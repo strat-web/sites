@@ -1,6 +1,5 @@
-# Quem revisa o quê. Equipes: admins (Helbert), devs (Jhonathan, João Paranhos), marketing.
-# Enquanto as equipes não existem, o Helbert revisa tudo.
-*                    @helbertparanhos
+# Quem revisa o quê. O resto do repositório o dev mescla sozinho, com as checagens verdes.
+# Kit, catálogo, CI e decisões mudam o padrão de todos os sites: pedem a aprovação do Helbert.
 /packages/           @helbertparanhos
 /catalogo/           @helbertparanhos
 /.github/            @helbertparanhos

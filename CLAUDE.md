@@ -9,7 +9,10 @@ e em `docs/`; se o caso não estiver previsto, pergunte no item do Plane antes d
 - **Branch:** `web-<N>-<slug>` (ex.: `web-23-agencia-site`), sempre a partir da `main` atualizada.
 - **Commit:** Conventional Commits em português, com o item no fim: `feat(agenciastrat): migra o site da Agência (WEB-23)`.
 - **PR:** um por item, pelo modelo `.github/pull_request_template.md`, aberto pela conta de serviço `strat-aibr`.
-  Quem abre não mescla. A `main` só recebe PR com as checagens verdes e uma aprovação.
+  O dev mescla o próprio PR (conta pessoal) quando as checagens estão verdes. PR que toca `packages/`, `catalogo/`,
+  `.github/` ou `docs/decisoes.md` espera a aprovação do Helbert (CODEOWNERS).
+- **Virar DNS de domínio que está no ar** (stratai, metricaas, stratacademy e LPs) só depois do comentário
+  "pode virar" do Helbert no item. Domínio novo (agenciastrat) não precisa.
 - **Item no Plane:** Fazendo ao começar; Aprovação com o link do PR e do preview e "como conferir"; nunca Concluído
   (só o Helbert conclui). O que aparecer fora do escopo vira item novo em Triagem, não entra no PR.
 
