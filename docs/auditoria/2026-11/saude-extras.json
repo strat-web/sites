@@ -1,0 +1,67 @@
+{
+  "fonte": "lote.mjs (Nota Strat rápida)",
+  "gerado_em": "2026-11-05T00:01:20.968Z",
+  "psi": true,
+  "sites": [
+    {
+      "id": "agencia-advogados",
+      "nome": "agencia-advogados",
+      "url": "https://agencia.stratai.com.br/advogados/",
+      "nota": 67,
+      "velocidade": 98,
+      "conversao": 9,
+      "seo": 65,
+      "confianca": 85,
+      "performance_mobile": 98,
+      "lcp_lab_s": 1.7,
+      "problema_principal": "Não há botão de WhatsApp, telefone clicável nem formulário na página.",
+      "fonte_problema": "sinais.contato",
+      "status": "ok"
+    },
+    {
+      "id": "stratai-raio-x",
+      "nome": "stratai-raio-x",
+      "url": "https://stratai.com.br/raio-x/",
+      "nota": 74,
+      "velocidade": 85,
+      "conversao": 45,
+      "seo": 81,
+      "confianca": 85,
+      "performance_mobile": 85,
+      "lcp_lab_s": 2,
+      "problema_principal": "Não há botão de WhatsApp, telefone clicável nem formulário na página.",
+      "fonte_problema": "sinais.contato",
+      "status": "ok"
+    },
+    {
+      "id": "stratai-bio",
+      "nome": "stratai-bio",
+      "url": "https://bio.stratai.com.br/",
+      "nota": 74,
+      "velocidade": 93,
+      "conversao": 45,
+      "seo": 66,
+      "confianca": 85,
+      "performance_mobile": 93,
+      "lcp_lab_s": 1.7,
+      "problema_principal": "A página está marcada para não aparecer no Google (noindex).",
+      "fonte_problema": "sinais.vazamentos.noindex",
+      "status": "ok"
+    },
+    {
+      "id": "agencia-site",
+      "nome": "agencia-site",
+      "url": "https://agencia.stratai.com.br/",
+      "nota": 79,
+      "velocidade": 73,
+      "conversao": 64,
+      "seo": 100,
+      "confianca": 85,
+      "performance_mobile": 73,
+      "lcp_lab_s": 4.1,
+      "problema_principal": "Nenhum pixel de anúncio na página: tráfego pago fica sem medir resultado.",
+      "fonte_problema": "sinais.tracking (HTML)",
+      "status": "ok"
+    }
+  ]
+}
