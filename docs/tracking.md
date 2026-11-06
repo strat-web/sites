@@ -11,6 +11,12 @@ Ninguém cola pixel, gtag ou GTM à mão.
 | `lead` | página que gera contato (formulário, WhatsApp, agenda) | MetricaaS `m.js` do workspace da marca; Rastro também quando a marca tem produto no Rastro | Agência, StratAI, MetricaaS |
 | `conteudo` | blog e institucional | o mesmo do site da marca, sem evento de lead | todos os blogs |
 
+**Regra dura do perfil `lead`:** o `m.js` do MetricaaS carrega **na hora** (`defer` ou `async` no `<head>`), nunca
+atrasado para depois do `load`, do `requestIdleCallback` ou do 1º toque. Ele põe o código no texto do WhatsApp no
+instante do clique; atrasado, quem toca no botão do topo de cara abre o WhatsApp sem o código e o lead vira orgânico
+(caso FTV, 2 de 7 leads do Google Ads perdidos entre 24/10 e 06/11/2026). Se o PageSpeed pedir atrasar tag, atrase só
+o Rastro. Padrão do carregador: `Strat-Ai-Operacional/modelo-lp`, `docs/tracking.md` ("Regra dura").
+
 ## Ids por marca (conferir no catálogo; aqui é referência)
 
 | Marca | Meta pixel | GA4 | Tag do Google | Rastro | MetricaaS |
@@ -34,7 +40,8 @@ precisa do slug.
 1. Slug cadastrado no Rastro (`/sa?product=<slug>` responde `known: true`). Slug desconhecido cai no pixel da Strat sem erro.
 2. Domínio na lista de "Domínios autorizados" do MetricaaS e na lista de permissão do pixel (Gerenciador de Eventos).
 3. Teste com `?utm_source=teste&utm_medium=verificacao`: `PageView`; `Contact` no clique do WhatsApp; `Lead` no
-   formulário com o mesmo `event_id` no navegador e na CAPI; evento no MetricaaS.
+   formulário com o mesmo `event_id` no navegador e na CAPI; evento no MetricaaS. No celular emulado (4G lento),
+   tocar no WhatsApp do topo logo que ele aparece: o código do MetricaaS tem de estar no texto.
 4. Com e sem aceitar cookies (o consentimento do Rastro pode ser `off`, `soft` ou `strict` por produto).
 
 Referência completa do Rastro: `strat-web/rastro` (hoje `Strat-Ai-Horus-OS/rastro-stratacademy`), `docs/TRACKING-ARCHITECTURE.md`.
