@@ -3,3 +3,5 @@
 export { grupo, marcas, marca } from './marcas.js';
 export { urlCanonica, schemaMarca, schemaBreadcrumb, schemaFaq, jsonSeguro } from './schema.js';
 export { PERFIS, planoDeTracking, linhaDoCatalogo } from './tracking.js';
+// Integração do Astro que grava sitemap.xml, robots.txt e llms.txt no fim do build (WEB-18).
+export { arquivosDoSite } from './arquivos-do-site.js';
