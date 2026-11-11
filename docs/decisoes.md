@@ -2,6 +2,11 @@
 
 Uma entrada por decisão, com data e quem decidiu. A mais nova em cima.
 
+## 2026-11-11 · Nome do projeto do Pages da Academy (Jhonathan, WEB-15)
+O nome `stratacademy` no Pages já é o projeto que serve stratacademy.com.br em produção, ligado ao repositório horus.
+O app `apps/stratacademy` deste repositório vira o projeto **`sites-stratacademy`**, sem mexer no projeto antigo. Como o
+domínio passa para cá fica para o Helbert decidir no WEB-49 (detalhe em `pages.md`, "A questão da stratacademy").
+
 ## 2026-11-04 · Organização dos sites (Helbert)
 Plano: https://claude.ai/artifact/7YroEqx8kQtjt7NQKMxZc8. Todas as recomendações aprovadas.
 
