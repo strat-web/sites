@@ -1,4 +1,5 @@
-// sitemap.xml, robots.txt e llms.txt de cada app, gerados no fim do build a partir do catálogo (WEB-18).
+// sitemap.xml, robots.txt e llms.txt de cada app, gerados no fim do build a partir do catálogo (WEB-18), e o
+// _headers do Cloudflare Pages com os cabeçalhos de segurança e o noindex do *.pages.dev (WEB-21).
 //
 // Uso no astro.config.mjs do app:
 //   import { arquivosDoSite } from '@strat/kit';
@@ -12,9 +13,10 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { marcas as MARCAS } from './marcas.js';
+import { montarHeaders } from './cabecalhos.js';
 
 const RAIZ = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
-const ARQUIVOS = ['sitemap.xml', 'robots.txt', 'llms.txt'];
+const ARQUIVOS = ['sitemap.xml', 'robots.txt', 'llms.txt', '_headers'];
 
 // Robôs que leem e citam a página nas respostas de IA (docs/seo-geo.md). Três papéis: *Bot rastreia,
 // *-SearchBot monta o índice do assistente, *-User busca a página na hora porque alguém perguntou.
@@ -195,7 +197,7 @@ export function arquivosDoSite({ app }) {
         const saida = fileURLToPath(dir);
         const manuais = ARQUIVOS.filter((a) => existsSync(resolve(pastaPublica, a)));
         if (manuais.length) {
-          throw new Error(`${app}: ${manuais.map((a) => `public/${a}`).join(', ')} feito à mão. O kit gera esse arquivo (WEB-18): apague o manual.`);
+          throw new Error(`${app}: ${manuais.map((a) => `public/${a}`).join(', ')} feito à mão. O kit gera esse arquivo (WEB-18 e WEB-21): apague o manual.`);
         }
         const catalogo = lerCatalogo();
         const linhaDaHome = catalogo.urls.find((u) => u.app === app && u.url === site);
@@ -219,7 +221,8 @@ export function arquivosDoSite({ app }) {
         writeFileSync(resolve(saida, 'sitemap.xml'), montarSitemap(indexaveis));
         writeFileSync(resolve(saida, 'robots.txt'), montarRobots(site));
         writeFileSync(resolve(saida, 'llms.txt'), montarLlms({ marca, site, indexaveis, catalogo }));
-        logger.info(`sitemap.xml (${indexaveis.length} de ${paginas.length} páginas), robots.txt e llms.txt gerados.`);
+        writeFileSync(resolve(saida, '_headers'), montarHeaders());
+        logger.info(`sitemap.xml (${indexaveis.length} de ${paginas.length} páginas), robots.txt, llms.txt e _headers gerados.`);
       },
     },
   };
