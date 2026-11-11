@@ -1,0 +1,16 @@
+---
+// Teste do <Tracking> perfil venda (WEB-17): Rastro com o produto mentoria e launcher da Hotmart. Sai antes de o
+// domínio virar (WEB-49).
+import Layout from '@strat/kit/Layout.astro';
+import TesteTracking from '@strat/kit/TesteTracking.astro';
+---
+<Layout marca="academy" perfil="venda" indexar={false}
+  titulo="Teste do Tracking, perfil venda · Strat Academy"
+  descricao="Página de teste do componente Tracking do kit dos sites: perfil venda da Academy, com o Rastro e o launcher da Hotmart.">
+  <TesteTracking perfil="venda" checkout="https://pay.hotmart.com/S99990328Q?off=e7rrc4yj" esperado={[
+    'Na abertura: tracking.stratacademy.com.br/sa?product=mentoria (known: true, consentMode off) e launcher.hotmart.com/launcher.js.',
+    'PageView do pixel 860500981882285 uma vez, page_view do GA4 G-R84BNVV2HX e a tag do Google Ads AW-17263684860.',
+    'O link do checkout ganha xcod e as UTMs no href (o Rastro reescreve). Clique no botão de teste: CTAClick.',
+    'Sem MetricaaS (a Academy não usa).',
+  ]} />
+</Layout>

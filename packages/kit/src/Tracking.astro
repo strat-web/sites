@@ -1,0 +1,88 @@
+---
+// Tracking da página (docs/tracking.md, D7): lê a linha da URL em catalogo/sites.json e põe no <head> o que o perfil
+// pede. Ninguém cola pixel, gtag ou GTM à mão. Entra pelo Layout (`perfil="..."`); use direto só fora dele.
+// A regra mora em tracking.js; aqui só se desenha o resultado.
+import catalogo from '../../../catalogo/sites.json';
+import { planoDeTracking, HOTMART_LAUNCHER } from './tracking.js';
+import { urlCanonica } from './schema.js';
+import { marca as dadosMarca } from './marcas.js';
+
+interface Props {
+  perfil: 'venda' | 'lead' | 'conteudo';
+  caminho?: string; // padrão: o caminho da própria página
+}
+
+const { perfil, caminho = Astro.url.pathname } = Astro.props;
+const url = urlCanonica(Astro.site, caminho);
+const plano = planoDeTracking({ catalogo, url, perfil });
+for (const aviso of plano.avisos) console.warn(`[kit] Tracking em ${url}: ${aviso}`);
+
+// Launcher da Hotmart com o id escrito no HTML: o "verificar instalação" da Hotmart lê o HTML estático. O snippet
+// do Rastro detecta o launcher e não duplica.
+const launcher = plano.hotmart && `
+(function(l,a,u,n,c,h,e,r){l['HotmartLauncherObject']=c;l[c]=l[c]||function(){
+(l[c].q=l[c].q||[]).push(arguments)},l[c].l=1*new Date();h=a.createElement(u),
+e=a.getElementsByTagName(u)[0];h.async=1;h.src=n;e.parentNode.insertBefore(h,e)
+})(window,document,'script','${HOTMART_LAUNCHER}','hot');
+hot('account',${JSON.stringify(plano.hotmart).replace(/"/g, "'")});
+`;
+
+let privacidade = null;
+if (plano.banner) {
+  privacidade = dadosMarca(plano.linha.marca).privacidade;
+  if (!privacidade) throw new Error(`[kit] Tracking em ${url}: o banner de cookies precisa de \`privacidade\` da marca em marcas.js`);
+}
+---
+{plano.scripts.map((s) => <script is:inline defer src={s.src} {...s.attrs}></script>)}
+{plano.hotmart && (
+  <script is:inline id="hotmart_launcher_script" set:html={launcher}></script>
+)}
+{plano.banner && (
+  <script is:inline define:vars={{ privacidade }}>
+    // Banner de cookies do kit (o mesmo da Agência, laudo de 31/10/2026): o pixel da Meta só liga depois do
+    // "Aceitar" (mtc.consentir). O cadastro do lead e a CAPI do servidor não dependem dele. A escolha fica no
+    // navegador, na chave strat_cookies, a mesma das páginas antigas do domínio.
+    (function () {
+      var CHAVE = 'strat_cookies', escolha = null;
+      try { escolha = localStorage.getItem(CHAVE); } catch (e) {}
+      function liberar() {
+        var t0 = Date.now();
+        (function tenta() {
+          if (window.mtc && window.mtc.consentir) return window.mtc.consentir();
+          if (Date.now() - t0 < 8000) setTimeout(tenta, 150);
+        })();
+      }
+      if (escolha === 'sim') return liberar();
+      if (escolha === 'nao') return;
+      function mostrar() {
+        var b = document.createElement('div');
+        b.className = 'strat-cookies';
+        b.setAttribute('role', 'dialog');
+        b.setAttribute('aria-label', 'Cookies');
+        b.innerHTML = '<p>Usamos cookies e o Pixel da Meta para medir os nossos anúncios. Você pode aceitar ou recusar. ' +
+          '<a href="' + privacidade + '">Política de privacidade</a></p>' +
+          '<div><button type="button" data-c="nao">Recusar</button> <button type="button" data-c="sim">Aceitar</button></div>';
+        b.addEventListener('click', function (e) {
+          var c = e.target.closest && e.target.closest('[data-c]');
+          if (!c) return;
+          try { localStorage.setItem(CHAVE, c.dataset.c); } catch (err) {}
+          b.remove();
+          if (c.dataset.c === 'sim') liberar();
+        });
+        document.body.appendChild(b);
+      }
+      if (document.body) mostrar(); else document.addEventListener('DOMContentLoaded', mostrar);
+    })();
+  </script>
+  <style is:global>
+    .strat-cookies { position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 50; max-width: 560px; margin: 0 auto;
+      padding: 16px; background: #fff; color: #161616; border: 1px solid #d6d2c6; border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.12); font: 15px/1.5 system-ui, sans-serif; }
+    .strat-cookies p { margin: 0 0 12px; }
+    .strat-cookies a { color: inherit; }
+    .strat-cookies div { display: flex; gap: 8px; justify-content: flex-end; }
+    .strat-cookies button { min-height: 44px; padding: 0 18px; border-radius: 8px; border: 1px solid #161616;
+      background: #fff; color: #161616; font: inherit; cursor: pointer; }
+    .strat-cookies button[data-c="sim"] { background: #161616; color: #fff; }
+  </style>
+)}

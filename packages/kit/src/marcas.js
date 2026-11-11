@@ -4,6 +4,7 @@
 // - nome, telefone e endereço: docs/seo-geo.md ("Nome, endereço e telefone iguais em todo lugar");
 // - redes, e-mail e imagem: o HTML no ar em 2026-11-11 (stratai.com.br, agencia.stratai.com.br, stratacademy.com.br e
 //   metricaas.com.br); o YouTube @stratacademy vem de um link da stratai.com.br.
+// - privacidade: a política no ar em 2026-11-11 (link do banner de cookies do <Tracking>).
 // Rede nova entra aqui com a fonte no PR. Telefone dos contratos não entra (docs/seo-geo.md).
 
 export const grupo = { '@type': 'Organization', name: 'Grupo Strat' };
@@ -35,6 +36,8 @@ export const marcas = {
     imagem: 'https://agencia.stratai.com.br/midia/og.png',
     telefone: '+55 48 3199-4338',
     email: 'comercial@stratai.com.br',
+    // Muda para agenciastrat.com.br na migração (WEB-23), junto da imagem.
+    privacidade: 'https://agencia.stratai.com.br/politica-de-privacidade',
     endereco: joinville,
     sameAs: ['https://www.instagram.com/agencia.strat/'],
   },
