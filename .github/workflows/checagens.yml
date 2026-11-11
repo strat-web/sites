@@ -11,8 +11,10 @@ on:
 permissions:
   contents: read
 
+# Uma execução por branch: a nova cancela a anterior. Se uma execução ficar presa no GitHub (aconteceu em 11/11/2026:
+# job "em andamento" sem runner, que nem o force-cancel derruba), trocar o prefixo do grupo destrava as próximas.
 concurrency:
-  group: checagens-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 jobs:
