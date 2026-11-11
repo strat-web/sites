@@ -30,3 +30,20 @@ A conferência no navegador, que vê o que o JavaScript injeta, é o WEB-11.
   `strat-marketing` na StratAI e Rastro na Agência). O `catalogo/sites.json` daqui já está certo.
 - **Motor de LP:** a checagem sem navegador não vê pixel, formulário e WhatsApp injetados por script (MetricaaS, Rastro).
   Ajuste no motor quando ele for para a oficina (F5).
+
+# Conferência no navegador · 2026-11-11 (WEB-11)
+
+Um arquivo por domínio, com a tabela por URL (o que dispara, o que falta, o que duplica) e o lead de teste:
+[agenciastrat.md](agenciastrat.md) · [stratai.md](stratai.md) · [metricaas.md](metricaas.md) · [stratacademy.md](stratacademy.md).
+
+| Achado | Onde | Vai para |
+|---|---|---|
+| **Nada dispara em dobro**: pixel `PageView` ×1 em todas as URLs medidas | todas | — |
+| T3: Agência sem GA4 G-6S4YX29WBH e sem tag GT-TX2632G5 em nenhuma página (só pixel e MetricaaS) | agencia., bio.stratai.com.br/agencia/ | WEB-13 (catálogo) e WEB-23 (migração) |
+| T4: bio da StratAI carrega o MetricaaS `strat-marketing` em vez de `agencia-strat` | bio.stratai.com.br/ | WEB-35 e WEB-13 |
+| T2: a LP claude. carrega a tag G-3RYFFP7EF5 (GA4 do produto `quaia` no Rastro), que entrega os hits em G-R84BNVV2HX | claude. | WEB-13 |
+| Umami não existe em nenhuma URL | todas | WEB-17 (kit) |
+| Formulário da Agência não leva empresa, segmento, faturamento, verba e serviços aos campos do lead no MetricaaS | agencia./ | WEB-23 |
+| Site da Academy mede com pixel 860500981882285 + PostHog (sem GA4); catálogo com `null` | stratacademy.com.br | WEB-13 e WEB-46 |
+| Consentimento: Agência (home e bio) pede aceite antes do pixel; /advogados, StratAI, MetricaaS e LPs da Academy não pedem (Rastro `off`); vibecode em `soft` | vários | decisão do Helbert |
+| Hosts não vistos no navegador (extensão bloqueia): stratacademy.com.br, skills., bootcamp., comunidade. | Academy | refazer no WEB-46 / WEB-48 |
