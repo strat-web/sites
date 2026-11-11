@@ -1,0 +1,30 @@
+---
+// Casca de toda página: <head> com Seo e o JSON-LD da marca. O <Tracking> entra aqui no WEB-17.
+// Slots: o padrão é o <body>; `head` acrescenta itens ao <head> (fonte, estilo, JSON-LD da página).
+import Seo from './Seo.astro';
+import JsonLd from './JsonLd.astro';
+
+interface Props {
+  marca: string;
+  titulo: string;
+  descricao: string;
+  imagem?: string;
+  indexar?: boolean;
+  tipo?: 'website' | 'article';
+}
+
+const props = Astro.props;
+---
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <Seo {...props} />
+    <JsonLd marca={props.marca} />
+    <slot name="head" />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
