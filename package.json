@@ -13,6 +13,7 @@
     "dev:stratai": "pnpm --filter @strat/stratai dev",
     "dev:stratacademy": "pnpm --filter @strat/stratacademy dev",
     "dev:metricaas": "pnpm --filter @strat/metricaas dev",
-    "checar": "pnpm build"
+    "checar": "pnpm build && pnpm test",
+    "test": "pnpm -r --if-present run test"
   }
 }
