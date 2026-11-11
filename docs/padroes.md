@@ -143,8 +143,10 @@ Exceções escritas no código, com o item que as tira:
   `<Tracking>`, pedindo para tirar a URL da lista no mesmo PR;
 - `/u/` não é conferido como link: o proxy do Umami é do Strat Tracking, fora do build.
 
-O peso é medido no `dist/` servido na própria máquina da CI, com os scripts de terceiro carregando de verdade; se a
-primeira medição do Lighthouse não passa, ele mede de novo antes de barrar. O número que vale para o site no ar
+O peso é medido no `dist/` servido na própria máquina da CI. No Lighthouse, os scripts do `<Tracking>` (Rastro,
+MetricaaS, launcher da Hotmart, Umami) ficam bloqueados: são obrigatórios, não mudam por PR e variam a cada medição
+(a página de venda oscilou entre 89 e 93 só por eles). Qualquer outro script de terceiro continua medido. Se a
+primeira medição não passa, ele mede de novo antes de barrar. O número que vale para o site no ar
 continua sendo o PageSpeed em produção (`docs/checklist-publicar.md`, D1).
 
 ## Regra de merge na main (WEB-20)

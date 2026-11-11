@@ -2,8 +2,10 @@
 // celular (configuração padrão: Moto G Power, 4G lento simulado), performance ≥ 90, LCP ≤ 2,5 s e CLS ≤ 0,1.
 //
 // Os bytes contam o HTML e o que ele carrega do próprio build (CSS, JS, imagem, fonte, inclusive url() do CSS).
-// Script de terceiro (Rastro, MetricaaS, Hotmart) fica fora da soma, mas entra no Lighthouse, que abre a página de
-// verdade a partir do dist/ servido localmente. O número de manchete do site continua sendo o PageSpeed em produção.
+// O Lighthouse abre a página de verdade a partir do dist/ servido localmente, com os scripts do <Tracking> bloqueados
+// (Rastro, MetricaaS, launcher da Hotmart e Umami): eles são obrigatórios em toda página, não mudam por PR e variam a
+// cada medição (a página de venda oscilou entre 89 e 93 só por eles, 11/11/2026). Qualquer outro script de terceiro
+// que a página puser continua medido. O custo do tracking e o número de manchete ficam com o PageSpeed em produção.
 import { createReadStream, existsSync, readFileSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { extname, join, normalize } from 'node:path';
@@ -12,6 +14,9 @@ import { enderecos } from './html.js';
 import { resultado } from './resultado.js';
 
 export const ORCAMENTO = { bytes: 1_500_000, performance: 90, lcpMs: 2500, cls: 0.1 };
+
+// Scripts do <Tracking> do kit, bloqueados só no Lighthouse da CI (ver o topo do arquivo).
+export const BLOQUEADOS_NO_LIGHTHOUSE = ['*tracking.stratacademy.com.br/*', '*t.metricaas.com.br/*', '*launcher.hotmart.com/*', '*/u/script.js*'];
 
 const ehArquivo = (f) => existsSync(f) && statSync(f).isFile();
 
@@ -93,7 +98,13 @@ export function servirDist(dist) {
 
 async function medirComLighthouse(url, porta) {
   const { default: lighthouse } = await import('lighthouse');
-  const { lhr } = await lighthouse(url, { port: porta, onlyCategories: ['performance'], logLevel: 'error', output: 'json' });
+  const { lhr } = await lighthouse(url, {
+    port: porta,
+    onlyCategories: ['performance'],
+    blockedUrlPatterns: BLOQUEADOS_NO_LIGHTHOUSE,
+    logLevel: 'error',
+    output: 'json',
+  });
   if (lhr.runtimeError) throw new Error(lhr.runtimeError.message);
   return {
     performance: Math.round((lhr.categories.performance.score ?? 0) * 100),
