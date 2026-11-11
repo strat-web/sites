@@ -18,7 +18,7 @@ const url = urlCanonica(Astro.site, Astro.url.pathname);
 const { linha, scripts, hotmart, banner } = planoDeTracking({ catalogo, url, perfil });
 const texto = encodeURIComponent('Olá! Teste do kit de tracking (WEB-17), pode ignorar.');
 ---
-<main style="max-width:720px;margin:0 auto;padding:32px 16px;font:16px/1.6 system-ui,sans-serif">
+<main id="topo" style="max-width:720px;margin:0 auto;padding:32px 16px;font:16px/1.6 system-ui,sans-serif">
   <h1>Teste do Tracking · perfil {perfil}</h1>
   <p>Página de teste do componente <code>&lt;Tracking&gt;</code> do kit. Abra com
     <code>?utm_source=teste&amp;utm_medium=verificacao</code> e confira a aba Rede. Fica fora do índice e sai antes

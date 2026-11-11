@@ -13,7 +13,8 @@
     "dev:stratai": "pnpm --filter @strat/stratai dev",
     "dev:stratacademy": "pnpm --filter @strat/stratacademy dev",
     "dev:metricaas": "pnpm --filter @strat/metricaas dev",
-    "checar": "pnpm build && pnpm test",
-    "test": "pnpm -r --if-present run test"
+    "checar": "pnpm build && pnpm test && node packages/checagens/src/cli.js",
+    "test": "pnpm -r --if-present run test",
+    "checar:rapido": "pnpm build && pnpm test && node packages/checagens/src/cli.js --sem-lighthouse"
   }
 }

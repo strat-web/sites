@@ -13,6 +13,7 @@ lps/
 packages/
   kit/               Layout, Seo, JsonLd, Breadcrumb, Faq, Tracking, sitemap, robots, llms.txt
   conteudo/          schema do blog (Zod) e checar-posts
+  checagens/         as checagens da CI (seo, tracking, links, peso, catalogo) sobre o dist/ de cada app
 catalogo/sites.json  fonte única de URLs, ids e tags
 docs/                o manual
 ```
@@ -115,11 +116,45 @@ export default defineConfig({ site: 'https://stratai.com.br', integrations: [arq
 - Um PR por item. PR grande (mais de ~600 linhas fora de conteúdo) é sinal de que o item precisava ser dividido.
 
 ## Checagens da CI (WEB-20)
+Rodam em todo PR (`.github/workflows/checagens.yml`), cada uma num job com o próprio nome, e são as que o ruleset
+da `main` exige. A regra mora em `packages/checagens/` e lê o `dist/` de cada app depois do build.
+
 | Checagem | Barra quando |
 |---|---|
-| build | algum app não compila |
-| seo | título ou H1 repetido, sem canonical, `href="#"`, JSON-LD inválido, página indexável fora do sitemap |
-| tracking | página sem `<Tracking>`, slug que o Rastro não conhece, pixel ou gtag colado à mão |
-| links | link interno quebrado |
-| peso | página acima do orçamento (performance ≥ 90, LCP ≤ 2,5 s, CLS ≤ 0,1, até 1,5 MB) |
-| catalogo | URL nova sem linha em `catalogo/sites.json` |
+| build | algum app não compila ou algum teste dos pacotes falha (`pnpm build` e `pnpm test`) |
+| seo | `<title>` ou `<h1>` faltando, repetido na página ou repetido no site; sem canonical ou canonical diferente da URL; `<a href="#">` (ou vazio, ou `javascript:`); JSON-LD que não é JSON ou sem `@context`/`@type`; página indexável fora do `sitemap.xml`; sitemap com página que tem noindex ou não existe; app sem `sitemap.xml` ou `robots.txt` |
+| tracking | script do `<Tracking>` faltando ou diferente do que a linha do catálogo pede (`data-ws`, `data-pixel`, `data-website-id`); script de tracking a mais ou em dobro; pixel da Meta, gtag, GTM ou pixel do TikTok colado à mão; slug que o Rastro não conhece (`/sa?product=<slug>` com `known: false`) |
+| links | link interno quebrado (caminho, relativo ou URL do próprio domínio sem arquivo no build); âncora `#id` sem o id na página |
+| peso | página acima de 1,5 MB (HTML + CSS, JS, imagem e fonte do build); no Lighthouse em celular, performance abaixo de 90, LCP acima de 2,5 s ou CLS acima de 0,1 |
+| catalogo | página do build sem linha em `catalogo/sites.json` ou com `app` diferente; linha sem campo obrigatório, com valor fora da lista, URL sem barra, id ou URL repetidos |
+
+Na máquina: `pnpm checar` roda tudo (o Lighthouse precisa do Chrome instalado, ~1 min); `pnpm checar:rapido` pula
+o Lighthouse. Uma checagem ou um app: `node packages/checagens/src/cli.js seo links --app apps/stratai`.
+`--sem-rede` não pergunta ao Rastro (só para trabalhar desconectado; na CI ele pergunta sempre).
+
+O que não barra (aparece como aviso no log e na anotação do PR):
+- página com tracking sem `umami_website_id` no catálogo: os ids vêm do Strat Tracking e ainda não existem. Quando
+  existirem, o `<Tracking>` carrega o `/u/script.js` e a checagem passa a exigir o script;
+- link interno sem barra no fim que cai numa página que existe (passa por redirecionamento).
+
+Exceções escritas no código, com o item que as tira:
+- `packages/checagens/src/esqueletos.js`: a home de cada app é um esqueleto do WEB-15 (noindex, sem tracking) até
+  o item de migração. A checagem exige noindex e nenhum tracking nessas URLs e quebra quando a página real ganha o
+  `<Tracking>`, pedindo para tirar a URL da lista no mesmo PR;
+- `/u/` não é conferido como link: o proxy do Umami é do Strat Tracking, fora do build.
+
+O peso é medido no `dist/` servido na própria máquina da CI, com os scripts de terceiro carregando de verdade; se a
+primeira medição do Lighthouse não passa, ele mede de novo antes de barrar. O número que vale para o site no ar
+continua sendo o PageSpeed em produção (`docs/checklist-publicar.md`, D1).
+
+## Regra de merge na main (WEB-20)
+O ruleset está escrito em `.github/rulesets/main.json` e o Helbert aplica (Settings → Rules → Rulesets → Import,
+ou `gh api -X POST repos/strat-web/sites/rulesets --input .github/rulesets/main.json`): só admin do repositório
+aplica. Ele pede:
+- PR para tudo que entra na `main` (nada de push direto), sem apagar a branch e sem force push;
+- 1 aprovação e a do dono do caminho no `CODEOWNERS` (`packages/`, `catalogo/`, `.github/`, `docs/decisoes.md`
+  → Helbert); aprovação antiga cai quando chega commit novo;
+- as 6 checagens verdes (`build`, `seo`, `tracking`, `links`, `peso`, `catalogo`). O preview do Cloudflare Pages não
+  é obrigatório: ele só builda o app que mudou.
+
+Quem abre o PR não aprova o próprio: PR aberto pela conta do dev precisa da aprovação de outra pessoa.

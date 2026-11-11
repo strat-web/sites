@@ -1,0 +1,17 @@
+{
+  "name": "@strat/checagens",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "As 6 checagens da CI dos sites (WEB-20): build, seo, tracking, links, peso e catalogo. Rodam sobre o dist/ de cada app.",
+  "main": "./src/index.js",
+  "scripts": {
+    "test": "node --test",
+    "checar": "node src/cli.js"
+  },
+  "dependencies": {
+    "@strat/kit": "workspace:*",
+    "chrome-launcher": "1.2.2",
+    "lighthouse": "13.5.0"
+  }
+}
