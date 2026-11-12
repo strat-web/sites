@@ -1,14 +1,15 @@
 // Cada regra das checagens com um caso que tem de barrar e um que tem de passar (WEB-20).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { checarCatalogo } from '../src/catalogo.js';
+import { RAIZ, checarApps, montarContexto } from '../src/contexto.js';
 import { checarLinks } from '../src/links.js';
 import { bytesDaPagina } from '../src/peso.js';
 import { checarSeo } from '../src/seo.js';
-import { checarTracking, diferencasDoRastro, slugConhecido } from '../src/tracking.js';
+import { checarTracking, diferencasDoRastro, lerRastro, slugConhecido } from '../src/tracking.js';
 
 const SITE = 'https://stratai.com.br';
 const linha = (extra = {}) => ({
@@ -193,4 +194,129 @@ test('diferencasDoRastro: tag do Google aceita o googleTagId ou o googleAdsId, e
   assert.deepEqual(diferencasDoRastro(mentoria, l), []);
   assert.deepEqual(diferencasDoRastro({ known: true }, l), []);
   assert.equal(diferencasDoRastro({ ...mentoria, googleTagId: 'GT-X' }, l).length, 1);
+});
+
+// WEB-76: checagem de tracking sem falso verde.
+const MJS = 'https://t.metricaas.com.br/m.js';
+const RASTRO_SA = '<script defer src="https://tracking.stratacademy.com.br/sa?product=stratai"></script>';
+const comMjs = (tag, antes = '', depois = '') => `${antes}${tag}${RASTRO_SA}${depois}`;
+const erroDoMjs = async (head, corpo = '') => msgs(await checarTracking(ctx([pagina({ head, corpo })]), { semRede: true }));
+
+test('tracking: m.js sem defer, com async ou com type barra', async () => {
+  assert.match(await erroDoMjs(comMjs(`<script src="${MJS}" data-ws="agencia-strat"></script>`)), /m\.js sem defer/);
+  assert.match(await erroDoMjs(comMjs(`<script defer async src="${MJS}" data-ws="agencia-strat"></script>`)), /m\.js com async/);
+  assert.match(await erroDoMjs(comMjs(`<script defer type="module" src="${MJS}" data-ws="agencia-strat"></script>`)), /m\.js com type="module"/);
+  // type que o navegador não executa (gerenciador de consentimento): o script está lá e não roda.
+  assert.match(await erroDoMjs(comMjs(`<script defer type="text/plain" src="${MJS}" data-ws="agencia-strat"></script>`)), /m\.js com type="text\/plain"/);
+  assert.deepEqual((await checarTracking(ctx([pagina({ head: comMjs(`<script defer type="text/javascript" src="${MJS}" data-ws="agencia-strat"></script>`) })]), { semRede: true })).erros, []);
+});
+
+test('tracking: m.js depois de outro script ou fora do <head> barra; JSON-LD antes passa', async () => {
+  const mjs = `<script defer src="${MJS}" data-ws="agencia-strat"></script>`;
+  assert.match(await erroDoMjs(`${RASTRO_SA}${mjs}`), /m\.js depois de https:\/\/tracking\.stratacademy\.com\.br\/sa\?product=stratai/);
+  assert.match(await erroDoMjs(comMjs(mjs, '<script>window.x = 1;</script>')), /m\.js depois de <script id=""> inline/);
+  assert.match(await erroDoMjs(RASTRO_SA, mjs), /m\.js fora do <head>/);
+  const jsonLd = '<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage"}</script>';
+  assert.deepEqual((await checarTracking(ctx([pagina({ head: comMjs(mjs, jsonLd) })]), { semRede: true })).erros, []);
+});
+
+test('tracking: Rastro com type que não executa barra', async () => {
+  const head = `<script defer src="${MJS}" data-ws="agencia-strat"></script><script defer type="text/plain" src="https://tracking.stratacademy.com.br/sa?product=stratai"></script>`;
+  assert.match(await erroDoMjs(head), /sa\?product=stratai com type="text\/plain"/);
+});
+
+test('tracking: pixel ou GTM em <noscript> barra', async () => {
+  const pixel = '<noscript><img height="1" width="1" src="https://www.facebook.com/tr?id=1823024821883911&ev=PageView&noscript=1"></noscript>';
+  assert.match(await erroDoMjs(TRACKING_OK, pixel), /pixel da Meta \(imagem facebook\.com\/tr\) colado à mão em <noscript>/);
+  const gtm = '<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXX"></iframe></noscript>';
+  assert.match(await erroDoMjs(TRACKING_OK, gtm), /gtag ou GTM colado à mão em <noscript>/);
+  const social = '<noscript><a href="https://www.facebook.com/stratai">Facebook</a></noscript>';
+  assert.deepEqual((await checarTracking(ctx([pagina({ corpo: social })]), { semRede: true })).erros, []);
+});
+
+test('tracking: pixel dentro de um .js do build barra; .js limpo passa', async () => {
+  const comJs = (conteudo) => {
+    const c = ctx([pagina()]);
+    c.apps[0].js = [{ arquivo: '/raiz/apps/stratai/dist/js/pixel.js', caminho: '/js/pixel.js', conteudo }];
+    return c;
+  };
+  const fbq = "!function(f){f.fbq=function(){}}(window);fbq('init','1823024821883911');";
+  assert.match(msgs(await checarTracking(comJs(fbq), { semRede: true })), /pixel da Meta \(fbq\) colado à mão em \/js\/pixel\.js \(\.js do build\)/);
+  const gtag = "var s=document.createElement('script');s.src='https://www.googletagmanager.com/gtag/js?id=G-X';";
+  assert.match(msgs(await checarTracking(comJs(gtag), { semRede: true })), /gtag ou GTM colado à mão em \/js\/pixel\.js/);
+  assert.deepEqual((await checarTracking(comJs("document.querySelector('form').addEventListener('submit',()=>{});"), { semRede: true })).erros, []);
+});
+
+function raizFalsa() {
+  const raiz = mkdtempSync(join(tmpdir(), 'checagens-raiz-'));
+  const arquivo = (caminho, conteudo) => {
+    mkdirSync(dirname(join(raiz, caminho)), { recursive: true });
+    writeFileSync(join(raiz, caminho), conteudo);
+  };
+  arquivo('catalogo/sites.json', '{"urls":[]}');
+  arquivo('apps/com-dist/package.json', '{}');
+  arquivo('apps/com-dist/dist/index.html', '<h1>ok</h1>');
+  arquivo('apps/com-dist/dist/_astro/pagina.js', 'console.log(1)');
+  arquivo('apps/sem-dist/package.json', '{}');
+  arquivo('lps/academy/README.md', 'pasta de LPs, sem app ainda');
+  return raiz;
+}
+
+test('apps: app sem dist/ barra em vez de ser pulado; pasta que não é app fica de fora', () => {
+  const raiz = raizFalsa();
+  const todos = montarContexto({ raiz });
+  assert.deepEqual(todos.apps.map((a) => a.app), ['apps/com-dist']);
+  assert.deepEqual(todos.apps[0].js.map((j) => j.caminho), ['/_astro/pagina.js']);
+  assert.deepEqual(todos.semDist, ['apps/sem-dist']);
+  assert.match(msgs(checarApps(todos)), /app sem dist\//);
+  assert.equal(checarApps(todos).erros[0].onde, 'apps/sem-dist');
+  // --app só do que tem dist/: passa; --app de pasta que não existe: barra.
+  assert.deepEqual(checarApps(montarContexto({ raiz, apps: ['apps/com-dist'] })).erros, []);
+  assert.match(msgs(checarApps(montarContexto({ raiz, apps: ['apps/nao-existe'] }))), /não é um app/);
+});
+
+// Rastro de mentira que responde, na ordem, cada item da lista (erro = cai a rede; número = status HTTP; objeto = CFG).
+function rastroEmSequencia(respostas) {
+  const chamadas = [];
+  const buscar = async (url) => {
+    chamadas.push(new URL(url).searchParams.get('product'));
+    const r = respostas.length > 1 ? respostas.shift() : respostas[0];
+    if (r instanceof Error) throw r;
+    if (typeof r === 'number') return { ok: false, status: r, text: async () => '' };
+    return { ok: true, status: 200, text: async () => `var CFG=${JSON.stringify(r)};` };
+  };
+  return { buscar, chamadas };
+}
+const semEspera = async () => {};
+
+test('Rastro: oscilação (rede caiu, 503) ganha nova tentativa e passa', async () => {
+  const { buscar, chamadas } = rastroEmSequencia([new TypeError('fetch failed'), 503, { known: true }]);
+  assert.equal((await lerRastro('stratai', buscar, { esperar: semEspera })).known, true);
+  assert.equal(chamadas.length, 3);
+  const r = await checarTracking(ctx([pagina()]), { buscar: rastroEmSequencia([502, { known: true }]).buscar, esperar: semEspera });
+  assert.deepEqual(r.erros, []);
+});
+
+test('Rastro: fora do ar depois das tentativas barra, e o próximo slug não espera de novo', async () => {
+  const { buscar, chamadas } = rastroEmSequencia([503]);
+  const linhas = [linha(), linha({ id: 'o', url: `${SITE}/outra/`, rastro_slug: 'raio-x-ia' })];
+  const paginas = [pagina(), pagina({ caminho: '/outra/', titulo: 'Outra', h1: 'Outra', head: TRACKING_OK.replace('product=stratai', 'product=raio-x-ia') })];
+  const r = await checarTracking(ctx(paginas, { linhas }), { buscar, esperar: semEspera });
+  assert.match(msgs(r), /Rastro respondeu 503 \(3 tentativas\): o Rastro parece fora do ar/);
+  assert.deepEqual(chamadas, ['stratai', 'stratai', 'stratai', 'raio-x-ia']);
+  assert.equal(r.erros.length, 2);
+});
+
+test('Rastro: 404 não muda na segunda vez, então barra sem nova tentativa', async () => {
+  const { buscar, chamadas } = rastroEmSequencia([404]);
+  await assert.rejects(lerRastro('stratai', buscar, { esperar: semEspera }), /respondeu 404/);
+  assert.equal(chamadas.length, 1);
+});
+
+test('workflow: grupo de concorrência por número do PR, não por nome de branch', () => {
+  const yml = readFileSync(join(RAIZ, '.github/workflows/checagens.yml'), 'utf8');
+  const grupo = yml.match(/concurrency:\s*\n\s*group:\s*(.+)/)?.[1] ?? '';
+  assert.match(grupo, /github\.event\.pull_request\.number/);
+  assert.doesNotMatch(grupo, /head_ref/);
+  assert.match(yml, /cancel-in-progress:\s*\$\{\{\s*github\.event_name == 'pull_request'\s*\}\}/);
 });
