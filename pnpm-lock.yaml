@@ -10,6 +10,9 @@ importers:
 
   apps/agenciastrat:
     dependencies:
+      '@strat/conteudo':
+        specifier: workspace:*
+        version: link:../../packages/conteudo
       '@strat/kit':
         specifier: workspace:*
         version: link:../../packages/kit
@@ -19,6 +22,9 @@ importers:
 
   apps/metricaas:
     dependencies:
+      '@strat/conteudo':
+        specifier: workspace:*
+        version: link:../../packages/conteudo
       '@strat/kit':
         specifier: workspace:*
         version: link:../../packages/kit
@@ -28,6 +34,9 @@ importers:
 
   apps/stratacademy:
     dependencies:
+      '@strat/conteudo':
+        specifier: workspace:*
+        version: link:../../packages/conteudo
       '@strat/kit':
         specifier: workspace:*
         version: link:../../packages/kit
@@ -37,6 +46,9 @@ importers:
 
   apps/stratai:
     dependencies:
+      '@strat/conteudo':
+        specifier: workspace:*
+        version: link:../../packages/conteudo
       '@strat/kit':
         specifier: workspace:*
         version: link:../../packages/kit
@@ -56,7 +68,11 @@ importers:
         specifier: 13.5.0
         version: 13.5.0(@opentelemetry/core@2.12.0(@opentelemetry/api@1.9.1))
 
-  packages/conteudo: {}
+  packages/conteudo:
+    devDependencies:
+      astro:
+        specifier: 7.4.3
+        version: 7.4.3(@types/node@26.6.6)(yaml@2.9.1)
 
   packages/kit: {}
 

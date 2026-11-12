@@ -41,10 +41,21 @@ const pagina = ({ titulo = 'Teste', h1 = 'Teste', head = TRACKING_OK, corpo = ''
     `<meta name="robots" content="${robots}">${head}</head><body><h1>${h1}</h1>${corpo}</body></html>`,
 });
 
-const ctx = (paginas, { linhas = [linha()], sitemap = [], dist = '/nao-existe' } = {}) => ({
+// 404.html como o <PaginaNaoEncontrada> do kit gera (WEB-75): noindex, sem canonical próprio, fora do catálogo.
+const pagina404 = ({ corpo = '', robots = 'noindex, nofollow', h1 = 'Esta página não existe' } = {}) => ({
+  caminho: '/404.html',
+  url: `${SITE}/404.html`,
+  arquivo: 'dist/404.html',
+  html:
+    `<!doctype html><html><head><title>Página não encontrada · StratAI</title><link rel="canonical" href="${SITE}/404/">` +
+    `<meta name="robots" content="${robots}"></head><body><h1>${h1}</h1>${corpo}</body></html>`,
+});
+
+// Todo app tem a 404 (a checagem seo barra sem ela); `erro: null` monta o app sem.
+const ctx = (paginas, { linhas = [linha()], sitemap = [], dist = '/nao-existe', erro = pagina404() } = {}) => ({
   raiz: '/',
   catalogo: { urls: linhas },
-  apps: [{ app: 'apps/stratai', site: SITE, dist, paginas, sitemap, robots: 'User-agent: *' }],
+  apps: [{ app: 'apps/stratai', site: SITE, dist, paginas: erro ? [...paginas, erro] : paginas, sitemap, robots: 'User-agent: *' }],
 });
 
 const msgs = (r) => r.erros.map((e) => e.msg).join(' | ');
@@ -319,4 +330,31 @@ test('workflow: grupo de concorrência por número do PR, não por nome de branc
   assert.match(grupo, /github\.event\.pull_request\.number/);
   assert.doesNotMatch(grupo, /head_ref/);
   assert.match(yml, /cancel-in-progress:\s*\$\{\{\s*github\.event_name == 'pull_request'\s*\}\}/);
+});
+
+test('seo: app sem 404.html barra; com a 404 do kit passa', () => {
+  assert.match(msgs(checarSeo(ctx([pagina()], { erro: null }))), /sem 404\.html/);
+  assert.deepEqual(checarSeo(ctx([pagina()])).erros, []);
+});
+
+test('seo: 404 sem noindex, sem H1 ou no sitemap barra; canonical e título dela não contam', () => {
+  assert.match(msgs(checarSeo(ctx([pagina()], { erro: pagina404({ robots: 'index, follow' }) }))), /página de erro sem noindex/);
+  assert.match(msgs(checarSeo(ctx([pagina()], { erro: pagina404({ h1: '' }) }))), /exatamente um <h1>/);
+  assert.match(msgs(checarSeo(ctx([pagina()], { sitemap: [`${SITE}/404/`] }))), /página de erro no sitemap/);
+  assert.match(msgs(checarSeo(ctx([pagina()], { erro: pagina404({ corpo: '<a href="#">x</a>' }) }))), /link sem destino/);
+});
+
+test('links: a 404 é conferida a partir da raiz; endereço relativo e link quebrado nela barram', () => {
+  const dist = distFalso();
+  const corpo = '<a href="/existe/">ok</a><a href="https://stratai.com.br/existe/">ok</a><a href="https://wa.me/5547991658478">fora</a>';
+  assert.deepEqual(checarLinks(ctx([], { dist, erro: pagina404({ corpo }) })).erros, []);
+  const ruim = checarLinks(ctx([], { dist, erro: pagina404({ corpo: '<a href="existe/">relativo</a><a href="/raio-x/">quebrado</a>' }) }));
+  assert.equal(ruim.erros.length, 2, msgs(ruim));
+  assert.match(msgs(ruim), /endereço relativo "existe\/" na página de erro/);
+  assert.match(msgs(ruim), /link interno quebrado: "\/raio-x\/"/);
+});
+
+test('catalogo e tracking: a 404 fica fora do catálogo e do tracking', async () => {
+  assert.deepEqual(checarCatalogo(ctx([pagina()])).erros, []);
+  assert.deepEqual((await checarTracking(ctx([pagina()]), { semRede: true })).erros, []);
 });
