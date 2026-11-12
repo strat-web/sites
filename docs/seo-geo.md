@@ -11,6 +11,7 @@ Bing indexam, de páginas com fatos claros e de quem cita a empresa. O kit cuida
 - **Open Graph** com imagem absoluta.
 - **JSON-LD:** `Organization` ou `ProfessionalService` da marca (com `parentOrganization` "Grupo Strat" e `sameAs` das
   outras marcas e redes), `BreadcrumbList`, `FAQPage` quando houver FAQ (texto idêntico ao visível), `Article` no blog.
+  Post de blog segue o schema e o `checar-posts` de `docs/blog.md` (tamanho de título e descrição, H2, links internos).
 - **Conteúdo próprio:** não copiar bloco de outra página. Página que repete a home não ranqueia.
 - **Dois links internos** no mínimo e um CTA para o diagnóstico ou o contato da marca.
 - **Fatos verificáveis:** endereço, CNPJ, sócios, cases com número real. É o que as IAs citam.

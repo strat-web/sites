@@ -12,7 +12,7 @@ lps/
   academy/<lp>/      claude, skills, mentoria, bootcamp, vibecode, comunidade (um projeto do Pages por subdomínio)
 packages/
   kit/               Layout, Seo, JsonLd, Breadcrumb, Faq, Tracking, sitemap, robots, llms.txt
-  conteudo/          schema do blog (Zod) e checar-posts
+  conteudo/          schema do blog (Zod) e checar-posts (docs/blog.md)
 catalogo/sites.json  fonte única de URLs, ids e tags
 docs/                o manual
 ```
