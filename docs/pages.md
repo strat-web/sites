@@ -36,6 +36,9 @@ verdade aponta para estes projetos ainda.** Enquanto o F2 não termina, os quatr
 `noindex`), de propósito: o conteúdo entra nos itens de migração (WEB-23, WEB-32, WEB-36, WEB-49) e só então o domínio
 vira, com o "pode virar" do Helbert nos que estão no ar. Ver `dominios.md`.
 
+O endereço `.pages.dev` de produção e o das prévias saem com `X-Robots-Tag: noindex` pelo `_headers` que o kit gera
+(WEB-21); a Cloudflare já põe esse cabeçalho sozinha só nas prévias de branch.
+
 ## A questão da stratacademy
 Já existe na conta o projeto **`stratacademy`**: é o que serve stratacademy.com.br **em produção hoje**, ligado ao
 repositório `Strat-Ai-Horus-OS/horus` (build `pnpm --filter stratacademy build`, caminho `apps/stratacademy/*`,

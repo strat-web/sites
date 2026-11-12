@@ -1,0 +1,29 @@
+---
+// Página de teste do kit (WEB-16): Layout, Seo, JsonLd da marca, Breadcrumb e Faq juntos, para o teste de
+// resultados avançados do Google. Fica fora do índice e sai antes de o domínio virar para este repositório.
+import Layout from '@strat/kit/Layout.astro';
+import Breadcrumb from '@strat/kit/Breadcrumb.astro';
+import Faq from '@strat/kit/Faq.astro';
+
+const perguntas = [
+  {
+    pergunta: 'O que esta página testa?',
+    resposta: 'Os componentes de SEO do kit dos sites: título, descrição, canonical, Open Graph, os dados da marca, a trilha de navegação e as perguntas frequentes.',
+  },
+  {
+    pergunta: 'Esta página aparece no Google?',
+    resposta: 'Não. Ela sai com noindex e é removida antes de o domínio passar a ser servido por este repositório.',
+  },
+];
+---
+<Layout
+  marca="stratai"
+  titulo="Teste do kit de SEO · StratAI"
+  descricao="Página de teste dos componentes Seo, JsonLd, Breadcrumb e Faq do kit dos sites do Grupo Strat (WEB-16)."
+  indexar={false}
+>
+  <Breadcrumb itens={[{ nome: 'Início', caminho: '/' }, { nome: 'Teste do kit', caminho: '/kit/' }]} />
+  <h1>Teste do kit de SEO</h1>
+  <p>Esta página junta os componentes do kit para conferir os dados estruturados no teste do Google. <a href="/">Voltar ao início</a>.</p>
+  <Faq perguntas={perguntas} />
+</Layout>

@@ -1,16 +1,12 @@
 ---
-import { app } from '@strat/kit';
+import Layout from '@strat/kit/Layout.astro';
 ---
-<!doctype html>
-<html lang="pt-BR">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="noindex, nofollow" />
-    <title>StratAI · esqueleto do monorepo</title>
-  </head>
-  <body>
-    <h1>StratAI</h1>
-    <p>Esqueleto do app <code>{app('stratai')}</code> (WEB-15). A migração do site vem em item próprio; nenhuma página real está aqui.</p>
-  </body>
-</html>
+<Layout
+  marca="stratai"
+  titulo="StratAI · esqueleto do monorepo"
+  descricao="Esqueleto do app stratai no monorepo strat-web/sites. A migração do site vem em item próprio."
+  indexar={false}
+>
+  <h1>StratAI</h1>
+  <p>Esqueleto do app <code>stratai</code> (WEB-15), já com o Layout do kit (WEB-16). A migração do site vem em item próprio; nenhuma página real está aqui.</p>
+</Layout>
