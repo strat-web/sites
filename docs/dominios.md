@@ -7,7 +7,7 @@ ligados a este repositório e só com o endereço `.pages.dev` (ver `pages.md`).
 
 ## Regra
 - Sem servidor próprio (site, LP, blog) → **Cloudflare Pages**, a partir deste repositório.
-- Com banco, fila, sessão ou processo contínuo → **Easypanel** (VPS 104.131.184.144).
+- Com banco, fila, sessão ou processo contínuo → **Easypanel** (VPS própria; o endereço fica no mapa interno, fora deste repositório).
 - Todas as zonas na conta da Cloudflare "Strat Academy" (`6258e000cf06b29a9f3fa797f8592171`), menos `strat.tec.br`,
   que está noutra conta até o WEB-56.
 

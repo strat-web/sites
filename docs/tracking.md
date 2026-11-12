@@ -21,13 +21,16 @@ o Rastro. Padrão do carregador: `Strat-Ai-Operacional/modelo-lp`, `docs/trackin
 
 | Marca | Meta pixel | GA4 | Tag do Google | Rastro | MetricaaS |
 |---|---|---|---|---|---|
-| Agência Strat | 1815630929780241 | G-6S4YX29WBH | GT-TX2632G5 | não usa | `strat-marketing` |
+| Agência Strat | 1815630929780241 | não usa (o G-6S4YX29WBH e o GT-TX2632G5 antigos não carregam: T3, WEB-11) | não usa | não usa | `strat-marketing` |
 | StratAI | 1823024821883911 | G-3VJ019EH58 | GT-M6J6NZQW | `stratai`, `raio-x-ia` | `agencia-strat` (workspace "Strat Ai - Implementação"; o nome é antigo) |
-| Strat Academy | 860500981882285 (quaia: 2790080268035647) | G-R84BNVV2HX | AW-17263684860 | um slug por LP | — |
+| Strat Academy | 860500981882285 (quaia: 2790080268035647) | G-R84BNVV2HX (a LP claude. carrega a tag G-3RYFFP7EF5 do produto `quaia`, que entrega nessa mesma propriedade) | AW-17263684860 | um slug por LP; o site usa `site` | — |
 | MetricaaS | 461294776843663 | G-7L9LL2FN6C | — | `metricaas` | — |
 
 No Rastro, pixel, GA4 e Google Ads vêm do produto (tabela `web_products`), não do HTML. Por isso o componente só
 precisa do slug.
+
+Umami: ainda não existe em nenhuma URL (WEB-11). O catálogo já tem o campo `umami_website_id`; o kit carrega pelo
+proxy `/u/` quando o id existir (WEB-17).
 
 ## Marcação na página
 - Todo botão: `data-strat-cta="<seção>-<destino>"` (ex.: `hero-diagnostico`, `rodape-whatsapp`). Vira `CTAClick`.
