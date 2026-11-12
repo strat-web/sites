@@ -3,8 +3,19 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "description": "Schema do blog (Zod, content collections do Astro) e checar-posts, iguais nos quatro apps (WEB-19).",
   "main": "./src/index.js",
   "exports": {
-    ".": "./src/index.js"
+    ".": "./src/index.js",
+    "./checar-posts": "./src/checar-posts.js"
+  },
+  "bin": {
+    "checar-posts": "./bin/checar-posts.js"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "astro": "7.4.3"
   }
 }
