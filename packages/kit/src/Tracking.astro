@@ -3,7 +3,9 @@
 // pede. Ninguém cola pixel, gtag ou GTM à mão. Entra pelo Layout (`perfil="..."`); use direto só fora dele.
 // A regra mora em tracking.js; aqui só se desenha o resultado.
 import catalogo from '../../../catalogo/sites.json';
-import { planoDeTracking, HOTMART_LAUNCHER } from './tracking.js';
+import { planoDeTracking, scriptDoBanner, HOTMART_LAUNCHER } from './tracking.js';
+// Banner de cookies do kit: o script mora em banner-cookies.js (texto puro, testado em test/banner-cookies.test.js).
+import bannerCookies from './banner-cookies.js?raw';
 import { urlCanonica } from './schema.js';
 import { marca as dadosMarca } from './marcas.js';
 
@@ -27,10 +29,12 @@ e=a.getElementsByTagName(u)[0];h.async=1;h.src=n;e.parentNode.insertBefore(h,e)
 hot('account',${JSON.stringify(plano.hotmart).replace(/"/g, "'")});
 `;
 
-let privacidade = null;
+let banner = null;
 if (plano.banner) {
-  privacidade = dadosMarca(plano.linha.marca).privacidade;
+  const privacidade = dadosMarca(plano.linha.marca).privacidade;
   if (!privacidade) throw new Error(`[kit] Tracking em ${url}: o banner de cookies precisa de \`privacidade\` da marca em marcas.js`);
+  // O pixel só liga depois do "Aceitar"; o aceite espera o m.js carregar, sem prazo (WEB-80).
+  banner = scriptDoBanner(bannerCookies, privacidade);
 }
 ---
 {plano.scripts.map((s) => <script is:inline defer src={s.src} {...s.attrs}></script>)}
@@ -38,42 +42,7 @@ if (plano.banner) {
   <script is:inline id="hotmart_launcher_script" set:html={launcher}></script>
 )}
 {plano.banner && (
-  <script is:inline define:vars={{ privacidade }}>
-    // Banner de cookies do kit (o mesmo da Agência, laudo de 31/10/2026): o pixel da Meta só liga depois do
-    // "Aceitar" (mtc.consentir). O cadastro do lead e a CAPI do servidor não dependem dele. A escolha fica no
-    // navegador, na chave strat_cookies, a mesma das páginas antigas do domínio.
-    (function () {
-      var CHAVE = 'strat_cookies', escolha = null;
-      try { escolha = localStorage.getItem(CHAVE); } catch (e) {}
-      function liberar() {
-        var t0 = Date.now();
-        (function tenta() {
-          if (window.mtc && window.mtc.consentir) return window.mtc.consentir();
-          if (Date.now() - t0 < 8000) setTimeout(tenta, 150);
-        })();
-      }
-      if (escolha === 'sim') return liberar();
-      if (escolha === 'nao') return;
-      function mostrar() {
-        var b = document.createElement('div');
-        b.className = 'strat-cookies';
-        b.setAttribute('role', 'dialog');
-        b.setAttribute('aria-label', 'Cookies');
-        b.innerHTML = '<p>Usamos cookies e o Pixel da Meta para medir os nossos anúncios. Você pode aceitar ou recusar. ' +
-          '<a href="' + privacidade + '">Política de privacidade</a></p>' +
-          '<div><button type="button" data-c="nao">Recusar</button> <button type="button" data-c="sim">Aceitar</button></div>';
-        b.addEventListener('click', function (e) {
-          var c = e.target.closest && e.target.closest('[data-c]');
-          if (!c) return;
-          try { localStorage.setItem(CHAVE, c.dataset.c); } catch (err) {}
-          b.remove();
-          if (c.dataset.c === 'sim') liberar();
-        });
-        document.body.appendChild(b);
-      }
-      if (document.body) mostrar(); else document.addEventListener('DOMContentLoaded', mostrar);
-    })();
-  </script>
+  <script is:inline set:html={banner}></script>
   <style is:global>
     .strat-cookies { position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 50; max-width: 560px; margin: 0 auto;
       padding: 16px; background: #fff; color: #161616; border: 1px solid #d6d2c6; border-radius: 12px;

@@ -98,3 +98,12 @@ export function planoDeTracking({ catalogo, url, perfil }) {
 
   return plano;
 }
+
+// Texto do <script> inline do banner de cookies (packages/kit/src/banner-cookies.js, lido como texto): a expressão de
+// função chamada com window, document e { privacidade, mjs }. Comentário de linha inteira não vai para o HTML; `<`
+// nos dados vira \u003c para não fechar o <script>. O aceite espera o <script> do m.js (src METRICAAS), sem prazo (WEB-80).
+export function scriptDoBanner(fonte, privacidade) {
+  const codigo = fonte.replace(/^[ \t]*\/\/.*\n/gm, '').trim();
+  const opcoes = JSON.stringify({ privacidade, mjs: METRICAAS }).replace(/</g, '\\u003c');
+  return `${codigo}(window, document, ${opcoes});`;
+}
