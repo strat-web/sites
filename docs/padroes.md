@@ -98,7 +98,7 @@ A mesma integração `arquivosDoSite` grava o `_headers` do Cloudflare Pages em 
 | `/*` | `X-Content-Type-Options: nosniff` | o navegador não adivinha o tipo do arquivo |
 | `/*` | `Content-Security-Policy: frame-ancestors 'self'` | outro site não põe a página num iframe. Só isso: uma CSP de scripts quebraria o Rastro, o MetricaaS e a Hotmart |
 | `/*` | `Referrer-Policy: strict-origin-when-cross-origin` | o outro site recebe só o domínio, nunca o caminho com a query |
-| `/*` | `Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()` | desliga o que nenhuma página usa (o checkout da Hotmart é link, não pagamento na página) |
+| `/*` | `Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(self "https://pay.hotmart.com" "https://pci-pay.hotmart.com"), usb=()` | desliga câmera, microfone, localização e USB. Pagamento só na própria página e no iframe do Checkout Elements da Hotmart (upsell e downsell do bootcamp) |
 | `https://:project.pages.dev/*` e `https://:version.:project.pages.dev/*` | `X-Robots-Tag: noindex` | o endereço `.pages.dev` (produção e prévias) não concorre com o domínio no Google |
 
 - Página que precisa de outra regra (ex.: ser emoldurada por um parceiro) pede item próprio: o cabeçalho muda no kit,

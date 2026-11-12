@@ -34,3 +34,10 @@ test('_headers: noindex no pages.dev de produção e nas prévias, nunca no dom�
   assert.equal(r.get('https://:version.:project.pages.dev/*')['X-Robots-Tag'], 'noindex');
   assert.equal(r.get('/*')['X-Robots-Tag'], undefined);
 });
+
+test('pagamento liberado só para a página e o Checkout Elements da Hotmart (upsell e downsell do bootcamp)', () => {
+  const pp = SEGURANCA['Permissions-Policy'];
+  assert.match(pp, /payment=\(self "https:\/\/pay\.hotmart\.com" "https:\/\/pci-pay\.hotmart\.com"\)/);
+  assert.doesNotMatch(pp, /payment=\(\)/);
+  for (const desligado of ['camera=()', 'microphone=()', 'geolocation=()', 'usb=()']) assert.ok(pp.includes(desligado), desligado);
+});
