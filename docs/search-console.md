@@ -1,11 +1,11 @@
 # Search Console e Bing
 
-Toda propriedade sai da conta central `gabriel.bocardo@stratai.com.br`, como propriedade de domínio (`sc-domain:`)
+Toda propriedade sai da conta central do Gabriel (sócio), como propriedade de domínio (`sc-domain:`)
 verificada por TXT na Cloudflare. Acessos iguais em todas (decisão de 2026-11-02):
 
 | Quem | Nível |
 |---|---|
-| gabriel.bocardo@stratai.com.br | proprietário verificado |
+| Gabriel (conta central) | proprietário verificado |
 | Helbert | proprietário delegado |
 | João Paranhos, Jhonathan Geronimo | Total |
 | conta de serviço do MCP `search-console` | Restrito |
