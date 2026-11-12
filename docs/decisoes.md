@@ -14,6 +14,16 @@ O nome `stratacademy` no Pages já é o projeto que serve stratacademy.com.br em
 O app `apps/stratacademy` deste repositório vira o projeto **`sites-stratacademy`**, sem mexer no projeto antigo. Como o
 domínio passa para cá fica para o Helbert decidir no WEB-49 (detalhe em `pages.md`, "A questão da stratacademy").
 
+## 2026-11-11 · Como o catálogo guarda o que a página carrega (Jhonathan, no WEB-13; aprovação do Helbert no PR)
+- Os ids de cada linha de `catalogo/sites.json` são os que a página **deve** carregar, porque o `<Tracking>` lê dali.
+  O que a página carrega hoje e é diferente vai em `diferenca_hoje`, com o item que corrige. Assim o catálogo bate
+  com a auditoria linha a linha sem virar retrato de um erro.
+- Migração sem mudar tracking (WEB-23, WEB-32) leva o que está no ar: a Agência fica sem GA4 e sem tag do Google
+  até alguém decidir ligar (T3).
+- Na LP claude., o `ga4` guarda a tag que carrega (G-3RYFFP7EF5, do produto `quaia` no Rastro); ela entrega na
+  propriedade G-R84BNVV2HX, a mesma das outras LPs (T2).
+- Campos novos: `umami_website_id`, `consentimento`, `dono` e `diferenca_hoje`.
+
 ## 2026-11-04 · Organização dos sites (Helbert)
 Plano: https://claude.ai/artifact/7YroEqx8kQtjt7NQKMxZc8. Todas as recomendações aprovadas.
 

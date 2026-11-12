@@ -32,7 +32,7 @@ Bing indexam, de páginas com fatos claros e de quem cita a empresa. O kit cuida
 | StratAI | StratAI | 47991658478 | Rua Aubé, 777, Boa Vista, Joinville/SC, 89205-000 |
 | Agência Strat | Agência Strat | 4831994338 | Rua Aubé, 777, Boa Vista, Joinville/SC, 89205-000 |
 
-O telefone dos contratos (47996747049) não vai em página pública.
+O telefone dos contratos não vai em página pública nem neste repositório (fica no cadastro interno).
 
 ## Medir
 - Search Console: páginas indexadas, consultas e posição (7 dias depois de publicar, conferir a página indexada).
