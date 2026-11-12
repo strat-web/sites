@@ -26,7 +26,8 @@ Bing indexam, de páginas com fatos claros e de quem cita a empresa. O kit cuida
 - `llms.txt` com o resumo da marca, o contato e as páginas principais.
 - **Os três o kit gera sozinho no build** (WEB-18), a partir do catálogo e de `packages/kit/src/marcas.js`. Como
   funciona e as regras: `padroes.md`, "sitemap.xml, robots.txt e llms.txt".
-- Cabeçalhos de segurança no `_headers` e `X-Robots-Tag: noindex` em `*.pages.dev`.
+- Cabeçalhos de segurança no `_headers` e `X-Robots-Tag: noindex` em `*.pages.dev`: o kit também gera esse arquivo
+  no build (WEB-21). Quais cabeçalhos e por quê: `padroes.md`, "Cabeçalhos: `_headers`".
 - Propriedade no Search Console e no Bing Webmaster (`docs/search-console.md`).
 
 ## Nome, endereço e telefone iguais em todo lugar

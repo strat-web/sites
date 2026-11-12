@@ -9,6 +9,24 @@ O ruleset tem de bater com o `CODEOWNERS` ("o resto do repositório o dev mescla
 - `bypass_actors` com o admin da organização em `bypass_mode: pull_request`: o admin mescla PR próprio em pasta com
   dono, sempre por PR, nunca por push direto;
 - `/package.json` e `/pnpm-workspace.yaml` passam a ter dono no `CODEOWNERS` (Helbert).
+## 2026-11-12 · `lastmod` do sitemap com o histórico buscado no build (Helbert, revisão do PR #7)
+O build do Pages clona raso, e sem histórico o `lastmod` não sai. Decisão: buscar o histórico no build com
+`git fetch --unshallow`, e seguir sem data se a busca falhar (o `|| true` da revisão). A busca roda dentro da
+integração do kit (`completarHistorico`, `packages/kit/src/arquivos-do-site.js`), para valer em qualquer comando de
+build; se falhar, o `sitemap.xml` sai sem `lastmod` e o build avisa, em vez de pôr a mesma data em todas as páginas.
+
+## 2026-11-11 · Cabeçalhos de segurança do kit (Jhonathan, WEB-21; espera o Helbert no PR)
+- **HSTS sem `includeSubDomains` e sem `preload`**: stratai, stratacademy e metricaas têm subdomínios que não são
+  deste repositório (`n8n`, `git`, `hub`, `tracking`, `t.`); o HSTS os prenderia a HTTPS por um ano sem a gente
+  controlar. Subir para `includeSubDomains` é decisão à parte, depois de conferir cada subdomínio.
+- **CSP só com `frame-ancestors 'self'`**: uma CSP de scripts teria de listar Rastro, MetricaaS, Meta, Google,
+  Hotmart e PostHog, e quebraria a medição no primeiro script novo.
+- **Pagamento fora da Permissions-Policy** (decisão do Helbert, 12/11, revisão do PR #11 e comentário no WEB-69):
+  o `payment=()` partia de que o checkout da Hotmart é link, mas o upsell e o downsell do bootcamp usam o Checkout
+  Elements, que monta um iframe de `pay.hotmart.com` (e `pci-pay.hotmart.com` para o cartão) com
+  `allow="payment *"`. O cabeçalho ficou `camera=(), microphone=(), geolocation=(), usb=()`, sem `payment`. Substitui a
+  lista `payment=(self "https://pay.hotmart.com" "https://pci-pay.hotmart.com")` do repasse de 11/11.
+- **Um `_headers` só para os quatro apps**, gerado pela integração do kit; `public/_headers` no app quebra o build.
 
 ## 2026-11-11 · Como o `<Tracking>` decide o que carrega (Jhonathan, WEB-17; espera o Helbert no PR)
 - **Consentimento por URL, pelo catálogo**, enquanto o padrão por perfil (WEB-72) não sai: o componente faz o que o
