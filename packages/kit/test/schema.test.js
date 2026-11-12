@@ -4,12 +4,17 @@ import { urlCanonica, schemaMarca, schemaBreadcrumb, schemaFaq, jsonSeguro, marc
 
 const site = 'https://stratai.com.br';
 
-test('canonical: barra no fim, sem query nem âncora, no domínio do site', () => {
+test('canonical: barra no fim, sem query nem âncora, só no domínio do site', () => {
   assert.equal(urlCanonica(site, '/agente-de-ia-whatsapp'), 'https://stratai.com.br/agente-de-ia-whatsapp/');
   assert.equal(urlCanonica(site, '/guias/?utm_source=x#topo'), 'https://stratai.com.br/guias/');
   assert.equal(urlCanonica(site, '/'), 'https://stratai.com.br/');
   assert.equal(urlCanonica(site, '/feed.xml'), 'https://stratai.com.br/feed.xml');
-  assert.equal(urlCanonica(new URL(site), 'https://stratai-ti7.pages.dev/x/'), 'https://stratai-ti7.pages.dev/x/');
+  assert.equal(urlCanonica(new URL(site), 'https://stratai.com.br/x'), 'https://stratai.com.br/x/');
+  assert.throws(() => urlCanonica(new URL(site), 'https://stratai-ti7.pages.dev/x/'), /fora do site/);
+  assert.throws(() => urlCanonica(site, 'https://agenciastrat.com.br/'), /fora do site/);
+  assert.throws(() => urlCanonica(site, '//outro.com/x/'), /fora do site/);
+  assert.throws(() => urlCanonica(site, 'http://stratai.com.br/x/'), /fora do site/);
+  assert.throws(() => urlCanonica('https://stratai-ti7.pages.dev', '/'), /pages\.dev/);
   assert.throws(() => urlCanonica(undefined, '/'), /site/);
 });
 
