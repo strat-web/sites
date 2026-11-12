@@ -11,7 +11,7 @@ apps/
 lps/
   academy/<lp>/      claude, skills, mentoria, bootcamp, vibecode, comunidade (um projeto do Pages por subdomínio)
 packages/
-  kit/               Layout, Seo, JsonLd, Breadcrumb, Faq, Tracking, sitemap, robots, llms.txt
+  kit/               Layout, Seo, JsonLd, Breadcrumb, Faq, Tracking, sitemap, robots, llms.txt, _headers
   conteudo/          schema do blog (Zod) e checar-posts
 catalogo/sites.json  fonte única de URLs, ids e tags
 docs/                o manual
@@ -89,6 +89,24 @@ export default defineConfig({ site: 'https://stratai.com.br', integrations: [arq
 - Bloquear página no robots impediria o robô de ler o noindex: página fora do índice usa `indexar={false}` no `Layout`.
 - Sem nenhuma página indexável, o `sitemap.xml` sai sem `<url>`, e o validador do sitemaps.org recusa sitemap vazio.
   É o caso dos quatro apps enquanto só têm o esqueleto (noindex); passa a validar com a primeira página real.
+
+## Cabeçalhos: `_headers` (WEB-21)
+A mesma integração `arquivosDoSite` grava o `_headers` do Cloudflare Pages em cada app. O texto mora em
+`packages/kit/src/cabecalhos.js` e é igual nos quatro apps; `public/_headers` no app quebra o build.
+
+| Regra | Cabeçalho | Por quê |
+|---|---|---|
+| `/*` | `Strict-Transport-Security: max-age=31536000` | HTTPS sempre. **Sem `includeSubDomains` e sem `preload`**: os domínios têm subdomínios fora deste repositório (`n8n`, `git`, `hub`, `tracking`...) |
+| `/*` | `X-Content-Type-Options: nosniff` | o navegador não adivinha o tipo do arquivo |
+| `/*` | `Content-Security-Policy: frame-ancestors 'self'` | outro site não põe a página num iframe. Só isso: uma CSP de scripts quebraria o Rastro, o MetricaaS e a Hotmart |
+| `/*` | `Referrer-Policy: strict-origin-when-cross-origin` | o outro site recebe só o domínio, nunca o caminho com a query |
+| `/*` | `Permissions-Policy: camera=(), microphone=(), geolocation=(), usb=()` | desliga câmera, microfone, localização e USB. Sem `payment`: o Checkout Elements da Hotmart (upsell e downsell do bootcamp) pede pagamento num iframe |
+| `https://:project.pages.dev/*` e `https://:version.:project.pages.dev/*` | `X-Robots-Tag: noindex` | o endereço `.pages.dev` (produção e prévias) não concorre com o domínio no Google |
+
+- Página que precisa de outra regra (ex.: ser emoldurada por um parceiro) pede item próprio: o cabeçalho muda no kit,
+  com o motivo, e vale para todos.
+- Conferir: `curl -sI <url> | grep -iE 'strict-transport|nosniff|frame-ancestors|referrer|permissions|x-robots'`. No
+  domínio, sem `x-robots-tag`; no `.pages.dev`, com `noindex`.
 
 ## Nomes
 - App: o nome do domínio sem `.com.br` (`agenciastrat`, `stratai`).
