@@ -2,6 +2,13 @@
 
 Uma entrada por decisão, com data e quem decidiu. A mais nova em cima.
 
+## 2026-11-11 · `sameAs` só com os perfis da própria marca (Jhonathan, WEB-16; espera o Helbert no PR)
+O `seo-geo.md` pedia `sameAs` "das outras marcas e redes". Pela definição do schema.org, `sameAs` diz que a URL é a
+**mesma** entidade, então o site da Agência no `sameAs` da StratAI diria ao Google que as duas são uma empresa só.
+No kit, o `sameAs` leva só os perfis da própria marca (Instagram, LinkedIn, YouTube), e o vínculo entre as marcas vai
+pelo `parentOrganization` "Grupo Strat", igual nas quatro. Se o Helbert preferir o texto antigo, é uma linha em
+`packages/kit/src/marcas.js`.
+
 ## 2026-11-11 · Nome do projeto do Pages da Academy (Jhonathan, WEB-15)
 O nome `stratacademy` no Pages já é o projeto que serve stratacademy.com.br em produção, ligado ao repositório horus.
 O app `apps/stratacademy` deste repositório vira o projeto **`sites-stratacademy`**, sem mexer no projeto antigo. Como o

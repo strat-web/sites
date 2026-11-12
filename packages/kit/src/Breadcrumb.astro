@@ -1,0 +1,23 @@
+---
+// Trilha visível + BreadcrumbList, do início até a página atual: [{ nome, caminho }].
+import JsonLd from './JsonLd.astro';
+import { schemaBreadcrumb } from './schema.js';
+
+interface Props {
+  itens: { nome: string; caminho: string }[];
+  class?: string;
+}
+
+const { itens, class: classe } = Astro.props;
+const dados = schemaBreadcrumb(itens, Astro.site);
+---
+<nav aria-label="Você está aqui" class:list={['kit-breadcrumb', classe]}>
+  <ol>
+    {itens.map((it, i) =>
+      i === itens.length - 1
+        ? <li aria-current="page">{it.nome}</li>
+        : <li><a href={it.caminho}>{it.nome}</a></li>
+    )}
+  </ol>
+</nav>
+<JsonLd dados={dados} />

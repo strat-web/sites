@@ -1,5 +1,11 @@
 # @strat/kit
 
-Layout, Seo, JsonLd, Breadcrumb, Faq, Tracking, sitemap, robots e llms.txt (WEB-16, WEB-17 e WEB-18).
+Componentes e regras comuns a todos os sites do Grupo Strat.
 
-Hoje só o esqueleto (WEB-15): o conteúdo entra nos itens acima.
+| Pronto | O quê | Item |
+|---|---|---|
+| sim | `Layout`, `Seo`, `JsonLd`, `Breadcrumb`, `Faq` e os dados das marcas (`src/marcas.js`) | WEB-16 |
+| não | `Tracking` (perfis venda, lead, conteudo lendo o catálogo) | WEB-17 |
+| não | `sitemap.xml`, `robots.txt` e `llms.txt` | WEB-18 |
+
+Como usar: `docs/padroes.md`, "Página com o kit". Testes: `pnpm --filter @strat/kit test`.

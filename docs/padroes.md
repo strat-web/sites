@@ -23,6 +23,49 @@ docs/                o manual
 - URL sempre com barra no fim (`/agencia-de-ia-joinville/`). Canonical, sitemap e link interno na mesma forma.
 - Imagem de blog e de LP vai para o R2 da marca (`assets.<domínio>`), nunca para o repositório quando passar de 200 KB.
 
+## Página com o kit (WEB-16)
+Toda página começa pelo `Layout`. Ele põe no `<head>` o título, a descrição, o canonical (domínio do `site` do
+`astro.config.mjs`, com barra, nunca `pages.dev`; `caminho` ou item do `Breadcrumb` com URL de outro domínio, e
+`site` em `pages.dev`, quebram o build), o robots, o Open Graph e o JSON-LD da marca. `Breadcrumb` e `Faq`
+mostram o conteúdo e geram o JSON-LD da mesma lista, então o texto estruturado nunca diverge do visível.
+
+```astro
+---
+import Layout from '@strat/kit/Layout.astro';
+import Breadcrumb from '@strat/kit/Breadcrumb.astro';
+import Faq from '@strat/kit/Faq.astro';
+
+const perguntas = [
+  { pergunta: 'Funciona com o WhatsApp que eu já uso?', resposta: 'Sim, ...' },
+];
+---
+<Layout
+  marca="stratai"
+  titulo="Agente de IA no WhatsApp para empresas · StratAI"
+  descricao="O agente de IA atende, qualifica e agenda pelo WhatsApp da sua empresa, ligado ao seu CRM."
+>
+  <Breadcrumb itens={[{ nome: 'Início', caminho: '/' }, { nome: 'Agente de IA no WhatsApp', caminho: '/agente-de-ia-whatsapp/' }]} />
+  <h1>Agente de IA no WhatsApp</h1>
+  ...
+  <Faq perguntas={perguntas} />
+</Layout>
+```
+
+| Componente | Props | Gera |
+|---|---|---|
+| `Layout` | `marca`, `titulo`, `descricao`, `imagem?`, `indexar?` (padrão `true`), `tipo?` (`website` ou `article`); slots: padrão (`<body>`) e `head` | `<html lang="pt-BR">`, `Seo` e `JsonLd` da marca |
+| `Seo` | as mesmas do `Layout` e `caminho?` | title, description, canonical, robots, `og:*`, `twitter:card` |
+| `JsonLd` | `marca?` e/ou `dados?` (objeto ou lista já montada, ex.: `Article`) | `<script type="application/ld+json">` com `<` escapado |
+| `Breadcrumb` | `itens` (`{ nome, caminho }`, do início à página atual) | trilha visível + `BreadcrumbList` |
+| `Faq` | `perguntas` (`{ pergunta, resposta }`, texto puro), `titulo?` | `<details>` visíveis + `FAQPage` |
+
+- `marca` é a chave do catálogo: `agencia`, `stratai`, `academy`, `metricaas`. Marca nova ou rede nova entra em
+  `packages/kit/src/marcas.js`, com a fonte no PR.
+- Sem `imagem`, o Open Graph usa a imagem da marca. Caminho relativo vira absoluto pelo `site`.
+- Página fora do índice (bio, obrigado, teste): `indexar={false}`.
+- As regras ficam em `packages/kit/src/schema.js`, testadas com `pnpm --filter @strat/kit test`.
+- Página de teste com tudo junto: `apps/stratai/src/pages/kit/index.astro` (`/kit/`, noindex).
+
 ## Nomes
 - App: o nome do domínio sem `.com.br` (`agenciastrat`, `stratai`).
 - Página: caminho em português, minúsculo, com hífen (`/agente-de-ia-whatsapp/`).
