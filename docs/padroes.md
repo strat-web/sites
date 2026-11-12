@@ -156,9 +156,13 @@ O ruleset está escrito em `.github/rulesets/main.json` e o Helbert aplica (Sett
 ou `gh api -X POST repos/strat-web/sites/rulesets --input .github/rulesets/main.json`): só admin do repositório
 aplica. Ele pede:
 - PR para tudo que entra na `main` (nada de push direto), sem apagar a branch e sem force push;
-- 1 aprovação e a do dono do caminho no `CODEOWNERS` (`packages/`, `catalogo/`, `.github/`, `docs/decisoes.md`
-  → Helbert); aprovação antiga cai quando chega commit novo;
+- nenhuma aprovação obrigatória em geral, mas a do dono do caminho no `CODEOWNERS` quando o PR toca nele
+  (`packages/`, `catalogo/`, `.github/`, `docs/decisoes.md`, `/package.json` e `/pnpm-workspace.yaml` → Helbert);
+  aprovação antiga cai quando chega commit novo;
 - as 6 checagens verdes (`build`, `seo`, `tracking`, `links`, `peso`, `catalogo`). O preview do Cloudflare Pages não
   é obrigatório: ele só builda o app que mudou.
 
-Quem abre o PR não aprova o próprio: PR aberto pela conta do dev precisa da aprovação de outra pessoa.
+Fora das pastas com dono, o dev mescla o próprio PR sozinho com as checagens verdes. O admin da organização pode
+mesclar o próprio PR em pasta com dono (`bypass_mode: pull_request`), mas sempre por PR, nunca por push direto
+(decisão do Helbert, 12/11, PR #9). Depois do merge, o Helbert aplica o ruleset pela API e confere no primeiro PR que
+mexer em `packages/`: a aprovação do dono tem de ser pedida mesmo com 0 aprovações obrigatórias.

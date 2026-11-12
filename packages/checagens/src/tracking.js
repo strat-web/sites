@@ -90,7 +90,7 @@ export function checarPaginaTracking(pagina, catalogo, r) {
   if (esperados.length && !linha.umami_website_id) {
     r.aviso(onde, 'sem umami_website_id no catálogo: a página não mede no Umami (o id vem do Strat Tracking)');
   }
-  return linha.rastro_slug && linha.consentimento !== 'sem-tracking' ? [{ slug: linha.rastro_slug, linha }] : [];
+  return linha.rastro_slug && !['sem-tracking', 'por-funil'].includes(linha.consentimento) ? [{ slug: linha.rastro_slug, linha }] : [];
 }
 
 /** Lê a configuração (CFG) que o script do Rastro entrega para o produto: known, pixel, GA4, Google e consentMode. */

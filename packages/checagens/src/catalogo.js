@@ -6,7 +6,7 @@ const ENUMS = {
   marca: ['agencia', 'stratai', 'academy', 'metricaas'],
   tipo: ['site', 'lp', 'bio', 'blog', 'ferramenta'],
   perfil: ['venda', 'lead', 'conteudo'],
-  consentimento: ['banner', 'off', 'soft', 'sem-tracking'],
+  consentimento: ['banner', 'off', 'soft', 'sem-tracking', 'por-funil'],
 };
 const OBRIGATORIOS = ['id', 'url', 'marca', 'tipo', 'app', 'perfil', 'consentimento', 'indexar'];
 

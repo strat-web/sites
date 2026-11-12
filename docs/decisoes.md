@@ -2,6 +2,14 @@
 
 Uma entrada por decisão, com data e quem decidiu. A mais nova em cima.
 
+## 2026-11-12 · Regra de merge da `main` (Helbert, revisão do PR #9)
+O ruleset tem de bater com o `CODEOWNERS` ("o resto do repositório o dev mescla sozinho, com as checagens verdes"):
+- `required_approving_review_count: 0`, mantendo `require_code_owner_review: true`: com 1 aprovação obrigatória em todo
+  PR, ninguém mesclaria sozinho fora das pastas com dono, porque ninguém aprova o próprio PR;
+- `bypass_actors` com o admin da organização em `bypass_mode: pull_request`: o admin mescla PR próprio em pasta com
+  dono, sempre por PR, nunca por push direto;
+- `/package.json` e `/pnpm-workspace.yaml` passam a ter dono no `CODEOWNERS` (Helbert).
+
 ## 2026-11-11 · Como o `<Tracking>` decide o que carrega (Jhonathan, WEB-17; espera o Helbert no PR)
 - **Consentimento por URL, pelo catálogo**, enquanto o padrão por perfil (WEB-72) não sai: o componente faz o que o
   campo `consentimento` diz. A decisão do WEB-72 vira valor no catálogo, sem reescrever o componente.

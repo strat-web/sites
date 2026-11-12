@@ -80,8 +80,9 @@ test('Rastro com banner quebra o build: a página não segura o pixel do Rastro 
   }
 });
 
-test('sem-tracking não carrega nada; Umami entra pelo proxy /u/ quando o id existe', () => {
+test('sem-tracking e por-funil não carregam nada; Umami entra pelo proxy /u/ quando o id existe', () => {
   assert.deepEqual(plano('https://comunidade.stratacademy.com.br/', 'conteudo').scripts, []);
+  assert.deepEqual(falso({ metricaas_ws: 'w', consentimento: 'sem-tracking' }).scripts, []);
   const u = falso({ metricaas_ws: 'w', umami_website_id: 'abc-123' });
   assert.deepEqual(u.scripts.at(-1), { src: '/u/script.js', attrs: { 'data-website-id': 'abc-123' } });
 });
