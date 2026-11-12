@@ -1,0 +1,17 @@
+{
+  "$comentario": "Rotas do site da Academy que saíram do ar na virada do horus (vieram do checar-posts de lá): link para elas custa um 301. Ver docs/blog.md.",
+  "rotasMortas": [
+    "/academy/",
+    "/masterclass-01/",
+    "/loja/",
+    "/todos-produtos/",
+    "/curso-gratis/",
+    "/acesso-gratis/",
+    "/marketing/",
+    "/live-semanal/",
+    "/obr-live/",
+    "/obg-2/",
+    "/obrigado-acesso-gratis/",
+    "/strat-hub/"
+  ]
+}

@@ -119,7 +119,8 @@ const vazio = (v) => (v === '' || v === undefined ? null : v);
 /**
  * O que o produto no Rastro faz de diferente do que a linha do catálogo pede (pedido do Helbert no repasse do WEB-69):
  * o pixel e o GA4 que ele injeta, a tag do Google (googleTagId ou googleAdsId) e o consentMode. Só compara o campo que
- * o Rastro manda. O consentimento "banner" com Rastro o kit já recusa (WEB-72), então aqui sobra off × soft.
+ * o Rastro manda. Hoje o kit ainda recusa "banner" com Rastro no build, então aqui sobra off × soft, ao pé da letra.
+ * A regra do WEB-72 é "banner" no catálogo = "strict" no Rastro; levar isso para o kit e para cá é o WEB-81.
  */
 export function diferencasDoRastro(cfg, linha) {
   const difs = [];
