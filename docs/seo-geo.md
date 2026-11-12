@@ -12,6 +12,7 @@ Bing indexam, de páginas com fatos claros e de quem cita a empresa. O kit cuida
 - **JSON-LD:** `Organization` ou `ProfessionalService` da marca (com `parentOrganization` "Grupo Strat", que liga as
   marcas entre si, e `sameAs` só com os perfis da própria marca), `BreadcrumbList`, `FAQPage` quando houver FAQ (texto
   idêntico ao visível), `Article` no blog.
+  Post de blog segue o schema e o `checar-posts` de `docs/blog.md` (tamanho de título e descrição, H2, links internos).
 - **O kit faz tudo isso sozinho** (WEB-16): `<Layout>` põe título, descrição, canonical, robots, Open Graph e o JSON-LD
   da marca; `<Breadcrumb>` e `<Faq>` montam o visível e o JSON-LD da mesma lista. Os dados de cada marca (nome,
   telefone, endereço, redes) moram em `packages/kit/src/marcas.js`, com a fonte. Exemplo em `padroes.md`.

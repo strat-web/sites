@@ -15,6 +15,7 @@
     "dev:metricaas": "pnpm --filter @strat/metricaas dev",
     "checar": "pnpm build && pnpm test && node packages/checagens/src/cli.js",
     "test": "pnpm -r --if-present run test",
-    "checar:rapido": "pnpm build && pnpm test && node packages/checagens/src/cli.js --sem-lighthouse"
+    "checar:rapido": "pnpm build && pnpm test && node packages/checagens/src/cli.js --sem-lighthouse",
+    "checar:posts": "pnpm -r --if-present run checar:posts"
   }
 }
