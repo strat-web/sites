@@ -11,7 +11,7 @@ Uma entrada por decisão, com data e quem decidiu. A mais nova em cima.
   o `/lab:lp-revisar` aprovado, o dev mescla sem o Helbert. Todo o resto espera a revisão dele, mesmo fora das pastas
   do `CODEOWNERS` (o ruleset da `main` só obriga a parte do `CODEOWNERS`; o resto é combinado).
 - **Rebase que exige mudança de código** volta para o Helbert, com novo pedido de revisão.
-- **Lead de teste em produção:** nome "Teste Strat WEB-<n>", e-mail e telefone fictícios do time, aviso no grupo do
+- **Lead de teste em produção:** nome "Teste Strat WEB-<n>", e-mail e telefone fictícios, aviso no grupo do
   comercial antes do envio e o lead apagado do MetricaaS no fim (regra dura 9).
 
 ## 2026-11-12 · O PR sai pela conta própria do dev (Helbert, sessão de 12/11 pela cabine; trazida pelo Jhonathan)
@@ -53,6 +53,9 @@ A migração do stratai.com.br (home, `/raio-x/` e política) para `apps/stratai
 A correção do formulário (empresa, segmento, faturamento, verba e serviços indo para os campos do lead no MetricaaS)
 é feita já no repositório que serve o site no ar (`strat-lps`). O WEB-23 copia a versão corrigida e continua sem
 mudar texto nem tracking.
+
+## 2026-11-12 · Compra de teste do portão F6 (WEB-51) (Helbert, sessão de 12/11 pela cabine)
+A compra de teste na Hotmart usa o produto mais barato, paga com o cartão PJ, e o Helbert estorna no mesmo dia.
 
 ## 2026-11-12 · Domínio da Academy na virada do WEB-49: opção (a) (Helbert, sessão de 12/11 pela cabine; trazida pelo Jhonathan)
 Na virada, o domínio stratacademy.com.br sai do projeto `stratacademy` do Pages (o do horus) e passa para o projeto
@@ -136,7 +139,7 @@ domínio passa para cá fica para o Helbert decidir no WEB-49 (detalhe em `pages
 - Campos novos: `umami_website_id`, `consentimento`, `dono` e `diferenca_hoje`.
 
 ## 2026-11-04 · Organização dos sites (Helbert)
-Plano: https://claude.ai/artifact/7YroEqx8kQtjt7NQKMxZc8. Todas as recomendações aprovadas.
+Plano: [`docs/planos/sites-numa-casa-so.md`](planos/sites-numa-casa-so.md). Todas as recomendações aprovadas.
 
 | # | Decisão |
 |---|---|

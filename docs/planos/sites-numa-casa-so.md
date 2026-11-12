@@ -1,8 +1,8 @@
 # Os sites da Strat numa casa só
 
 > **Origem:** export do Drive em 2026-11-12 do plano aprovado pelo Helbert em 2026-11-04 (versão 1; decisões D1 a
-> D12 em `docs/decisoes.md`, entrada de 2026-11-04). Versão original, de acesso
-> restrito ao time: https://claude.ai/artifact/7YroEqx8kQtjt7NQKMxZc8.
+> D12 em `docs/decisoes.md`, entrada de 2026-11-04). A versão original
+> fica com o time.
 >
 > **O que foi tirado e por quê:** este repositório é público. Ficaram só as decisões, as fases e as páginas. Saíram
 > o retrato da infraestrutura interna (contas, serviços, servidores, hospedagem dos apps internos), as quedas do
@@ -131,4 +131,4 @@ e a estrutura nova da StratAI entra página a página pelo mapa `docs/planos/str
 | D9 | Voz do blog da Agência | Gabriel |
 | D10 | Metas de performance | performance 90 ou mais no celular, LCP até 2,5 s, CLS até 0,1, até 1,5 MB: viram barra na CI |
 | D11 | Marketing no repositório | escrita em conteúdo e LP; o resto pede revisão de dev (regra prática de 12/11 em `docs/decisoes.md`) |
-| D12 | Membros da Cloudflare | só os sócios; o time usa token restrito e publica pelo GitHub |
+| D12 | Publicação | o time publica pelo GitHub (PR e Cloudflare Pages), sem acesso direto ao painel |

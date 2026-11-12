@@ -1,7 +1,7 @@
 # StratAI no topo das buscas de IA em Joinville
 
-> **Origem:** export do Drive em 2026-11-12 do plano aprovado pelo Helbert em 2026-11-04 (versão 2). Versão
-> original, de acesso restrito ao time: https://claude.ai/artifact/Bh1FtvSLSJnYaxK5Cb6dKt.
+> **Origem:** export do Drive em 2026-11-12 do plano aprovado pelo Helbert em 2026-11-04 (versão 2). A versão
+> original fica com o time.
 >
 > **O que foi tirado e por quê:** este repositório é público. Ficaram só as decisões, as fases e as páginas. Saíram
 > a conferência do servidor antigo das LPs (código e operação do servidor), os telefones e os contratos,

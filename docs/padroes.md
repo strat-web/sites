@@ -147,7 +147,7 @@ A mesma integração `arquivosDoSite` grava o `_headers` do Cloudflare Pages em 
 - PR que só mexe em `apps/<app>`, com as 6 checagens verdes e o `/lab:lp-revisar` aprovado, o dev mescla sem o
   Helbert (D11). Todo o resto espera a revisão dele.
 - Rebase que exige mudança de código volta para o Helbert, com novo pedido de revisão.
-- Lead de teste em produção: nome "Teste Strat WEB-<n>", e-mail e telefone fictícios do time, aviso no grupo do
+- Lead de teste em produção: nome "Teste Strat WEB-<n>", e-mail e telefone fictícios, aviso no grupo do
   comercial antes e o lead apagado do MetricaaS no fim.
 
 ## Checagens da CI (WEB-20)
