@@ -65,18 +65,18 @@ A execução na CI sai no PR (link no corpo do PR).
 | C1 | ok | só o `<Tracking>` do kit (pelo `Layout`); a checagem `tracking` passa e não acha pixel, gtag, GTM nem TikTok à mão |
 | C2 | não se aplica | a linha não usa Rastro (`rastro_slug: null`); a Agência não tem produto no Rastro |
 | C3 | não se aplica | página de teste, só no preview. `agenciastrat.com.br` entra na lista do MetricaaS e do pixel na virada do domínio (WEB-23, WEB-26) |
-| C4 | ok | na abertura: `m.js`, `mf.js` e `/e` do MetricaaS (204), `fbevents.js` e nenhum `facebook.com/tr`. Depois de "Aceitar": `signals/config/1815630929780241` e um `PageView` do pixel 1815630929780241 com `dl` levando as UTMs de teste. Clique no WhatsApp: `/e` do MetricaaS (204) e o código do MetricaaS no texto do `wa.me` (navegação bloqueada no teste, nada enviado). `Lead`: não se aplica (sem formulário) |
+| C4 | falhou (só o `Contact`) | na abertura: `m.js`, `mf.js` e `/e` do MetricaaS (204), `fbevents.js` e nenhum `facebook.com/tr`. Depois de "Aceitar": `signals/config/1815630929780241` e um `PageView` do pixel 1815630929780241 com `dl` levando as UTMs de teste. Clique no WhatsApp: `/e` do MetricaaS (204) e o código do MetricaaS no texto do `wa.me` (nada enviado). **`Contact` não sai no navegador:** no preview, com o pixel aceito, o clique no WhatsApp (também abrindo em aba nova) só gera o `/e` do MetricaaS; nenhum `facebook.com/tr?ev=Contact` e nenhuma chamada ao `fbq`. O kit carrega o `m.js` como a linha pede; o evento é do MetricaaS (ou sai só pela CAPI, o que só o Gerenciador de Eventos mostra). Vira item próprio. `Lead`: não se aplica (sem formulário) |
 | C5 | não se aplica | o `event_id` igual no navegador e na CAPI é do `Lead`, e a página de conteúdo não tem formulário. O caso com lead é o da home da Agência (WEB-11, `agenciastrat.md`) |
 | C6 | ok | sem escolha: banner com Recusar e Aceitar, nenhum `/tr`. "Recusar": `strat_cookies=nao`, banner some, nenhum `/tr`. "Aceitar": `strat_cookies=sim`, `PageView` ×1. Bate com a política de `banner` (`docs/tracking.md`). O MetricaaS mede nos dois casos, como manda a regra do lead |
 
 ### D · Técnico
 | # | Resultado | Evidência |
 |---|---|---|
-| D1 | ok | Lighthouse no celular (checagem `peso`): performance 100, LCP 1,4 s, CLS 0; página com 11 KB. O PageSpeed no preview está no corpo do PR |
+| D1 | ok | PageSpeed Insights no celular, no preview, 12/11 14h43: performance 100, LCP 0,8 s, CLS 0, TBT 30 ms. Lighthouse da checagem `peso`: performance 100, LCP 1,4 s, CLS 0; página com 11 KB |
 | D2 | ok | a única imagem é a da primeira dobra: sem `loading="lazy"`, com `fetchpriority="high"`, `width="320"` e `height="120"` |
 | D3 | ok | `robots.txt`, `sitemap.xml` e `llms.txt` gerados pelo kit (a página fica fora do sitemap e do llms.txt por ser noindex; no `agenciastrat.pages.dev` os três respondem 200 em 12/11). Um `<title>`, uma descrição, um `<h1>`, `lang="pt-BR"`, `og:image`, 4 blocos JSON-LD (marca, `WebPage`, `BreadcrumbList`, `FAQPage`) validados pela checagem `seo` |
 | D4 | não se aplica | o domínio ainda não serve este repositório; no `.pages.dev` o HTTPS é o do Cloudflare. www ↔ raiz com 301 entra na virada (WEB-26) |
-| D5 | ok | `_headers` gerado no build; `curl -sI https://agenciastrat.pages.dev/kit/lead/` (mesmo `_headers`) em 12/11: HSTS, `nosniff`, `frame-ancestors 'self'`, `Referrer-Policy`, `Permissions-Policy` e `X-Robots-Tag: noindex`. Na própria página, no preview: corpo do PR |
+| D5 | ok | `_headers` gerado no build; `curl -sI https://agenciastrat.pages.dev/kit/lead/` (mesmo `_headers`) em 12/11: HSTS, `nosniff`, `frame-ancestors 'self'`, `Referrer-Policy`, `Permissions-Policy` e `X-Robots-Tag: noindex`. Na própria página, no preview `web-22-portao-f2.agenciastrat.pages.dev/kit/portao/`, os mesmos 6 |
 | D6 | não se aplica | URL nova, sem rota antiga |
 
 ### E · Depois de publicar
@@ -89,6 +89,7 @@ A execução na CI sai no PR (link no corpo do PR).
 
 ## Resultado
 
-O kit passa no portão F2: as 6 checagens verdes e, de A a E, nenhum item falhou. Os itens que não se aplicam são os
+O kit passa no portão F2: as 6 checagens verdes e, de A a E, só o `Contact` do C4 falhou, e ele não depende do kit
+(o `m.js` do MetricaaS carrega certo, mas não manda `Contact` ao pixel no clique do WhatsApp). Os itens que não se aplicam são os
 que dependem do domínio no ar (C3, D4, E2, E3), de formulário de lead (C5), de Rastro (C2) ou do plugin de LP (E4);
 cada um tem o item que o cobre na página real.
