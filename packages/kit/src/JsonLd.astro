@@ -1,0 +1,14 @@
+---
+// JSON-LD. Com `marca`: o Organization/ProfessionalService da marca, filho do Grupo Strat.
+// Com `dados`: qualquer objeto (ou lista) já montado, ex.: Article do blog.
+import { schemaMarca, jsonSeguro } from './schema.js';
+
+interface Props {
+  marca?: string;
+  dados?: object | object[];
+}
+
+const { marca, dados } = Astro.props;
+const blocos = [...(marca ? [schemaMarca(marca)] : []), ...(dados ? [dados].flat() : [])];
+---
+{blocos.map((b) => <script type="application/ld+json" set:html={jsonSeguro(b)} />)}
