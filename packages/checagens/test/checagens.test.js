@@ -8,7 +8,7 @@ import { checarCatalogo } from '../src/catalogo.js';
 import { checarLinks } from '../src/links.js';
 import { bytesDaPagina } from '../src/peso.js';
 import { checarSeo } from '../src/seo.js';
-import { checarTracking, slugConhecido } from '../src/tracking.js';
+import { checarTracking, diferencasDoRastro, slugConhecido } from '../src/tracking.js';
 
 const SITE = 'https://stratai.com.br';
 const linha = (extra = {}) => ({
@@ -162,4 +162,35 @@ test('peso: soma o HTML e os recursos locais, inclusive o url() do CSS', () => {
   const app = { site: SITE, dist };
   const esperado = Buffer.byteLength(p.html) + 'body{background:url(/fundo.png)}'.length + 2000;
   assert.equal(bytesDaPagina(app, p), esperado);
+});
+
+// Rastro de mentira com a configuração inteira do produto (o /sa de verdade manda todos estes campos).
+const rastroCom = (cfg) => async () => ({
+  ok: true,
+  text: async () => `(function(){var CFG=${JSON.stringify({ slug: 'stratai', known: true, ...cfg })};})();`,
+});
+const STRATAI = { metaPixelId: '1823024821883911', ga4Id: '', googleTagId: '', googleAdsId: '', consentMode: 'off' };
+
+test('tracking: o /sa do Rastro igual ao catálogo passa', async () => {
+  const r = await checarTracking(ctx([pagina()]), { buscar: rastroCom(STRATAI) });
+  assert.deepEqual(r.erros, []);
+});
+
+test('tracking: Rastro com consentMode, pixel, GA4 ou tag do Google diferente do catálogo barra', async () => {
+  const r = await checarTracking(ctx([pagina()]), {
+    buscar: rastroCom({ ...STRATAI, consentMode: 'soft', metaPixelId: '999', ga4Id: 'G-OUTRO', googleAdsId: 'AW-1' }),
+  });
+  const m = msgs(r);
+  assert.match(m, /consentMode "soft", o catálogo diz "off"/);
+  assert.match(m, /pixel da Meta: o Rastro injeta "999", o catálogo pede "1823024821883911"/);
+  assert.match(m, /GA4: o Rastro injeta "G-OUTRO"/);
+  assert.match(m, /tag do Google: o Rastro injeta "AW-1", o catálogo pede ""/);
+});
+
+test('diferencasDoRastro: tag do Google aceita o googleTagId ou o googleAdsId, e só compara o que o Rastro manda', () => {
+  const l = linha({ ga4: 'G-R84BNVV2HX', google_tag: 'AW-17263684860', meta_pixel: '860500981882285' });
+  const mentoria = { metaPixelId: '860500981882285', ga4Id: 'G-R84BNVV2HX', googleTagId: '', googleAdsId: 'AW-17263684860', consentMode: 'off' };
+  assert.deepEqual(diferencasDoRastro(mentoria, l), []);
+  assert.deepEqual(diferencasDoRastro({ known: true }, l), []);
+  assert.equal(diferencasDoRastro({ ...mentoria, googleTagId: 'GT-X' }, l).length, 1);
 });

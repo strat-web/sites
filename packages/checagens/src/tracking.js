@@ -33,7 +33,7 @@ export function ehScriptDeTracking(s) {
 
 const descrever = (s) => (s.attrs.src ? s.attrs.src : `<script id="${s.attrs.id || ''}"> inline`);
 
-/** Compara o HTML de uma página com o plano do catálogo. Devolve os slugs do Rastro usados. */
+/** Compara o HTML de uma página com o plano do catálogo. Devolve [{ slug, linha }] do Rastro usado. */
 export function checarPaginaTracking(pagina, catalogo, r) {
   const onde = pagina.url;
   const { scripts, noindex } = lerPagina(pagina.html);
@@ -90,17 +90,56 @@ export function checarPaginaTracking(pagina, catalogo, r) {
   if (esperados.length && !linha.umami_website_id) {
     r.aviso(onde, 'sem umami_website_id no catálogo: a página não mede no Umami (o id vem do Strat Tracking)');
   }
-  return linha.rastro_slug && linha.consentimento !== 'sem-tracking' ? [linha.rastro_slug] : [];
+  return linha.rastro_slug && linha.consentimento !== 'sem-tracking' ? [{ slug: linha.rastro_slug, linha }] : [];
+}
+
+/** Lê a configuração (CFG) que o script do Rastro entrega para o produto: known, pixel, GA4, Google e consentMode. */
+export async function lerRastro(slug, buscar = fetch) {
+  const resposta = await buscar(`${RASTRO}?product=${encodeURIComponent(slug)}`, { signal: AbortSignal.timeout(15000) });
+  if (!resposta.ok) throw new Error(`o Rastro respondeu ${resposta.status}`);
+  const corpo = await resposta.text();
+  const json = corpo.match(/\bCFG\s*=\s*(\{[^;]*\})\s*;/)?.[1];
+  let cfg;
+  try {
+    cfg = json && JSON.parse(json);
+  } catch {
+    cfg = undefined;
+  }
+  if (typeof cfg?.known !== 'boolean') throw new Error('a resposta do Rastro não traz "known"');
+  return cfg;
 }
 
 /** O Rastro responde known:true para slug cadastrado (web_products); slug desconhecido cai no pixel da Strat sem erro. */
 export async function slugConhecido(slug, buscar = fetch) {
-  const resposta = await buscar(`${RASTRO}?product=${encodeURIComponent(slug)}`, { signal: AbortSignal.timeout(15000) });
-  if (!resposta.ok) throw new Error(`o Rastro respondeu ${resposta.status}`);
-  const corpo = await resposta.text();
-  const known = corpo.match(/"known"\s*:\s*(true|false)/)?.[1];
-  if (!known) throw new Error('a resposta do Rastro não traz "known"');
-  return known === 'true';
+  return (await lerRastro(slug, buscar)).known;
+}
+
+const vazio = (v) => (v === '' || v === undefined ? null : v);
+
+/**
+ * O que o produto no Rastro faz de diferente do que a linha do catálogo pede (pedido do Helbert no repasse do WEB-69):
+ * o pixel e o GA4 que ele injeta, a tag do Google (googleTagId ou googleAdsId) e o consentMode. Só compara o campo que
+ * o Rastro manda. O consentimento "banner" com Rastro o kit já recusa (WEB-72), então aqui sobra off × soft.
+ */
+export function diferencasDoRastro(cfg, linha) {
+  const difs = [];
+  const comparar = (campoRastro, quer, nome) => {
+    if (!(campoRastro in cfg)) return;
+    const tem = vazio(cfg[campoRastro]);
+    if ((quer ?? null) !== tem) difs.push(`${nome}: o Rastro injeta "${tem ?? ''}", o catálogo pede "${quer ?? ''}"`);
+  };
+  comparar('metaPixelId', linha.meta_pixel, 'pixel da Meta');
+  comparar('ga4Id', linha.ga4, 'GA4');
+  if ('googleTagId' in cfg || 'googleAdsId' in cfg) {
+    const doRastro = [vazio(cfg.googleTagId), vazio(cfg.googleAdsId)].filter(Boolean);
+    const quer = linha.google_tag ?? null;
+    const ok = quer ? doRastro.includes(quer) && doRastro.length === 1 : doRastro.length === 0;
+    if (!ok) difs.push(`tag do Google: o Rastro injeta "${doRastro.join(', ')}", o catálogo pede "${quer ?? ''}"`);
+  }
+  if ('consentMode' in cfg && cfg.consentMode !== linha.consentimento) {
+    difs.push(`consentimento: o produto está em consentMode "${cfg.consentMode}", o catálogo diz "${linha.consentimento}"`);
+  }
+  return difs;
 }
 
 export async function checarTracking(ctx, { semRede = false, buscar = fetch } = {}) {
@@ -109,9 +148,9 @@ export async function checarTracking(ctx, { semRede = false, buscar = fetch } = 
   for (const app of ctx.apps) {
     for (const pagina of app.paginas) {
       if (ehPaginaDeErro(pagina)) continue;
-      for (const slug of checarPaginaTracking(pagina, ctx.catalogo, r)) {
+      for (const { slug, linha } of checarPaginaTracking(pagina, ctx.catalogo, r)) {
         if (!slugs.has(slug)) slugs.set(slug, []);
-        slugs.get(slug).push(pagina.url);
+        slugs.get(slug).push({ url: pagina.url, linha });
       }
     }
   }
@@ -120,12 +159,19 @@ export async function checarTracking(ctx, { semRede = false, buscar = fetch } = 
     return r;
   }
   for (const [slug, paginas] of slugs) {
+    let cfg;
     try {
-      if (!(await slugConhecido(slug, buscar))) {
-        r.erro(paginas.join(', '), `o Rastro não conhece o produto "${slug}" (known: false): cadastre em web_products antes de publicar`);
-      }
+      cfg = await lerRastro(slug, buscar);
     } catch (e) {
       r.erro(`Rastro (${slug})`, `não deu para conferir o slug: ${e.message}`);
+      continue;
+    }
+    if (!cfg.known) {
+      r.erro(paginas.map((p) => p.url).join(', '), `o Rastro não conhece o produto "${slug}" (known: false): cadastre em web_products antes de publicar`);
+      continue;
+    }
+    for (const { url, linha } of paginas) {
+      for (const d of diferencasDoRastro(cfg, linha)) r.erro(url, `produto "${slug}" no Rastro × catálogo, ${d}`);
     }
   }
   return r;
