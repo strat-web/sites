@@ -2,6 +2,9 @@
 
 Conferido em 2026-11-04 (Cloudflare, Easypanel, Search Console). Atualize a cada migração.
 
+Em 2026-11-11 (WEB-15) nasceram os projetos do Pages `agenciastrat`, `stratai`, `metricaas` e `sites-stratacademy`,
+ligados a este repositório e só com o endereço `.pages.dev` (ver `pages.md`). Nenhum domínio mudou.
+
 ## Regra
 - Sem servidor próprio (site, LP, blog) → **Cloudflare Pages**, a partir deste repositório.
 - Com banco, fila, sessão ou processo contínuo → **Easypanel** (VPS própria; o endereço fica no mapa interno, fora deste repositório).
@@ -22,14 +25,14 @@ Conferido em 2026-11-04 (Cloudflare, Easypanel, Search Console). Atualize a cada
 
 | URL | O que é | Hoje | Alvo | Item |
 |---|---|---|---|---|
-| agenciastrat.com.br | site da Agência, /advogados, /bio, /blog | não publicado | Pages `agenciastrat` | WEB-23 a 31 |
+| agenciastrat.com.br | site da Agência, /advogados, /bio, /blog | não publicado | Pages `agenciastrat` (existe desde 11/11, agenciastrat.pages.dev) | WEB-23 a 31 |
 | agencia.stratai.com.br | site da Agência (antigo) | Easypanel `strat-lps` | 301 para agenciastrat.com.br | WEB-29 |
-| stratai.com.br | site da StratAI, /raio-x | Easypanel `strat-lps` | Pages `stratai` | WEB-32 |
+| stratai.com.br | site da StratAI, /raio-x | Easypanel `strat-lps` | Pages `stratai` (existe desde 11/11, stratai-ti7.pages.dev) | WEB-32 |
 | bio.stratai.com.br | bio da StratAI e da Agência | Easypanel `strat-lps` | 301 para /bio de cada marca | WEB-25, WEB-35 |
-| metricaas.com.br | site do MetricaaS | Easypanel `strat-lps` (com proxy) | Pages `metricaas` | WEB-36 |
+| metricaas.com.br | site do MetricaaS | Easypanel `strat-lps` (com proxy) | Pages `metricaas` (existe desde 11/11, metricaas.pages.dev) | WEB-36 |
 | app., go.metricaas.com.br | o produto | Easypanel `whatsapp/metricaas-app` | fica | — |
 | docs.metricaas.com.br | documentação | Mintlify | fica | — |
-| stratacademy.com.br | site e blog | Pages `stratacademy` (repositório horus) | Pages, deste repositório | WEB-49 |
+| stratacademy.com.br | site e blog | Pages `stratacademy` (repositório horus) | Pages `sites-stratacademy`, deste repositório (existe desde 11/11; o nome `stratacademy` é o do horus, ver `pages.md`) | WEB-49 |
 | claude., skills., mentoria., bootcamp., vibecode., comunidade.stratacademy.com.br | LPs de campanha | Easypanel `strat-lps` | um projeto do Pages por subdomínio | WEB-48 |
 | tracking., wa.stratacademy.com.br | Rastro | Pages `rastro-stratacademy` | fica (repositório vai para a strat-web, WEB-55) | — |
 | hub., links., lists., form., git.stratacademy.com.br | apps | Easypanel | fica | — |
