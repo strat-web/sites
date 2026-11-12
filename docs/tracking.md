@@ -35,6 +35,7 @@ A regra mora em `packages/kit/src/tracking.js` e tem teste (`pnpm --filter @stra
 | perfil `venda` | também o launcher da Hotmart com `hot('account', <hotmart_conta>)` escrito no HTML |
 | `umami_website_id` | `/u/script.js` com `data-website-id`, pelo proxy `/u/` do próprio domínio (o proxy é do Strat Tracking) |
 | `consentimento: sem-tracking` | nada |
+| `consentimento: por-funil` | nada pelo kit: a própria página liga o Rastro do funil pelo `?f=` (registro `FUNIS`, com o consentimento do produto); sem `?f=`, nada. Hoje só a comunidade da Academy (T5); entra no kit na migração (WEB-48) |
 
 **Consentimento:** o componente segue o campo `consentimento` de cada URL (o que a página faz hoje). O padrão por
 perfil é decisão do Helbert no WEB-72; quando sair, muda o valor no catálogo, não o componente. Com Rastro, quem segura
