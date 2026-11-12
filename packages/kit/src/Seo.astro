@@ -1,0 +1,34 @@
+---
+// Título, descrição, canonical, robots, Open Graph e cartão do X/Twitter (docs/seo-geo.md).
+// O canonical usa o `site` do astro.config.mjs: nunca sai pages.dev, nem no preview.
+import { marca as dadosMarca } from './marcas.js';
+import { urlCanonica } from './schema.js';
+
+interface Props {
+  marca: string;            // chave do catálogo: agencia | stratai | academy | metricaas
+  titulo: string;           // 10 a 65 caracteres, com a busca principal e a marca
+  descricao: string;        // 50 a 160 caracteres
+  imagem?: string;          // caminho ou URL da imagem do Open Graph; sem ela, a da marca
+  indexar?: boolean;        // false = noindex, nofollow
+  tipo?: 'website' | 'article';
+  caminho?: string;         // padrão: o caminho da própria página
+}
+
+const { marca, titulo, descricao, imagem, indexar = true, tipo = 'website', caminho = Astro.url.pathname } = Astro.props;
+if (!titulo?.trim() || !descricao?.trim()) throw new Error(`[kit] Seo: título e descrição são obrigatórios (${caminho})`);
+const m = dadosMarca(marca);
+const canonical = urlCanonica(Astro.site, caminho);
+const ogImagem = new URL(imagem ?? m.imagem, Astro.site).href;
+---
+<title>{titulo}</title>
+<meta name="description" content={descricao} />
+<link rel="canonical" href={canonical} />
+<meta name="robots" content={indexar ? 'index, follow' : 'noindex, nofollow'} />
+<meta property="og:type" content={tipo} />
+<meta property="og:locale" content="pt_BR" />
+<meta property="og:site_name" content={m.nome} />
+<meta property="og:title" content={titulo} />
+<meta property="og:description" content={descricao} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImagem} />
+<meta name="twitter:card" content="summary_large_image" />

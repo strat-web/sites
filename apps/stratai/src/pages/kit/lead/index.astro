@@ -1,0 +1,14 @@
+---
+// Teste do <Tracking> perfil lead com Rastro e MetricaaS (WEB-17). Sai antes de o domínio virar (WEB-32).
+import Layout from '@strat/kit/Layout.astro';
+import TesteTracking from '@strat/kit/TesteTracking.astro';
+---
+<Layout marca="stratai" perfil="lead" indexar={false}
+  titulo="Teste do Tracking, perfil lead · StratAI"
+  descricao="Página de teste do componente Tracking do kit dos sites: perfil lead da StratAI, com MetricaaS e o Rastro.">
+  <TesteTracking perfil="lead" whatsapp="5547991658478" esperado={[
+    'Na abertura: t.metricaas.com.br/m.js (data-ws=agencia-strat, sem data-pixel) e tracking.stratacademy.com.br/sa?product=stratai (known: true, consentMode off).',
+    'PageView do pixel 1823024821883911 uma vez só (vem do Rastro; o m.js não liga pixel aqui), page_view do GA4 G-3VJ019EH58.',
+    'Clique no botão de teste: CTAClick. Clique no WhatsApp: Contact.',
+  ]} />
+</Layout>

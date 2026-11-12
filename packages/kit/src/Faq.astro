@@ -1,0 +1,25 @@
+---
+// Perguntas frequentes visíveis + FAQPage. O texto vem de uma lista só, então o JSON-LD
+// é sempre idêntico ao que está na página (docs/seo-geo.md). Resposta em texto puro.
+import JsonLd from './JsonLd.astro';
+import { schemaFaq } from './schema.js';
+
+interface Props {
+  perguntas: { pergunta: string; resposta: string }[];
+  titulo?: string;
+  class?: string;
+}
+
+const { perguntas, titulo = 'Perguntas frequentes', class: classe } = Astro.props;
+const dados = schemaFaq(perguntas);
+---
+<section class:list={['kit-faq', classe]}>
+  <h2>{titulo}</h2>
+  {perguntas.map((p) => (
+    <details>
+      <summary>{p.pergunta}</summary>
+      <p>{p.resposta}</p>
+    </details>
+  ))}
+</section>
+<JsonLd dados={dados} />

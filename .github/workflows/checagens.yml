@@ -1,0 +1,68 @@
+# As 6 checagens obrigatórias dos sites (WEB-20, docs/padroes.md "Checagens da CI").
+# Os nomes dos jobs (build, seo, tracking, links, peso, catalogo) são os que o ruleset da main exige
+# (.github/rulesets/main.json): mudou um nome aqui, muda lá no mesmo PR.
+name: checagens
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+# Uma execução por branch: a nova cancela a anterior. Se uma execução ficar presa no GitHub (aconteceu em 11/11/2026:
+# job "em andamento" sem runner, que nem o force-cancel derruba), trocar o prefixo do grupo destrava as próximas.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # o lastmod do sitemap vem do git log; clone raso sai sem lastmod
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm test
+      - name: Empacotar o dist/ de cada app
+        run: tar -czf dist.tgz $(ls -d apps/*/dist lps/academy/*/dist 2>/dev/null)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist.tgz
+          retention-days: 3
+          if-no-files-found: error
+
+  checagem:
+    needs: build
+    name: ${{ matrix.checagem }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        checagem: [seo, tracking, links, peso, catalogo]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+      - run: tar -xzf dist.tgz
+      # peso abre cada página no Chrome do runner (Lighthouse em celular); tracking pergunta ao Rastro se o slug existe.
+      - run: node packages/checagens/src/cli.js ${{ matrix.checagem }}
