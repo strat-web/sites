@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- docs(pages): functions/* no caminho observado dos 4 projetos do Pages (gravado na Cloudflare em 12/11), mudança só na Function passa a disparar build (TRACK-9)
 - ci(checagens): tracking confere ordem, defer e type do m.js e barra pixel em <noscript> ou em .js do build; app sem dist/ barra; nova tentativa quando o Rastro não responde; concorrência do workflow por número do PR (WEB-76)
 - docs(catalogo): o campo consentimento passa a dizer a regra da página (banner, soft, off só como exceção, sem-tracking e por-funil, com o padrão por perfil do WEB-72), com o mesmo texto em docs/tracking.md (WEB-79)
 - docs: decisões do Helbert de 12/11 (WEB-71, WEB-74, WEB-32 antecipado, estrutura da StratAI, casos com nome, conta do PR, WEB-49, fluxo dos PRs), regra de consentimento do WEB-72 em decisoes.md e tracking.md (com o que o código faz hoje: o kit ainda recusa Rastro com banner, banner = strict é o WEB-81), PR pela conta própria do dev e os planos em docs/planos/ (WEB-72)
