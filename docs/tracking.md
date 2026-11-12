@@ -32,6 +32,38 @@ precisa do slug.
 Umami: ainda não existe em nenhuma URL (WEB-11). O catálogo já tem o campo `umami_website_id`; o kit carrega pelo
 proxy `/u/` quando o id existir (WEB-17).
 
+## Consentimento (WEB-72, decisão do Helbert de 11/11)
+O campo `consentimento` de cada linha do `catalogo/sites.json` decide, página a página, o que mede antes do aceite.
+O kit garante que o catálogo bate com o Rastro.
+
+| Perfil da página nova | Nasce em |
+|---|---|
+| `venda` ou `lead` | `soft` |
+| `conteudo` | `banner` |
+
+- **`off` só como exceção** registrada em `docs/decisoes.md`, com data e quem decidiu. As exceções herdadas (a
+  migração não muda tracking) estão lá, na entrada de 11/11: /advogados da Agência, StratAI (home, `/raio-x/`,
+  `/bio/`), metricaas.com.br e as LPs de venda da Academy (claude., skills., mentoria., bootcamp.).
+- **Com Rastro**, quem segura o pixel é o `consentMode` do produto, não a página. O catálogo tem de dizer o mesmo
+  que o produto: `off` = `off`, `soft` = `soft`, `banner` = `strict`. Diferente disso o build quebra, e a checagem
+  `tracking` da CI barra: ela lê o `/sa?product=<slug>` de cada URL e compara consentimento, pixel, GA4 e Google Ads
+  com a linha do catálogo.
+- **Sem Rastro** (hoje só a Agência), `banner` é o banner de cookies do kit, e o pixel vem pelo `m.js` do MetricaaS.
+- Outros valores do campo: `por-funil` (a página liga o Rastro do funil pelo `?f=`, hoje só a comunidade da Academy)
+  e `sem-tracking`.
+
+O que cada modo faz (conferido na auditoria de 2026-11, `docs/auditoria/2026-11/`):
+
+| Modo | Exemplo hoje | Antes do aceite | Depois do aceite |
+|---|---|---|---|
+| `off` | StratAI, MetricaaS, LPs de venda da Academy | sem aviso: pixel, GA4, Google Ads e o Rastro (`/tracker`) disparam na abertura | igual (não há escolha) |
+| `soft` | vibecode | pixel, GA4, Google Ads e Rastro disparam na abertura, com o aviso "recusar / ok" | quem recusa deixa de ser medido pelas tags do produto; quem aceita segue medido |
+| `banner` com Rastro (`strict` no produto) | home da Academy (produto `site`) | o pixel não dispara | o pixel liga; o aceite fica no cookie `strat_consent` (o mesmo do horus), então quem já aceitou lá continua aceito. GA4 e Google Ads seguem o produto no Rastro: conferir no teste com e sem aceite |
+| `banner` sem Rastro | home e bio da Agência | o pixel não dispara (`data-pixel-consent="aguardar"`) | "Aceitar" chama `mtc.consentir()` e o pixel do navegador liga; "Recusar" deixa o pixel desligado. GA4: a Agência não usa (WEB-73) |
+
+MetricaaS em qualquer modo: na página que tem `metricaas_ws`, o `m.js` carrega na hora (regra dura do lead) e o
+cadastro do lead no MetricaaS não depende do aceite.
+
 ## Marcação na página
 - Todo botão: `data-strat-cta="<seção>-<destino>"` (ex.: `hero-diagnostico`, `rodape-whatsapp`). Vira `CTAClick`.
 - Todo formulário de lead: `data-strat-leadform`. Vira `Lead`, com CAPI e o webhook do funil.
@@ -45,6 +77,7 @@ proxy `/u/` quando o id existir (WEB-17).
 3. Teste com `?utm_source=teste&utm_medium=verificacao`: `PageView`; `Contact` no clique do WhatsApp; `Lead` no
    formulário com o mesmo `event_id` no navegador e na CAPI; evento no MetricaaS. No celular emulado (4G lento),
    tocar no WhatsApp do topo logo que ele aparece: o código do MetricaaS tem de estar no texto.
-4. Com e sem aceitar cookies (o consentimento do Rastro pode ser `off`, `soft` ou `strict` por produto).
+4. Com e sem aceitar cookies, conferindo o modo da linha do catálogo (seção "Consentimento"). Com Rastro, o
+   `consentMode` do `/sa?product=<slug>` tem de ser o mesmo do catálogo (`banner` = `strict`).
 
 Referência completa do Rastro: `strat-web/rastro` (hoje `Strat-Ai-Horus-OS/rastro-stratacademy`), `docs/TRACKING-ARCHITECTURE.md`.
