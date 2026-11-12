@@ -18,7 +18,7 @@ ligados a este repositório e só com o endereço `.pages.dev` (ver `pages.md`).
 | agenciastrat.com.br | Strat Academy | **pendente**: nameservers ainda no registro.br (WEB-1) | sim |
 | stratai.com.br | Strat Academy | ativa | sim |
 | metricaas.com.br | Strat Academy | ativa | sim |
-| stratacademy.com.br | Strat Academy | ativa | não (entra no WEB-47) |
+| stratacademy.com.br | Strat Academy | ativa | sim, só o CNAME que o item de migração pedir; `n8n`, `git`, `lists` e `hub` não (WEB-47, conferido em 12/11/2026) |
 | strat.tec.br | outra conta | ativa | não |
 
 ## Por domínio
