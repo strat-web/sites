@@ -1,7 +1,16 @@
 // Testes do gerador de sitemap.xml, robots.txt e llms.txt (WEB-18). Rodar: pnpm --filter @strat/kit test
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { lerHtml, montarLlms, montarRobots, montarSitemap, ROBOS_DE_IA, separarIndexaveis } from '../src/arquivos-do-site.js';
+import {
+  completarHistorico,
+  dataDoUltimoCommit,
+  lerHtml,
+  montarLlms,
+  montarRobots,
+  montarSitemap,
+  ROBOS_DE_IA,
+  separarIndexaveis,
+} from '../src/arquivos-do-site.js';
 
 const catalogo = {
   urls: [
@@ -94,4 +103,38 @@ test('llms.txt sem página indexável diz isso, e marca fora do catálogo quebra
   assert.match(txt, /Nenhuma página publicada neste endereço ainda\./);
   assert.doesNotMatch(txt, /Contato|Endereço|Redes/);
   assert.throws(() => montarLlms({ marca: 'x', site: 'https://x/', indexaveis: [], catalogo }), /marcas.js/);
+});
+
+// git de mentira: guarda os comandos e responde como um clone raso que vira completo depois do fetch.
+function gitFalso({ raso = true, fetchFalha = false } = {}) {
+  const chamadas = [];
+  const git = (...args) => {
+    chamadas.push(args.join(' '));
+    if (args[0] === 'rev-parse') return raso ? 'true' : 'false';
+    if (args[0] === 'fetch') {
+      if (fetchFalha) throw new Error('sem rede');
+      raso = false;
+      return '';
+    }
+    if (args[0] === 'log') return '2026-11-10';
+    return '';
+  };
+  return { git, chamadas };
+}
+
+test('clone raso: o build busca o histórico antes de ler o lastmod (Pages clona raso)', () => {
+  const { git, chamadas } = gitFalso();
+  assert.equal(completarHistorico('.', git), 'completado');
+  assert.ok(chamadas.includes('fetch --unshallow --quiet'));
+  assert.equal(dataDoUltimoCommit('apps/stratai/src/pages/index.astro', '.', git), '2026-11-10');
+});
+
+test('clone completo não busca nada; fetch que falha deixa o lastmod em branco', () => {
+  const completo = gitFalso({ raso: false });
+  assert.equal(completarHistorico('.', completo.git), 'completo');
+  assert.ok(!completo.chamadas.some((c) => c.startsWith('fetch')));
+
+  const semRede = gitFalso({ fetchFalha: true });
+  assert.equal(completarHistorico('.', semRede.git), 'raso');
+  assert.equal(dataDoUltimoCommit('apps/stratai/src/pages/index.astro', '.', semRede.git), undefined);
 });

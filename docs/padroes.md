@@ -83,7 +83,8 @@ export default defineConfig({ site: 'https://stratai.com.br', integrations: [arq
 - Página no catálogo com `indexar: true` mas com noindex no HTML fica fora e o build avisa. Página gerada sem linha no
   catálogo também fica fora, com aviso (regra 3).
 - `public/robots.txt`, `public/sitemap.xml` ou `public/llms.txt` no app quebram o build: o kit é a única fonte.
-- Em clone raso (`git` sem histórico), o `lastmod` sai em branco em vez de levar a mesma data para todas as páginas.
+- O Pages clona raso (um commit só). Antes de ler as datas, o build roda `git fetch --unshallow` (o repositório é
+  público). Se o fetch falhar, o `lastmod` sai em branco e o build avisa, em vez de levar a mesma data para todas as páginas.
 - Bloquear página no robots impediria o robô de ler o noindex: página fora do índice usa `indexar={false}` no `Layout`.
 - Sem nenhuma página indexável, o `sitemap.xml` sai sem `<url>`, e o validador do sitemaps.org recusa sitemap vazio.
   É o caso dos quatro apps enquanto só têm o esqueleto (noindex); passa a validar com a primeira página real.
