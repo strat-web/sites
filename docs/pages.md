@@ -58,6 +58,11 @@ direto, só para ver o esqueleto: `web-15-agenciastrat-preview`, `web-15-stratai
 Projeto criado por upload direto nunca pode ser ligado ao GitHub depois, por isso eles não viraram os definitivos.
 Ficam até o Helbert dizer se desliga.
 
+## Functions (`functions/` na raiz)
+O Pages procura a pasta `functions/` no diretório raiz do projeto, que aqui é `/` nos quatro. Então
+`functions/u/[[caminho]].js` (proxy do Umami, `tracking.md`) vale para todos os apps e LPs. Falta pôr `functions/*`
+no caminho observado dos projetos: hoje uma mudança só nessa pasta não dispara build (pede o token `pages-strat-web`).
+
 ## Armadilhas
 - **wrangler 4.160+:** `wrangler pages project create` tenta delegar para o Workers e falha num monorepo
   ("workspace root unsupported"), sem criar nada. Para upload direto, use `--force`.
