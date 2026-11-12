@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- feat(kit): página 404 nos 4 apps com o componente PaginaNaoEncontrada (noindex, sem tracking, texto na voz da marca e links só para página que existe no build); seo barra app sem 404.html e links confere a 404 a partir da raiz (WEB-75)
 - feat(tracking): Umami medindo pelo próprio domínio: umami_website_id nas 19 URLs do catálogo (um website por host), proxy /u/ como Pages Function na raiz (functions/u/[[caminho]].js, IP do visitante em payload.ip) com os eventos cta, whatsapp, checkout, form_inicio e cadastro; testes do kit atualizados (TRACK-8, TRACK-9)
 - ci: checagens obrigatórias build, seo, tracking, links, peso e catalogo em todo PR (packages/checagens, checagens.yml), ruleset da main escrito para o Helbert aplicar e âncora #topo das páginas de teste do Tracking corrigida (WEB-20)
 - feat(kit): componente Tracking com os perfis venda, lead e conteudo lendo o catálogo (consentimento por URL, banner de cookies do kit, launcher da Hotmart, Umami pelo /u/), campo hotmart_conta e 4 páginas de teste (WEB-17)

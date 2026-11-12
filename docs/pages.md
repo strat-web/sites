@@ -64,6 +64,8 @@ O Pages procura a pasta `functions/` no diretório raiz do projeto, que aqui é 
 no caminho observado dos projetos: hoje uma mudança só nessa pasta não dispara build (pede o token `pages-strat-web`).
 
 ## Armadilhas
+- **Sem `404.html` na raiz da saída**, o Pages trata o projeto como aplicação de página única e responde 200 com a
+  home em qualquer caminho. Todo app tem `src/pages/404.astro` (WEB-75, `padroes.md`, "Página 404").
 - **wrangler 4.160+:** `wrangler pages project create` tenta delegar para o Workers e falha num monorepo
   ("workspace root unsupported"), sem criar nada. Para upload direto, use `--force`.
 - **Projeto ligado ao GitHub** não sai pelo `wrangler`: crie pela API (`POST /accounts/<id>/pages/projects` com
