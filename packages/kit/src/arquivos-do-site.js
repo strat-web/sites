@@ -71,11 +71,28 @@ export function lerHtml(html) {
   };
 }
 
-/** Data (AAAA-MM-DD) do último commit que tocou o arquivo; undefined se não houver histórico confiável. */
-export function dataDoUltimoCommit(arquivo, raiz = RAIZ) {
+const gitNaRaiz = (raiz) => (...args) =>
+  execFileSync('git', args, { cwd: raiz, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], timeout: 60000 }).trim();
+
+/**
+ * O Pages (e quase toda CI) clona raso: com um commit só, todo arquivo teria a mesma data. Antes de ler as datas, o
+ * build busca o histórico que falta (`git fetch --unshallow`, o repositório é público). Devolve 'completo' (já
+ * tinha histórico), 'completado' (buscou agora) ou 'raso' (não deu: sem rede ou sem git; o lastmod sai em branco).
+ */
+export function completarHistorico(raiz = RAIZ, git = gitNaRaiz(raiz)) {
   try {
-    const git = (...args) => execFileSync('git', args, { cwd: raiz, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
-    // Clone raso (comum em CI) devolve a data do único commit para todo arquivo: melhor não ter lastmod do que mentir.
+    if (git('rev-parse', '--is-shallow-repository') !== 'true') return 'completo';
+    git('fetch', '--unshallow', '--quiet');
+    return git('rev-parse', '--is-shallow-repository') === 'true' ? 'raso' : 'completado';
+  } catch {
+    return 'raso';
+  }
+}
+
+/** Data (AAAA-MM-DD) do último commit que tocou o arquivo; undefined se não houver histórico confiável. */
+export function dataDoUltimoCommit(arquivo, raiz = RAIZ, git = gitNaRaiz(raiz)) {
+  try {
+    // Ainda raso (o fetch falhou): melhor não ter lastmod do que dar a mesma data para todas as páginas.
     if (git('rev-parse', '--is-shallow-repository') === 'true') return undefined;
     return git('log', '-1', '--format=%cs', '--', arquivo) || undefined;
   } catch {
@@ -201,6 +218,10 @@ export function arquivosDoSite({ app }) {
         const linhaDaHome = catalogo.urls.find((u) => u.app === app && u.url === site);
         const marca = linhaDaHome?.marca || catalogo.urls.find((u) => u.app === app)?.marca;
         if (!marca) throw new Error(`${app}: nenhuma linha do catalogo/sites.json aponta para este app.`);
+
+        const historico = completarHistorico();
+        if (historico === 'completado') logger.info('clone raso: histórico do git buscado para o lastmod do sitemap.');
+        if (historico === 'raso') logger.warn('clone raso e o git fetch --unshallow falhou: sitemap.xml sai sem lastmod.');
 
         const paginas = [];
         for (const { pathname } of pages) {
