@@ -66,6 +66,30 @@ const perguntas = [
 - As regras ficam em `packages/kit/src/schema.js`, testadas com `pnpm --filter @strat/kit test`.
 - Página de teste com tudo junto: `apps/stratai/src/pages/kit/index.astro` (`/kit/`, noindex).
 
+## sitemap.xml, robots.txt e llms.txt (WEB-18)
+Ninguém escreve esses três à mão: a integração `arquivosDoSite` do kit, ligada no `astro.config.mjs` de cada app,
+grava os três na saída do build.
+
+```js
+import { arquivosDoSite } from '@strat/kit';
+export default defineConfig({ site: 'https://stratai.com.br', integrations: [arquivosDoSite({ app: 'apps/stratai' })] });
+```
+
+| Arquivo | O que sai | De onde vem |
+|---|---|---|
+| `sitemap.xml` | só as páginas indexáveis, com `lastmod` | página com `indexar: true` no `catalogo/sites.json` **e** sem noindex no HTML; `lastmod` = data do último commit do arquivo da página |
+| `robots.txt` | `Allow: /` para todos e para cada robô de IA, e a linha `Sitemap:` | lista `ROBOS_DE_IA` em `packages/kit/src/arquivos-do-site.js` |
+| `llms.txt` | nome, resumo, contato, endereço e redes da marca, as páginas indexáveis (título e descrição do HTML) e as outras marcas do grupo | `packages/kit/src/marcas.js` (campo `resumo`) e o catálogo |
+
+- Página no catálogo com `indexar: true` mas com noindex no HTML fica fora e o build avisa. Página gerada sem linha no
+  catálogo também fica fora, com aviso (regra 3).
+- `public/robots.txt`, `public/sitemap.xml` ou `public/llms.txt` no app quebram o build: o kit é a única fonte.
+- O Pages clona raso (um commit só). Antes de ler as datas, o build roda `git fetch --unshallow` (o repositório é
+  público). Se o fetch falhar, o `lastmod` sai em branco e o build avisa, em vez de levar a mesma data para todas as páginas.
+- Bloquear página no robots impediria o robô de ler o noindex: página fora do índice usa `indexar={false}` no `Layout`.
+- Sem nenhuma página indexável, o `sitemap.xml` sai sem `<url>`, e o validador do sitemaps.org recusa sitemap vazio.
+  É o caso dos quatro apps enquanto só têm o esqueleto (noindex); passa a validar com a primeira página real.
+
 ## Nomes
 - App: o nome do domínio sem `.com.br` (`agenciastrat`, `stratai`).
 - Página: caminho em português, minúsculo, com hífen (`/agente-de-ia-whatsapp/`).

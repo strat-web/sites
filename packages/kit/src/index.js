@@ -2,3 +2,5 @@
 // Aqui ficam os dados das marcas e as funções que montam o canonical e o JSON-LD.
 export { grupo, marcas, marca } from './marcas.js';
 export { urlCanonica, schemaMarca, schemaBreadcrumb, schemaFaq, jsonSeguro } from './schema.js';
+// Integração do Astro que grava sitemap.xml, robots.txt e llms.txt no fim do build (WEB-18).
+export { arquivosDoSite } from './arquivos-do-site.js';

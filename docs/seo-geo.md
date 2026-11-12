@@ -20,9 +20,12 @@ Bing indexam, de páginas com fatos claros e de quem cita a empresa. O kit cuida
 - **Fatos verificáveis:** endereço, CNPJ, sócios, cases com número real. É o que as IAs citam.
 
 ## Todo site
-- `robots.txt` que libera os robôs de IA (GPTBot, ChatGPT-User, ClaudeBot, PerplexityBot, Google-Extended, Bingbot) e aponta o sitemap.
+- `robots.txt` que libera os robôs de IA (GPTBot, OAI-SearchBot, ChatGPT-User, ClaudeBot, Claude-SearchBot,
+  Claude-User, PerplexityBot, Perplexity-User, Google-Extended, Applebot-Extended, Bingbot) e aponta o sitemap.
 - `sitemap.xml` gerado no build, só com páginas indexáveis, com `lastmod` real.
-- `llms.txt` com o resumo da marca, os serviços e as páginas principais.
+- `llms.txt` com o resumo da marca, o contato e as páginas principais.
+- **Os três o kit gera sozinho no build** (WEB-18), a partir do catálogo e de `packages/kit/src/marcas.js`. Como
+  funciona e as regras: `padroes.md`, "sitemap.xml, robots.txt e llms.txt".
 - Cabeçalhos de segurança no `_headers` e `X-Robots-Tag: noindex` em `*.pages.dev`.
 - Propriedade no Search Console e no Bing Webmaster (`docs/search-console.md`).
 
