@@ -214,6 +214,10 @@ test('peso: exceção do Lighthouse avisa acima do piso e barra abaixo dele (WEB
   assert.equal(julgarMedicao('https://x.com.br/', { performance: 60, lcpMs: 3900, cls: 0 }, exc), 'erro');
   assert.equal(julgarMedicao('https://x.com.br/', { performance: 80, lcpMs: 6000, cls: 0 }, exc), 'erro');
   assert.equal(julgarMedicao('https://y.com.br/', { performance: 80, lcpMs: 3900, cls: 0 }, exc), 'erro');
-  // a única exceção real hoje é a home da StratAI
-  assert.deepEqual(Object.keys(EXCECOES_LIGHTHOUSE), ['https://stratai.com.br/']);
+  // exceções reais hoje: a home da StratAI (WEB-87) e duas páginas com falso vermelho da CI (WEB-88)
+  assert.deepEqual(Object.keys(EXCECOES_LIGHTHOUSE), [
+    'https://stratai.com.br/',
+    'https://stratai.com.br/politica-de-privacidade/',
+    'https://stratai.com.br/raio-x/',
+  ]);
 });
