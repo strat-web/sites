@@ -37,9 +37,19 @@ A regra mora em `packages/kit/src/tracking.js` e tem teste (`pnpm --filter @stra
 | `consentimento: sem-tracking` | nada |
 | `consentimento: por-funil` | nada pelo kit: a própria página liga o Rastro do funil pelo `?f=` (registro `FUNIS`, com o consentimento do produto); sem `?f=`, nada. Hoje só a comunidade da Academy (T5); entra no kit na migração (WEB-48) |
 
-**Consentimento:** o componente segue o campo `consentimento` de cada URL. A regra de qual valor cada página usa é a
-do WEB-72 (seção "Consentimento", abaixo): ela muda o valor no catálogo, não o componente. Com Rastro, quem segura o
-pixel é o produto no Rastro (`off`, `soft`, `strict`); a página não troca.
+**Consentimento:** o campo `consentimento` de cada URL é a regra da página, e o componente obedece (regra do
+WEB-72, decisão do Helbert de 11/11/2026). É o que a página deve fazer, não um retrato de como ela pede aceite hoje:
+- `banner`: nada de pixel, GA4 nem Google Ads antes do aceite. Com Rastro, o produto no Rastro em `strict`.
+- `soft`: mede desde a abertura, com aviso, e para quando a pessoa recusa. Com Rastro, o produto em `soft`.
+- `off`: mede sem aviso. Só como exceção registrada em `docs/decisoes.md`. Com Rastro, o produto em `off`.
+- `sem-tracking`: a página não carrega tracking.
+- `por-funil`: a página escolhe o produto do Rastro pelo `?f=`, com o consentimento dele; sem `?f=`, nada.
+
+Página nova nasce em `soft` no perfil `venda` ou `lead` e em `banner` no perfil `conteudo`. Mudar o padrão muda o
+valor no catálogo, não o componente. Com Rastro, quem segura o pixel é o produto no Rastro, e a página não troca: por
+isso o `consentMode` do produto tem de ser o par do catálogo (`banner` = `strict`), e a checagem `tracking` da CI
+compara os dois (o que ela já confere hoje está na seção "Consentimento", abaixo). Os valores aceitos são os de `packages/checagens/src/catalogo.js`; valor fora da lista barra a
+checagem `catalogo`. O texto é o mesmo da descrição do campo em `catalogo/sites.json`.
 
 **Banner do kit** (só sem Rastro e com `banner`): o texto e a chave `strat_cookies` são os da Agência (laudo de
 31/10/2026). "Aceitar" chama `mtc.consentir()` e o pixel liga; "Recusar" não manda nada à Meta. O cadastro do lead e a

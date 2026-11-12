@@ -4,6 +4,7 @@ Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
 - ci(checagens): tracking confere ordem, defer e type do m.js e barra pixel em <noscript> ou em .js do build; app sem dist/ barra; nova tentativa quando o Rastro não responde; concorrência do workflow por número do PR (WEB-76)
+- docs(catalogo): o campo consentimento passa a dizer a regra da página (banner, soft, off só como exceção, sem-tracking e por-funil, com o padrão por perfil do WEB-72), com o mesmo texto em docs/tracking.md (WEB-79)
 - docs: decisões do Helbert de 12/11 (WEB-71, WEB-74, WEB-32 antecipado, estrutura da StratAI, casos com nome, conta do PR, WEB-49, fluxo dos PRs), regra de consentimento do WEB-72 em decisoes.md e tracking.md (com o que o código faz hoje: o kit ainda recusa Rastro com banner, banner = strict é o WEB-81), PR pela conta própria do dev e os planos em docs/planos/ (WEB-72)
 - feat(conteudo): schema do blog e checar-posts trazidos do horus para packages/conteudo, ligados aos 4 apps (collection blog, scripts checar:posts e test), com post de teste noindex na stratai e na stratacademy (WEB-19)
 - feat(kit): página 404 nos 4 apps com o componente PaginaNaoEncontrada (noindex, sem tracking, texto na voz da marca e links só para página que existe no build); seo barra app sem 404.html e links confere a 404 a partir da raiz (WEB-75)
