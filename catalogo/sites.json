@@ -16,7 +16,7 @@
     "google_tag": "tag do Google (GT-) ou conta do Google Ads (AW-)",
     "umami_website_id": "id do site no Umami (proxy /u/ do kit), ou null enquanto não existe",
     "search_console": "propriedade",
-    "consentimento": "como a página pede aceite hoje: banner (pixel só depois do aceite) | off (sem aviso) | soft (mede até recusar) | sem-tracking | por-funil (a página escolhe o produto do Rastro pelo ?f=, com o consentimento dele; sem ?f=, nada)",
+    "consentimento": "regra da página, que o <Tracking> do kit obedece (WEB-72, docs/tracking.md): banner (nada de pixel, GA4 nem Google Ads antes do aceite; com Rastro, o produto em strict) | soft (mede desde a abertura, com aviso, e para quando a pessoa recusa; com Rastro, o produto em soft) | off (mede sem aviso; só como exceção registrada em docs/decisoes.md; com Rastro, o produto em off) | sem-tracking (a página não carrega tracking) | por-funil (a página escolhe o produto do Rastro pelo ?f=, com o consentimento dele; sem ?f=, nada). Página nova nasce em soft no perfil venda ou lead e em banner no perfil conteudo",
     "hospedagem_hoje": "onde está servindo agora",
     "hospedagem_alvo": "onde vai ficar",
     "dono": "quem responde pelo conteúdo e pela marca",

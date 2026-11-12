@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- docs(catalogo): o campo consentimento passa a dizer a regra da página (banner, soft, off só como exceção, sem-tracking e por-funil, com o padrão por perfil do WEB-72), com o mesmo texto em docs/tracking.md (WEB-79)
 - ci: checagens obrigatórias build, seo, tracking, links, peso e catalogo em todo PR (packages/checagens, checagens.yml), ruleset da main escrito para o Helbert aplicar e âncora #topo das páginas de teste do Tracking corrigida (WEB-20)
 - feat(kit): componente Tracking com os perfis venda, lead e conteudo lendo o catálogo (consentimento por URL, banner de cookies do kit, launcher da Hotmart, Umami pelo /u/), campo hotmart_conta e 4 páginas de teste (WEB-17)
 - feat(kit): _headers gerado no build de cada app com HSTS, nosniff, frame-ancestors, Referrer-Policy e Permissions-Policy, e noindex no *.pages.dev (WEB-21)
