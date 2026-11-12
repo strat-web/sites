@@ -60,6 +60,7 @@ const perguntas = [
 | `JsonLd` | `marca?` e/ou `dados?` (objeto ou lista já montada, ex.: `Article`) | `<script type="application/ld+json">` com `<` escapado |
 | `Breadcrumb` | `itens` (`{ nome, caminho }`, do início à página atual) | trilha visível + `BreadcrumbList` |
 | `Faq` | `perguntas` (`{ pergunta, resposta }`, texto puro), `titulo?` | `<details>` visíveis + `FAQPage` |
+| `PaginaNaoEncontrada` | `marca`, `titulo`, `descricao`, `h1`, `links?` (`{ nome, caminho }`), `inicio?`, `whatsapp?`; slot: o texto | a 404 do app: `Layout` com noindex e sem tracking, o texto e a lista de links (ver "Página 404") |
 
 - `marca` é a chave do catálogo: `agencia`, `stratai`, `academy`, `metricaas`. Marca nova ou rede nova entra em
   `packages/kit/src/marcas.js`, com a fonte no PR.
@@ -69,6 +70,33 @@ const perguntas = [
 - Página de teste com tudo junto: `apps/stratai/src/pages/kit/index.astro` (`/kit/`, noindex).
 - Página com tracking: `perfil` no `Layout` e a linha da URL no catálogo com o mesmo perfil, senão o build quebra.
   Páginas de teste de cada perfil: `/kit/lead/`, `/kit/conteudo/` e `/kit/venda/` (WEB-17).
+
+## Página 404 (WEB-75)
+Todo app tem `src/pages/404.astro`, e o build gera o `dist/404.html`. O Cloudflare Pages serve esse arquivo, com
+status 404, em todo caminho que não existe. Sem ele, o Pages trata o projeto como aplicação de página única e responde
+200 com a home, e o Google conta como soft 404. A checagem `seo` barra app sem `404.html`.
+
+```astro
+---
+import PaginaNaoEncontrada from '@strat/kit/PaginaNaoEncontrada.astro';
+---
+<PaginaNaoEncontrada marca="stratai" titulo="Página não encontrada · StratAI" descricao="..." h1="Esta página não existe"
+  inicio="Voltar para o início" whatsapp="Falar com a gente no WhatsApp"
+  links={[{ nome: 'Fazer meu diagnóstico', caminho: '/raio-x/' }]}>
+  <p>Texto curto na voz da marca.</p>
+</PaginaNaoEncontrada>
+```
+
+- Sempre noindex e sem tracking; fica fora do catálogo, do sitemap e do `llms.txt`. O título e o H1 dela não contam
+  como repetidos.
+- `links` traz as páginas principais do site, escritas uma vez. Link do próprio site só aparece quando a página já
+  existe no build (o componente lê `src/pages`): a página migrada depois entra na 404 sozinha e a que ainda não foi
+  migrada nunca vira link quebrado. Link para outro domínio (`https://`) entra como está.
+- A 404 é servida em qualquer caminho, então endereço relativo (`raio-x/`) quebra o build: use `/raio-x/` ou a URL
+  completa. A checagem `links` confere os links dela a partir da raiz.
+- `whatsapp` põe o link `wa.me` com o telefone da marca em `packages/kit/src/marcas.js`.
+- Conferir no preview: `curl -s -o /dev/null -w '%{http_code}' <preview>/nao-existe/` responde `404`, e a página é a
+  da marca.
 
 ## sitemap.xml, robots.txt e llms.txt (WEB-18)
 Ninguém escreve esses três à mão: a integração `arquivosDoSite` do kit, ligada no `astro.config.mjs` de cada app,
@@ -142,9 +170,9 @@ da `main` exige. A regra mora em `packages/checagens/` e lê o `dist/` de cada a
 | Checagem | Barra quando |
 |---|---|
 | build | algum app não compila ou algum teste dos pacotes falha (`pnpm build` e `pnpm test`) |
-| seo | `<title>` ou `<h1>` faltando, repetido na página ou repetido no site; sem canonical ou canonical diferente da URL; `<a href="#">` (ou vazio, ou `javascript:`); JSON-LD que não é JSON ou sem `@context`/`@type`; página indexável fora do `sitemap.xml`; sitemap com página que tem noindex ou não existe; app sem `sitemap.xml` ou `robots.txt` |
+| seo | `<title>` ou `<h1>` faltando, repetido na página ou repetido no site; sem canonical ou canonical diferente da URL; `<a href="#">` (ou vazio, ou `javascript:`); JSON-LD que não é JSON ou sem `@context`/`@type`; página indexável fora do `sitemap.xml`; sitemap com página que tem noindex ou não existe; app sem `sitemap.xml`, `robots.txt` ou `404.html`; 404 sem noindex, sem um `<title>` e um `<h1>`, ou no sitemap |
 | tracking | script do `<Tracking>` faltando ou diferente do que a linha do catálogo pede (`data-ws`, `data-pixel`, `data-website-id`); script de tracking a mais ou em dobro; pixel da Meta, gtag, GTM ou pixel do TikTok colado à mão; slug que o Rastro não conhece (`/sa?product=<slug>` com `known: false`); produto do Rastro que injeta pixel, GA4 ou tag do Google diferente da linha do catálogo, ou com `consentMode` diferente do `consentimento` |
-| links | link interno quebrado (caminho, relativo ou URL do próprio domínio sem arquivo no build); âncora `#id` sem o id na página |
+| links | link interno quebrado (caminho, relativo ou URL do próprio domínio sem arquivo no build); âncora `#id` sem o id na página; endereço relativo na 404 (ela é servida em qualquer caminho) |
 | peso | página acima de 1,5 MB (HTML + CSS, JS, imagem e fonte do build); no Lighthouse em celular, performance abaixo de 90, LCP acima de 2,5 s ou CLS acima de 0,1 |
 | catalogo | página do build sem linha em `catalogo/sites.json` ou com `app` diferente; linha sem campo obrigatório, com valor fora da lista, URL sem barra, id ou URL repetidos |
 

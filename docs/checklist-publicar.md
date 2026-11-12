@@ -36,7 +36,7 @@ com a evidência (print, curl, link). Adaptado do portão do setor de LP da cabi
 |---|---|
 | D1 | PageSpeed no celular: performance 90 ou mais, LCP até 2,5 s, CLS até 0,1, até 1,5 MB |
 | D2 | Imagem da primeira dobra sem `loading="lazy"`; as outras com; `width` e `height` definidos |
-| D3 | `robots.txt`, `sitemap.xml` e `llms.txt` respondendo; título, descrição, um H1, `lang`, og:image, JSON-LD válidos |
+| D3 | `robots.txt`, `sitemap.xml` e `llms.txt` respondendo; título, descrição, um H1, `lang`, og:image, JSON-LD válidos; `/nao-existe/` responde 404 com a página da marca |
 | D4 | HTTPS, www ↔ raiz com 301, certificado válido |
 | D5 | Cabeçalhos de segurança presentes (o kit gera; conferir com `curl -sI`, ver `padroes.md`, "Cabeçalhos") |
 | D6 | Rotas antigas respondem 301 para as novas, mantendo a query (tabela no PR) |
