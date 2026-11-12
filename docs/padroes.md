@@ -152,7 +152,9 @@ A mesma integração `arquivosDoSite` grava o `_headers` do Cloudflare Pages em 
 4. **Verificar:** build, as checagens da CI rodando local (`pnpm checar`), o checklist de publicar quando for página
    (`docs/checklist-publicar.md`), o preview do Pages a 390 e 1440 px.
 5. **Documentar:** catálogo, `docs/dominios.md`, `docs/decisoes.md` e `CHANGELOG.md` no mesmo PR.
-6. **PR:** pelo modelo, aberto pela `strat-aibr`, com o link do item, do preview e "como conferir".
+6. **PR:** pelo modelo, aberto pela conta própria do dev (o `gh` logado na máquina de quem fez), com o link do item,
+   do preview e "como conferir". Desde 12/11 não sai mais pela `strat-aibr` (`docs/decisoes.md`). Com 6 PRs abertos,
+   o PR espera numa branch (regras de fluxo abaixo).
 7. **Fechar a volta:** item em Aprovação com o link do PR e do preview; comentário com o que foi feito, o que ficou
    de fora e o que precisa do Helbert. Cartão da sessão no strat-dev (`/base:encerrar cartao`).
 8. **Ajuste:** se o Helbert mover para Em ajuste, o motivo está no comentário. Corrige no mesmo PR e volta para Aprovação.
@@ -162,6 +164,19 @@ A mesma integração `arquivosDoSite` grava o `_headers` do Cloudflare Pages em 
   O item vai no fim: `fix(stratai): links do WhatsApp com wa.me no HTML (WEB-33)`.
 - Título do PR igual ao commit principal.
 - Um PR por item. PR grande (mais de ~600 linhas fora de conteúdo) é sinal de que o item precisava ser dividido.
+- Commit, push e PR pela conta do GitHub de quem fez o trabalho. Conferir antes: `gh api user --jq .login` responde
+  o seu login.
+
+## Fluxo dos PRs (decisão do Helbert, 12/11)
+- No máximo **6 PRs abertos** no repositório. Com 6 abertos, o trabalho fica pronto na branch (com o corpo do PR
+  escrito) e o PR abre quando houver vaga.
+- Pilha de no máximo **2 níveis**: um PR pode depender de outro aberto, mas esse outro não depende de um terceiro.
+- O Helbert revisa em duas janelas: **9h e 17h** (Brasília).
+- PR que só mexe em `apps/<app>`, com as 6 checagens verdes e o `/lab:lp-revisar` aprovado, o dev mescla sem o
+  Helbert (D11). Todo o resto espera a revisão dele.
+- Rebase que exige mudança de código volta para o Helbert, com novo pedido de revisão.
+- Lead de teste em produção: nome "Teste Strat WEB-<n>", e-mail e telefone fictícios, aviso no grupo do
+  comercial antes e o lead apagado do MetricaaS no fim.
 
 ## Checagens da CI (WEB-20)
 Rodam em todo PR (`.github/workflows/checagens.yml`), cada uma num job com o próprio nome, e são as que o ruleset

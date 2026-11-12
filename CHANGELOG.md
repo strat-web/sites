@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- docs: decisões do Helbert de 12/11 (WEB-71, WEB-74, WEB-32 antecipado, estrutura da StratAI, casos com nome, conta do PR, WEB-49, fluxo dos PRs), regra de consentimento do WEB-72 em decisoes.md e tracking.md (com o que o código faz hoje: o kit ainda recusa Rastro com banner, banner = strict é o WEB-81), PR pela conta própria do dev e os planos em docs/planos/ (WEB-72)
 - feat(conteudo): schema do blog e checar-posts trazidos do horus para packages/conteudo, ligados aos 4 apps (collection blog, scripts checar:posts e test), com post de teste noindex na stratai e na stratacademy (WEB-19)
 - feat(kit): página 404 nos 4 apps com o componente PaginaNaoEncontrada (noindex, sem tracking, texto na voz da marca e links só para página que existe no build); seo barra app sem 404.html e links confere a 404 a partir da raiz (WEB-75)
 - feat(tracking): Umami medindo pelo próprio domínio: umami_website_id nas 19 URLs do catálogo (um website por host), proxy /u/ como Pages Function na raiz (functions/u/[[caminho]].js, IP do visitante em payload.ip) com os eventos cta, whatsapp, checkout, form_inicio e cadastro; testes do kit atualizados (TRACK-8, TRACK-9)
