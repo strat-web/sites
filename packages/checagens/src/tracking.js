@@ -1,7 +1,7 @@
 // Checagem "tracking" (docs/tracking.md, D7): página sem <Tracking>, script de tracking a mais ou faltando, pixel ou
 // gtag colado à mão e slug que o Rastro não conhece. O esperado de cada página sai da mesma regra do componente
 // (planoDeTracking do kit), lida da linha do catálogo; a checagem compara com o HTML gerado.
-import { HOTMART_LAUNCHER, METRICAAS, RASTRO, UMAMI, planoDeTracking } from '@strat/kit';
+import { HOTMART_LAUNCHER, METRICAAS, RASTRO, UMAMI, consentModeEsperado, planoDeTracking } from '@strat/kit';
 import { ehPaginaDeErro } from './contexto.js';
 import { lerPagina } from './html.js';
 import { ESQUELETOS } from './esqueletos.js';
@@ -119,7 +119,8 @@ const vazio = (v) => (v === '' || v === undefined ? null : v);
 /**
  * O que o produto no Rastro faz de diferente do que a linha do catálogo pede (pedido do Helbert no repasse do WEB-69):
  * o pixel e o GA4 que ele injeta, a tag do Google (googleTagId ou googleAdsId) e o consentMode. Só compara o campo que
- * o Rastro manda. O consentimento "banner" com Rastro o kit já recusa (WEB-72), então aqui sobra off × soft.
+ * o Rastro manda. O consentimento segue a regra do WEB-72 (WEB-81): banner = strict, soft = soft, off = off; qualquer
+ * outro par (inclusive um consentMode que o kit não conhece) barra.
  */
 export function diferencasDoRastro(cfg, linha) {
   const difs = [];
@@ -136,8 +137,16 @@ export function diferencasDoRastro(cfg, linha) {
     const ok = quer ? doRastro.includes(quer) && doRastro.length === 1 : doRastro.length === 0;
     if (!ok) difs.push(`tag do Google: o Rastro injeta "${doRastro.join(', ')}", o catálogo pede "${quer ?? ''}"`);
   }
-  if ('consentMode' in cfg && cfg.consentMode !== linha.consentimento) {
-    difs.push(`consentimento: o produto está em consentMode "${cfg.consentMode}", o catálogo diz "${linha.consentimento}"`);
+  if ('consentMode' in cfg) {
+    const quer = consentModeEsperado(linha.consentimento);
+    if (!quer) {
+      difs.push(`consentimento: o catálogo diz "${linha.consentimento}", que não tem consentMode no Rastro (banner, soft ou off)`);
+    } else if (cfg.consentMode !== quer) {
+      difs.push(
+        `consentimento: o produto está em consentMode "${cfg.consentMode}", o catálogo diz "${linha.consentimento}" ` +
+          `(pede "${quer}" no Rastro)`,
+      );
+    }
   }
   return difs;
 }

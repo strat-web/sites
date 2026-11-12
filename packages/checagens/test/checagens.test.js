@@ -194,3 +194,38 @@ test('diferencasDoRastro: tag do Google aceita o googleTagId ou o googleAdsId, e
   assert.deepEqual(diferencasDoRastro({ known: true }, l), []);
   assert.equal(diferencasDoRastro({ ...mentoria, googleTagId: 'GT-X' }, l).length, 1);
 });
+
+test('diferencasDoRastro: banner = strict, soft = soft, off = off; o resto barra (WEB-81)', () => {
+  const ok = [['banner', 'strict'], ['soft', 'soft'], ['off', 'off']];
+  for (const [consentimento, consentMode] of ok) {
+    assert.deepEqual(diferencasDoRastro({ ...STRATAI, consentMode }, linha({ consentimento })), [], `${consentimento} × ${consentMode}`);
+  }
+  const ruins = [
+    ['banner', 'soft'], ['banner', 'off'], ['banner', 'banner'],
+    ['soft', 'strict'], ['soft', 'off'],
+    ['off', 'strict'], ['off', 'soft'],
+    ['sem-tracking', 'off'], ['por-funil', 'strict'],
+    ['off', 'outro'],
+  ];
+  for (const [consentimento, consentMode] of ruins) {
+    const difs = diferencasDoRastro({ ...STRATAI, consentMode }, linha({ consentimento }));
+    assert.equal(difs.length, 1, `${consentimento} × ${consentMode}`);
+    assert.match(difs[0], /^consentimento: /);
+  }
+  assert.match(diferencasDoRastro({ ...STRATAI, consentMode: 'soft' }, linha({ consentimento: 'banner' }))[0], /pede "strict"/);
+});
+
+test('tracking: página com Rastro e banner passa com o produto em strict e barra com o produto em soft (WEB-81)', async () => {
+  const linhas = [linha({ consentimento: 'banner' })];
+  const head = TRACKING_OK; // sem data-pixel e sem banner do kit: o aviso é o do Rastro
+  const strict = await checarTracking(ctx([pagina({ head })], { linhas }), { buscar: rastroCom({ ...STRATAI, consentMode: 'strict' }) });
+  assert.deepEqual(strict.erros, []);
+  const soft = await checarTracking(ctx([pagina({ head })], { linhas }), { buscar: rastroCom({ ...STRATAI, consentMode: 'soft' }) });
+  assert.match(msgs(soft), /consentMode "soft", o catálogo diz "banner" \(pede "strict" no Rastro\)/);
+  // m.js com data-pixel-consent numa página com Rastro: o kit não pede, então barra (pixel em dobro e aviso em dobro)
+  const dobro = await checarTracking(
+    ctx([pagina({ head: TRACKING_OK.replace('data-ws="agencia-strat"', 'data-ws="agencia-strat" data-pixel-consent="aguardar"') })], { linhas }),
+    { buscar: rastroCom({ ...STRATAI, consentMode: 'strict' }) },
+  );
+  assert.match(msgs(dobro), /data-pixel-consent="aguardar", mas o catálogo pede ""/);
+});

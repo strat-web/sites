@@ -31,7 +31,7 @@ A regra mora em `packages/kit/src/tracking.js` e tem teste (`pnpm --filter @stra
 |---|---|
 | `metricaas_ws` | `m.js` com `data-ws`, `defer`, **antes** de tudo (regra dura do lead) |
 | `metricaas_ws` + `meta_pixel`, sem `rastro_slug` | o `m.js` também liga o pixel (`data-pixel`); com `consentimento: banner`, `data-pixel-consent="aguardar"` e o banner de cookies do kit |
-| `rastro_slug` | `/sa?product=<slug>` com `defer`; pixel, GA4 e Google Ads vêm do produto no Rastro, então o `m.js` vai **sem** `data-pixel` |
+| `rastro_slug` | `/sa?product=<slug>` com `defer`; pixel, GA4 e Google Ads vêm do produto no Rastro, então o `m.js` vai **sem** `data-pixel`. O produto tem de estar no `consentMode` do catálogo: `banner` = `strict`, `soft` = `soft`, `off` = `off` |
 | perfil `venda` | também o launcher da Hotmart com `hot('account', <hotmart_conta>)` escrito no HTML |
 | `umami_website_id` | `/u/script.js` com `data-website-id`, pelo proxy `/u/` do próprio domínio (o proxy é do Strat Tracking) |
 | `consentimento: sem-tracking` | nada |
@@ -45,16 +45,27 @@ o pixel é o produto no Rastro (`off`, `soft`, `strict`); a página não troca.
 31/10/2026). "Aceitar" chama `mtc.consentir()` e o pixel liga; "Recusar" não manda nada à Meta. O cadastro do lead e a
 CAPI do MetricaaS não dependem do banner. O link da política vem de `privacidade` em `packages/kit/src/marcas.js`.
 
+**Rastro com `banner`** (WEB-81): o produto no Rastro tem de estar em `strict`, e o banner do kit **não** entra. O
+Rastro em `strict` (e em `soft`) já mostra o aviso dele no rodapé ("recusar" e "aceitar") e guarda a escolha no
+`localStorage`, na chave `strat_consent` (`granted` ou `denied`). Em `strict`, pixel, GA4, Google Ads, PostHog e o
+launcher da Hotmart só ligam depois do "aceitar"; em `soft`, ligam na abertura e param no "recusar"; em `off`, não há
+aviso. Lido no `/sa?product=site` em 12/11/2026. Os dois avisos juntos pediriam o aceite duas vezes, com chaves
+diferentes (`strat_cookies` e `strat_consent`), e o "Aceitar" do kit chama o `mtc.consentir()`, que nessa página não
+segura nada (o `m.js` vai sem `data-pixel`). Por isso o kit só desenha o banner dele sem Rastro.
+
 **O build quebra quando:** a URL não tem linha no catálogo; o perfil da página difere do catálogo; `venda` sem
 `rastro_slug` ou sem `hotmart_conta`; `lead` sem `metricaas_ws` e sem `rastro_slug`; pixel sem Rastro e sem MetricaaS;
-GA4 ou tag do Google sem Rastro (ainda sem regra: WEB-73); Rastro com `consentimento: banner` (a página não segura o
-pixel do Rastro, quem segura é o `consentMode` do produto; até o WEB-72, o catálogo usa `off` ou `soft`, igual ao produto).
+GA4 ou tag do Google sem Rastro (ainda sem regra: WEB-73); Rastro com um `consentimento` que não tem par no Rastro
+(só `banner`, `soft` e `off` têm). O build não lê a rede: quem confere se o produto está mesmo no `consentMode` do
+catálogo é a checagem `tracking` da CI, que lê o `/sa?product=<slug>` e barra `banner` com o produto fora de `strict`,
+`soft` fora de `soft` e `off` fora de `off` (`packages/checagens/src/tracking.js`, com teste).
 
 **Conteúdo:** carrega o mesmo da marca e não tem formulário de lead (`data-strat-leadform`) na página.
 
 **Páginas de teste** (noindex, só no preview; saem antes de o domínio virar), cada uma com a lista do que deve
 disparar: `agenciastrat/kit/lead/` (lead sem Rastro, banner), `stratai/kit/lead/` (lead com Rastro e MetricaaS),
-`stratai/kit/conteudo/` e `stratacademy/kit/venda/` (produto `mentoria`, launcher da Hotmart).
+`stratai/kit/conteudo/`, `stratacademy/kit/venda/` (produto `mentoria`, launcher da Hotmart) e
+`stratacademy/kit/conteudo/` (Rastro com `banner`: produto `site` em `strict`, o aviso é o do Rastro; WEB-81).
 
 ## Ids por marca (conferir no catálogo; aqui é referência)
 

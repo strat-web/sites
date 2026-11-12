@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { planoDeTracking, linhaDoCatalogo, PERFIS } from '../src/index.js';
+import { planoDeTracking, linhaDoCatalogo, PERFIS, CONSENT_MODE_DO_RASTRO, consentModeEsperado } from '../src/index.js';
 
 const catalogo = JSON.parse(readFileSync(new URL('../../../catalogo/sites.json', import.meta.url), 'utf8'));
 const plano = (url, perfil) => planoDeTracking({ catalogo, url, perfil });
@@ -68,16 +68,37 @@ test('conteudo: o mesmo do site da marca, sem Hotmart', () => {
   assert.equal(p.hotmart, null);
 });
 
-test('Rastro com banner quebra o build: a página não segura o pixel do Rastro (WEB-72)', () => {
-  // Linha real: o site da Academy pede aceite hoje, mas o produto "site" no Rastro está em consentMode off.
-  assert.throws(() => plano('https://stratacademy.com.br/', 'conteudo'), /consentimento "banner" com Rastro.*produto "site"/);
-  assert.throws(() => falso({ rastro_slug: 'stratai', consentimento: 'banner' }), /WEB-72/);
-  // off e soft com Rastro seguem montando: quem decide é o consentMode do produto, conferido pela CI.
-  for (const consentimento of ['off', 'soft']) {
+test('Rastro com banner monta: o produto tem de estar em strict e o banner do kit não entra (WEB-81)', () => {
+  // Linha real: a home da Academy (banner) com o produto "site" do Rastro, em strict desde 11/11.
+  const home = plano('https://stratacademy.com.br/', 'conteudo');
+  assert.deepEqual(srcs(home), ['https://tracking.stratacademy.com.br/sa?product=site']);
+  assert.equal(home.consentMode, 'strict');
+  assert.equal(home.banner, false);
+  // Página de teste com a mesma configuração (noindex).
+  const teste = plano('https://stratacademy.com.br/kit/conteudo/', 'conteudo');
+  assert.deepEqual(teste.scripts, home.scripts);
+  assert.equal(teste.consentMode, 'strict');
+  // Lead com Rastro, MetricaaS e banner: m.js sem data-pixel nem data-pixel-consent, e sem o banner do kit.
+  const lead = falso({ rastro_slug: 'stratai', metricaas_ws: 'w', meta_pixel: '1', consentimento: 'banner' });
+  assert.deepEqual(lead.scripts[0], { src: 'https://t.metricaas.com.br/m.js', attrs: { 'data-ws': 'w' } });
+  assert.equal(lead.banner, false);
+  assert.equal(lead.consentMode, 'strict');
+});
+
+test('consentimento × consentMode do Rastro: banner = strict, soft = soft, off = off; o resto não tem par', () => {
+  assert.deepEqual({ ...CONSENT_MODE_DO_RASTRO }, { banner: 'strict', soft: 'soft', off: 'off' });
+  assert.equal(consentModeEsperado('banner'), 'strict');
+  for (const v of ['sem-tracking', 'por-funil', 'strict', 'toString', undefined]) assert.equal(consentModeEsperado(v), null, String(v));
+  for (const [consentimento, consentMode] of Object.entries(CONSENT_MODE_DO_RASTRO)) {
     const p = falso({ rastro_slug: 'stratai', consentimento });
     assert.deepEqual(srcs(p), ['https://tracking.stratacademy.com.br/sa?product=stratai']);
+    assert.equal(p.consentMode, consentMode);
     assert.equal(p.banner, false);
   }
+  // Valor fora da regra com Rastro quebra o build (a checagem catalogo também barra o valor).
+  assert.throws(() => falso({ rastro_slug: 'stratai', consentimento: 'strict' }), /não tem consentMode equivalente/);
+  // Sem Rastro não há consentMode a conferir.
+  assert.equal(plano('https://agenciastrat.com.br/kit/lead/', 'lead').consentMode, null);
 });
 
 test('sem-tracking e por-funil não carregam nada; Umami entra pelo proxy /u/ quando o id existe', () => {
@@ -87,12 +108,6 @@ test('sem-tracking e por-funil não carregam nada; Umami entra pelo proxy /u/ qu
   assert.deepEqual(u.scripts.at(-1), { src: '/u/script.js', attrs: { 'data-website-id': 'abc-123' } });
 });
 
-// Linhas que o kit recusa de propósito até o WEB-72 (Rastro com banner). Linha nova nessa situação tem de entrar aqui.
-const ESPERAM_WEB72 = ['academy'];
-
-test('toda linha do catálogo gera um plano sem erro, menos as que esperam o WEB-72', () => {
-  for (const l of catalogo.urls) {
-    if (ESPERAM_WEB72.includes(l.id)) assert.throws(() => plano(l.url, l.perfil), /WEB-72/, l.id);
-    else assert.doesNotThrow(() => plano(l.url, l.perfil), l.id);
-  }
+test('toda linha do catálogo gera um plano sem erro', () => {
+  for (const l of catalogo.urls) assert.doesNotThrow(() => plano(l.url, l.perfil), l.id);
 });
