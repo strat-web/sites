@@ -66,7 +66,9 @@ const perguntas = [
 - Sem `imagem`, o Open Graph usa a imagem da marca. Caminho relativo vira absoluto pelo `site`.
 - Página fora do índice (bio, obrigado, teste): `indexar={false}`.
 - As regras ficam em `packages/kit/src/schema.js`, testadas com `pnpm --filter @strat/kit test`.
-- Página de teste com tudo junto: `apps/stratai/src/pages/kit/index.astro` (`/kit/`, noindex).
+- Página de teste com tudo junto: `apps/agenciastrat/src/pages/kit/portao/index.astro` (`/kit/portao/`, noindex, WEB-22):
+  Layout, Seo, JsonLd, Breadcrumb, Faq e Tracking, com o checklist de publicar preenchido em
+  `docs/auditoria/2026-11/portao-f2.md`. A de SEO sem tracking é a `apps/stratai/src/pages/kit/index.astro` (`/kit/`).
 - Página com tracking: `perfil` no `Layout` e a linha da URL no catálogo com o mesmo perfil, senão o build quebra.
   Páginas de teste de cada perfil: `/kit/lead/`, `/kit/conteudo/` e `/kit/venda/` (WEB-17).
 

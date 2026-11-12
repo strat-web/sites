@@ -54,7 +54,9 @@ pixel do Rastro, quem segura é o `consentMode` do produto; até o WEB-72, o cat
 
 **Páginas de teste** (noindex, só no preview; saem antes de o domínio virar), cada uma com a lista do que deve
 disparar: `agenciastrat/kit/lead/` (lead sem Rastro, banner), `stratai/kit/lead/` (lead com Rastro e MetricaaS),
-`stratai/kit/conteudo/` e `stratacademy/kit/venda/` (produto `mentoria`, launcher da Hotmart).
+`stratai/kit/conteudo/` e `stratacademy/kit/venda/` (produto `mentoria`, launcher da Hotmart). A página do portão F2,
+`agenciastrat/kit/portao/` (conteúdo sem Rastro, banner; WEB-22), junta o kit inteiro, e a linha dela no catálogo leva
+`"teste": true`, como toda página de teste nova.
 
 ## Ids por marca (conferir no catálogo; aqui é referência)
 
