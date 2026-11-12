@@ -7,18 +7,17 @@
 //   tracking...) e o HSTS os prenderia a HTTPS sem a gente controlar.
 // - Só frame-ancestors, sem uma CSP inteira: uma CSP de scripts quebraria o Rastro, o MetricaaS e a Hotmart.
 //   'self' deixa a própria página se emoldurar e impede que outro site a ponha num iframe.
-// - Permissions-Policy desliga câmera, microfone, localização e USB. Pagamento fica liberado só para a própria página e
-//   para a Hotmart: o upsell e o downsell do bootcamp montam o Checkout Elements num iframe de pay.hotmart.com
-//   (cartão em pci-pay.hotmart.com) com allow="payment *", e payment=() desligaria a Payment Request dentro dele.
-// Quem pode pedir pagamento na página (Permissions-Policy payment): a própria página e o iframe do Checkout Elements.
-export const PAGAMENTO = ['self', '"https://pay.hotmart.com"', '"https://pci-pay.hotmart.com"'];
+// - Permissions-Policy desliga câmera, microfone, localização e USB e não fala de pagamento (decisão do Helbert,
+//   12/11, PR #11): o upsell e o downsell do bootcamp montam o Checkout Elements da Hotmart num iframe de
+//   pay.hotmart.com com allow="payment *", e qualquer payment no cabeçalho arrisca parar o Google Pay e o Apple Pay
+//   dentro dele.
 
 export const SEGURANCA = {
   'Strict-Transport-Security': 'max-age=31536000',
   'X-Content-Type-Options': 'nosniff',
   'Content-Security-Policy': "frame-ancestors 'self'",
   'Referrer-Policy': 'strict-origin-when-cross-origin',
-  'Permissions-Policy': `camera=(), microphone=(), geolocation=(), payment=(${PAGAMENTO.join(' ')}), usb=()`,
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), usb=()',
 };
 
 // O endereço *.pages.dev não pode concorrer com o domínio no Google. `:project` cobre o endereço de produção do

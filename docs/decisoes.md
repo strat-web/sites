@@ -8,10 +8,11 @@ Uma entrada por decisão, com data e quem decidiu. A mais nova em cima.
   controlar. Subir para `includeSubDomains` é decisão à parte, depois de conferir cada subdomínio.
 - **CSP só com `frame-ancestors 'self'`**: uma CSP de scripts teria de listar Rastro, MetricaaS, Meta, Google,
   Hotmart e PostHog, e quebraria a medição no primeiro script novo.
-- **Pagamento liberado para a Hotmart** (pedido do Helbert no repasse do WEB-69, 11/11): o `payment=()` partia de que
-  o checkout da Hotmart é link, mas o upsell e o downsell do bootcamp usam o Checkout Elements, que monta um iframe de
-  `pay.hotmart.com` (e `pci-pay.hotmart.com` para o cartão) com `allow="payment *"`. O cabeçalho ficou
-  `payment=(self "https://pay.hotmart.com" "https://pci-pay.hotmart.com")`: as outras origens seguem sem pagamento.
+- **Pagamento fora da Permissions-Policy** (decisão do Helbert, 12/11, revisão do PR #11 e comentário no WEB-69):
+  o `payment=()` partia de que o checkout da Hotmart é link, mas o upsell e o downsell do bootcamp usam o Checkout
+  Elements, que monta um iframe de `pay.hotmart.com` (e `pci-pay.hotmart.com` para o cartão) com
+  `allow="payment *"`. O cabeçalho ficou `camera=(), microphone=(), geolocation=(), usb=()`, sem `payment`. Substitui a
+  lista `payment=(self "https://pay.hotmart.com" "https://pci-pay.hotmart.com")` do repasse de 11/11.
 - **Um `_headers` só para os quatro apps**, gerado pela integração do kit; `public/_headers` no app quebra o build.
 
 ## 2026-11-11 · `sameAs` só com os perfis da própria marca (Jhonathan, WEB-16; espera o Helbert no PR)
