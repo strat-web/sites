@@ -185,15 +185,22 @@ da `main` exige. A regra mora em `packages/checagens/` e lê o `dist/` de cada a
 | Checagem | Barra quando |
 |---|---|
 | build | algum app não compila ou algum teste dos pacotes falha (`pnpm build` e `pnpm test`) |
+| (todas) | app (pasta com `package.json` em `apps/` ou `lps/academy/`) sem `dist/`: cada checagem barra antes de começar, em vez de pular o app em silêncio |
 | seo | `<title>` ou `<h1>` faltando, repetido na página ou repetido no site; sem canonical ou canonical diferente da URL; `<a href="#">` (ou vazio, ou `javascript:`); JSON-LD que não é JSON ou sem `@context`/`@type`; página indexável fora do `sitemap.xml`; sitemap com página que tem noindex ou não existe; app sem `sitemap.xml`, `robots.txt` ou `404.html`; 404 sem noindex, sem um `<title>` e um `<h1>`, ou no sitemap |
-| tracking | script do `<Tracking>` faltando ou diferente do que a linha do catálogo pede (`data-ws`, `data-pixel`, `data-website-id`); script de tracking a mais ou em dobro; pixel da Meta, gtag, GTM ou pixel do TikTok colado à mão; slug que o Rastro não conhece (`/sa?product=<slug>` com `known: false`); produto do Rastro que injeta pixel, GA4 ou tag do Google diferente da linha do catálogo, ou com `consentMode` diferente do `consentimento` |
+| tracking | script do `<Tracking>` faltando ou diferente do que a linha do catálogo pede (`data-ws`, `data-pixel`, `data-website-id`); `m.js` sem `defer`, com `async`, com `type` (só JavaScript clássico), fora do `<head>` ou depois de outro script que executa (JSON-LD não conta); script do `<Tracking>` com `type` que o navegador não executa; script de tracking a mais ou em dobro; pixel da Meta, gtag, GTM ou pixel do TikTok colado à mão, no HTML, em `<noscript>` (inclusive a imagem `facebook.com/tr`) ou dentro de um `.js` do build; slug que o Rastro não conhece (`/sa?product=<slug>` com `known: false`); produto do Rastro que injeta pixel, GA4 ou tag do Google diferente da linha do catálogo, ou com `consentMode` diferente do `consentimento` |
 | links | link interno quebrado (caminho, relativo ou URL do próprio domínio sem arquivo no build); âncora `#id` sem o id na página; endereço relativo na 404 (ela é servida em qualquer caminho) |
 | peso | página acima de 1,5 MB (HTML + CSS, JS, imagem e fonte do build); no Lighthouse em celular, performance abaixo de 90, LCP acima de 2,5 s ou CLS acima de 0,1 |
 | catalogo | página do build sem linha em `catalogo/sites.json` ou com `app` diferente; linha sem campo obrigatório, com valor fora da lista, URL sem barra, id ou URL repetidos |
 
 Na máquina: `pnpm checar` roda tudo (o Lighthouse precisa do Chrome instalado, ~1 min); `pnpm checar:rapido` pula
 o Lighthouse. Uma checagem ou um app: `node packages/checagens/src/cli.js seo links --app apps/stratai`.
-`--sem-rede` não pergunta ao Rastro (só para trabalhar desconectado; na CI ele pergunta sempre).
+`--sem-rede` não pergunta ao Rastro (só para trabalhar desconectado; na CI ele pergunta sempre). Com `--app`, só os
+apps pedidos precisam de `dist/`.
+
+Rastro fora do ar: falha de rede, tempo esgotado (15 s), 5xx, 429 ou resposta sem `known` ganham nova tentativa (3 no
+total, com 3 s e 10 s entre elas). Se o Rastro continuar fora, a checagem barra (sem resposta, nada foi conferido) e
+os slugs seguintes levam uma tentativa só; o caminho é rodar o job de novo quando ele voltar. Resposta 4xx barra na
+hora.
 
 O que não barra (aparece como aviso no log e na anotação do PR):
 - página com tracking sem `umami_website_id` no catálogo: os ids vêm do Strat Tracking e ainda não existem. Quando
