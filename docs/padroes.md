@@ -26,7 +26,8 @@ docs/                o manual
 
 ## Página com o kit (WEB-16)
 Toda página começa pelo `Layout`. Ele põe no `<head>` o título, a descrição, o canonical (domínio do `site` do
-`astro.config.mjs`, com barra, nunca `pages.dev`), o robots, o Open Graph e o JSON-LD da marca. `Breadcrumb` e `Faq`
+`astro.config.mjs`, com barra, nunca `pages.dev`; `caminho` ou item do `Breadcrumb` com URL de outro domínio, e
+`site` em `pages.dev`, quebram o build), o robots, o Open Graph e o JSON-LD da marca. `Breadcrumb` e `Faq`
 mostram o conteúdo e geram o JSON-LD da mesma lista, então o texto estruturado nunca diverge do visível.
 
 ```astro

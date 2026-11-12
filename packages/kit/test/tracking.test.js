@@ -68,11 +68,16 @@ test('conteudo: o mesmo do site da marca, sem Hotmart', () => {
   assert.equal(p.hotmart, null);
 });
 
-test('Rastro com banner: avisa que quem segura o pixel é o produto no Rastro', () => {
-  const p = plano('https://stratacademy.com.br/', 'conteudo');
-  assert.deepEqual(srcs(p), ['https://tracking.stratacademy.com.br/sa?product=site']);
-  assert.equal(p.banner, false);
-  assert.match(p.avisos[0], /produto "site" no Rastro/);
+test('Rastro com banner quebra o build: a página não segura o pixel do Rastro (WEB-72)', () => {
+  // Linha real: o site da Academy pede aceite hoje, mas o produto "site" no Rastro está em consentMode off.
+  assert.throws(() => plano('https://stratacademy.com.br/', 'conteudo'), /consentimento "banner" com Rastro.*produto "site"/);
+  assert.throws(() => falso({ rastro_slug: 'stratai', consentimento: 'banner' }), /WEB-72/);
+  // off e soft com Rastro seguem montando: quem decide é o consentMode do produto, conferido pela CI.
+  for (const consentimento of ['off', 'soft']) {
+    const p = falso({ rastro_slug: 'stratai', consentimento });
+    assert.deepEqual(srcs(p), ['https://tracking.stratacademy.com.br/sa?product=stratai']);
+    assert.equal(p.banner, false);
+  }
 });
 
 test('sem-tracking não carrega nada; Umami entra pelo proxy /u/ quando o id existe', () => {
@@ -81,6 +86,12 @@ test('sem-tracking não carrega nada; Umami entra pelo proxy /u/ quando o id exi
   assert.deepEqual(u.scripts.at(-1), { src: '/u/script.js', attrs: { 'data-website-id': 'abc-123' } });
 });
 
-test('toda linha do catálogo gera um plano sem erro', () => {
-  for (const l of catalogo.urls) assert.doesNotThrow(() => plano(l.url, l.perfil), l.id);
+// Linhas que o kit recusa de propósito até o WEB-72 (Rastro com banner). Linha nova nessa situação tem de entrar aqui.
+const ESPERAM_WEB72 = ['academy'];
+
+test('toda linha do catálogo gera um plano sem erro, menos as que esperam o WEB-72', () => {
+  for (const l of catalogo.urls) {
+    if (ESPERAM_WEB72.includes(l.id)) assert.throws(() => plano(l.url, l.perfil), /WEB-72/, l.id);
+    else assert.doesNotThrow(() => plano(l.url, l.perfil), l.id);
+  }
 });

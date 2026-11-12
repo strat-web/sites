@@ -52,6 +52,17 @@ export function planoDeTracking({ catalogo, url, perfil }) {
   if (perfil === 'lead' && !rastro && !ws) {
     throw erro(onde, 'perfil lead precisa de metricaas_ws ou rastro_slug no catálogo');
   }
+  // Com Rastro, quem liga o pixel é o produto no Rastro (consentMode off, soft ou strict), e a página não tem como
+  // segurá-lo. Só avisar deixaria o pixel disparar antes do aceite (ex.: produto "site" em off no WEB-49): quebra o
+  // build até o padrão por perfil sair (WEB-72). A CI compara o /sa do produto com o catálogo (packages/checagens).
+  if (rastro && linha.consentimento === 'banner') {
+    throw erro(
+      onde,
+      `consentimento "banner" com Rastro: a página não segura o pixel, quem segura é o produto "${rastro}" no Rastro. ` +
+        'Até o WEB-72 definir o padrão, use "off" ou "soft" no catálogo, igual ao consentMode do produto',
+    );
+  }
+
   // Sem Rastro, quem liga o pixel é o m.js (data-pixel). GA4 e tag do Google sem Rastro ainda não têm regra
   // (WEB-73): melhor quebrar o build do que colar gtag à mão.
   if (!rastro) {
@@ -77,9 +88,6 @@ export function planoDeTracking({ catalogo, url, perfil }) {
 
   if (rastro) {
     plano.scripts.push({ src: `${RASTRO}?product=${encodeURIComponent(rastro)}`, attrs: {} });
-    if (linha.consentimento === 'banner') {
-      plano.avisos.push(`consentimento "banner" com Rastro: quem segura o pixel é o produto "${rastro}" no Rastro (strict ou auto), não a página`);
-    }
   }
 
   if (linha.umami_website_id) {

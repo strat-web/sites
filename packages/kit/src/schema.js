@@ -4,9 +4,17 @@ import { grupo, marca } from './marcas.js';
 
 // URL canônica: domínio do `site` do app (nunca pages.dev), sem query nem âncora, com barra no fim
 // (docs/padroes.md). Arquivo com extensão (/feed.xml) fica sem barra.
+// Caminho absoluto de outro domínio (ou //outro.com) é erro de build: o canonical nunca aponta para fora do site.
 export function urlCanonica(site, caminho = '/') {
   if (!site) throw new Error('[kit] defina `site` no astro.config.mjs do app: o canonical depende dele');
-  const u = new URL(caminho, site);
+  const base = new URL(site);
+  if (base.hostname.endsWith('.pages.dev')) {
+    throw new Error(`[kit] o \`site\` do app não pode ser pages.dev (${base.hostname}): use o domínio final`);
+  }
+  const u = new URL(caminho, base);
+  if (u.origin !== base.origin) {
+    throw new Error(`[kit] canonical fora do site: "${caminho}" não é de ${base.origin}`);
+  }
   u.search = '';
   u.hash = '';
   const ultimo = u.pathname.split('/').pop();

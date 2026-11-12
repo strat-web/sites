@@ -46,7 +46,8 @@ CAPI do MetricaaS não dependem do banner. O link da política vem de `privacida
 
 **O build quebra quando:** a URL não tem linha no catálogo; o perfil da página difere do catálogo; `venda` sem
 `rastro_slug` ou sem `hotmart_conta`; `lead` sem `metricaas_ws` e sem `rastro_slug`; pixel sem Rastro e sem MetricaaS;
-GA4 ou tag do Google sem Rastro (ainda sem regra: WEB-73). Rastro com `banner` só avisa no build.
+GA4 ou tag do Google sem Rastro (ainda sem regra: WEB-73); Rastro com `consentimento: banner` (a página não segura o
+pixel do Rastro, quem segura é o `consentMode` do produto; até o WEB-72, o catálogo usa `off` ou `soft`, igual ao produto).
 
 **Conteúdo:** carrega o mesmo da marca e não tem formulário de lead (`data-strat-leadform`) na página.
 
