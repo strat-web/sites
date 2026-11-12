@@ -1,0 +1,134 @@
+{
+  "atualizado": "2026-11-12",
+  "como_editar": "Sem valores na página (decisão do Jhonathan em 12/11/2026): nada de percentual, R$ ou data de pagamento. A comissão é apresentada na conversa de alinhamento.",
+  "comissao": {
+    "base": "sobre a mensalidade de cada cliente indicado",
+    "frequencia": "todo mês",
+    "duracao": "enquanto o cliente pagar"
+  },
+  "perfis": [
+    {
+      "nome": "Implementadores de IA e automação",
+      "texto": "Você monta fluxo, agente e integração. Quando o projeto é maior que o seu time, indica para a gente e segue recebendo."
+    },
+    {
+      "nome": "Agências de marketing e tráfego",
+      "texto": "Seu cliente gera lead e não dá conta de responder. A gente põe o agente no WhatsApp; você ganha todo mês."
+    },
+    {
+      "nome": "Consultores e mentores",
+      "texto": "Você diagnostica o negócio. Quando a resposta é IA na operação, a indicação vira renda recorrente."
+    },
+    {
+      "nome": "Criadores de conteúdo sobre IA",
+      "texto": "Sua audiência pergunta quem faz. Agora você tem para quem mandar, e ganha por isso."
+    },
+    {
+      "nome": "Freelancers de tecnologia",
+      "texto": "Dev, designer, gestor de CRM: você está dentro das empresas e vê onde a operação perde tempo."
+    }
+  ],
+  "nao_e_para": "Não é para quem quer comissão sem conhecer o cliente. A gente só fecha o que faz sentido para a empresa indicada; se não fizer, a gente diz e indica outro caminho.",
+  "oferta": [
+    {
+      "rotulo": "AGENTES DE IA",
+      "nome": "Atendimento no WhatsApp",
+      "texto": "Agente que responde, qualifica e marca reunião, inclusive sábado à noite."
+    },
+    {
+      "rotulo": "AUTOMAÇÕES",
+      "nome": "Rotinas do time",
+      "texto": "Tarefa repetida que vira fluxo: planilha, CRM, aviso e relatório sem ninguém copiar e colar."
+    },
+    {
+      "rotulo": "SISTEMAS",
+      "nome": "CRM e painéis",
+      "texto": "O sistema que a empresa precisa, desenhado para a operação dela, no ar."
+    }
+  ],
+  "passos": [
+    {
+      "nome": "Cadastro",
+      "texto": "Você preenche o formulário. Leva 2 minutos."
+    },
+    {
+      "nome": "Conversa de alinhamento",
+      "texto": "A gente explica as regras, o material e como indicar."
+    },
+    {
+      "nome": "Você indica",
+      "texto": "Manda o contato da empresa. A gente faz o diagnóstico, a proposta e o fechamento."
+    },
+    {
+      "nome": "Recebe todo mês",
+      "texto": "Fechou, a comissão entra todo mês enquanto o cliente pagar. Cada nova indicação soma mais uma."
+    }
+  ],
+  "faq": [
+    {
+      "p": "Quanto eu ganho por indicação?",
+      "r": "Uma comissão sobre a mensalidade de cada cliente que você indicar e fechar, paga todo mês enquanto ele continuar com a Strat. Quanto mais clientes você indica, mais comissões somam no seu mês. As condições são apresentadas na conversa de alinhamento."
+    },
+    {
+      "p": "Até quando eu recebo?",
+      "r": "Enquanto o cliente indicado pagar a mensalidade. Se ele ficar 2 anos, são 24 comissões."
+    },
+    {
+      "p": "Preciso vender ou negociar?",
+      "r": "Não. Você indica e apresenta. O diagnóstico, a proposta e o fechamento ficam com o time da Strat."
+    },
+    {
+      "p": "Quando o pagamento cai?",
+      "r": "Todo mês, sobre as mensalidades pagas pelos seus indicados. A data é combinada na conversa de alinhamento."
+    },
+    {
+      "p": "E se a empresa que eu indiquei não fechar?",
+      "r": "Não tem custo nem multa para você. A gente conta o motivo e você segue indicando."
+    },
+    {
+      "p": "Quem pode ser parceiro?",
+      "r": "Quem trabalha com IA, tecnologia ou marketing e conhece empresas que perdem tempo na operação. O cadastro passa por uma conversa de alinhamento antes de valer."
+    }
+  ],
+  "formulario": {
+    "atuacao": [
+      "Implemento IA e automações",
+      "Agência de marketing ou tráfego",
+      "Consultoria ou mentoria",
+      "Crio conteúdo sobre IA",
+      "Freelancer de tecnologia",
+      "Outro"
+    ],
+    "contatos": [
+      "Até 5",
+      "6 a 20",
+      "21 a 50",
+      "Mais de 50"
+    ],
+    "segmentos": [
+      "Saúde e clínicas",
+      "Advocacia",
+      "Imobiliárias",
+      "Varejo e e-commerce",
+      "Educação",
+      "Serviços",
+      "Indústria",
+      "Outro"
+    ],
+    "tem_indicacao": [
+      "Sim, já tenho empresas em mente",
+      "Tenho 1 ou 2 nomes",
+      "Ainda não, quero conhecer primeiro"
+    ],
+    "experiencia": [
+      "Sim, recebo comissão hoje",
+      "Já participei",
+      "Nunca participei"
+    ],
+    "inicio": [
+      "Agora",
+      "Nos próximos 30 dias",
+      "Só quero conhecer o programa"
+    ]
+  }
+}

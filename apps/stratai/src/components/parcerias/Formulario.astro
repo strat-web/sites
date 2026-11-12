@@ -1,0 +1,252 @@
+---
+// Cadastro do parceiro em 3 etapas. Perguntas inspiradas no formulário "Propostas de Publicidade"
+// (contato + escolhas objetivas + detalhe sem link), viradas para qualificar quem vai indicar.
+// Envio (WEB-74): mtc.lead() do MetricaaS da StratAI (workspace agencia-strat, o m.js vem do <Tracking> do kit). O
+// lead nasce no envio com `tipo_cadastro: parceria` e as respostas em `campos` (montarLead em lib/parcerias.js).
+// A tela de recebido só aparece quando o MetricaaS confirma; se a tag não carregar ou o envio falhar, avisa e deixa
+// tentar de novo.
+import { programa } from '../../lib/parcerias.js';
+const f = programa.formulario;
+const etapas = ['Sobre você', 'Seu trabalho', 'Suas indicações'];
+---
+<section class="faixa cadastro" id="quero-ser-parceiro" data-mtc-section="cadastro" aria-labelledby="cad-titulo">
+  <div class="cad-caixa" data-revelar>
+    <div class="cad-texto">
+      <p class="mono destaque eyebrow">CADASTRO DE PARCEIRO</p>
+      <h2 id="cad-titulo">Quero indicar e receber todo mês.</h2>
+      <p>Uma comissão todo mês por cliente que fechar, enquanto ele pagar. Quanto mais você indicar, mais você vai ganhar.</p>
+      <ul class="garantias">
+        <li><span>01</span><p>Leva 2 minutos. São 3 etapas curtas.</p></li>
+        <li><span>02</span><p>A gente responde pelo WhatsApp e marca a <strong>conversa de alinhamento</strong>, onde apresenta as condições.</p></li>
+        <li><span>03</span><p>Sem custo para entrar. Se não fizer sentido, a gente diz.</p></li>
+      </ul>
+    </div>
+
+    <form class="form" novalidate data-cadastro data-strat-leadform data-mtc-form="parcerias">
+      <div class="etapas" aria-hidden="true">
+        {etapas.map((e, i) => <span class:list={['etapa-pill', { ativa: i === 0 }]} data-pill={i}><b>{i + 1}</b>{e}</span>)}
+      </div>
+      <div class="barra-etapa" aria-hidden="true"><span></span></div>
+      <p class="sr" aria-live="polite" data-anuncio>Etapa 1 de 3: Sobre você</p>
+
+      <fieldset class="etapa ativa" data-etapa="0">
+        <legend class="sr">Sobre você</legend>
+        <label>Nome completo<input name="nome" autocomplete="name" required /></label>
+        <div class="duas">
+          <label>E-mail<input name="email" type="email" autocomplete="email" required /></label>
+          <label>WhatsApp<input name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" placeholder="(11) 90000-0000" required /></label>
+        </div>
+        <label><span>Instagram ou LinkedIn <small>(só o @ ou o nome, sem link)</small></span><input name="perfil" placeholder="@seuperfil" /></label>
+      </fieldset>
+
+      <fieldset class="etapa" data-etapa="1">
+        <legend class="sr">Seu trabalho</legend>
+        <div class="grupo" data-obrigatorio>
+          <p class="pergunta">Como você trabalha com IA hoje? <small>(marque quantas quiser)</small></p>
+          <div class="chips">{f.atuacao.map((o) => <label class="chip"><input type="checkbox" name="atuacao" value={o} /><span>{o}</span></label>)}</div>
+        </div>
+        <div class="grupo" data-obrigatorio>
+          <p class="pergunta">Com quantas empresas você tem contato direto?</p>
+          <div class="chips">{f.contatos.map((o) => <label class="chip"><input type="radio" name="contatos" value={o} /><span>{o}</span></label>)}</div>
+        </div>
+        <div class="grupo" data-obrigatorio>
+          <p class="pergunta">Que tipo de empresa você mais conhece? <small>(marque quantas quiser)</small></p>
+          <div class="chips">{f.segmentos.map((o) => <label class="chip"><input type="checkbox" name="segmentos" value={o} /><span>{o}</span></label>)}</div>
+        </div>
+      </fieldset>
+
+      <fieldset class="etapa" data-etapa="2">
+        <legend class="sr">Suas indicações</legend>
+        <div class="grupo" data-obrigatorio>
+          <p class="pergunta">Você já tem empresas em mente para indicar?</p>
+          <div class="chips">{f.tem_indicacao.map((o) => <label class="chip"><input type="radio" name="tem_indicacao" value={o} /><span>{o}</span></label>)}</div>
+        </div>
+        <div class="grupo" data-obrigatorio>
+          <p class="pergunta">Já participou de algum programa de indicação ou afiliado?</p>
+          <div class="chips">{f.experiencia.map((o) => <label class="chip"><input type="radio" name="experiencia" value={o} /><span>{o}</span></label>)}</div>
+        </div>
+        <div class="grupo" data-obrigatorio>
+          <p class="pergunta">Quando você quer começar?</p>
+          <div class="chips">{f.inicio.map((o) => <label class="chip"><input type="radio" name="inicio" value={o} /><span>{o}</span></label>)}</div>
+        </div>
+        <label><span>Conte em poucas linhas quem você indicaria <small>(opcional, sem links)</small></span><textarea name="detalhes" rows="3" placeholder="Ex.: uma clínica com 3 unidades que perde lead no WhatsApp à noite"></textarea></label>
+      </fieldset>
+
+      <p class="erro" role="alert" hidden></p>
+
+      <div class="navegar">
+        <button type="button" class="botao botao-fantasma" data-voltar hidden>Voltar</button>
+        <button type="button" class="botao botao-lima" data-avancar>Continuar <span class="seta" aria-hidden="true">→</span></button>
+        <button type="submit" class="botao botao-lima" data-enviar hidden data-strat-cta="cadastro-enviar">Quero ser parceiro <span class="seta" aria-hidden="true">→</span></button>
+      </div>
+      <p class="letra">Seus dados vão só para o time da Strat, para responder este cadastro.</p>
+
+      <div class="sucesso" hidden tabindex="-1">
+        <svg viewBox="0 0 80 80" class="check" aria-hidden="true"><circle cx="40" cy="40" r="36" /><path d="M24 41 L35 52 L57 29" /></svg>
+        <h3>Recebido<span data-nome></span>.</h3>
+        <p>A gente responde pelo WhatsApp para marcar a conversa de alinhamento.</p>
+      </div>
+    </form>
+  </div>
+</section>
+
+<style>
+  .cadastro { margin-top: var(--secao); }
+  .cad-caixa { position: relative; overflow: clip; display: grid; grid-template-columns: .9fr 1.2fr; gap: clamp(24px, 5vw, 64px); padding: clamp(24px, 5vw, 56px); background: var(--card); border: 1px solid var(--line); border-radius: 24px; }
+  .cad-caixa::before { content: ""; position: absolute; width: 640px; height: 640px; left: -260px; top: -300px; background: radial-gradient(circle, rgba(198,255,52,.13), transparent 62%); pointer-events: none; }
+  .cad-texto, .form { position: relative; }
+  .cad-texto h2 { font-size: clamp(2rem, 4vw, 3.2rem); margin: 14px 0 16px; max-width: 14ch; }
+  .cad-texto > p:not(.mono) { color: var(--ink-2); font-size: 18px; }
+  .garantias { list-style: none; padding: 0; margin: 28px 0 0; display: grid; gap: 14px; }
+  .garantias li { display: grid; grid-template-columns: 32px 1fr; gap: 8px; color: var(--ink-2); }
+  .garantias span { font: 500 12px/1.9 var(--mono); color: var(--lime-text); }
+  .garantias strong { color: var(--ink); }
+
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .etapas { display: flex; gap: 8px; flex-wrap: wrap; }
+  .etapa-pill { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink-2); font-size: 14px; transition: all .3s var(--ease); }
+  .etapa-pill b { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--card-2); font: 500 12px/1 var(--mono); }
+  .etapa-pill.ativa { color: var(--ink); border-color: var(--lime-text); }
+  .etapa-pill.ativa b, .etapa-pill.feita b { background: var(--lime); color: var(--lime-ink); }
+  .barra-etapa { height: 3px; background: #353535; border-radius: 999px; margin: 16px 0 24px; overflow: clip; }
+  .barra-etapa span { display: block; height: 100%; width: 33.3%; background: var(--lime); transition: width .5s var(--ease); }
+
+  fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+  .etapa { display: none; gap: 18px; }
+  .etapa.ativa { display: grid; animation: etapa .5s var(--ease); }
+  @keyframes etapa { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+  .duas { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form label:not(.chip) { display: grid; gap: 6px; font-weight: 500; font-size: 15px; }
+  .form small { color: var(--ink-2); font-weight: 400; }
+  .form input:not([type="radio"]):not([type="checkbox"]), .form textarea {
+    width: 100%; min-height: 48px; padding: 12px 14px; background: var(--card-2); color: var(--ink); border: 1px solid var(--line); border-radius: 12px; font: 400 16px/1.4 var(--sans); transition: border-color .2s;
+  }
+  .form textarea { resize: vertical; }
+  .form input:focus-visible, .form textarea:focus-visible { border-color: var(--lime-text); }
+  .form [aria-invalid="true"] { border-color: #ff6b5b !important; }
+  .grupo { display: grid; gap: 10px; }
+  .grupo.invalido .pergunta { color: #ff8a7d; }
+  .pergunta { font-weight: 500; font-size: 15px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { position: relative; cursor: pointer; }
+  .chip input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+  .chip span { display: inline-flex; align-items: center; min-height: 42px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; font-size: 15px; color: var(--ink-2); transition: all .2s var(--ease); }
+  .chip:hover span { border-color: #5a5a5a; color: var(--ink); }
+  .chip input:checked + span { background: rgba(198,255,52,.1); border-color: var(--lime-text); color: var(--lime-text); }
+  .chip input:checked + span::before { content: "✓"; margin-right: 6px; font-weight: 700; }
+  .chip input:focus-visible + span { outline: 2px solid var(--lime); outline-offset: 2px; }
+  .erro { color: #ff8a7d; font-size: 14px; margin-top: 14px; }
+  .navegar { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+  .navegar [data-voltar] { margin-right: auto; }
+  .navegar [hidden] { display: none; }
+  .letra { color: var(--ink-2); font-size: 13px; margin-top: 14px; }
+  .sucesso { display: grid; justify-items: center; text-align: center; gap: 12px; padding: 32px 8px; }
+  .sucesso[hidden] { display: none; }
+  .sucesso h3 { font-size: 28px; }
+  .sucesso p { color: var(--ink-2); max-width: 40ch; }
+  .check { width: 88px; height: 88px; }
+  .check circle { fill: none; stroke: var(--lime); stroke-width: 3; stroke-dasharray: 227; stroke-dashoffset: 227; animation: tracar .7s var(--ease) forwards; }
+  .check path { fill: none; stroke: var(--lime); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 50; stroke-dashoffset: 50; animation: tracar .45s var(--ease) .55s forwards; }
+  @keyframes tracar { to { stroke-dashoffset: 0; } }
+  .form.enviado > :not(.sucesso) { display: none !important; }
+
+  @media (max-width: 900px) { .cad-caixa { grid-template-columns: 1fr; } }
+  @media (max-width: 520px) {
+    .duas { grid-template-columns: 1fr; }
+    .etapa-pill { font-size: 0; gap: 0; padding: 4px; }
+    .etapa-pill b { font-size: 12px; }
+    .etapa-pill.ativa { font-size: 13px; gap: 8px; padding-right: 12px; }
+  }
+</style>
+
+<script>
+  import { montarLead } from '../../lib/parcerias-lead.js';
+
+  // A tag do MetricaaS carrega com defer; espera até 8 s por ela (o mesmo da página da Agência).
+  const esperarMtc = (ms: number) => new Promise<any>((ok, falha) => {
+    const t0 = Date.now();
+    (function tenta() {
+      const m = (window as any).mtc;
+      if (m && m.lead) return ok(m);
+      if (Date.now() - t0 > ms) return falha(new Error('tag-nao-carregou'));
+      setTimeout(tenta, 150);
+    })();
+  });
+
+  const form = document.querySelector<HTMLFormElement>('form[data-cadastro]');
+  if (form) {
+    const etapas = [...form.querySelectorAll<HTMLElement>('[data-etapa]')];
+    const pills = [...form.querySelectorAll<HTMLElement>('[data-pill]')];
+    const nomes = ['Sobre você', 'Seu trabalho', 'Suas indicações'];
+    const erro = form.querySelector<HTMLElement>('.erro')!;
+    const voltar = form.querySelector<HTMLButtonElement>('[data-voltar]')!;
+    const avancar = form.querySelector<HTMLButtonElement>('[data-avancar]')!;
+    const enviar = form.querySelector<HTMLButtonElement>('[data-enviar]')!;
+    let atual = 0;
+
+    const valida = (i: number) => {
+      const el = etapas[i];
+      let ok = true;
+      el.querySelectorAll<HTMLInputElement>('input[required]').forEach((c) => {
+        const valido = c.value.trim() !== '' && c.checkValidity();
+        c.setAttribute('aria-invalid', String(!valido));
+        if (!valido) ok = false;
+      });
+      el.querySelectorAll<HTMLElement>('[data-obrigatorio]').forEach((g) => {
+        const marcado = !!g.querySelector('input:checked');
+        g.classList.toggle('invalido', !marcado);
+        if (!marcado) ok = false;
+      });
+      erro.hidden = ok;
+      erro.textContent = ok ? '' : 'Falta responder o que está em vermelho.';
+      return ok;
+    };
+
+    const ir = (i: number) => {
+      atual = i;
+      etapas.forEach((e, k) => e.classList.toggle('ativa', k === i));
+      pills.forEach((p, k) => { p.classList.toggle('ativa', k === i); p.classList.toggle('feita', k < i); });
+      form.querySelector<HTMLElement>('.barra-etapa span')!.style.width = `${((i + 1) / etapas.length) * 100}%`;
+      form.querySelector('[data-anuncio]')!.textContent = `Etapa ${i + 1} de ${etapas.length}: ${nomes[i]}`;
+      voltar.hidden = i === 0;
+      avancar.hidden = i === etapas.length - 1;
+      enviar.hidden = i !== etapas.length - 1;
+      erro.hidden = true;
+      etapas[i].querySelector<HTMLElement>('input, textarea')?.focus({ preventScroll: true });
+    };
+
+    avancar.addEventListener('click', () => { if (valida(atual)) ir(atual + 1); });
+    voltar.addEventListener('click', () => ir(atual - 1));
+    form.addEventListener('change', () => { if (!erro.hidden) valida(atual); });
+    let enviando = false;
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (enviando || !valida(atual)) return;
+      const dados = new FormData(form);
+      const respostas: Record<string, string | string[]> = {};
+      for (const k of new Set(dados.keys())) {
+        const v = dados.getAll(k).map(String);
+        respostas[k] = v.length > 1 || ['atuacao', 'segmentos'].includes(k) ? v : v[0];
+      }
+      const lead = montarLead(respostas);
+      enviando = true;
+      enviar.disabled = true;
+      esperarMtc(8000)
+        // mtc.lead() espera o mf.js do MetricaaS; se ele não responder em 15 s, conta como falha.
+        .then((m) => Promise.race([m.lead(lead), new Promise((_, falha) => setTimeout(() => falha(new Error('sem-resposta')), 15000))]))
+        .then(() => {
+          const nome = lead.nome.split(' ')[0];
+          form.querySelector('[data-nome]')!.textContent = nome ? `, ${nome}` : '';
+          form.classList.add('enviado');
+          const ok = form.querySelector<HTMLElement>('.sucesso')!;
+          ok.hidden = false;
+          ok.focus();
+        })
+        .catch(() => {
+          erro.hidden = false;
+          erro.textContent = 'Não deu para enviar agora. Confira a conexão e tente de novo.';
+        })
+        .finally(() => { enviando = false; enviar.disabled = false; });
+    });
+  }
+</script>
