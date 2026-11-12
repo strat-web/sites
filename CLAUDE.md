@@ -48,5 +48,6 @@ proposta ao **contexto-strat** quando surgir processo ou fato da empresa, e do c
 - `lps/academy/<lp>/` — LPs de campanha da Academy, uma por subdomínio.
 - `packages/kit/` — Layout, Seo, JsonLd, Breadcrumb, Faq, Tracking, sitemap, robots, llms.txt.
 - `packages/conteudo/` — schema do blog e `checar-posts`.
+- `packages/checagens/` — as checagens da CI (`pnpm checar`); ruleset da `main` em `.github/rulesets/main.json`.
 - `catalogo/sites.json` — fonte única de URLs, ids e tags.
 - `docs/` — o manual.

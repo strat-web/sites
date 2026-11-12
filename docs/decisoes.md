@@ -2,6 +2,13 @@
 
 Uma entrada por decisão, com data e quem decidiu. A mais nova em cima.
 
+## 2026-11-12 · Regra de merge da `main` (Helbert, revisão do PR #9)
+O ruleset tem de bater com o `CODEOWNERS` ("o resto do repositório o dev mescla sozinho, com as checagens verdes"):
+- `required_approving_review_count: 0`, mantendo `require_code_owner_review: true`: com 1 aprovação obrigatória em todo
+  PR, ninguém mesclaria sozinho fora das pastas com dono, porque ninguém aprova o próprio PR;
+- `bypass_actors` com o admin da organização em `bypass_mode: pull_request`: o admin mescla PR próprio em pasta com
+  dono, sempre por PR, nunca por push direto;
+- `/package.json` e `/pnpm-workspace.yaml` passam a ter dono no `CODEOWNERS` (Helbert).
 ## 2026-11-12 · `lastmod` do sitemap com o histórico buscado no build (Helbert, revisão do PR #7)
 O build do Pages clona raso, e sem histórico o `lastmod` não sai. Decisão: buscar o histórico no build com
 `git fetch --unshallow`, e seguir sem data se a busca falhar (o `|| true` da revisão). A busca roda dentro da
