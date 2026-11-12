@@ -2,6 +2,12 @@
 
 Uma entrada por decisão, com data e quem decidiu. A mais nova em cima.
 
+## 2026-11-12 · `lastmod` do sitemap com o histórico buscado no build (Helbert, revisão do PR #7)
+O build do Pages clona raso, e sem histórico o `lastmod` não sai. Decisão: buscar o histórico no build com
+`git fetch --unshallow`, e seguir sem data se a busca falhar (o `|| true` da revisão). A busca roda dentro da
+integração do kit (`completarHistorico`, `packages/kit/src/arquivos-do-site.js`), para valer em qualquer comando de
+build; se falhar, o `sitemap.xml` sai sem `lastmod` e o build avisa, em vez de pôr a mesma data em todas as páginas.
+
 ## 2026-11-11 · `sameAs` só com os perfis da própria marca (Jhonathan, WEB-16; espera o Helbert no PR)
 O `seo-geo.md` pedia `sameAs` "das outras marcas e redes". Pela definição do schema.org, `sameAs` diz que a URL é a
 **mesma** entidade, então o site da Agência no `sameAs` da StratAI diria ao Google que as duas são uma empresa só.
