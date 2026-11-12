@@ -136,6 +136,20 @@ test('catalogo: página sem linha barra; linha fora do formato barra', () => {
   assert.deepEqual(checarCatalogo(ctx([pagina()])).erros, []);
 });
 
+test('catalogo: slug com ponto precisa da barra, arquivo não; linha tipo site sem no_ar barra (WEB-77)', () => {
+  const slug = checarCatalogo(ctx([], { linhas: [linha({ url: `${SITE}/blog/gpt-4.1` })] }));
+  assert.match(msgs(slug), /terminar com barra/);
+  assert.deepEqual(checarCatalogo(ctx([], { linhas: [linha({ url: `${SITE}/blog/gpt-4.1/` })] })).erros, []);
+  assert.deepEqual(checarCatalogo(ctx([], { linhas: [linha({ url: `${SITE}/feed.xml` })] })).erros, []);
+
+  const site = (extra) => linha({ id: 'site', url: `${SITE}/`, tipo: 'site', ...extra });
+  assert.match(msgs(checarCatalogo(ctx([], { linhas: [site({})] }))), /falta o campo "no_ar"/);
+  assert.match(msgs(checarCatalogo(ctx([], { linhas: [site({ no_ar: 'sim' })] }))), /no_ar tem de ser true ou false/);
+  assert.deepEqual(checarCatalogo(ctx([], { linhas: [site({ no_ar: false })] })).erros, []);
+  // Fora de tipo site o campo é opcional.
+  assert.deepEqual(checarCatalogo(ctx([], { linhas: [linha()] })).erros, []);
+});
+
 function distFalso() {
   const dist = mkdtempSync(join(tmpdir(), 'checagens-'));
   mkdirSync(join(dist, 'existe'), { recursive: true });

@@ -10,7 +10,7 @@ Bing indexam, de páginas com fatos claros e de quem cita a empresa. O kit cuida
 - **Canonical** para a própria URL, com barra no fim e no domínio final (nunca `pages.dev`).
 - **Open Graph** com imagem absoluta.
 - **JSON-LD:** `Organization` ou `ProfessionalService` da marca (com `parentOrganization` "Grupo Strat", que liga as
-  marcas entre si, e `sameAs` só com os perfis da própria marca), `BreadcrumbList`, `FAQPage` quando houver FAQ (texto
+  marcas entre si, `sameAs` só com os perfis da própria marca e `logo` com o logotipo, não a imagem de compartilhamento), `BreadcrumbList`, `FAQPage` quando houver FAQ (texto
   idêntico ao visível), `Article` no blog.
 - **O kit faz tudo isso sozinho** (WEB-16): `<Layout>` põe título, descrição, canonical, robots, Open Graph e o JSON-LD
   da marca; `<Breadcrumb>` e `<Faq>` montam o visível e o JSON-LD da mesma lista. Os dados de cada marca (nome,
@@ -23,7 +23,7 @@ Bing indexam, de páginas com fatos claros e de quem cita a empresa. O kit cuida
 - `robots.txt` que libera os robôs de IA (GPTBot, OAI-SearchBot, ChatGPT-User, ClaudeBot, Claude-SearchBot,
   Claude-User, PerplexityBot, Perplexity-User, Google-Extended, Applebot-Extended, Bingbot) e aponta o sitemap.
 - `sitemap.xml` gerado no build, só com páginas indexáveis, com `lastmod` real.
-- `llms.txt` com o resumo da marca, o contato e as páginas principais.
+- `llms.txt` com o resumo da marca, o contato e as páginas principais, e só as outras marcas que já estão no ar.
 - **Os três o kit gera sozinho no build** (WEB-18), a partir do catálogo e de `packages/kit/src/marcas.js`. Como
   funciona e as regras: `padroes.md`, "sitemap.xml, robots.txt e llms.txt".
 - Cabeçalhos de segurança no `_headers` e `X-Robots-Tag: noindex` em `*.pages.dev`: o kit também gera esse arquivo

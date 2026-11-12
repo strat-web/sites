@@ -1,7 +1,7 @@
 // Kit dos sites. Componentes: import Layout from '@strat/kit/Layout.astro' (Seo, JsonLd, Breadcrumb, Faq e Tracking idem).
 // Aqui ficam os dados das marcas e as funções que montam o canonical e o JSON-LD.
 export { grupo, marcas, marca } from './marcas.js';
-export { urlCanonica, schemaMarca, schemaBreadcrumb, schemaFaq, jsonSeguro } from './schema.js';
+export { urlCanonica, caminhoCanonico, ehArquivo, dataDoDia, schemaMarca, schemaBreadcrumb, schemaFaq, jsonSeguro } from './schema.js';
 export { PERFIS, planoDeTracking, linhaDoCatalogo, RASTRO, METRICAAS, UMAMI, HOTMART_LAUNCHER } from './tracking.js';
 // Integração do Astro que grava sitemap.xml, robots.txt e llms.txt no fim do build (WEB-18).
 export { arquivosDoSite } from './arquivos-do-site.js';

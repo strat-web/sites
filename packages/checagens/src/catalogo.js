@@ -1,4 +1,5 @@
 // Checagem "catalogo": URL nova sem linha em catalogo/sites.json (regra 3 do CLAUDE.md) e linha fora do formato.
+import { ehArquivo } from '@strat/kit';
 import { ehPaginaDeErro } from './contexto.js';
 import { resultado } from './resultado.js';
 
@@ -26,6 +27,9 @@ export function checarLinhas(catalogo) {
       }
     }
     if (linha.indexar != null && typeof linha.indexar !== 'boolean') r.erro(onde, 'indexar tem de ser true ou false');
+    // no_ar (WEB-77): o llms.txt de cada site só lista as outras marcas que já respondem. Obrigatório na linha tipo site.
+    if (linha.tipo === 'site' && linha.no_ar === undefined) r.erro(onde, 'falta o campo "no_ar" (obrigatório em tipo site)');
+    if (linha.no_ar !== undefined && typeof linha.no_ar !== 'boolean') r.erro(onde, 'no_ar tem de ser true ou false');
     if (linha.url) {
       let u;
       try {
@@ -34,10 +38,10 @@ export function checarLinhas(catalogo) {
         r.erro(onde, `url "${linha.url}" não é uma URL`);
       }
       if (u) {
-        const ultimo = u.pathname.split('/').pop();
         if (u.protocol !== 'https:') r.erro(onde, 'url tem de ser https');
         if (u.search || u.hash) r.erro(onde, 'url sem query nem âncora');
-        if (!u.pathname.endsWith('/') && !ultimo.includes('.')) r.erro(onde, 'url tem de terminar com barra (docs/padroes.md)');
+        // Mesma regra do canonical do kit: só arquivo de verdade fica sem barra; slug com ponto (/gpt-4.1) precisa dela.
+        if (!u.pathname.endsWith('/') && !ehArquivo(u.pathname)) r.erro(onde, 'url tem de terminar com barra (docs/padroes.md)');
       }
       if (urls.has(linha.url)) r.erro(onde, `url repetida (também em ${urls.get(linha.url)})`);
       urls.set(linha.url, linha.id);

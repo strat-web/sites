@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- feat(kit): lastmod também em rota dinâmica (com a data que a página declara no `atualizado`), logo do JSON-LD com o logotipo de cada marca no public/ do app, href do Breadcrumb com a barra no fim (slug com ponto também), llms.txt só com as marcas no ar (campo `no_ar` no catálogo) e página de teste /kit/gpt-4.1/ (WEB-77)
 - ci: checagens obrigatórias build, seo, tracking, links, peso e catalogo em todo PR (packages/checagens, checagens.yml), ruleset da main escrito para o Helbert aplicar e âncora #topo das páginas de teste do Tracking corrigida (WEB-20)
 - feat(kit): componente Tracking com os perfis venda, lead e conteudo lendo o catálogo (consentimento por URL, banner de cookies do kit, launcher da Hotmart, Umami pelo /u/), campo hotmart_conta e 4 páginas de teste (WEB-17)
 - feat(kit): _headers gerado no build de cada app com HSTS, nosniff, frame-ancestors, Referrer-Policy e Permissions-Policy, e noindex no *.pages.dev (WEB-21)

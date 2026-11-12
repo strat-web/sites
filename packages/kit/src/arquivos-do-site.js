@@ -14,6 +14,7 @@ import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { marcas as MARCAS } from './marcas.js';
 import { montarHeaders } from './cabecalhos.js';
+import { dataDoDia } from './schema.js';
 
 const RAIZ = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 const ARQUIVOS = ['sitemap.xml', 'robots.txt', 'llms.txt', '_headers'];
@@ -55,22 +56,50 @@ const decodificarHtml = (t) =>
     .replace(/&amp;/g, '&')
     .trim();
 
-/** Lê do HTML gerado o que interessa: noindex, título e descrição. */
+/**
+ * Lê do HTML gerado o que interessa: noindex, título, descrição e, quando a página declara
+ * (`<Layout atualizado>`, WEB-77), a data do `article:modified_time`.
+ */
 export function lerHtml(html) {
   const metas = [...html.matchAll(/<meta\b[^>]*>/gi)].map((m) => m[0]);
   const attr = (tag, nome) => tag.match(new RegExp(`\\b${nome}\\s*=\\s*("([^"]*)"|'([^']*)')`, 'i'))?.slice(2).find((v) => v !== undefined);
-  const meta = (nome) => {
-    const tag = metas.find((t) => (attr(t, 'name') || '').toLowerCase() === nome);
+  const meta = (nome, chave = 'name') => {
+    const tag = metas.find((t) => (attr(t, chave) || '').toLowerCase() === nome);
     return tag ? attr(tag, 'content') : undefined;
   };
   const robots = (meta('robots') || '').toLowerCase();
   const titulo = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1];
   const descricao = meta('description');
-  return {
+  const atualizado = meta('article:modified_time', 'property');
+  const lido = {
     noindex: /\b(noindex|none)\b/.test(robots),
     titulo: titulo ? decodificarHtml(titulo) : undefined,
     descricao: descricao ? decodificarHtml(descricao) : undefined,
   };
+  if (atualizado) lido.atualizado = dataDoDia(atualizado.trim());
+  return lido;
+}
+
+/**
+ * Arquivo de origem (`src/pages/...`) de uma página gerada. Rota fixa primeiro, pelo caminho exato; depois a rota
+ * dinâmica (`[slug].astro`, `[...caminho].astro`) cuja expressão bate com o caminho, na ordem de prioridade do Astro.
+ * rotas: { fixas: Map<'/caminho/', entrada>, dinamicas: [{ regex, entrada }] }
+ */
+export function entradaDaPagina(pathname, rotas) {
+  const comBarra = `/${pathname.replace(/^\/+/, '')}`.replace(/\/?$/, '/');
+  const fixa = rotas.fixas.get(comBarra);
+  if (fixa) return fixa;
+  const semBarra = comBarra === '/' ? '/' : comBarra.slice(0, -1);
+  return rotas.dinamicas.find((r) => r.regex.test(comBarra) || r.regex.test(semBarra))?.entrada;
+}
+
+/**
+ * lastmod de uma página: a data que ela declara (`<Layout atualizado>`, o caso do post, que sai de uma rota dinâmica
+ * e muda pelo conteúdo, não pelo arquivo da rota) ou, sem isso, o último commit do arquivo da rota, fixa ou dinâmica.
+ */
+export function lastmodDaPagina({ atualizado, entrada }, dataDoCommit = dataDoUltimoCommit) {
+  if (atualizado) return atualizado;
+  return entrada ? dataDoCommit(entrada) : undefined;
 }
 
 const gitNaRaiz = (raiz) => (...args) =>
@@ -175,7 +204,8 @@ export function montarLlms({ marca, site, indexaveis, catalogo }) {
   } else {
     linhas.push('Nenhuma página publicada neste endereço ainda.');
   }
-  const outras = catalogo.urls.filter((u) => u.tipo === 'site' && u.indexar === true && u.marca !== marca);
+  // Só o site que já responde (`no_ar: true` no catálogo, WEB-77): domínio que ainda não virou não entra.
+  const outras = catalogo.urls.filter((u) => u.tipo === 'site' && u.indexar === true && u.no_ar === true && u.marca !== marca);
   if (outras.length) {
     linhas.push('', '## Outras marcas do Grupo Strat', '');
     for (const u of outras) {
@@ -197,7 +227,7 @@ export function arquivosDoSite({ app }) {
   if (!app) throw new Error('arquivosDoSite: informe { app: "apps/<nome>" }.');
   let site;
   let pastaPublica;
-  const entradaPorCaminho = new Map();
+  const rotas = { fixas: new Map(), dinamicas: [] };
 
   return {
     name: '@strat/kit:arquivos-do-site',
@@ -208,7 +238,14 @@ export function arquivosDoSite({ app }) {
         pastaPublica = fileURLToPath(config.publicDir);
       },
       'astro:routes:resolved': ({ routes }) => {
-        for (const r of routes) if (r.pathname && r.entrypoint) entradaPorCaminho.set(r.pathname.replace(/\/?$/, '/'), r.entrypoint);
+        rotas.fixas.clear();
+        rotas.dinamicas.length = 0;
+        // As rotas chegam na ordem de prioridade do Astro; a dinâmica guarda a expressão para achar a página gerada.
+        for (const r of routes) {
+          if (r.type !== 'page' || !r.entrypoint) continue;
+          if (r.pathname) rotas.fixas.set(r.pathname.replace(/\/?$/, '/'), r.entrypoint);
+          else if (r.patternRegex) rotas.dinamicas.push({ regex: r.patternRegex, entrada: r.entrypoint });
+        }
       },
       'astro:build:done': ({ dir, pages, logger }) => {
         const saida = fileURLToPath(dir);
@@ -230,10 +267,13 @@ export function arquivosDoSite({ app }) {
           const html = caminhoDoHtml(saida, pathname);
           if (!html) continue;
           const url = new URL(pathname.replace(/^\//, ''), site).href;
-          const entrada = entradaPorCaminho.get(new URL(url).pathname);
-          const appDir = resolve(RAIZ, app);
-          const lastmod = entrada ? dataDoUltimoCommit(relative(RAIZ, resolve(appDir, entrada))) : undefined;
-          paginas.push({ url, lastmod, ...lerHtml(readFileSync(html, 'utf8')) });
+          const entrada = entradaDaPagina(new URL(url).pathname, rotas);
+          const lido = lerHtml(readFileSync(html, 'utf8'));
+          const lastmod = lastmodDaPagina({
+            atualizado: lido.atualizado,
+            entrada: entrada && relative(RAIZ, resolve(RAIZ, app, entrada)),
+          });
+          paginas.push({ url, lastmod, ...lido });
         }
         // 404 não é página do site para robô nenhum.
         const { indexaveis, avisos } = separarIndexaveis(paginas.filter((p) => !/\/404\/?$/.test(p.url)), catalogo);
