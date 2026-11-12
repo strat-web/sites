@@ -54,7 +54,7 @@ const perguntas = [
 
 | Componente | Props | Gera |
 |---|---|---|
-| `Layout` | `marca`, `titulo`, `descricao`, `imagem?`, `indexar?` (padrão `true`), `tipo?` (`website` ou `article`), `perfil?` (`venda`, `lead` ou `conteudo`); slots: padrão (`<body>`) e `head` | `<html lang="pt-BR">`, `Seo`, `JsonLd` da marca e, com `perfil`, o `Tracking` |
+| `Layout` | `marca`, `titulo`, `descricao`, `imagem?`, `indexar?` (padrão `true`), `tipo?` (`website` ou `article`), `perfil?` (`venda`, `lead` ou `conteudo`), `tituloSocial?` e `descricaoSocial?` (og:title e og:description quando diferem, WEB-32), `viewport?`; slots: padrão (`<body>`) e `head` | `<html lang="pt-BR">`, `Seo`, `JsonLd` da marca e, com `perfil`, o `Tracking` |
 | `Tracking` | `perfil`, `caminho?` | os scripts do perfil com os ids da linha do catálogo (ver `docs/tracking.md`) |
 | `Seo` | as mesmas do `Layout` e `caminho?` | title, description, canonical, robots, `og:*`, `twitter:card` |
 | `JsonLd` | `marca?` e/ou `dados?` (objeto ou lista já montada, ex.: `Article`) | `<script type="application/ld+json">` com `<` escapado |
@@ -161,6 +161,10 @@ Exceções escritas no código, com o item que as tira:
 - `packages/checagens/src/esqueletos.js`: a home de cada app é um esqueleto do WEB-15 (noindex, sem tracking) até
   o item de migração. A checagem exige noindex e nenhum tracking nessas URLs e quebra quando a página real ganha o
   `<Tracking>`, pedindo para tirar a URL da lista no mesmo PR;
+- `packages/checagens/src/excecoes-peso.js`: página migrada sem mudança que ainda não cabe no orçamento do Lighthouse
+  (hoje só a home da StratAI, WEB-32). Cada uma tem um piso, o número da página no ar no dia da migração: entre o piso
+  e o orçamento a checagem só avisa; abaixo do piso, barra. O limite de 1,5 MB continua valendo. A URL sai da lista
+  no item que acertar o desempenho da página;
 - `/u/` não é conferido como link: o proxy do Umami é do Strat Tracking, fora do build.
 
 O peso é medido no `dist/` servido na própria máquina da CI. No Lighthouse, os scripts do `<Tracking>` (Rastro,

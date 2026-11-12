@@ -32,9 +32,13 @@ para o site: o endereço público será `stratai.com.br` (WEB-32).
 
 ## O que é "produção" aqui
 A branch `main` publica a versão principal de cada projeto no endereço `.pages.dev` da tabela. **Nenhum domínio de
-verdade aponta para estes projetos ainda.** Enquanto o F2 não termina, os quatro apps são esqueleto (uma página com
-`noindex`), de propósito: o conteúdo entra nos itens de migração (WEB-23, WEB-32, WEB-36, WEB-49) e só então o domínio
-vira, com o "pode virar" do Helbert nos que estão no ar. Ver `dominios.md`.
+verdade aponta para estes projetos ainda.** Os apps nascem como esqueleto (uma página com `noindex`), de propósito:
+o conteúdo entra nos itens de migração (WEB-23, WEB-32, WEB-36, WEB-49) e só então o domínio vira, com o "pode virar"
+do Helbert nos que estão no ar. Ver `dominios.md`. O `stratai` já tem as páginas reais desde o WEB-32 (home, /raio-x/
+e /politica-de-privacidade/), ainda sem o domínio.
+
+Redirecionamento de URL que mudou fica em `apps/<app>/public/_redirects` (formato do Pages: `origem destino 301`; a
+query segue junto). Conferir na máquina com `npx wrangler pages dev apps/<app>/dist` antes do PR.
 
 O endereço `.pages.dev` de produção e o das prévias saem com `X-Robots-Tag: noindex` pelo `_headers` que o kit gera
 (WEB-21); a Cloudflare já põe esse cabeçalho sozinha só nas prévias de branch.
