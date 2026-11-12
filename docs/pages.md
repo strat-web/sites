@@ -58,6 +58,11 @@ direto, só para ver o esqueleto: `web-15-agenciastrat-preview`, `web-15-stratai
 Projeto criado por upload direto nunca pode ser ligado ao GitHub depois, por isso eles não viraram os definitivos.
 Ficam até o Helbert dizer se desliga.
 
+## Functions (`functions/` na raiz)
+O Pages procura a pasta `functions/` no diretório raiz do projeto, que aqui é `/` nos quatro. Então
+`functions/u/[[caminho]].js` (proxy do Umami, `tracking.md`) vale para todos os apps e LPs. Falta pôr `functions/*`
+no caminho observado dos projetos: hoje uma mudança só nessa pasta não dispara build (pede o token `pages-strat-web`).
+
 ## Armadilhas
 - **Sem `404.html` na raiz da saída**, o Pages trata o projeto como aplicação de página única e responde 200 com a
   home em qualquer caminho. Todo app tem `src/pages/404.astro` (WEB-75, `padroes.md`, "Página 404").

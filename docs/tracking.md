@@ -68,8 +68,25 @@ disparar: `agenciastrat/kit/lead/` (lead sem Rastro, banner), `stratai/kit/lead/
 No Rastro, pixel, GA4 e Google Ads vêm do produto (tabela `web_products`), não do HTML. Por isso o componente só
 precisa do slug.
 
-Umami: ainda não existe em nenhuma URL (WEB-11). O catálogo já tem o campo `umami_website_id`; o kit carrega pelo
-proxy `/u/` quando o id existir (WEB-17).
+## Umami (Strat Tracking, TRACK-8 e TRACK-9, 12/11/2026)
+
+Contador de navegação do painel https://track.strat.tec.br: visita, página, origem, UTM, aparelho e cidade, sem cookie
+e antes do aceite. Não manda nada à Meta nem ao Google (isso segue no Rastro e no MetricaaS).
+
+| Peça | Onde |
+|---|---|
+| Website no Umami, um por host | `umami_website_id` de cada URL do catálogo (o mesmo id para todas as URLs do host) |
+| Tag | o `<Tracking>` põe `<script defer src="/u/script.js" data-website-id>` quando o id existe (nada com `sem-tracking` ou `por-funil`) |
+| Proxy `/u/` | `functions/u/[[caminho]].js` na raiz do repositório (Pages Function dos quatro projetos): `/u/script.js` é o script do Umami com cache de 1 h + os eventos; `/u/api/send` repassa ao coletor `analytics.strat.tec.br` com o IP do visitante em `payload.ip` |
+| Eventos | `cta` (`data-strat-cta`, com o id), `whatsapp` (link `wa.me`), `checkout` (link `pay.hotmart.com`), `form_inicio` e `cadastro` (formulário com `data-strat-leadform`, e-mail ou telefone): a mesma regra do `umami-eventos.js` do `strat-lps` |
+
+As LPs que ainda estão no `strat-lps` já medem com o mesmo website e os mesmos eventos (o `server.js` de lá põe a tag;
+`umami.json`). Na migração, nada muda no Umami: o id do host é o mesmo. Domínio novo: criar o website no Umami (pede o
+Strat Tracking) e pôr o id nas linhas do host.
+
+Teste: abrir a página com `?utm_source=teste&utm_medium=verificacao` num Chrome normal e ver o `POST /u/api/send` com
+200 e corpo `{"cache":…}`. Corpo `{"beep":"boop"}` é o filtro de robôs do Umami (navegador automatizado, como o
+HeadlessChrome): a visita não conta.
 
 ## Marcação na página
 - Todo botão: `data-strat-cta="<seção>-<destino>"` (ex.: `hero-diagnostico`, `rodape-whatsapp`). Vira `CTAClick`.
