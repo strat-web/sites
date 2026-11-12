@@ -3,7 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
-- docs: decisões do Helbert de 12/11 (WEB-71, WEB-74, WEB-32 antecipado, estrutura da StratAI, casos com nome, conta do PR, WEB-49, fluxo dos PRs), regra de consentimento do WEB-72 em decisoes.md e tracking.md, PR pela conta própria do dev e os planos em docs/planos/ (WEB-72)
+- docs: decisões do Helbert de 12/11 (WEB-71, WEB-74, WEB-32 antecipado, estrutura da StratAI, casos com nome, conta do PR, WEB-49, fluxo dos PRs), regra de consentimento do WEB-72 em decisoes.md e tracking.md (com o que o código faz hoje: o kit ainda recusa Rastro com banner, banner = strict é o WEB-81), PR pela conta própria do dev e os planos em docs/planos/ (WEB-72)
 - ci: checagens obrigatórias build, seo, tracking, links, peso e catalogo em todo PR (packages/checagens, checagens.yml), ruleset da main escrito para o Helbert aplicar e âncora #topo das páginas de teste do Tracking corrigida (WEB-20)
 - feat(kit): componente Tracking com os perfis venda, lead e conteudo lendo o catálogo (consentimento por URL, banner de cookies do kit, launcher da Hotmart, Umami pelo /u/), campo hotmart_conta e 4 páginas de teste (WEB-17)
 - feat(kit): _headers gerado no build de cada app com HSTS, nosniff, frame-ancestors, Referrer-Policy e Permissions-Policy, e noindex no *.pages.dev (WEB-21)

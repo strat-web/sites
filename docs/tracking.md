@@ -37,9 +37,9 @@ A regra mora em `packages/kit/src/tracking.js` e tem teste (`pnpm --filter @stra
 | `consentimento: sem-tracking` | nada |
 | `consentimento: por-funil` | nada pelo kit: a própria página liga o Rastro do funil pelo `?f=` (registro `FUNIS`, com o consentimento do produto); sem `?f=`, nada. Hoje só a comunidade da Academy (T5); entra no kit na migração (WEB-48) |
 
-**Consentimento:** o componente segue o campo `consentimento` de cada URL (o que a página faz hoje). O padrão por
-perfil é decisão do Helbert no WEB-72; quando sair, muda o valor no catálogo, não o componente. Com Rastro, quem segura
-o pixel é o produto no Rastro (`off`, `soft`, `strict`); a página não troca.
+**Consentimento:** o componente segue o campo `consentimento` de cada URL. A regra de qual valor cada página usa é a
+do WEB-72 (seção "Consentimento", abaixo): ela muda o valor no catálogo, não o componente. Com Rastro, quem segura o
+pixel é o produto no Rastro (`off`, `soft`, `strict`); a página não troca.
 
 **Banner do kit** (só sem Rastro e com `banner`): o texto e a chave `strat_cookies` são os da Agência (laudo de
 31/10/2026). "Aceitar" chama `mtc.consentir()` e o pixel liga; "Recusar" não manda nada à Meta. O cadastro do lead e a
@@ -47,8 +47,10 @@ CAPI do MetricaaS não dependem do banner. O link da política vem de `privacida
 
 **O build quebra quando:** a URL não tem linha no catálogo; o perfil da página difere do catálogo; `venda` sem
 `rastro_slug` ou sem `hotmart_conta`; `lead` sem `metricaas_ws` e sem `rastro_slug`; pixel sem Rastro e sem MetricaaS;
-GA4 ou tag do Google sem Rastro (ainda sem regra: WEB-73); Rastro com `consentimento: banner` (a página não segura o
-pixel do Rastro, quem segura é o `consentMode` do produto; até o WEB-72, o catálogo usa `off` ou `soft`, igual ao produto).
+GA4 ou tag do Google sem Rastro (ainda sem regra: WEB-73); Rastro com `consentimento: banner`. Esta última recusa é o
+código de hoje e diverge da regra do WEB-72 (`banner` no catálogo = `strict` no produto): o kit ainda não sabe disso, e
+o WEB-81 troca a recusa pela comparação com o produto. Até o WEB-81 entrar, página com Rastro em `banner` (a home da
+Academy, quando o WEB-49 ligar o `<Tracking>`) não builda.
 
 **Conteúdo:** carrega o mesmo da marca e não tem formulário de lead (`data-strat-leadform`) na página.
 
@@ -83,10 +85,12 @@ O kit garante que o catálogo bate com o Rastro.
 - **`off` só como exceção** registrada em `docs/decisoes.md`, com data e quem decidiu. As exceções herdadas (a
   migração não muda tracking) estão lá, na entrada de 11/11: /advogados da Agência, StratAI (home, `/raio-x/`,
   `/bio/`), metricaas.com.br e as LPs de venda da Academy (claude., skills., mentoria., bootcamp.).
-- **Com Rastro**, quem segura o pixel é o `consentMode` do produto, não a página. O catálogo tem de dizer o mesmo
-  que o produto: `off` = `off`, `soft` = `soft`, `banner` = `strict`. Diferente disso o build quebra, e a checagem
-  `tracking` da CI barra: ela lê o `/sa?product=<slug>` de cada URL e compara consentimento, pixel, GA4 e Google Ads
-  com a linha do catálogo.
+- **Com Rastro**, quem segura o pixel é o `consentMode` do produto, não a página. A regra: o catálogo diz o mesmo
+  que o produto, `off` = `off`, `soft` = `soft`, `banner` = `strict`.
+- **O que o código faz hoje (12/11):** a checagem `tracking` da CI lê o `/sa?product=<slug>` de cada página dos apps e
+  barra quando consentimento, pixel, GA4 ou Google Ads diferem da linha do catálogo. O consentimento é comparado ao pé
+  da letra, então `off` e `soft` já são conferidos. `banner` com Rastro não chega lá: o kit ainda recusa essa
+  combinação no build. A correspondência `banner` = `strict`, no kit e na checagem, é o WEB-81.
 - **Sem Rastro** (hoje só a Agência), `banner` é o banner de cookies do kit, e o pixel vem pelo `m.js` do MetricaaS.
 - Outros valores do campo: `por-funil` (a página liga o Rastro do funil pelo `?f=`, hoje só a comunidade da Academy)
   e `sem-tracking`.
@@ -117,6 +121,7 @@ cadastro do lead no MetricaaS não depende do aceite.
    formulário com o mesmo `event_id` no navegador e na CAPI; evento no MetricaaS. No celular emulado (4G lento),
    tocar no WhatsApp do topo logo que ele aparece: o código do MetricaaS tem de estar no texto.
 4. Com e sem aceitar cookies, conferindo o modo da linha do catálogo (seção "Consentimento"). Com Rastro, o
-   `consentMode` do `/sa?product=<slug>` tem de ser o mesmo do catálogo (`banner` = `strict`).
+   `consentMode` do `/sa?product=<slug>` tem de ser o mesmo do catálogo (`banner` = `strict`; o kit só aceita
+   `banner` com Rastro depois do WEB-81).
 
 Referência completa do Rastro: `strat-web/rastro` (hoje `Strat-Ai-Horus-OS/rastro-stratacademy`), `docs/TRACKING-ARCHITECTURE.md`.

@@ -81,9 +81,11 @@ build; se falhar, o `sitemap.xml` sai sem `lastmod` e o build avisa, em vez de p
   (decisão de 02/11), StratAI (home, `/raio-x/` e `/bio/`), metricaas.com.br e as LPs de venda da Academy (claude.,
   skills., mentoria. e bootcamp.). A vibecode segue em `soft`; a home e a bio da Agência seguem em `banner`.
 - **Catálogo diferente do Rastro vira erro:** com `rastro_slug`, o `consentimento` do catálogo tem de ser o
-  `consentMode` do produto (`banner` no catálogo = `strict` no Rastro). O build quebra quando não bate, e a checagem
-  `tracking` da CI compara o `/sa?product=` de cada URL com o catálogo, inclusive pixel, GA4 e Google Ads. O código
-  entra no PR do WEB-17 (#8).
+  `consentMode` do produto (`banner` no catálogo = `strict` no Rastro), e a CI compara o `/sa?product=` de cada URL
+  com o catálogo, inclusive pixel, GA4 e Google Ads.
+- **Estado do código em 12/11:** a checagem `tracking` da CI (#9, WEB-20) já compara pixel, GA4, Google Ads e
+  consentimento, este ao pé da letra (`off` e `soft`). O kit ainda recusa Rastro com `banner` no build. Levar
+  `banner` = `strict` para o kit e para a checagem é o WEB-81.
 - **Produto `site` do Rastro em `strict`:** a home da Academy migrada (WEB-49) se comporta como hoje, com o pixel só
   depois do aceite. O cookie é o mesmo `strat_consent` do horus, então quem já aceitou continua aceito. A troca foi
   feita pelo Helbert e conferida em 11/11 às 23h01 (`/sa?product=site` em `strict`; pixel, GA4 e Ads iguais).
