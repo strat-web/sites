@@ -1,0 +1,15 @@
+---
+// Teste do <Tracking> perfil lead sem Rastro e com banner (WEB-17). Sai antes de o domínio virar (WEB-23).
+import Layout from '@strat/kit/Layout.astro';
+import TesteTracking from '@strat/kit/TesteTracking.astro';
+---
+<Layout marca="agencia" perfil="lead" indexar={false}
+  titulo="Teste do Tracking, perfil lead · Agência Strat"
+  descricao="Página de teste do componente Tracking do kit dos sites: perfil lead da Agência, com MetricaaS e banner de cookies.">
+  <TesteTracking perfil="lead" whatsapp="554831994338" esperado={[
+    'Na abertura: t.metricaas.com.br/m.js (data-ws=strat-marketing, data-pixel, data-pixel-consent=aguardar) e o beacon /e do MetricaaS.',
+    'Antes do aceite: nenhum facebook.com/tr. O banner aparece com Recusar e Aceitar.',
+    'Depois de Aceitar: fbevents.js e PageView do pixel 1815630929780241 (uma vez). Recusar: nenhum /tr.',
+    'Sem Rastro, sem GA4 e sem tag do Google (a Agência não usa: T3, WEB-73).',
+  ]} />
+</Layout>

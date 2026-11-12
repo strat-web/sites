@@ -53,7 +53,8 @@ const perguntas = [
 
 | Componente | Props | Gera |
 |---|---|---|
-| `Layout` | `marca`, `titulo`, `descricao`, `imagem?`, `indexar?` (padrão `true`), `tipo?` (`website` ou `article`); slots: padrão (`<body>`) e `head` | `<html lang="pt-BR">`, `Seo` e `JsonLd` da marca |
+| `Layout` | `marca`, `titulo`, `descricao`, `imagem?`, `indexar?` (padrão `true`), `tipo?` (`website` ou `article`), `perfil?` (`venda`, `lead` ou `conteudo`); slots: padrão (`<body>`) e `head` | `<html lang="pt-BR">`, `Seo`, `JsonLd` da marca e, com `perfil`, o `Tracking` |
+| `Tracking` | `perfil`, `caminho?` | os scripts do perfil com os ids da linha do catálogo (ver `docs/tracking.md`) |
 | `Seo` | as mesmas do `Layout` e `caminho?` | title, description, canonical, robots, `og:*`, `twitter:card` |
 | `JsonLd` | `marca?` e/ou `dados?` (objeto ou lista já montada, ex.: `Article`) | `<script type="application/ld+json">` com `<` escapado |
 | `Breadcrumb` | `itens` (`{ nome, caminho }`, do início à página atual) | trilha visível + `BreadcrumbList` |
@@ -65,6 +66,8 @@ const perguntas = [
 - Página fora do índice (bio, obrigado, teste): `indexar={false}`.
 - As regras ficam em `packages/kit/src/schema.js`, testadas com `pnpm --filter @strat/kit test`.
 - Página de teste com tudo junto: `apps/stratai/src/pages/kit/index.astro` (`/kit/`, noindex).
+- Página com tracking: `perfil` no `Layout` e a linha da URL no catálogo com o mesmo perfil, senão o build quebra.
+  Páginas de teste de cada perfil: `/kit/lead/`, `/kit/conteudo/` e `/kit/venda/` (WEB-17).
 
 ## sitemap.xml, robots.txt e llms.txt (WEB-18)
 Ninguém escreve esses três à mão: a integração `arquivosDoSite` do kit, ligada no `astro.config.mjs` de cada app,

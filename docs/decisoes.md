@@ -21,6 +21,15 @@ build; se falhar, o `sitemap.xml` sai sem `lastmod` e o build avisa, em vez de p
   lista `payment=(self "https://pay.hotmart.com" "https://pci-pay.hotmart.com")` do repasse de 11/11.
 - **Um `_headers` só para os quatro apps**, gerado pela integração do kit; `public/_headers` no app quebra o build.
 
+## 2026-11-11 · Como o `<Tracking>` decide o que carrega (Jhonathan, WEB-17; espera o Helbert no PR)
+- **Consentimento por URL, pelo catálogo**, enquanto o padrão por perfil (WEB-72) não sai: o componente faz o que o
+  campo `consentimento` diz. A decisão do WEB-72 vira valor no catálogo, sem reescrever o componente.
+- **GA4 ou tag do Google sem Rastro quebra o build** até o WEB-73 decidir como a Agência mede: melhor do que o kit
+  inventar um gtag.
+- **O `m.js` vem antes do Rastro** no `<head>` e, com Rastro, vai sem `data-pixel` (o pixel vem do produto no Rastro;
+  com os dois, o evento sairia em dobro).
+- **A conta da Hotmart entra no catálogo** (`hotmart_conta`, só no perfil venda), como os outros ids públicos.
+
 ## 2026-11-11 · `sameAs` só com os perfis da própria marca (Jhonathan, WEB-16; espera o Helbert no PR)
 O `seo-geo.md` pedia `sameAs` "das outras marcas e redes". Pela definição do schema.org, `sameAs` diz que a URL é a
 **mesma** entidade, então o site da Agência no `sameAs` da StratAI diria ao Google que as duas são uma empresa só.

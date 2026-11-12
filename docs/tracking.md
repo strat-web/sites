@@ -17,6 +17,45 @@ instante do clique; atrasado, quem toca no botão do topo de cara abre o WhatsAp
 (caso FTV, 2 de 7 leads do Google Ads perdidos entre 24/10 e 06/11/2026). Se o PageSpeed pedir atrasar tag, atrase só
 o Rastro. Padrão do carregador: `Strat-Ai-Operacional/modelo-lp`, `docs/tracking.md` ("Regra dura").
 
+## O componente `<Tracking>` (WEB-17)
+A página só declara o perfil; o resto vem da linha do catálogo com a mesma URL canônica.
+
+```astro
+<Layout marca="stratai" perfil="lead" titulo="..." descricao="...">
+```
+
+O `Layout` põe o `<Tracking perfil>` no `<head>`. Sem `perfil`, a página sai sem tracking (placeholder, teste do kit).
+A regra mora em `packages/kit/src/tracking.js` e tem teste (`pnpm --filter @strat/kit test`).
+
+| A linha do catálogo tem | O `<head>` recebe |
+|---|---|
+| `metricaas_ws` | `m.js` com `data-ws`, `defer`, **antes** de tudo (regra dura do lead) |
+| `metricaas_ws` + `meta_pixel`, sem `rastro_slug` | o `m.js` também liga o pixel (`data-pixel`); com `consentimento: banner`, `data-pixel-consent="aguardar"` e o banner de cookies do kit |
+| `rastro_slug` | `/sa?product=<slug>` com `defer`; pixel, GA4 e Google Ads vêm do produto no Rastro, então o `m.js` vai **sem** `data-pixel` |
+| perfil `venda` | também o launcher da Hotmart com `hot('account', <hotmart_conta>)` escrito no HTML |
+| `umami_website_id` | `/u/script.js` com `data-website-id`, pelo proxy `/u/` do próprio domínio (o proxy é do Strat Tracking) |
+| `consentimento: sem-tracking` | nada |
+| `consentimento: por-funil` | nada pelo kit: a própria página liga o Rastro do funil pelo `?f=` (registro `FUNIS`, com o consentimento do produto); sem `?f=`, nada. Hoje só a comunidade da Academy (T5); entra no kit na migração (WEB-48) |
+
+**Consentimento:** o componente segue o campo `consentimento` de cada URL (o que a página faz hoje). O padrão por
+perfil é decisão do Helbert no WEB-72; quando sair, muda o valor no catálogo, não o componente. Com Rastro, quem segura
+o pixel é o produto no Rastro (`off`, `soft`, `strict`); a página não troca.
+
+**Banner do kit** (só sem Rastro e com `banner`): o texto e a chave `strat_cookies` são os da Agência (laudo de
+31/10/2026). "Aceitar" chama `mtc.consentir()` e o pixel liga; "Recusar" não manda nada à Meta. O cadastro do lead e a
+CAPI do MetricaaS não dependem do banner. O link da política vem de `privacidade` em `packages/kit/src/marcas.js`.
+
+**O build quebra quando:** a URL não tem linha no catálogo; o perfil da página difere do catálogo; `venda` sem
+`rastro_slug` ou sem `hotmart_conta`; `lead` sem `metricaas_ws` e sem `rastro_slug`; pixel sem Rastro e sem MetricaaS;
+GA4 ou tag do Google sem Rastro (ainda sem regra: WEB-73); Rastro com `consentimento: banner` (a página não segura o
+pixel do Rastro, quem segura é o `consentMode` do produto; até o WEB-72, o catálogo usa `off` ou `soft`, igual ao produto).
+
+**Conteúdo:** carrega o mesmo da marca e não tem formulário de lead (`data-strat-leadform`) na página.
+
+**Páginas de teste** (noindex, só no preview; saem antes de o domínio virar), cada uma com a lista do que deve
+disparar: `agenciastrat/kit/lead/` (lead sem Rastro, banner), `stratai/kit/lead/` (lead com Rastro e MetricaaS),
+`stratai/kit/conteudo/` e `stratacademy/kit/venda/` (produto `mentoria`, launcher da Hotmart).
+
 ## Ids por marca (conferir no catálogo; aqui é referência)
 
 | Marca | Meta pixel | GA4 | Tag do Google | Rastro | MetricaaS |
