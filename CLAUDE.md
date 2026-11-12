@@ -8,9 +8,11 @@ e em `docs/`; se o caso não estiver previsto, pergunte no item do Plane antes d
   branch, fazer, verificar, PR, documentar, atualizar o item. Sem item, não tem PR.
 - **Branch:** `web-<N>-<slug>` (ex.: `web-23-agencia-site`), sempre a partir da `main` atualizada.
 - **Commit:** Conventional Commits em português, com o item no fim: `feat(agenciastrat): migra o site da Agência (WEB-23)`.
-- **PR:** um por item, pelo modelo `.github/pull_request_template.md`, aberto pela conta de serviço `strat-aibr`.
-  O dev mescla o próprio PR (conta pessoal) quando as checagens estão verdes. PR que toca `packages/`, `catalogo/`,
-  `.github/` ou `docs/decisoes.md` espera a aprovação do Helbert (CODEOWNERS).
+- **PR:** um por item, pelo modelo `.github/pull_request_template.md`, aberto pela conta própria do dev (o `gh`
+  logado de quem fez), não pela `strat-aibr`. No máximo 6 PRs abertos e pilha de 2 níveis. PR só em `apps/<app>`, com
+  as 6 checagens verdes e o `/lab:lp-revisar` aprovado, o dev mescla sozinho; o resto espera a revisão do Helbert
+  (janelas 9h e 17h). PR que toca `packages/`, `catalogo/`, `.github/` ou `docs/decisoes.md` pede a aprovação dele
+  pelo CODEOWNERS. Detalhe em `docs/padroes.md`, "Fluxo dos PRs".
 - **Virar DNS de domínio que está no ar** (stratai, metricaas, stratacademy e LPs) só depois do comentário
   "pode virar" do Helbert no item. Domínio novo (agenciastrat) não precisa.
 - **Item no Plane:** Fazendo ao começar; Aprovação com o link do PR e do preview e "como conferir"; nunca Concluído
