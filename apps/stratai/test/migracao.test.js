@@ -83,16 +83,19 @@ test('dist: o cartão de compartilhamento continua o da página no ar', { skip: 
   assert.match(pol, /<meta property="og:type" content="article">/);
 });
 
+// Umami pelo proxy /u/ (TRACK-9) na home e no /raio-x/, como no ar desde 12/11; a política segue sem tracking nenhum.
 test('dist: os scripts de tracking são os mesmos da produção (src e data-ws)', { skip: semDist }, () => {
   const scripts = (html) => [...html.matchAll(/<script[^>]*\bsrc="([^"]+)"[^>]*>/g)].map((m) => m[0]);
   const home = scripts(pagina(''));
   assert.deepEqual(home, [
     '<script defer src="https://t.metricaas.com.br/m.js" data-ws="agencia-strat">',
     '<script defer src="https://tracking.stratacademy.com.br/sa?product=stratai">',
+    '<script defer src="/u/script.js" data-website-id="d6394916-40aa-45da-b80e-7285ec5bcb45">',
   ]);
   assert.deepEqual(scripts(pagina('raio-x')), [
     '<script defer src="https://t.metricaas.com.br/m.js" data-ws="agencia-strat">',
     '<script defer src="https://tracking.stratacademy.com.br/sa?product=raio-x-ia">',
+    '<script defer src="/u/script.js" data-website-id="d6394916-40aa-45da-b80e-7285ec5bcb45">',
   ]);
   assert.deepEqual(scripts(pagina('politica-de-privacidade')), []);
 });
