@@ -1,0 +1,168 @@
+---
+const meses = Array.from({ length: 12 }, (_, i) => i + 1);
+const cenarios = [1, 5, 10];
+---
+<section class="faixa destaque-mensal" data-mtc-section="mensal" aria-labelledby="mensal-titulo">
+  <div class="mensal-caixa" data-revelar>
+    <p class="mono eyebrow">PAGAMENTO MENSAL</p>
+    <h2 id="mensal-titulo">1 indicação que fecha não vira 1 pagamento. Vira <u>1 comissão por mês</u>.</h2>
+    <div class="mensal-linha">
+      <div><strong data-contar="12">12</strong><span>comissões em 1 ano</span></div>
+      <div><strong data-contar="24">24</strong><span>comissões em 2 anos</span></div>
+      <div><strong data-contar="36">36</strong><span>comissões em 3 anos</span></div>
+    </div>
+    <p class="mensal-letra">Com 1 cliente indicado que continua pagando. Cada novo cliente que fecha soma outra comissão por mês.</p>
+  </div>
+</section>
+
+<section class="faixa mais" id="quanto-mais" data-mtc-section="quanto-mais" aria-labelledby="mais-titulo">
+  <div class="mais-grade">
+    <div class="mais-texto" data-revelar>
+      <p class="mono destaque eyebrow">QUANTO MAIS, MAIS</p>
+      <h2 id="mais-titulo" class="titulo-secao">Quanto mais você indicar, mais você vai ganhar.</h2>
+      <p class="sub-secao">Cada cliente que fecha vira mais uma comissão no seu mês, e ela continua entrando enquanto ele pagar. As indicações se somam: o gráfico só sobe.</p>
+      <div class="cenarios" role="tablist" aria-label="Quantas indicações fecham no ano">
+        {cenarios.map((c, i) => (
+          <button type="button" role="tab" class="cenario" aria-selected={i === 0 ? 'true' : 'false'} data-cenario={c}>
+            <strong>{c}</strong>
+            <span>{c === 1 ? 'indicação' : 'indicações'}</span>
+            <small>{c === 1 ? '1 comissão por mês' : `${c} comissões por mês`}</small>
+          </button>
+        ))}
+      </div>
+      <p class="mais-letra">Exemplo: indicações que fecham ao longo de 1 ano. No fim do ano, cada uma vira uma comissão por mês.</p>
+    </div>
+
+    <div class="grafico" data-revelar aria-hidden="true">
+      <div class="grafico-topo">
+        <span class="mono">SUA COMISSÃO MÊS A MÊS</span>
+        <span class="mono legenda"><i></i>CADA FAIXA É UM CLIENTE INDICADO</span>
+      </div>
+      <div class="area-graf">
+        <div class="barras">
+          {meses.map((m) => <div class="barra"><div class="pilha"></div><span class="rot mono">{m}</span></div>)}
+        </div>
+        <svg class="tendencia" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M 0 100" /></svg>
+        <span class="selo-sobe mono">↑ SUBINDO</span>
+      </div>
+      <p class="mono eixo">MÊS</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .destaque-mensal { margin-top: var(--secao); }
+  .mensal-caixa { position: relative; overflow: clip; padding: clamp(32px, 6vw, 72px); border-radius: 28px; background: var(--lime); color: var(--lime-ink); }
+  .mensal-caixa::after { content: ""; position: absolute; inset: 0; background-image: linear-gradient(to right, rgba(0,0,0,.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,.06) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; }
+  .mensal-caixa .eyebrow { color: var(--lime-ink) !important; }
+  .mensal-caixa .eyebrow::before { background: var(--lime-ink); animation: none; }
+  .mensal-caixa h2 { font-size: clamp(2rem, 4.6vw, 3.6rem); max-width: 20ch; margin-top: 16px; position: relative; z-index: 1; }
+  .mensal-caixa u { text-decoration-thickness: .08em; text-underline-offset: .12em; }
+  .mensal-linha { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 36px; }
+  .mensal-linha div { display: grid; gap: 2px; padding: 18px 20px; border-radius: var(--raio); background: rgba(20,20,20,.08); border: 1px solid rgba(20,20,20,.14); }
+  .mensal-linha strong { font: 700 clamp(40px, 5vw, 64px)/1 var(--sans); font-variant-numeric: tabular-nums; letter-spacing: -.03em; }
+  .mensal-letra { position: relative; z-index: 1; margin-top: 18px; font-size: 15px; opacity: .78; }
+
+  .mais { margin-top: var(--secao); }
+  .mais-grade { display: grid; grid-template-columns: 1fr 1.25fr; gap: clamp(24px, 4vw, 56px); align-items: center; }
+  .mais h2 { margin-top: 14px; }
+  .cenarios { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 32px; }
+  .cenario { position: relative; overflow: clip; display: grid; gap: 2px; justify-items: start; text-align: left; padding: 16px; background: var(--card); border: 1px solid var(--line); border-radius: var(--raio); color: var(--ink); cursor: pointer; font-family: var(--sans); transition: border-color .3s var(--ease), background .3s var(--ease), translate .3s var(--ease); }
+  .cenario strong { font: 700 34px/1 var(--sans); font-variant-numeric: tabular-nums; }
+  .cenario span { font-weight: 500; }
+  .cenario small { color: var(--ink-2); font-size: 13px; }
+  .cenario:hover { border-color: #5a5a5a; translate: 0 -2px; }
+  .cenario[aria-selected="true"] { border-color: var(--lime); background: rgba(198,255,52,.08); }
+  .cenario[aria-selected="true"] strong { color: var(--lime-text); }
+  /* Barra de tempo do ciclo automático. */
+  .cenario::after { content: ""; position: absolute; left: 0; bottom: 0; height: 2px; width: 100%; background: var(--lime); transform: scaleX(0); transform-origin: left; }
+  .mais.auto .cenario[aria-selected="true"]::after { animation: tempo 3.6s linear forwards; }
+  .mais-letra { color: var(--ink-2); font-size: 13px; margin-top: 14px; }
+
+  .grafico { background: var(--card); border: 1px solid var(--line); border-radius: var(--raio-g); padding: 26px; }
+  .grafico-topo { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .legenda { display: inline-flex; align-items: center; gap: 8px; font-size: 10px !important; }
+  .legenda i { width: 24px; height: 8px; border-radius: 4px; background: linear-gradient(90deg, #c6ff34, #6f8f1d); }
+  .area-graf { position: relative; height: 320px; margin-top: 32px; border-bottom: 1px solid var(--line); background-image: linear-gradient(to top, rgba(255,255,255,.05) 1px, transparent 1px); background-size: 100% 25%; }
+  .barras { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(12, 1fr); gap: clamp(4px, 1vw, 10px); }
+  .barra { position: relative; display: flex; flex-direction: column; justify-content: flex-end; }
+  .pilha { display: flex; flex-direction: column-reverse; height: 0%; border-radius: 6px 6px 0 0; overflow: clip; transition: height .9s var(--ease); transition-delay: calc(var(--d, 0) * 45ms); }
+  .pilha :global(i) { display: block; flex: 1; border-top: 1px solid rgba(25,25,25,.55); }
+  .rot { position: absolute; bottom: -24px; left: 50%; transform: translateX(-50%); font-size: 10px !important; }
+  .tendencia { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+  .tendencia { clip-path: inset(0 100% 0 0); }
+  .tendencia.anda { animation: revelar 1.4s var(--ease) .4s forwards; }
+  .tendencia path { fill: none; stroke: var(--ink); stroke-width: 2.5; vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
+  .selo-sobe { position: absolute; top: -22px; right: 0; padding: 6px 10px; border-radius: 999px; background: var(--lime); color: var(--lime-ink) !important; font-size: 10px !important; animation: quicar 1.6s var(--ease) infinite; }
+  .eixo { text-align: center; margin-top: 30px; font-size: 10px !important; }
+  @keyframes revelar { to { clip-path: inset(0 0 0 0); } }
+  @keyframes tempo { to { transform: scaleX(1); } }
+  @keyframes quicar { 0%, 100% { transform: none; } 50% { transform: translateY(-3px); } }
+
+  @media (max-width: 900px) {
+    .mais-grade { grid-template-columns: 1fr; }
+    .mensal-linha { grid-template-columns: 1fr; }
+    .area-graf { height: 240px; }
+  }
+  @media (max-width: 420px) {
+    .cenario { padding: 12px; }
+    .cenario strong { font-size: 28px; }
+    .cenario small { display: none; }
+  }
+</style>
+
+<script>
+  const sec = document.querySelector<HTMLElement>('#quanto-mais');
+  if (sec) {
+    const botoes = [...sec.querySelectorAll<HTMLButtonElement>('[data-cenario]')];
+    const barras = [...sec.querySelectorAll<HTMLElement>('.pilha')];
+    const linha = sec.querySelector<SVGPathElement>('.tendencia path')!;
+    const MAX = 10; // escala fixa no maior cenário: 1 indicação fica baixa, 10 enche o gráfico
+    const reduzir = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let atual = 0, timer = 0, visivel = false;
+
+    const desenhar = (n: number) => {
+      // Cliente k (1..n) fecha no mês ceil(12k/n): espalhados no ano, o último no mês 12.
+      const fecha = Array.from({ length: n }, (_, k) => Math.ceil((12 * (k + 1)) / n));
+      const ativos = barras.map((_, i) => fecha.filter((f) => f <= i + 1).length);
+      barras.forEach((p, i) => {
+        p.style.setProperty('--d', String(i));
+        p.style.height = visivel ? `${(ativos[i] / MAX) * 92}%` : '0%';
+        p.innerHTML = Array.from({ length: ativos[i] }, (_, k) =>
+          `<i style="background:hsl(76 100% ${60 - (k * 28) / Math.max(1, MAX - 1)}%)"></i>`).join('');
+      });
+      // Linha de tendência pelo topo das barras (coordenadas 0..100).
+      const pts = ativos.map((a, i) => `${((i + 0.5) / 12) * 100} ${100 - (a / MAX) * 92 - 6}`); // 6 acima do topo da barra
+      linha.setAttribute('d', `M ${pts.join(' L ')}`);
+      const svg = linha.ownerSVGElement!; svg.classList.remove('anda'); void svg.getBoundingClientRect(); if (visivel) svg.classList.add('anda');
+    };
+
+    const escolher = (i: number) => {
+      atual = i;
+      botoes.forEach((b, k) => b.setAttribute('aria-selected', String(k === i)));
+      desenhar(Number(botoes[i].dataset.cenario));
+    };
+
+    const ciclo = () => {
+      if (reduzir) return;
+      sec.classList.add('auto');
+      clearInterval(timer);
+      // Sobe 1 → 5 → 10 e para no maior: o gráfico nunca desce sozinho.
+      timer = window.setInterval(() => {
+        sec.classList.remove('auto'); void sec.offsetWidth;
+        escolher(atual + 1);
+        if (atual === botoes.length - 1) clearInterval(timer);
+        else sec.classList.add('auto');
+      }, 3600);
+    };
+
+    botoes.forEach((b, i) => b.addEventListener('click', () => {
+      clearInterval(timer); sec.classList.remove('auto'); escolher(i);
+    }));
+
+    new IntersectionObserver((e, o) => {
+      if (e[0].isIntersecting) { visivel = true; escolher(0); ciclo(); o.disconnect(); }
+    }, { threshold: 0.3 }).observe(sec);
+    escolher(0);
+  }
+</script>

@@ -1,0 +1,35 @@
+---
+import { programa } from '../../lib/parcerias.js';
+---
+<section class="faixa perguntas" id="perguntas" data-mtc-section="perguntas" aria-labelledby="perguntas-titulo">
+  <div data-revelar>
+    <p class="mono destaque eyebrow">DÚVIDAS</p>
+    <h2 id="perguntas-titulo" class="titulo-secao">O que todo parceiro pergunta antes de entrar.</h2>
+  </div>
+  <div class="lista">
+    {programa.faq.map((f, i) => (
+      <details data-revelar style={`--atraso:${i * 0.06}s`} open={i === 0}>
+        <summary>{f.p}<span class="mais" aria-hidden="true"></span></summary>
+        <div class="resposta"><p>{f.r}</p></div>
+      </details>
+    ))}
+  </div>
+</section>
+<style>
+  .perguntas { margin-top: var(--secao); display: grid; grid-template-columns: 1fr 1.4fr; gap: clamp(28px, 5vw, 72px); align-items: start; }
+  .perguntas h2 { margin-top: 14px; }
+  details { border-bottom: 1px solid var(--line); }
+  details:first-child { border-top: 1px solid var(--line); }
+  summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 22px 0; font: 700 19px/1.3 var(--sans); transition: color .25s; }
+  summary::-webkit-details-marker { display: none; }
+  summary:hover { color: var(--lime-text); }
+  .mais { position: relative; width: 32px; height: 32px; flex: none; border: 1px solid var(--line); border-radius: 50%; transition: transform .35s var(--ease), background .35s, border-color .35s; }
+  .mais::before, .mais::after { content: ""; position: absolute; left: 50%; top: 50%; width: 12px; height: 1.5px; margin: -.75px 0 0 -6px; background: currentColor; }
+  .mais::after { transform: rotate(90deg); transition: transform .35s var(--ease); }
+  details[open] .mais { transform: rotate(180deg); background: var(--lime); border-color: var(--lime); color: var(--lime-ink); }
+  details[open] .mais::after { transform: rotate(0deg); }
+  .resposta { color: var(--ink-2); padding: 0 48px 22px 0; max-width: 62ch; }
+  details[open] .resposta { animation: abrir .45s var(--ease); }
+  @keyframes abrir { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+  @media (max-width: 860px) { .perguntas { grid-template-columns: 1fr; } .resposta { padding-right: 0; } }
+</style>

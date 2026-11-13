@@ -1,0 +1,218 @@
+---
+// Casca da página /parcerias/ (WEB-74): o Layout do kit (Seo, JSON-LD e Tracking da linha "stratai-parcerias" do
+// catálogo) com o cabeçalho, o rodapé e o estilo da prévia aprovada pelo Helbert em 12/11/2026.
+import Layout from '@strat/kit/Layout.astro';
+
+interface Props { titulo: string; descricao: string }
+const { titulo, descricao } = Astro.props;
+const DIAGNOSTICO = '/raio-x/';
+---
+<Layout marca="stratai" perfil="lead" titulo={titulo} descricao={descricao}>
+  <Fragment slot="head">
+    <meta name="theme-color" content="#191919" />
+    <link rel="icon" href="/midia/favicon/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/midia/favicon/favicon-192.png" />
+    <link rel="apple-touch-icon" href="/midia/favicon/favicon-180.png" />
+    {/* Fontes pelo próprio app (public/fontes/, licença OFL ao lado), sem a folha do Google: ela bloqueava a
+        renderização (~0,9 s no celular) e passava o IP de quem visita ao Google. A Space Grotesk é variável: o mesmo
+        arquivo cobre 400, 500 e 700, então um preload só serve a 400 e a 700. */}
+    <link rel="preload" href="/fontes/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+  </Fragment>
+  <div class="progresso" aria-hidden="true"><span></span></div>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+  <header class="topo" data-topo>
+    <div class="faixa">
+      <a class="marca" href="/" aria-label="StratAI, página inicial">Strat<span>.ai</span></a>
+      <nav aria-label="Principal">
+        <a href="#como-funciona" class="nav-link">Como funciona</a>
+        <a href="#quanto-mais" class="nav-link">Quanto mais, mais</a>
+        <a href="#perguntas" class="nav-link">Dúvidas</a>
+        <a href="#quero-ser-parceiro" class="botao botao-fantasma botao-p" data-strat-cta="topo-cadastro" data-mtc-event="cta_topo_cadastro">Quero ser parceiro</a>
+      </nav>
+    </div>
+  </header>
+  <main id="conteudo">
+    <slot />
+  </main>
+  <footer class="rodape">
+    <div class="faixa rodape-grade">
+      <div>
+        <a class="marca marca-g" href="/">Strat<span>.ai</span></a>
+        <p>Agentes de IA, automações e sistemas para pequenas e médias empresas. Braço de tecnologia do Grupo Strat.</p>
+      </div>
+      <div class="rodape-links">
+        <p class="mono">PARCERIA E INDICAÇÃO</p>
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#quanto-mais">Quanto mais indica, mais ganha</a>
+        <a href="#quero-ser-parceiro" data-strat-cta="rodape-cadastro" data-mtc-event="cta_rodape_cadastro">Quero ser parceiro</a>
+      </div>
+      <div class="rodape-links">
+        <p class="mono">STRATAI</p>
+        <a href="/">Início</a>
+        <a href={DIAGNOSTICO} data-strat-cta="rodape-diagnostico">Diagnóstico em 3 minutos</a>
+        <a href="/politica-de-privacidade/">Política de privacidade</a>
+      </div>
+    </div>
+    <div class="faixa rodape-base">
+      <p class="mono">© 2026 STRAT AI</p>
+      <p class="mono destaque">TODA ALAVANCA TEM UM NÚMERO</p>
+    </div>
+  </footer>
+  <script>
+    // Entrada ao rolar (data-revelar), contadores (data-contar), barra de progresso e cabeçalho.
+    const reduzir = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const formatar = (n: number) => Math.round(n).toLocaleString('pt-BR');
+
+    const contar = (el: HTMLElement) => {
+      const alvo = Number(el.dataset.contar);
+      if (reduzir) { el.textContent = formatar(alvo); return; }
+      const ini = performance.now(), dur = 1600;
+      const passo = (t: number) => {
+        const k = Math.min(1, (t - ini) / dur);
+        el.textContent = formatar(alvo * (1 - Math.pow(1 - k, 3)));
+        if (k < 1) requestAnimationFrame(passo);
+      };
+      requestAnimationFrame(passo);
+    };
+
+    const obs = new IntersectionObserver((entradas) => {
+      entradas.forEach((e) => {
+        if (!e.isIntersecting) return;
+        const el = e.target as HTMLElement;
+        el.classList.add('visivel');
+        el.querySelectorAll<HTMLElement>('[data-contar]').forEach(contar);
+        if (el.dataset.contar) contar(el);
+        obs.unobserve(el);
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('[data-revelar]').forEach((el) => obs.observe(el));
+
+    const barra = document.querySelector<HTMLElement>('.progresso span');
+    const topo = document.querySelector<HTMLElement>('[data-topo]');
+    const rolar = () => {
+      const h = document.documentElement.scrollHeight - innerHeight;
+      if (barra) barra.style.transform = `scaleX(${h > 0 ? scrollY / h : 0})`;
+      topo?.classList.toggle('rolou', scrollY > 24);
+    };
+    addEventListener('scroll', rolar, { passive: true });
+    rolar();
+
+    // Brilho que segue o mouse nos cartões (data-brilho).
+    document.querySelectorAll<HTMLElement>('[data-brilho]').forEach((c) => {
+      c.addEventListener('pointermove', (ev) => {
+        const r = c.getBoundingClientRect();
+        c.style.setProperty('--mx', `${ev.clientX - r.left}px`);
+        c.style.setProperty('--my', `${ev.clientY - r.top}px`);
+      });
+    });
+  </script>
+</Layout>
+<style is:global>
+  /* Subset latin do Google Fonts (mesmo unicode-range), servido de /fontes/. */
+  @font-face {
+    font-family: "Space Grotesk"; font-style: normal; font-weight: 400 700; font-display: swap;
+    src: url("/fontes/space-grotesk-latin.woff2") format("woff2");
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+  @font-face {
+    font-family: "JetBrains Mono"; font-style: normal; font-weight: 500; font-display: swap;
+    src: url("/fontes/jetbrains-mono-500-latin.woff2") format("woff2");
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+  :root {
+    --bg: #191919; --card: #242424; --card-2: #2b2b2b; --line: #353535;
+    --ink: #f3f3ee; --ink-2: #b9b9b1; --mute: #8a8a83;
+    --lime: #c6ff34; --lime-ink: #141414; --lime-text: #c6ff34;
+    --raio: 14px; --raio-g: 18px;
+    --sans: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --ease: cubic-bezier(.2, .8, .2, 1);
+    --secao: clamp(72px, 10vw, 128px);
+    color-scheme: dark;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 80px; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink); font: 400 17px/1.55 var(--sans);
+    overflow-x: clip;
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,.035) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 30%, transparent 100%);
+  }
+  h1, h2, h3 { font-weight: 700; line-height: 1.1; margin: 0; letter-spacing: -.02em; }
+  p { margin: 0; }
+  a { color: inherit; }
+  img { max-width: 100%; display: block; }
+  :focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; box-shadow: 0 0 0 2px var(--bg); border-radius: 6px; }
+  .faixa { width: min(1200px, 100% - 32px); margin-inline: auto; }
+  .mono { font: 500 12px/1.4 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); }
+  .destaque { color: var(--lime-text); }
+  .pular { position: absolute; left: -9999px; top: 8px; background: var(--lime); color: var(--lime-ink); padding: 8px 14px; border-radius: 999px; z-index: 30; }
+  .pular:focus { left: 16px; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 10px; }
+  .eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 0 rgba(198,255,52,.6); animation: pulsar 2.4s var(--ease) infinite; }
+  .titulo-secao { font-size: clamp(2rem, 4.4vw, 3.4rem); max-width: 18ch; }
+  .sub-secao { color: var(--ink-2); font-size: clamp(17px, 1.5vw, 19px); max-width: 58ch; margin-top: 16px; }
+
+  .progresso { position: fixed; inset: 0 0 auto; height: 2px; z-index: 20; pointer-events: none; }
+  .progresso span { display: block; height: 100%; background: var(--lime); transform-origin: left; transform: scaleX(0); }
+
+  .topo { position: sticky; top: 0; z-index: 10; border-bottom: 1px solid transparent; transition: background .3s var(--ease), border-color .3s var(--ease); }
+  .topo.rolou { background: rgba(25,25,25,.82); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-color: var(--line); }
+  .topo .faixa { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 72px; transition: min-height .3s var(--ease); }
+  .topo.rolou .faixa { min-height: 60px; }
+  .topo nav { display: flex; align-items: center; gap: 24px; }
+  .nav-link { text-decoration: none; color: var(--ink-2); font-weight: 500; font-size: 15px; position: relative; }
+  .nav-link::after { content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 1px; background: var(--lime); transform: scaleX(0); transform-origin: left; transition: transform .3s var(--ease); }
+  .nav-link:hover { color: var(--ink); }
+  .nav-link:hover::after { transform: scaleX(1); }
+  .marca { font-weight: 700; font-size: 22px; text-decoration: none; letter-spacing: -.02em; }
+  .marca span { color: var(--lime-text); }
+  .marca-g { font-size: 30px; }
+
+  .botao {
+    position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 0 26px;
+    border-radius: 999px; font: 700 16px/1 var(--sans); text-decoration: none; cursor: pointer; border: 1px solid transparent; overflow: clip;
+    transition: transform .25s var(--ease), box-shadow .25s var(--ease), background .25s var(--ease), border-color .25s var(--ease), color .25s var(--ease);
+  }
+  .botao .seta { display: inline-block; transition: transform .25s var(--ease); }
+  .botao:hover .seta { transform: translateX(4px); }
+  .botao-lima { background: var(--lime); color: var(--lime-ink); }
+  .botao-lima::after { content: ""; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.55) 50%, transparent 65%); transform: translateX(-120%); transition: transform .8s var(--ease); }
+  .botao-lima:hover { box-shadow: 0 0 0 6px rgba(198,255,52,.14), 0 10px 34px rgba(198,255,52,.28); transform: translateY(-2px); }
+  .botao-lima:hover::after { transform: translateX(120%); }
+  .botao-fantasma { background: rgba(255,255,255,.02); color: var(--ink); border-color: var(--line); }
+  .botao-fantasma:hover { border-color: var(--ink-2); background: rgba(255,255,255,.05); }
+  .botao-p { min-height: 40px; padding: 0 16px; font-size: 14px; }
+
+  /* Entrada ao rolar: só com JS ligado, para nada sumir sem ele. */
+  .js [data-revelar] { opacity: 0; transform: translateY(28px); transition: opacity .7s var(--ease), transform .7s var(--ease); transition-delay: var(--atraso, 0s); }
+  .js [data-revelar].visivel { opacity: 1; transform: none; }
+
+  .rodape { border-top: 1px solid var(--line); margin-top: var(--secao); padding: 56px 0 28px; }
+  .rodape-grade { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 32px; }
+  .rodape-grade > div:first-child p { color: var(--ink-2); max-width: 40ch; margin-top: 12px; }
+  .rodape-links { display: grid; gap: 10px; align-content: start; }
+  .rodape-links a { color: var(--ink-2); text-decoration: none; }
+  .rodape-links a:hover { color: var(--ink); }
+  .rodape-base { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); }
+
+  @keyframes pulsar { 0% { box-shadow: 0 0 0 0 rgba(198,255,52,.55); } 70%, 100% { box-shadow: 0 0 0 10px rgba(198,255,52,0); } }
+
+  @media (max-width: 760px) {
+    .nav-link { display: none; }
+    .rodape-grade { grid-template-columns: 1fr 1fr; }
+    .rodape-grade > div:first-child { grid-column: 1 / -1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+    .js [data-revelar] { opacity: 1; transform: none; }
+  }
+</style>

@@ -1,0 +1,192 @@
+---
+import { programa } from '../../lib/parcerias.js';
+// O chat roda em laço e acende o cartão da esquerda que está "trabalhando" em cada etapa:
+// 0 = agente no WhatsApp, 1 = automação (aviso ao time), 2 = sistema (lead no CRM).
+---
+<section class="faixa oferta" data-mtc-section="oferta" aria-labelledby="oferta-titulo">
+  <div class="oferta-caixa">
+    <div class="oferta-esq">
+      <div class="oferta-texto" data-revelar>
+        <p class="mono destaque eyebrow">O QUE VOCÊ INDICA</p>
+        <h2 id="oferta-titulo" class="titulo-secao">Agentes de IA que atendem a empresa. Sem contratar mais gente.</h2>
+        <p class="sub-secao">A empresa indicada passa por um diagnóstico de 10 perguntas e 3 minutos. Sai com o mapa de onde a operação perde tempo, e a gente desenha o que entra primeiro.</p>
+      </div>
+      <ul class="oferta-lista">
+        {programa.oferta.map((o, i) => (
+          <li data-revelar data-frente={i} style={`--atraso:${i * 0.12}s`}>
+            <span class="pulso" aria-hidden="true"></span>
+            <p class="mono destaque">{o.rotulo}</p>
+            <h3>{o.nome}</h3>
+            <p>{o.texto}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div class="chat-col">
+      <div class="chat" data-revelar data-chat aria-hidden="true">
+        <div class="chat-topo">
+          <span class="avatar">IA</span>
+          <div>
+            <strong>Agente da empresa</strong>
+            <small class="status"><i></i><span data-status>online</span></small>
+          </div>
+        </div>
+        <div class="chat-corpo" data-corpo>
+          <p class="dia mono">SÁBADO · EXEMPLO ILUSTRATIVO</p>
+        </div>
+        <div class="chat-pe">
+          <span>Mensagem</span>
+          <span class="enviar">➤</span>
+        </div>
+      </div>
+      <p class="chat-legenda">O agente responde, marca a reunião, salva o lead no CRM e avisa o time. Sábado à noite.</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .oferta { margin-top: var(--secao); }
+  .oferta-caixa { position: relative; overflow: clip; display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(24px, 4vw, 56px); padding: clamp(28px, 5vw, 64px); border: 1px solid var(--line); border-radius: 24px; background: linear-gradient(160deg, #222, #1b1b1b 60%); }
+  .oferta-caixa::before { content: ""; position: absolute; width: 640px; height: 640px; right: -240px; top: -300px; background: radial-gradient(circle, rgba(198,255,52,.12), transparent 62%); pointer-events: none; animation: deriva 16s ease-in-out infinite alternate; }
+  .oferta-esq, .chat-col { position: relative; }
+  .oferta-texto h2 { margin-top: 14px; }
+
+  .oferta-lista { list-style: none; padding: 0; margin: 32px 0 0; display: grid; gap: 12px; }
+  .oferta-lista li {
+    position: relative; overflow: clip; display: grid; gap: 6px; padding: 18px 20px 18px 22px; border-radius: var(--raio);
+    background: rgba(43,43,43,.55); border: 1px solid var(--line);
+    transition: border-color .4s var(--ease), background .4s var(--ease), translate .4s var(--ease), opacity .7s var(--ease) var(--atraso, 0s), transform .7s var(--ease) var(--atraso, 0s);
+  }
+  .js .oferta-lista li[data-revelar] { transform: translateX(-28px); }
+  .js .oferta-lista li[data-revelar].visivel { transform: none; }
+  .oferta-lista li::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--lime); transform: scaleY(.25); transform-origin: top; transition: transform .5s var(--ease); }
+  .oferta-lista li.ativa { border-color: rgba(198,255,52,.55); background: rgba(198,255,52,.06); translate: 6px 0; }
+  .oferta-lista li.ativa::before { transform: scaleY(1); }
+  .oferta-lista h3 { font-size: 19px; }
+  .oferta-lista li > p:last-of-type { color: var(--ink-2); }
+  .pulso { position: absolute; top: 18px; right: 18px; width: 8px; height: 8px; border-radius: 50%; background: #3a3a3a; transition: background .3s; }
+  .ativa .pulso { background: var(--lime); animation: pulsar 1.6s var(--ease) infinite; }
+
+  .chat-col { align-self: start; position: sticky; top: 96px; display: grid; gap: 14px; }
+  .chat { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; height: 540px; background: #121212; border: 1px solid var(--line); border-radius: 26px; overflow: clip; box-shadow: 0 40px 80px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.04); }
+  .chat-topo { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: #1c1c1c; border-bottom: 1px solid var(--line); }
+  .avatar { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; background: var(--lime); color: var(--lime-ink); font: 700 13px/1 var(--sans); flex: none; }
+  .chat-topo strong { display: block; font-size: 15px; white-space: nowrap; }
+  .status { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); font-size: 12px; }
+  .status i { width: 6px; height: 6px; border-radius: 50%; background: var(--lime); }
+  .chat-corpo { display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; padding: 16px; overflow: clip; background-image: radial-gradient(rgba(255,255,255,.03) 1px, transparent 1px); background-size: 16px 16px; }
+  .dia { align-self: center; font-size: 9px !important; padding: 4px 10px; border-radius: 999px; background: #1f1f1f; }
+  .chat-pe { display: flex; justify-content: space-between; align-items: center; margin: 0 12px 12px; padding: 10px 14px; border-radius: 999px; background: #1f1f1f; color: var(--mute); font-size: 14px; }
+  .enviar { color: var(--lime-text); }
+
+  .chat-corpo :global(.msg) { max-width: 84%; padding: 10px 12px 8px; border-radius: 14px; font-size: 14px; line-height: 1.4; animation: chegar .45s var(--ease) both; }
+  .chat-corpo :global(.msg small) { display: block; margin-top: 4px; font: 500 10px/1 var(--mono); opacity: .65; text-align: right; }
+  .chat-corpo :global(.cli) { align-self: flex-start; background: #2a2a2a; border-bottom-left-radius: 4px; }
+  .chat-corpo :global(.ag) { align-self: flex-end; background: var(--lime); color: var(--lime-ink); border-bottom-right-radius: 4px; }
+  .chat-corpo :global(.ag small) { opacity: .75; }
+  .chat-corpo :global(.tempo) { align-self: flex-end; margin-top: -4px; font: 500 10px/1 var(--mono); letter-spacing: .1em; color: var(--lime-text); animation: chegar .45s var(--ease) both; }
+  .chat-corpo :global(.digitando) { align-self: flex-end; display: flex; gap: 4px; padding: 12px 14px; border-radius: 14px; background: rgba(198,255,52,.16); animation: chegar .3s var(--ease) both; }
+  .chat-corpo :global(.digitando i) { width: 6px; height: 6px; border-radius: 50%; background: var(--lime); animation: pontinho 1s infinite; }
+  .chat-corpo :global(.digitando i:nth-child(2)) { animation-delay: .15s; }
+  .chat-corpo :global(.digitando i:nth-child(3)) { animation-delay: .3s; }
+  .chat-corpo :global(.evento) { align-self: stretch; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; border: 1px dashed rgba(198,255,52,.5); background: rgba(198,255,52,.06); font-size: 13px; animation: chegar .45s var(--ease) both; }
+  .chat-corpo :global(.evento b) { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--lime); color: var(--lime-ink); font-size: 12px; flex: none; }
+  .chat-corpo :global(.evento span) { color: var(--ink); }
+  .chat-corpo :global(.evento em) { margin-left: auto; font: 500 10px/1 var(--mono); font-style: normal; color: var(--lime-text); letter-spacing: .1em; }
+  .chat-corpo.saindo { animation: sair .5s var(--ease) forwards; }
+  .chat-legenda { color: var(--ink-2); font-size: 14px; text-align: center; }
+
+  @keyframes chegar { from { opacity: 0; transform: translateY(12px) scale(.97); } to { opacity: 1; transform: none; } }
+  @keyframes sair { to { opacity: 0; transform: translateY(-10px); } }
+  @keyframes pontinho { 0%, 60%, 100% { transform: none; opacity: .4; } 30% { transform: translateY(-4px); opacity: 1; } }
+  @keyframes deriva { to { transform: translate(-300px, 80px); } }
+
+  @media (max-width: 900px) {
+    .oferta-caixa { grid-template-columns: 1fr; }
+    .chat-col { position: static; }
+    .chat { height: 500px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .js .oferta-lista li[data-revelar] { transform: none; }
+  }
+</style>
+
+<script>
+  const chat = document.querySelector<HTMLElement>('[data-chat]');
+  const corpo = chat?.querySelector<HTMLElement>('[data-corpo]');
+  const frentes = [...document.querySelectorAll<HTMLElement>('[data-frente]')];
+  const status = chat?.querySelector<HTMLElement>('[data-status]');
+
+  type Passo =
+    | { t: 'cli' | 'ag'; txt: string; hora: string; frente?: number }
+    | { t: 'digita'; ms: number }
+    | { t: 'tempo'; txt: string }
+    | { t: 'evento'; txt: string; tag: string; frente: number }
+    | { t: 'espera'; ms: number };
+
+  const roteiro: Passo[] = [
+    { t: 'cli', txt: 'Oi, vocês atendem no sábado? Queria um orçamento.', hora: '22h47', frente: 0 },
+    { t: 'digita', ms: 1300 },
+    { t: 'ag', txt: 'Atendo sim! Me conta o que você precisa que eu já te passo valor e horário.', hora: '22h47', frente: 0 },
+    { t: 'tempo', txt: 'RESPONDEU EM 4S' },
+    { t: 'espera', ms: 1100 },
+    { t: 'cli', txt: 'Pode ser terça às 10h?', hora: '22h49', frente: 0 },
+    { t: 'digita', ms: 1100 },
+    { t: 'ag', txt: 'Fechado: terça, 10h. Te mandei o convite.', hora: '22h49', frente: 0 },
+    { t: 'espera', ms: 700 },
+    { t: 'evento', txt: 'Lead salvo no CRM', tag: 'SISTEMA', frente: 2 },
+    { t: 'espera', ms: 900 },
+    { t: 'evento', txt: 'Time avisado da reunião', tag: 'AUTOMAÇÃO', frente: 1 },
+    { t: 'espera', ms: 2600 },
+  ];
+
+  const ativar = (i: number | undefined) => frentes.forEach((f) => f.classList.toggle('ativa', Number(f.dataset.frente) === i));
+  const esperar = (ms: number) => new Promise((r) => setTimeout(r, ms));
+  const add = (html: string, cls: string) => {
+    const el = document.createElement('div');
+    el.className = cls; el.innerHTML = html;
+    corpo!.appendChild(el);
+    return el;
+  };
+
+  const tudo = () => roteiro.forEach((p) => {
+    if (p.t === 'cli' || p.t === 'ag') add(`${p.txt}<small>${p.hora}</small>`, `msg ${p.t}`);
+    if (p.t === 'tempo') add(p.txt, 'tempo');
+    if (p.t === 'evento') add(`<b>✓</b><span>${p.txt}</span><em>${p.tag}</em>`, 'evento');
+  });
+
+  const rodar = async () => {
+    while (true) {
+      corpo!.classList.remove('saindo');
+      corpo!.querySelectorAll(':scope > :not(.dia)').forEach((n) => n.remove());
+      for (const p of roteiro) {
+        if (p.t === 'espera') { await esperar(p.ms); continue; }
+        if (p.t === 'digita') {
+          if (status) status.textContent = 'digitando…';
+          const d = add('<i></i><i></i><i></i>', 'digitando');
+          await esperar(p.ms); d.remove();
+          if (status) status.textContent = 'online';
+          continue;
+        }
+        if (p.t === 'cli' || p.t === 'ag') { add(`${p.txt}<small>${p.hora}</small>`, `msg ${p.t}`); ativar(p.frente); }
+        if (p.t === 'tempo') add(p.txt, 'tempo');
+        if (p.t === 'evento') { add(`<b>✓</b><span>${p.txt}</span><em>${p.tag}</em>`, 'evento'); ativar(p.frente); }
+        await esperar(p.t === 'cli' ? 900 : 600);
+      }
+      corpo!.classList.add('saindo');
+      ativar(undefined);
+      await esperar(600);
+    }
+  };
+
+  if (chat && corpo) {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { tudo(); ativar(0); }
+    else {
+      let comecou = false;
+      new IntersectionObserver((e) => {
+        if (e[0].isIntersecting && !comecou) { comecou = true; setTimeout(rodar, 500); }
+      }, { threshold: 0.35 }).observe(chat);
+    }
+  }
+</script>
