@@ -6,7 +6,6 @@
 // põe o <Tracking> na página, a checagem quebra pedindo para tirar a URL daqui, no mesmo PR da migração.
 export const ESQUELETOS = {
   'https://agenciastrat.com.br/': 'WEB-23',
-  'https://stratai.com.br/': 'WEB-32',
   'https://metricaas.com.br/': 'WEB-36',
   'https://stratacademy.com.br/': 'WEB-49',
 };

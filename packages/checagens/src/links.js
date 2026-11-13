@@ -1,5 +1,7 @@
 // Checagem "links": link interno quebrado. Interno = caminho que começa com "/", caminho relativo ou URL absoluta
 // no domínio do próprio app. Âncora (#id) tem de achar o id na página. Link para outro domínio fica de fora.
+// A página de erro (404.html) é servida em qualquer caminho que não existe: nela, endereço relativo ("raio-x/",
+// "../") muda de destino conforme o caminho pedido, então só vale endereço que começa com "/" ou URL completa.
 import { existsSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { ehPaginaDeErro } from './contexto.js';
@@ -30,9 +32,9 @@ export function checarLinks(ctx) {
   for (const app of ctx.apps) {
     const host = app.site && new URL(app.site).host;
     for (const pagina of app.paginas) {
-      if (ehPaginaDeErro(pagina)) continue;
+      const deErro = ehPaginaDeErro(pagina);
       const { ids } = lerPagina(pagina.html);
-      const base = new URL(pagina.caminho, app.site || 'https://localhost');
+      const base = new URL(deErro ? '/' : pagina.caminho, app.site || 'https://localhost');
       const vistos = new Set();
       for (const { valor } of enderecos(pagina.html)) {
         const bruto = valor.trim();
@@ -45,6 +47,10 @@ export function checarLinks(ctx) {
         }
         if (/^[a-z][a-z0-9+.-]*:/i.test(bruto) && !/^https?:/i.test(bruto)) continue; // mailto:, tel:, data:
         if (bruto.startsWith('//')) continue;
+        if (deErro && !bruto.startsWith('/') && !/^https?:/i.test(bruto)) {
+          r.erro(pagina.url, `endereço relativo "${bruto}" na página de erro: ela é servida em qualquer caminho, use um endereço que começa com "/"`);
+          continue;
+        }
         let u;
         try {
           u = new URL(bruto, base);
@@ -56,7 +62,7 @@ export function checarLinks(ctx) {
         if (DE_FORA_DO_BUILD.some((re) => re.test(u.pathname))) continue;
         const { ok, semBarra } = resolverNoDist(app.dist, u.pathname);
         if (ok) {
-          if (u.hash && u.pathname === base.pathname && !ids.has(decodeURIComponent(u.hash.slice(1)))) {
+          if (u.hash && !deErro && u.pathname === base.pathname && !ids.has(decodeURIComponent(u.hash.slice(1)))) {
             r.erro(pagina.url, `âncora "${u.hash}" sem elemento com esse id na página`);
           }
           continue;

@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { planoDeTracking, linhaDoCatalogo, PERFIS } from '../src/index.js';
+import { planoDeTracking, linhaDoCatalogo, PERFIS, CONSENT_MODE_DO_RASTRO, consentModeEsperado } from '../src/index.js';
 
 const catalogo = JSON.parse(readFileSync(new URL('../../../catalogo/sites.json', import.meta.url), 'utf8'));
 const plano = (url, perfil) => planoDeTracking({ catalogo, url, perfil });
@@ -28,7 +28,7 @@ test('perfil precisa existir e bater com o catálogo', () => {
 
 test('venda: Rastro do produto e launcher da Hotmart, sem MetricaaS', () => {
   const p = plano('https://stratacademy.com.br/kit/venda/', 'venda');
-  assert.deepEqual(srcs(p), ['https://tracking.stratacademy.com.br/sa?product=mentoria']);
+  assert.deepEqual(srcs(p), ['https://tracking.stratacademy.com.br/sa?product=mentoria', '/u/script.js']);
   assert.equal(p.hotmart, '6f2c2394-9d1b-3999-9a14-087cfe3fd764');
   assert.equal(p.banner, false);
   assert.throws(() => falso({ perfil: 'venda', hotmart_conta: 'h' }), /rastro_slug/);
@@ -37,14 +37,16 @@ test('venda: Rastro do produto e launcher da Hotmart, sem MetricaaS', () => {
 
 test('lead com Rastro: m.js primeiro e sem data-pixel (o pixel vem do Rastro)', () => {
   const p = plano('https://stratai.com.br/kit/lead/', 'lead');
-  assert.deepEqual(srcs(p), ['https://t.metricaas.com.br/m.js', 'https://tracking.stratacademy.com.br/sa?product=stratai']);
+  assert.deepEqual(srcs(p), ['https://t.metricaas.com.br/m.js', 'https://tracking.stratacademy.com.br/sa?product=stratai', '/u/script.js']);
+  // Umami do Strat Tracking: o website do host, o mesmo do stratai.com.br/ (TRACK-8)
+  assert.deepEqual(p.scripts[2].attrs, { 'data-website-id': 'd6394916-40aa-45da-b80e-7285ec5bcb45' });
   assert.deepEqual(p.scripts[0].attrs, { 'data-ws': 'agencia-strat' });
   assert.equal(p.hotmart, null);
 });
 
 test('lead sem Rastro e com banner: m.js liga o pixel e segura até o aceite', () => {
   const p = plano('https://agenciastrat.com.br/kit/lead/', 'lead');
-  assert.deepEqual(srcs(p), ['https://t.metricaas.com.br/m.js']);
+  assert.deepEqual(srcs(p), ['https://t.metricaas.com.br/m.js', '/u/script.js']);
   assert.deepEqual(p.scripts[0].attrs, {
     'data-ws': 'strat-marketing', 'data-pixel': '1815630929780241', 'data-pixel-consent': 'aguardar',
   });
@@ -68,16 +70,52 @@ test('conteudo: o mesmo do site da marca, sem Hotmart', () => {
   assert.equal(p.hotmart, null);
 });
 
-test('Rastro com banner quebra o build: a página não segura o pixel do Rastro (WEB-72)', () => {
-  // Linha real: o site da Academy pede aceite hoje, mas o produto "site" no Rastro está em consentMode off.
-  assert.throws(() => plano('https://stratacademy.com.br/', 'conteudo'), /consentimento "banner" com Rastro.*produto "site"/);
-  assert.throws(() => falso({ rastro_slug: 'stratai', consentimento: 'banner' }), /WEB-72/);
-  // off e soft com Rastro seguem montando: quem decide é o consentMode do produto, conferido pela CI.
-  for (const consentimento of ['off', 'soft']) {
+test('Rastro com banner monta: o produto tem de estar em strict e o banner do kit não entra (WEB-81)', () => {
+  // Linha real: a home da Academy (banner) com o produto "site" do Rastro, em strict desde 11/11.
+  const home = plano('https://stratacademy.com.br/', 'conteudo');
+  assert.deepEqual(srcs(home), ['https://tracking.stratacademy.com.br/sa?product=site', '/u/script.js']);
+  assert.equal(home.consentMode, 'strict');
+  assert.equal(home.banner, false);
+  // Página de teste com a mesma configuração (noindex).
+  const teste = plano('https://stratacademy.com.br/kit/conteudo/', 'conteudo');
+  assert.deepEqual(teste.scripts, home.scripts);
+  assert.equal(teste.consentMode, 'strict');
+  // Lead com Rastro, MetricaaS e banner: m.js sem data-pixel nem data-pixel-consent, e sem o banner do kit.
+  const lead = falso({ rastro_slug: 'stratai', metricaas_ws: 'w', meta_pixel: '1', consentimento: 'banner' });
+  assert.deepEqual(lead.scripts[0], { src: 'https://t.metricaas.com.br/m.js', attrs: { 'data-ws': 'w' } });
+  assert.equal(lead.banner, false);
+  assert.equal(lead.consentMode, 'strict');
+});
+
+test('venda com banner e Rastro quebra o build: o launcher da Hotmart sairia antes do aceite (WEB-85)', () => {
+  const venda = { perfil: 'venda', rastro_slug: 'mentoria', hotmart_conta: 'h' };
+  assert.throws(() => falso({ ...venda, consentimento: 'banner' }), /perfil venda com consentimento "banner" e Rastro.*WEB-85/);
+  // soft e off montam com o launcher (em soft e off o Rastro não pede aceite antes de carregar nada).
+  for (const consentimento of ['soft', 'off']) {
+    const p = falso({ ...venda, consentimento });
+    assert.equal(p.hotmart, 'h', consentimento);
+    assert.equal(p.banner, false, consentimento);
+  }
+  // Lead e conteúdo com Rastro e banner continuam montando: não há launcher.
+  assert.equal(falso({ perfil: 'conteudo', rastro_slug: 'site', consentimento: 'banner' }).hotmart, null);
+  // Nenhuma linha do catálogo de hoje está em venda + banner.
+  assert.deepEqual(catalogo.urls.filter((l) => l.perfil === 'venda' && l.consentimento === 'banner').map((l) => l.id), []);
+});
+
+test('consentimento × consentMode do Rastro: banner = strict, soft = soft, off = off; o resto não tem par', () => {
+  assert.deepEqual({ ...CONSENT_MODE_DO_RASTRO }, { banner: 'strict', soft: 'soft', off: 'off' });
+  assert.equal(consentModeEsperado('banner'), 'strict');
+  for (const v of ['sem-tracking', 'por-funil', 'strict', 'toString', undefined]) assert.equal(consentModeEsperado(v), null, String(v));
+  for (const [consentimento, consentMode] of Object.entries(CONSENT_MODE_DO_RASTRO)) {
     const p = falso({ rastro_slug: 'stratai', consentimento });
     assert.deepEqual(srcs(p), ['https://tracking.stratacademy.com.br/sa?product=stratai']);
+    assert.equal(p.consentMode, consentMode);
     assert.equal(p.banner, false);
   }
+  // Valor fora da regra com Rastro quebra o build (a checagem catalogo também barra o valor).
+  assert.throws(() => falso({ rastro_slug: 'stratai', consentimento: 'strict' }), /não tem consentMode equivalente/);
+  // Sem Rastro não há consentMode a conferir.
+  assert.equal(plano('https://agenciastrat.com.br/kit/lead/', 'lead').consentMode, null);
 });
 
 test('sem-tracking e por-funil não carregam nada; Umami entra pelo proxy /u/ quando o id existe', () => {
@@ -87,12 +125,6 @@ test('sem-tracking e por-funil não carregam nada; Umami entra pelo proxy /u/ qu
   assert.deepEqual(u.scripts.at(-1), { src: '/u/script.js', attrs: { 'data-website-id': 'abc-123' } });
 });
 
-// Linhas que o kit recusa de propósito até o WEB-72 (Rastro com banner). Linha nova nessa situação tem de entrar aqui.
-const ESPERAM_WEB72 = ['academy'];
-
-test('toda linha do catálogo gera um plano sem erro, menos as que esperam o WEB-72', () => {
-  for (const l of catalogo.urls) {
-    if (ESPERAM_WEB72.includes(l.id)) assert.throws(() => plano(l.url, l.perfil), /WEB-72/, l.id);
-    else assert.doesNotThrow(() => plano(l.url, l.perfil), l.id);
-  }
+test('toda linha do catálogo gera um plano sem erro', () => {
+  for (const l of catalogo.urls) assert.doesNotThrow(() => plano(l.url, l.perfil), l.id);
 });

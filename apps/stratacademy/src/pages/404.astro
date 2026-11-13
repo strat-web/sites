@@ -1,0 +1,21 @@
+---
+// Página 404 da Strat Academy (WEB-75). O Pages serve o 404.html com status 404 em todo caminho que não existe.
+// Os cursos moram em subdomínios (lps/academy): os links são absolutos. O bootcamp está pausado e fica de fora.
+import PaginaNaoEncontrada from '@strat/kit/PaginaNaoEncontrada.astro';
+---
+<PaginaNaoEncontrada
+  marca="academy"
+  titulo="Página não encontrada · Strat Academy"
+  descricao="Este endereço não leva a nenhuma página da Strat Academy. Volte para o início ou siga para um dos cursos de IA e Claude Code."
+  h1="Esta página não existe"
+  inicio="Voltar para o início"
+  links={[
+    { nome: 'Aula gratuita de Claude Code', caminho: 'https://vibecode.stratacademy.com.br/' },
+    { nome: 'Curso Claude Code para Negócios', caminho: 'https://claude.stratacademy.com.br/' },
+    { nome: '+500 skills para o Claude', caminho: 'https://skills.stratacademy.com.br/' },
+    { nome: 'Mentoria de IA aplicada a negócios', caminho: 'https://mentoria.stratacademy.com.br/' },
+  ]}
+>
+  <p>O endereço que você abriu não leva a nenhuma página da Strat Academy. Pode ter mudado de lugar ou ter sido digitado diferente.</p>
+  <p>Se você veio aprender IA pra usar no seu negócio, os caminhos estão aqui embaixo.</p>
+</PaginaNaoEncontrada>

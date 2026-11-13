@@ -11,11 +11,13 @@ on:
 permissions:
   contents: read
 
-# Uma execução por branch: a nova cancela a anterior. Se uma execução ficar presa no GitHub (aconteceu em 11/11/2026:
+# Uma execução por PR (pelo número, não pelo nome da branch: dois PRs da mesma branch, ou de fork com o mesmo nome,
+# não se cancelam): a nova cancela a anterior. Na main, uma por commit e nenhuma cancela a outra, para todo commit
+# mesclado ter o resultado das 6 checagens (WEB-76). Se uma execução ficar presa no GitHub (aconteceu em 11/11/2026:
 # job "em andamento" sem runner, que nem o force-cancel derruba), trocar o prefixo do grupo destrava as próximas.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:

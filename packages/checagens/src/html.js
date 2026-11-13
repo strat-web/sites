@@ -30,17 +30,33 @@ export function tags(html, nome) {
   return [...marcacao(html).matchAll(new RegExp(`<${nome}\\b[^>]*>`, 'gi'))].map((m) => ({ tag: m[0], attrs: atributos(m[0]) }));
 }
 
-/** <script>: atributos e conteúdo. */
+/** <script>: atributos, conteúdo e posição no HTML (`inicio`, para a ordem e para saber se está no <head>). */
 export function scripts(html) {
   return [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)].map((m) => ({
     attrs: atributos(`<script${m[1]}>`),
     conteudo: m[2],
+    inicio: m.index,
   }));
+}
+
+/** Conteúdo bruto de cada <noscript> (o que o navegador sem JavaScript desenha, como o <img> do pixel). */
+export function noscripts(html) {
+  return [...html.matchAll(/<noscript\b[^>]*>([\s\S]*?)<\/noscript>/gi)].map((m) => m[1]);
 }
 
 /** Texto de cada ocorrência de um elemento (sem as tags internas). */
 export function textos(html, nome) {
   return [...html.matchAll(new RegExp(`<${nome}\\b[^>]*>([\\s\\S]*?)<\\/${nome}>`, 'gi'))].map((m) => semTags(m[1]));
+}
+
+/** Posição do </head> no HTML (o mesmo índice de `scripts().inicio`), ignorando o que estiver dentro de <script>.
+ * Sem </head>, a página inteira conta como <head>. */
+export function fimDoHead(html) {
+  const dentroDeScript = [...html.matchAll(/<script\b[^>]*>[\s\S]*?<\/script>/gi)].map((m) => [m.index, m.index + m[0].length]);
+  for (const m of html.matchAll(/<\/head\s*>/gi)) {
+    if (!dentroDeScript.some(([a, b]) => m.index > a && m.index < b)) return m.index;
+  }
+  return Infinity;
 }
 
 /** O que a checagem de SEO e a de links precisam de uma página. */
@@ -55,6 +71,8 @@ export function lerPagina(html) {
     canonical: canonical?.attrs.href,
     noindex: /\b(noindex|none)\b/.test(robots),
     scripts: scripts(html),
+    noscripts: noscripts(html),
+    fimDoHead: fimDoHead(html),
     ids: new Set([...marcacao(html).matchAll(/\s(?:id|name)\s*=\s*"([^"]+)"/gi)].map((m) => m[1])),
   };
 }
