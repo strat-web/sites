@@ -8,7 +8,7 @@
 //   ... --sem-lighthouse                               # peso só pelos bytes (rápido, para o dia a dia)
 //
 // A checagem "build" é o próprio `pnpm build` mais os testes dos pacotes (`pnpm -r test`).
-import { montarContexto } from './contexto.js';
+import { checarApps, montarContexto } from './contexto.js';
 import { checarCatalogo } from './catalogo.js';
 import { checarLinks } from './links.js';
 import { checarPeso } from './peso.js';
@@ -40,17 +40,12 @@ for (let i = 0; i < args.length; i++) {
 }
 
 const ctx = montarContexto({ apps });
-if (!ctx.apps.length) {
-  console.error('nenhum app com dist/: rode `pnpm build` antes');
-  process.exit(2);
-}
 
 const anotacao = process.env.GITHUB_ACTIONS === 'true';
 const rel = (t) => String(t).replaceAll(`${ctx.raiz}/`, '');
 let falhou = false;
-for (const nome of nomes.length ? nomes : Object.keys(CHECAGENS)) {
-  console.log(`\n▸ ${nome}`);
-  const r = await CHECAGENS[nome](ctx, opcoes);
+
+function relatar(nome, r) {
   for (const a of r.avisos) {
     console.log(`  aviso  ${rel(a.onde)}: ${rel(a.msg)}`);
     if (anotacao) console.log(`::warning title=${nome}::${rel(a.onde)}: ${rel(a.msg)}`);
@@ -61,5 +56,21 @@ for (const nome of nomes.length ? nomes : Object.keys(CHECAGENS)) {
   }
   console.log(r.erros.length ? `  ✗ ${nome}: ${r.erros.length} erro(s)` : `  ✓ ${nome}`);
   if (r.erros.length) falhou = true;
+}
+
+// Antes das checagens: todo app pedido tem de ter dist/. App pulado em silêncio daria falso verde (WEB-76).
+const semDist = checarApps(ctx);
+if (semDist.erros.length) {
+  console.log('\n▸ apps');
+  relatar('apps', semDist);
+}
+if (!ctx.apps.length) {
+  console.error('nenhum app com dist/: rode `pnpm build` antes');
+  process.exit(2);
+}
+
+for (const nome of nomes.length ? nomes : Object.keys(CHECAGENS)) {
+  console.log(`\n▸ ${nome}`);
+  relatar(nome, await CHECAGENS[nome](ctx, opcoes));
 }
 process.exit(falhou ? 1 : 0);

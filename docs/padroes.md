@@ -12,7 +12,7 @@ lps/
   academy/<lp>/      claude, skills, mentoria, bootcamp, vibecode, comunidade (um projeto do Pages por subdomínio)
 packages/
   kit/               Layout, Seo, JsonLd, Breadcrumb, Faq, Tracking, sitemap, robots, llms.txt, _headers
-  conteudo/          schema do blog (Zod) e checar-posts
+  conteudo/          schema do blog (Zod) e checar-posts (docs/blog.md)
   checagens/         as checagens da CI (seo, tracking, links, peso, catalogo) sobre o dist/ de cada app
 catalogo/sites.json  fonte única de URLs, ids e tags
 docs/                o manual
@@ -54,12 +54,13 @@ const perguntas = [
 
 | Componente | Props | Gera |
 |---|---|---|
-| `Layout` | `marca`, `titulo`, `descricao`, `imagem?`, `indexar?` (padrão `true`), `tipo?` (`website` ou `article`), `perfil?` (`venda`, `lead` ou `conteudo`); slots: padrão (`<body>`) e `head` | `<html lang="pt-BR">`, `Seo`, `JsonLd` da marca e, com `perfil`, o `Tracking` |
+| `Layout` | `marca`, `titulo`, `descricao`, `imagem?`, `indexar?` (padrão `true`), `tipo?` (`website` ou `article`), `perfil?` (`venda`, `lead` ou `conteudo`), `tituloSocial?` e `descricaoSocial?` (og:title e og:description quando diferem, WEB-32), `viewport?`; slots: padrão (`<body>`) e `head` | `<html lang="pt-BR">`, `Seo`, `JsonLd` da marca e, com `perfil`, o `Tracking` |
 | `Tracking` | `perfil`, `caminho?` | os scripts do perfil com os ids da linha do catálogo (ver `docs/tracking.md`) |
 | `Seo` | as mesmas do `Layout` e `caminho?` | title, description, canonical, robots, `og:*`, `twitter:card` |
 | `JsonLd` | `marca?` e/ou `dados?` (objeto ou lista já montada, ex.: `Article`) | `<script type="application/ld+json">` com `<` escapado |
 | `Breadcrumb` | `itens` (`{ nome, caminho }`, do início à página atual) | trilha visível + `BreadcrumbList` |
 | `Faq` | `perguntas` (`{ pergunta, resposta }`, texto puro), `titulo?` | `<details>` visíveis + `FAQPage` |
+| `PaginaNaoEncontrada` | `marca`, `titulo`, `descricao`, `h1`, `links?` (`{ nome, caminho }`), `inicio?`, `whatsapp?`; slot: o texto | a 404 do app: `Layout` com noindex e sem tracking, o texto e a lista de links (ver "Página 404") |
 
 - `marca` é a chave do catálogo: `agencia`, `stratai`, `academy`, `metricaas`. Marca nova ou rede nova entra em
   `packages/kit/src/marcas.js`, com a fonte no PR.
@@ -69,6 +70,33 @@ const perguntas = [
 - Página de teste com tudo junto: `apps/stratai/src/pages/kit/index.astro` (`/kit/`, noindex).
 - Página com tracking: `perfil` no `Layout` e a linha da URL no catálogo com o mesmo perfil, senão o build quebra.
   Páginas de teste de cada perfil: `/kit/lead/`, `/kit/conteudo/` e `/kit/venda/` (WEB-17).
+
+## Página 404 (WEB-75)
+Todo app tem `src/pages/404.astro`, e o build gera o `dist/404.html`. O Cloudflare Pages serve esse arquivo, com
+status 404, em todo caminho que não existe. Sem ele, o Pages trata o projeto como aplicação de página única e responde
+200 com a home, e o Google conta como soft 404. A checagem `seo` barra app sem `404.html`.
+
+```astro
+---
+import PaginaNaoEncontrada from '@strat/kit/PaginaNaoEncontrada.astro';
+---
+<PaginaNaoEncontrada marca="stratai" titulo="Página não encontrada · StratAI" descricao="..." h1="Esta página não existe"
+  inicio="Voltar para o início" whatsapp="Falar com a gente no WhatsApp"
+  links={[{ nome: 'Fazer meu diagnóstico', caminho: '/raio-x/' }]}>
+  <p>Texto curto na voz da marca.</p>
+</PaginaNaoEncontrada>
+```
+
+- Sempre noindex e sem tracking; fica fora do catálogo, do sitemap e do `llms.txt`. O título e o H1 dela não contam
+  como repetidos.
+- `links` traz as páginas principais do site, escritas uma vez. Link do próprio site só aparece quando a página já
+  existe no build (o componente lê `src/pages`): a página migrada depois entra na 404 sozinha e a que ainda não foi
+  migrada nunca vira link quebrado. Link para outro domínio (`https://`) entra como está.
+- A 404 é servida em qualquer caminho, então endereço relativo (`raio-x/`) quebra o build: use `/raio-x/` ou a URL
+  completa. A checagem `links` confere os links dela a partir da raiz.
+- `whatsapp` põe o link `wa.me` com o telefone da marca em `packages/kit/src/marcas.js`.
+- Conferir no preview: `curl -s -o /dev/null -w '%{http_code}' <preview>/nao-existe/` responde `404`, e a página é a
+  da marca.
 
 ## sitemap.xml, robots.txt e llms.txt (WEB-18)
 Ninguém escreve esses três à mão: a integração `arquivosDoSite` do kit, ligada no `astro.config.mjs` de cada app,
@@ -124,7 +152,9 @@ A mesma integração `arquivosDoSite` grava o `_headers` do Cloudflare Pages em 
 4. **Verificar:** build, as checagens da CI rodando local (`pnpm checar`), o checklist de publicar quando for página
    (`docs/checklist-publicar.md`), o preview do Pages a 390 e 1440 px.
 5. **Documentar:** catálogo, `docs/dominios.md`, `docs/decisoes.md` e `CHANGELOG.md` no mesmo PR.
-6. **PR:** pelo modelo, aberto pela `strat-aibr`, com o link do item, do preview e "como conferir".
+6. **PR:** pelo modelo, aberto pela conta própria do dev (o `gh` logado na máquina de quem fez), com o link do item,
+   do preview e "como conferir". Desde 12/11 não sai mais pela `strat-aibr` (`docs/decisoes.md`). Com 6 PRs abertos,
+   o PR espera numa branch (regras de fluxo abaixo).
 7. **Fechar a volta:** item em Aprovação com o link do PR e do preview; comentário com o que foi feito, o que ficou
    de fora e o que precisa do Helbert. Cartão da sessão no strat-dev (`/base:encerrar cartao`).
 8. **Ajuste:** se o Helbert mover para Em ajuste, o motivo está no comentário. Corrige no mesmo PR e volta para Aprovação.
@@ -134,6 +164,19 @@ A mesma integração `arquivosDoSite` grava o `_headers` do Cloudflare Pages em 
   O item vai no fim: `fix(stratai): links do WhatsApp com wa.me no HTML (WEB-33)`.
 - Título do PR igual ao commit principal.
 - Um PR por item. PR grande (mais de ~600 linhas fora de conteúdo) é sinal de que o item precisava ser dividido.
+- Commit, push e PR pela conta do GitHub de quem fez o trabalho. Conferir antes: `gh api user --jq .login` responde
+  o seu login.
+
+## Fluxo dos PRs (decisão do Helbert, 12/11)
+- No máximo **6 PRs abertos** no repositório. Com 6 abertos, o trabalho fica pronto na branch (com o corpo do PR
+  escrito) e o PR abre quando houver vaga.
+- Pilha de no máximo **2 níveis**: um PR pode depender de outro aberto, mas esse outro não depende de um terceiro.
+- O Helbert revisa em duas janelas: **9h e 17h** (Brasília).
+- PR que só mexe em `apps/<app>`, com as 6 checagens verdes e o `/lab:lp-revisar` aprovado, o dev mescla sem o
+  Helbert (D11). Todo o resto espera a revisão dele.
+- Rebase que exige mudança de código volta para o Helbert, com novo pedido de revisão.
+- Lead de teste em produção: nome "Teste Strat WEB-<n>", e-mail e telefone fictícios, aviso no grupo do
+  comercial antes e o lead apagado do MetricaaS no fim.
 
 ## Checagens da CI (WEB-20)
 Rodam em todo PR (`.github/workflows/checagens.yml`), cada uma num job com o próprio nome, e são as que o ruleset
@@ -142,15 +185,22 @@ da `main` exige. A regra mora em `packages/checagens/` e lê o `dist/` de cada a
 | Checagem | Barra quando |
 |---|---|
 | build | algum app não compila ou algum teste dos pacotes falha (`pnpm build` e `pnpm test`) |
-| seo | `<title>` ou `<h1>` faltando, repetido na página ou repetido no site; sem canonical ou canonical diferente da URL; `<a href="#">` (ou vazio, ou `javascript:`); JSON-LD que não é JSON ou sem `@context`/`@type`; página indexável fora do `sitemap.xml`; sitemap com página que tem noindex ou não existe; app sem `sitemap.xml` ou `robots.txt` |
-| tracking | script do `<Tracking>` faltando ou diferente do que a linha do catálogo pede (`data-ws`, `data-pixel`, `data-website-id`); script de tracking a mais ou em dobro; pixel da Meta, gtag, GTM ou pixel do TikTok colado à mão; slug que o Rastro não conhece (`/sa?product=<slug>` com `known: false`); produto do Rastro que injeta pixel, GA4 ou tag do Google diferente da linha do catálogo, ou com `consentMode` diferente do `consentimento` |
-| links | link interno quebrado (caminho, relativo ou URL do próprio domínio sem arquivo no build); âncora `#id` sem o id na página |
+| (todas) | app (pasta com `package.json` em `apps/` ou `lps/academy/`) sem `dist/`: cada checagem barra antes de começar, em vez de pular o app em silêncio |
+| seo | `<title>` ou `<h1>` faltando, repetido na página ou repetido no site; sem canonical ou canonical diferente da URL; `<a href="#">` (ou vazio, ou `javascript:`); JSON-LD que não é JSON ou sem `@context`/`@type`; página indexável fora do `sitemap.xml`; sitemap com página que tem noindex ou não existe; app sem `sitemap.xml`, `robots.txt` ou `404.html`; 404 sem noindex, sem um `<title>` e um `<h1>`, ou no sitemap |
+| tracking | script do `<Tracking>` faltando ou diferente do que a linha do catálogo pede (`data-ws`, `data-pixel`, `data-website-id`); `m.js` sem `defer`, com `async`, com `type` (só JavaScript clássico), fora do `<head>` ou depois de outro script que executa (JSON-LD não conta); script do `<Tracking>` com `type` que o navegador não executa; script de tracking a mais ou em dobro; pixel da Meta, gtag, GTM ou pixel do TikTok colado à mão, no HTML, em `<noscript>` (inclusive a imagem `facebook.com/tr`) ou dentro de um `.js` do build; slug que o Rastro não conhece (`/sa?product=<slug>` com `known: false`); produto do Rastro que injeta pixel, GA4 ou tag do Google diferente da linha do catálogo, ou com `consentMode` diferente do `consentimento` |
+| links | link interno quebrado (caminho, relativo ou URL do próprio domínio sem arquivo no build); âncora `#id` sem o id na página; endereço relativo na 404 (ela é servida em qualquer caminho) |
 | peso | página acima de 1,5 MB (HTML + CSS, JS, imagem e fonte do build); no Lighthouse em celular, performance abaixo de 90, LCP acima de 2,5 s ou CLS acima de 0,1 |
 | catalogo | página do build sem linha em `catalogo/sites.json` ou com `app` diferente; linha sem campo obrigatório, com valor fora da lista, URL sem barra, id ou URL repetidos |
 
 Na máquina: `pnpm checar` roda tudo (o Lighthouse precisa do Chrome instalado, ~1 min); `pnpm checar:rapido` pula
 o Lighthouse. Uma checagem ou um app: `node packages/checagens/src/cli.js seo links --app apps/stratai`.
-`--sem-rede` não pergunta ao Rastro (só para trabalhar desconectado; na CI ele pergunta sempre).
+`--sem-rede` não pergunta ao Rastro (só para trabalhar desconectado; na CI ele pergunta sempre). Com `--app`, só os
+apps pedidos precisam de `dist/`.
+
+Rastro fora do ar: falha de rede, tempo esgotado (15 s), 5xx, 429 ou resposta sem `known` ganham nova tentativa (3 no
+total, com 3 s e 10 s entre elas). Se o Rastro continuar fora, a checagem barra (sem resposta, nada foi conferido) e
+os slugs seguintes levam uma tentativa só; o caminho é rodar o job de novo quando ele voltar. Resposta 4xx barra na
+hora.
 
 O que não barra (aparece como aviso no log e na anotação do PR):
 - página com tracking sem `umami_website_id` no catálogo: os ids vêm do Strat Tracking e ainda não existem. Quando
@@ -161,6 +211,10 @@ Exceções escritas no código, com o item que as tira:
 - `packages/checagens/src/esqueletos.js`: a home de cada app é um esqueleto do WEB-15 (noindex, sem tracking) até
   o item de migração. A checagem exige noindex e nenhum tracking nessas URLs e quebra quando a página real ganha o
   `<Tracking>`, pedindo para tirar a URL da lista no mesmo PR;
+- `packages/checagens/src/excecoes-peso.js`: página migrada sem mudança que ainda não cabe no orçamento do Lighthouse
+  (hoje só a home da StratAI, WEB-32). Cada uma tem um piso, o número da página no ar no dia da migração: entre o piso
+  e o orçamento a checagem só avisa; abaixo do piso, barra. O limite de 1,5 MB continua valendo. A URL sai da lista
+  no item que acertar o desempenho da página;
 - `/u/` não é conferido como link: o proxy do Umami é do Strat Tracking, fora do build.
 
 O peso é medido no `dist/` servido na própria máquina da CI. No Lighthouse, os scripts do `<Tracking>` (Rastro,

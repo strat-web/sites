@@ -1,0 +1,21 @@
+---
+// Raio-X de IA, migrado do strat-lps (lps/stratai/raio-x/index.html) sem mudar texto, layout nem tracking (WEB-32).
+// Tracking pelo kit: Rastro raio-x-ia e MetricaaS agencia-strat (linha "stratai-raio-x" do catálogo). O viewport
+// mantém o viewport-fit=cover da página no ar (a barra de baixo usa env(safe-area-inset-bottom)).
+import Layout from '@strat/kit/Layout.astro';
+import head from '../../html/raio-x.head.html?raw';
+import corpo from '../../html/raio-x.corpo.html?raw';
+---
+<Layout
+  marca="stratai"
+  perfil="lead"
+  titulo="Raio-X de IA · Quanto a sua empresa perde por mês sem IA? · StratAI"
+  descricao="Responda 5 perguntas e receba um laudo de IA feito pra sua empresa: quanto custa o trabalho repetitivo, o que está travando, por onde começar e um plano em 3 passos."
+  tituloSocial="Raio-X de IA · Quanto a sua empresa perde por mês sem IA?"
+  descricaoSocial="5 perguntas, 2 minutos. Um laudo feito pra sua empresa: quanto custa o trabalho repetitivo, onde a IA ajuda mais e por onde começar."
+  imagem="/midia/og.png"
+  viewport="width=device-width, initial-scale=1, viewport-fit=cover"
+>
+  <Fragment slot="head" set:html={head} />
+  <Fragment set:html={corpo} />
+</Layout>
