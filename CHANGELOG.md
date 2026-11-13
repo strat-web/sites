@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- docs: cai o limite de 6 PRs abertos (Helbert e Jhonathan, 13/11) em decisoes.md, padroes.md e CLAUDE.md; as outras regras de fluxo de 12/11 continuam (WEB-69)
 - test(agenciastrat): portão F2, página de teste /kit/portao/ (noindex) com o kit inteiro, linha do catálogo marcada com "teste": true e o checklist de publicar A a E em docs/auditoria/2026-11/portao-f2.md (WEB-22)
 - chore(stratai): saem as páginas de teste /kit/, /kit/lead/ e /kit/conteudo/ (noindex) e as 3 linhas delas no catálogo, antes de o domínio virar; os testes do kit passam a usar as linhas da home e do /raio-x/ (WEB-32)
 - docs(catalogo): a observação da agenciastrat e o achado do formulário na auditoria da Agência passam a dizer que os 6 campos da empresa já chegavam ao lead em lead_custom_values (premissa corrigida na revisão do strat-lps#86) (WEB-71)

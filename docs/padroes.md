@@ -157,8 +157,8 @@ A mesma integração `arquivosDoSite` grava o `_headers` do Cloudflare Pages em 
    (`docs/checklist-publicar.md`), o preview do Pages a 390 e 1440 px.
 5. **Documentar:** catálogo, `docs/dominios.md`, `docs/decisoes.md` e `CHANGELOG.md` no mesmo PR.
 6. **PR:** pelo modelo, aberto pela conta própria do dev (o `gh` logado na máquina de quem fez), com o link do item,
-   do preview e "como conferir". Desde 12/11 não sai mais pela `strat-aibr` (`docs/decisoes.md`). Com 6 PRs abertos,
-   o PR espera numa branch (regras de fluxo abaixo).
+   do preview e "como conferir". Desde 12/11 não sai mais pela `strat-aibr` (`docs/decisoes.md`). Item pronto vira PR na
+   hora, sem limite de PRs abertos (regras de fluxo abaixo).
 7. **Fechar a volta:** item em Aprovação com o link do PR e do preview; comentário com o que foi feito, o que ficou
    de fora e o que precisa do Helbert. Cartão da sessão no strat-dev (`/base:encerrar cartao`).
 8. **Ajuste:** se o Helbert mover para Em ajuste, o motivo está no comentário. Corrige no mesmo PR e volta para Aprovação.
@@ -171,9 +171,8 @@ A mesma integração `arquivosDoSite` grava o `_headers` do Cloudflare Pages em 
 - Commit, push e PR pela conta do GitHub de quem fez o trabalho. Conferir antes: `gh api user --jq .login` responde
   o seu login.
 
-## Fluxo dos PRs (decisão do Helbert, 12/11)
-- No máximo **6 PRs abertos** no repositório. Com 6 abertos, o trabalho fica pronto na branch (com o corpo do PR
-  escrito) e o PR abre quando houver vaga.
+## Fluxo dos PRs (decisão do Helbert, 12/11; limite de PRs revogado em 13/11)
+- Sem limite de PRs abertos: item pronto vira PR na hora (`docs/decisoes.md`, 13/11).
 - Pilha de no máximo **2 níveis**: um PR pode depender de outro aberto, mas esse outro não depende de um terceiro.
 - O Helbert revisa em duas janelas: **9h e 17h** (Brasília).
 - PR que só mexe em `apps/<app>`, com as 6 checagens verdes e o `/lab:lp-revisar` aprovado, o dev mescla sem o
