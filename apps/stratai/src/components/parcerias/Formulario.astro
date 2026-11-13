@@ -82,7 +82,7 @@ const etapas = ['Sobre você', 'Seu trabalho', 'Suas indicações'];
         <button type="button" class="botao botao-lima" data-avancar>Continuar <span class="seta" aria-hidden="true">→</span></button>
         <button type="submit" class="botao botao-lima" data-enviar hidden data-strat-cta="cadastro-enviar">Quero ser parceiro <span class="seta" aria-hidden="true">→</span></button>
       </div>
-      <p class="letra">Seus dados vão só para o time da Strat, para responder este cadastro.</p>
+      <p class="letra">Seus dados vão só para o time da Strat, para responder este cadastro. Veja a <a href="/politica-de-privacidade/">política de privacidade</a>.</p>
 
       <div class="sucesso" hidden tabindex="-1">
         <svg viewBox="0 0 80 80" class="check" aria-hidden="true"><circle cx="40" cy="40" r="36" /><path d="M24 41 L35 52 L57 29" /></svg>
@@ -253,7 +253,7 @@ const etapas = ['Sobre você', 'Seu trabalho', 'Suas indicações'];
         })
         .catch(() => {
           erro.hidden = false;
-          erro.textContent = 'Não deu para enviar agora. Confira a conexão e tente de novo.';
+          erro.textContent = 'Não deu para enviar agora. Confira a conexão e tente de novo. Se continuar, escreva para contato@strat.tec.br.';
         })
         .finally(() => { enviando = false; enviar.disabled = false; });
     });

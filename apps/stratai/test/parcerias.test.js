@@ -101,6 +101,6 @@ test('dist: /parcerias/ com o Tracking da linha do catálogo e indexável', { sk
   assert.doesNotMatch(html, /fonts\.(googleapis|gstatic)\.com/, 'fontes pelo próprio app');
   assert.deepEqual(scripts, [
     '<script defer src="https://t.metricaas.com.br/m.js" data-ws="agencia-strat">',
-    '<script defer src="https://tracking.stratacademy.com.br/sa?product=stratai">',
+    '<script defer src="https://tracking.stratacademy.com.br/sa?product=stratai-parcerias">',
   ]);
 });
