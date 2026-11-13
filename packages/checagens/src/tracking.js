@@ -2,7 +2,7 @@
 // gtag colado à mão (no HTML, em <noscript> ou num .js do build), m.js fora do lugar (ordem, defer e type) e slug que
 // o Rastro não conhece. O esperado de cada página sai da mesma regra do componente (planoDeTracking do kit), lida da
 // linha do catálogo; a checagem compara com o HTML gerado.
-import { HOTMART_LAUNCHER, METRICAAS, RASTRO, UMAMI, planoDeTracking } from '@strat/kit';
+import { HOTMART_LAUNCHER, METRICAAS, RASTRO, UMAMI, consentModeEsperado, planoDeTracking } from '@strat/kit';
 import { ehPaginaDeErro } from './contexto.js';
 import { lerPagina } from './html.js';
 import { ESQUELETOS } from './esqueletos.js';
@@ -18,6 +18,9 @@ const COLADO_A_MAO = [
   [/\bgtag\s*\(/, 'gtag'],
   [/analytics\.tiktok\.com/i, 'pixel do TikTok'],
 ];
+
+// Script de venda de terceiro (launcher, checkout ou widget da Hotmart): carrega na abertura, sem esperar o aceite.
+const DE_VENDA = /hotmart\.com/i;
 
 const ATRIBUTOS = ['data-ws', 'data-pixel', 'data-pixel-consent', 'data-website-id'];
 
@@ -84,6 +87,15 @@ export function checarPaginaTracking(pagina, catalogo, r) {
 
   const linha = (catalogo.urls || []).find((l) => l.url === onde);
   if (!linha) return []; // a checagem catalogo acusa
+  // Com banner nada de venda carrega antes do "aceitar" (WEB-81): o kit já recusa venda + banner (até o WEB-85), e
+  // aqui barra também o script da Hotmart que entrou por outro caminho (colado à mão, widget de checkout, build velho).
+  if (linha.consentimento === 'banner') {
+    for (const s of scripts) {
+      if (DE_VENDA.test(`${s.attrs.src || ''}\n${s.conteudo}`)) {
+        r.erro(onde, `script da Hotmart em página com consentimento "banner": ${descrever(s)} carrega antes do "aceitar" (WEB-85)`);
+      }
+    }
+  }
   let plano;
   try {
     plano = planoDeTracking({ catalogo, url: onde, perfil: linha.perfil });
@@ -196,9 +208,9 @@ const vazio = (v) => (v === '' || v === undefined ? null : v);
 
 /**
  * O que o produto no Rastro faz de diferente do que a linha do catálogo pede (pedido do Helbert no repasse do WEB-69):
- * o pixel e o GA4 que ele injeta, a tag do Google (googleTagId ou googleAdsId) e o consentMode. Só compara o campo que
- * o Rastro manda. Hoje o kit ainda recusa "banner" com Rastro no build, então aqui sobra off × soft, ao pé da letra.
- * A regra do WEB-72 é "banner" no catálogo = "strict" no Rastro; levar isso para o kit e para cá é o WEB-81.
+ * o pixel e o GA4 que ele injeta, a tag do Google (googleTagId ou googleAdsId) e o consentMode. Pixel, GA4 e tag do
+ * Google só se comparam quando o Rastro manda o campo; o consentMode é obrigatório (sem ele, barra). O consentimento segue a regra do WEB-72 (WEB-81): banner = strict, soft = soft, off = off; qualquer
+ * outro par (inclusive um consentMode que o kit não conhece) barra.
  */
 export function diferencasDoRastro(cfg, linha) {
   const difs = [];
@@ -215,8 +227,21 @@ export function diferencasDoRastro(cfg, linha) {
     const ok = quer ? doRastro.includes(quer) && doRastro.length === 1 : doRastro.length === 0;
     if (!ok) difs.push(`tag do Google: o Rastro injeta "${doRastro.join(', ')}", o catálogo pede "${quer ?? ''}"`);
   }
-  if ('consentMode' in cfg && cfg.consentMode !== linha.consentimento) {
-    difs.push(`consentimento: o produto está em consentMode "${cfg.consentMode}", o catálogo diz "${linha.consentimento}"`);
+  // O consentMode não é opcional: sem ele não dá para conferir o par do catálogo, e "não veio" não pode virar verde
+  // (revisão do WEB-81). O /sa de hoje manda o campo em todo produto conhecido.
+  const quer = consentModeEsperado(linha.consentimento);
+  if (vazio(cfg.consentMode) === null) {
+    difs.push(
+      `consentimento: o Rastro não mandou consentMode, então não dá para conferir o "${linha.consentimento}" do catálogo ` +
+        `(banner = strict, soft = soft, off = off)`,
+    );
+  } else if (!quer) {
+    difs.push(`consentimento: o catálogo diz "${linha.consentimento}", que não tem consentMode no Rastro (banner, soft ou off)`);
+  } else if (cfg.consentMode !== quer) {
+    difs.push(
+      `consentimento: o produto está em consentMode "${cfg.consentMode}", o catálogo diz "${linha.consentimento}" ` +
+        `(pede "${quer}" no Rastro)`,
+    );
   }
   return difs;
 }
