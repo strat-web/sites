@@ -53,5 +53,10 @@ indicação: o bloco de ferramentas parceiras com desconto entra quando a lista 
   montado por `src/lib/parcerias-lead.js`. `campos.tipo_cadastro = parceria` separa o parceiro do lead de cliente;
   as respostas vão como `instagram_ou_linkedin`, `atuacao`, `contatos`, `segmentos`, `tem_indicacao`, `experiencia`,
   `inicio` e `detalhes`. Chave que o workspace não tem é descartada sem erro: as chaves precisam existir em
-  Configurações → Campos personalizados do `agencia-strat`. A tela de recebido só aparece quando o MetricaaS confirma.
+  Configurações → Campos personalizados do `agencia-strat` (criadas em 13/11/2026, rótulo "Parceria: …"). A tela de
+  recebido só aparece quando o MetricaaS confirma.
+- **Sem Lead na Meta:** o envio leva `meta: false` (MetricaaS, PR 697, tag v11): o parceiro não vira Lead no pixel
+  nem na CAPI. O fluxo "Parceiro do site vai para o funil Parceiros" do `agencia-strat` (lead criado, origem
+  formulário, `tipo_cadastro = parceria`) move o lead para o funil Parceiros, cujas etapas não têm evento.
+- **Consentimento:** `soft`, com o produto próprio `stratai-parcerias` no Rastro (WEB-72: página nova de lead).
 - O rodapé ganhou o link da política de privacidade (o cadastro coleta dados pessoais; checklist A5).
