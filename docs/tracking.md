@@ -54,6 +54,11 @@ checagem `catalogo`. O texto é o mesmo da descrição do campo em `catalogo/sit
 **Banner do kit** (só sem Rastro e com `banner`): o texto e a chave `strat_cookies` são os da Agência (laudo de
 31/10/2026). "Aceitar" chama `mtc.consentir()` e o pixel liga; "Recusar" não manda nada à Meta. O cadastro do lead e a
 CAPI do MetricaaS não dependem do banner. O link da política vem de `privacidade` em `packages/kit/src/marcas.js`.
+O aceite não tem prazo (WEB-80): o `m.js` não tem fila nem evento próprio e troca o `window.mtc` inteiro quando roda,
+então, se ele ainda não rodou (rede lenta, celular), o aceite (o clique ou o `sim` guardado) espera o `load` do próprio
+`<script>` do `m.js` e o `load` da página, sem timer, e chama o `consentir` uma vez só. Antes do aceite, nada chama o
+`consentir`. O script mora em `packages/kit/src/banner-cookies.js` (ES5, lido como texto pelo `<Tracking>`) e o
+teste roda o mesmo texto num DOM simulado com o `m.js` chegando depois de 8 s (`test/banner-cookies.test.js`).
 
 **Rastro com `banner`** (WEB-81): o produto no Rastro tem de estar em `strict`, e o banner do kit **não** entra. O
 Rastro em `strict` (e em `soft`) já mostra o aviso dele no rodapé ("recusar" e "aceitar") e guarda a escolha no
@@ -83,9 +88,12 @@ com teste).
 **Conteúdo:** carrega o mesmo da marca e não tem formulário de lead (`data-strat-leadform`) na página.
 
 **Páginas de teste** (noindex, só no preview; saem antes de o domínio virar), cada uma com a lista do que deve
-disparar: `agenciastrat/kit/lead/` (lead sem Rastro, banner), `stratai/kit/lead/` (lead com Rastro e MetricaaS),
-`stratai/kit/conteudo/`, `stratacademy/kit/venda/` (produto `mentoria`, launcher da Hotmart) e
-`stratacademy/kit/conteudo/` (Rastro com `banner`: produto `site` em `strict`, o aviso é o do Rastro; WEB-81).
+disparar: `agenciastrat/kit/lead/` (lead sem Rastro, banner), `stratacademy/kit/venda/` (produto `mentoria`,
+launcher da Hotmart) e `stratacademy/kit/conteudo/` (Rastro com `banner`: produto `site` em `strict`, o aviso é o do
+Rastro; WEB-81). A página do portão F2, `agenciastrat/kit/portao/` (conteúdo sem Rastro, banner; WEB-22), junta o kit
+inteiro, e a linha dela no catálogo leva `"teste": true`, como toda página de teste nova. As da StratAI (`/kit/lead/`,
+lead com Rastro e MetricaaS, e `/kit/conteudo/`) saíram antes de o domínio virar (WEB-32): o lead com Rastro e
+MetricaaS se confere na home e no `/raio-x/` da StratAI.
 
 ## Ids por marca (conferir no catálogo; aqui é referência)
 

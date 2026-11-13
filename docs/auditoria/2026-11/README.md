@@ -1,5 +1,8 @@
 # Auditoria 2026-11 · relatório do portão F1 (WEB-14)
 
+Portão F2 (WEB-22, 12/11): a página de teste do kit nas 6 checagens e no checklist de publicar está em
+[portao-f2.md](portao-f2.md).
+
 Junta a auditoria automática ([WEB-10](#auditoria-automática--2026-11-04-web-10), abaixo), a conferência no navegador
 ([WEB-11](#conferência-no-navegador--2026-11-11-web-11), abaixo) e a correção do catálogo ([WEB-13](https://plane.strat.tec.br/grupo-strat/browse/WEB-13/)). Cada achado tem
 um destino: um item que já existia, o checklist da migração (`docs/checklist-publicar.md`) ou um item novo em Triagem.

@@ -9,9 +9,8 @@ Site da StratAI no Cloudflare Pages (projeto `stratai`, prévia em https://strat
 | `/` | `src/pages/index.astro` + `src/html/home.*.html` | `stratai` | Rastro `stratai` e MetricaaS `agencia-strat` |
 | `/raio-x/` | `src/pages/raio-x/index.astro` + `src/html/raio-x.*.html` | `stratai-raio-x` | Rastro `raio-x-ia` e MetricaaS `agencia-strat` |
 | `/politica-de-privacidade/` | `src/pages/politica-de-privacidade/index.astro` + `src/html/politica-de-privacidade.*.html` | `stratai-politica-de-privacidade` | nenhum (como no ar) |
-| `/kit/`, `/kit/lead/`, `/kit/conteudo/` | páginas de teste do kit (noindex) | `stratai-kit-*` | saem antes de o domínio virar |
-| `/recuperacao/v1/` a `/v4/` | `src/pages/recuperacao/v*/index.astro` + `src/html/recuperacao/v*.*.html` | `stratai-recuperacao-v*` | Rastro `stratai` e MetricaaS `agencia-strat` |
-| `/recuperacao/cases/` e `/recuperacao/cases/<cliente>/` | `src/pages/recuperacao/cases/` (conteúdo em `public/recuperacao/comum/cases.js`) | `stratai-recuperacao-case*` | Rastro `stratai` e MetricaaS `agencia-strat` |
+| `/recuperacao/v1/` a `/v4/` | `src/pages/recuperacao/v*/index.astro` + `src/html/recuperacao/v*.*.html` | `stratai-recuperacao-v*` | Rastro `stratai-recuperacao` (soft) e MetricaaS `agencia-strat` |
+| `/recuperacao/cases/` e `/recuperacao/cases/<cliente>/` | `src/pages/recuperacao/cases/` (conteúdo em `public/recuperacao/comum/cases.js`) | `stratai-recuperacao-case*` | Rastro `stratai-recuperacao` (soft) e MetricaaS `agencia-strat` |
 
 ## Funil de recuperação de vendas (`/recuperacao/`, WEB-91)
 Formulário de qualificação do produto de recuperação comissionada (15% só do que for recuperado), construído na
@@ -24,6 +23,10 @@ low ticket da V4 ser definido (os `[X]` marcam o que falta).
   não clicável) e o mesmo fim ("seu perfil entrou em análise"). V4: compra rápida e agenda com o Helbert no fim.
 - Lead: `mtc.lead()` uma vez no fim (o m.js vem do `<Tracking>`), só em `stratai.com.br` (o `.pages.dev` não envia).
   A e B vão como `qualificado`, C como `desqualificado`. Eventos `funil_*` e `cta_click`, sem resposta nem dado pessoal.
+  O envio tem prazo (tag 8 s + `mtc.lead()` 15 s); na falha, a página avisa, oferece "Tentar de novo" e o contato
+  `contato@strat.tec.br` e não apaga nada (`funil_lead_erro`). Na prévia, `?simular=erro` mostra essa tela.
+- Consentimento `soft` com o produto `stratai-recuperacao` no Rastro (regra do WEB-72, decisão do Helbert no #24).
+  A política de privacidade tem a seção do funil (dados, nota A/B/C que decide o evento na Meta, base legal e prazo).
 - V1, V2 e V4 trazem a abertura pronta no HTML (`data-pre="abertura"`), para a primeira tela pintar antes do JS (LCP).
 
 ## Como as páginas migradas são montadas
@@ -44,6 +47,10 @@ low ticket da V4 ser definido (os `[X]` marcam o que falta).
 | Na política, `midia/` e `agencia/css/` viraram `/midia/` e `/css/` | com a barra no fim, o caminho relativo deixaria de achar a imagem e o CSS. No ar, o CSS vinha por um 301 para agencia.stratai.com.br |
 | `<meta name="robots" content="index, follow">`, `twitter:card` na política e o JSON-LD da StratAI no `<head>` | o kit põe em toda página |
 | `/raio-x/v1/` (primeira versão, noindex, só referência) não veio: responde 301 para `/raio-x/` | página não divulgada; sem ela, o 301 evita o 404 |
+
+As páginas de teste do kit (`/kit/`, `/kit/lead/` e `/kit/conteudo/`, noindex, WEB-16 e WEB-17) saíram em 13/11/2026,
+antes de o domínio virar para cá (WEB-32). As de teste do `<Tracking>` que ficam estão na Agência e na Academy
+(`docs/tracking.md`); o código das que saíram está no histórico do git.
 
 ## Redirecionamentos (`public/_redirects`)
 `/politica-de-privacidade` e `/politica-de-privacidade.html` → `/politica-de-privacidade/`; `/agencia` e `/agencia/*`
