@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- docs(dominios): zona agenciastrat.com.br ativa na Cloudflare desde 2026-11-04 (nameservers no registro.br trocados no WEB-1), conferida pela API em 2026-11-13 (WEB-90)
 - feat(kit): banner do catálogo = strict do Rastro: o kit monta Rastro com banner sem o banner de cookies do kit (o aviso é o do Rastro), a checagem tracking compara banner = strict, soft = soft e off = off e barra o /sa sem consentMode, venda com banner quebra o build e script da Hotmart em página com banner barra (o launcher carregaria antes do aceite, até o WEB-85), e a página de teste stratacademy.com.br/kit/conteudo/ (noindex) (WEB-81)
 - feat(stratai): home, /raio-x/ e /politica-de-privacidade/ migradas do strat-lps sem mudar texto, layout nem tracking, com o Tracking do kit, 301 da casa antiga no _redirects, linha da política no catálogo, og e viewport próprios no Layout e a home na exceção do Lighthouse com piso (WEB-32)
 - docs(pages): functions/* no caminho observado dos 4 projetos do Pages (gravado na Cloudflare em 12/11), mudança só na Function passa a disparar build (TRACK-9)
