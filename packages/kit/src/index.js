@@ -9,3 +9,5 @@ export {
 export { arquivosDoSite } from './arquivos-do-site.js';
 // Cabeçalhos de segurança e noindex do *.pages.dev, gravados em _headers pela mesma integração (WEB-21).
 export { SEGURANCA, PAGES_DEV, montarHeaders } from './cabecalhos.js';
+// Página 404 de cada app: links da 404 que só aparecem quando a página existe no build (WEB-75).
+export { rotaDoArquivo, linksDaPaginaDeErro } from './pagina-de-erro.js';
