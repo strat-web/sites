@@ -1,0 +1,17 @@
+---
+// Página 404 da StratAI (WEB-75). O Pages serve o 404.html com status 404 em todo caminho que não existe.
+// Link de página ainda não migrada só aparece quando a página entra no build (PaginaNaoEncontrada do kit).
+import PaginaNaoEncontrada from '@strat/kit/PaginaNaoEncontrada.astro';
+---
+<PaginaNaoEncontrada
+  marca="stratai"
+  titulo="Página não encontrada · StratAI"
+  descricao="Este endereço não leva a nenhuma página da StratAI. Volte para o início, faça o diagnóstico ou fale com a gente no WhatsApp."
+  h1="Esta página não existe"
+  inicio="Voltar para o início"
+  whatsapp="Falar com a gente no WhatsApp"
+  links={[{ nome: 'Fazer meu diagnóstico', caminho: '/raio-x/' }]}
+>
+  <p>O endereço que você abriu não leva a nenhuma página da StratAI. Pode ter mudado de lugar ou ter sido digitado diferente.</p>
+  <p>Os caminhos que funcionam estão aqui embaixo.</p>
+</PaginaNaoEncontrada>

@@ -28,7 +28,7 @@ test('perfil precisa existir e bater com o catálogo', () => {
 
 test('venda: Rastro do produto e launcher da Hotmart, sem MetricaaS', () => {
   const p = plano('https://stratacademy.com.br/kit/venda/', 'venda');
-  assert.deepEqual(srcs(p), ['https://tracking.stratacademy.com.br/sa?product=mentoria']);
+  assert.deepEqual(srcs(p), ['https://tracking.stratacademy.com.br/sa?product=mentoria', '/u/script.js']);
   assert.equal(p.hotmart, '6f2c2394-9d1b-3999-9a14-087cfe3fd764');
   assert.equal(p.banner, false);
   assert.throws(() => falso({ perfil: 'venda', hotmart_conta: 'h' }), /rastro_slug/);
@@ -37,14 +37,16 @@ test('venda: Rastro do produto e launcher da Hotmart, sem MetricaaS', () => {
 
 test('lead com Rastro: m.js primeiro e sem data-pixel (o pixel vem do Rastro)', () => {
   const p = plano('https://stratai.com.br/kit/lead/', 'lead');
-  assert.deepEqual(srcs(p), ['https://t.metricaas.com.br/m.js', 'https://tracking.stratacademy.com.br/sa?product=stratai']);
+  assert.deepEqual(srcs(p), ['https://t.metricaas.com.br/m.js', 'https://tracking.stratacademy.com.br/sa?product=stratai', '/u/script.js']);
+  // Umami do Strat Tracking: o website do host, o mesmo do stratai.com.br/ (TRACK-8)
+  assert.deepEqual(p.scripts[2].attrs, { 'data-website-id': 'd6394916-40aa-45da-b80e-7285ec5bcb45' });
   assert.deepEqual(p.scripts[0].attrs, { 'data-ws': 'agencia-strat' });
   assert.equal(p.hotmart, null);
 });
 
 test('lead sem Rastro e com banner: m.js liga o pixel e segura até o aceite', () => {
   const p = plano('https://agenciastrat.com.br/kit/lead/', 'lead');
-  assert.deepEqual(srcs(p), ['https://t.metricaas.com.br/m.js']);
+  assert.deepEqual(srcs(p), ['https://t.metricaas.com.br/m.js', '/u/script.js']);
   assert.deepEqual(p.scripts[0].attrs, {
     'data-ws': 'strat-marketing', 'data-pixel': '1815630929780241', 'data-pixel-consent': 'aguardar',
   });
