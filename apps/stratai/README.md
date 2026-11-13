@@ -10,6 +10,21 @@ Site da StratAI no Cloudflare Pages (projeto `stratai`, prévia em https://strat
 | `/raio-x/` | `src/pages/raio-x/index.astro` + `src/html/raio-x.*.html` | `stratai-raio-x` | Rastro `raio-x-ia` e MetricaaS `agencia-strat` |
 | `/politica-de-privacidade/` | `src/pages/politica-de-privacidade/index.astro` + `src/html/politica-de-privacidade.*.html` | `stratai-politica-de-privacidade` | nenhum (como no ar) |
 | `/kit/`, `/kit/lead/`, `/kit/conteudo/` | páginas de teste do kit (noindex) | `stratai-kit-*` | saem antes de o domínio virar |
+| `/recuperacao/v1/` a `/v4/` | `src/pages/recuperacao/v*/index.astro` + `src/html/recuperacao/v*.*.html` | `stratai-recuperacao-v*` | Rastro `stratai` e MetricaaS `agencia-strat` |
+| `/recuperacao/cases/` e `/recuperacao/cases/<cliente>/` | `src/pages/recuperacao/cases/` (conteúdo em `public/recuperacao/comum/cases.js`) | `stratai-recuperacao-case*` | Rastro `stratai` e MetricaaS `agencia-strat` |
+
+## Funil de recuperação de vendas (`/recuperacao/`, WEB-91)
+Formulário de qualificação do produto de recuperação comissionada (15% só do que for recuperado), construído na
+DEV-94 para o tráfego pago. **Rascunho e `noindex`** até os cases terem conteúdo e autorização dos clientes e o produto
+low ticket da V4 ser definido (os `[X]` marcam o que falta).
+- A fonte é o projeto `FunilRecuperacao-StratAI` (dev_ops do Jhonathan); `scripts/para-o-repo.py` gera
+  `public/recuperacao/` e `src/html/recuperacao/`. Mudança de texto ou regra: no `public/recuperacao/comum/funil.js`
+  (perguntas, saídas, lâminas, agenda, produto, classificação, envio) e no `cases.js` (cases).
+- 4 versões com as mesmas 7 perguntas, as 2 lâminas antes do formulário (o que a gente banca e o carrossel de cases,
+  não clicável) e o mesmo fim ("seu perfil entrou em análise"). V4: compra rápida e agenda com o Helbert no fim.
+- Lead: `mtc.lead()` uma vez no fim (o m.js vem do `<Tracking>`), só em `stratai.com.br` (o `.pages.dev` não envia).
+  A e B vão como `qualificado`, C como `desqualificado`. Eventos `funil_*` e `cta_click`, sem resposta nem dado pessoal.
+- V1, V2 e V4 trazem a abertura pronta no HTML (`data-pre="abertura"`), para a primeira tela pintar antes do JS (LCP).
 
 ## Como as páginas migradas são montadas
 - O HTML de cada página está em `src/html/<página>.head.html` (favicon, cor do tema, fontes, `<style>`) e

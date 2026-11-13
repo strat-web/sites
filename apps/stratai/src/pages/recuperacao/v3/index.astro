@@ -1,0 +1,21 @@
+---
+// Funil de recuperação de vendas, V3 (conversa em tela cheia) — WEB-91, vindo da DEV-94. O miolo vem de src/html/recuperacao/
+// (gerado pelo FunilRecuperacao-StratAI/scripts/para-o-repo.py); texto e regras em public/recuperacao/comum/funil.js.
+// Tracking pelo kit (linha "stratai-recuperacao-v3" do catálogo): Rastro stratai e MetricaaS agencia-strat. O lead sai
+// por mtc.lead() no fim, só em stratai.com.br. Rascunho: noindex até os cases e o low ticket terem conteúdo.
+import Layout from '@strat/kit/Layout.astro';
+import head from '../../../html/recuperacao/v3.head.html?raw';
+import corpo from '../../../html/recuperacao/v3.corpo.html?raw';
+---
+<Layout
+  marca="stratai"
+  perfil="lead"
+  indexar={false}
+  titulo="Conversa sobre recuperação de vendas · StratAI"
+  descricao="7 perguntas diretas para ver se a sua operação é aprovada. A gente recupera Pix, boleto e carrinho e fica com 15% só do que voltar."
+  imagem="/midia/og.png"
+  viewport="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
+>
+  <Fragment slot="head" set:html={head} />
+  <Fragment set:html={corpo} />
+</Layout>

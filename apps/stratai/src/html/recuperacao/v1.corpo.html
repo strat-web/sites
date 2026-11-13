@@ -1,0 +1,21 @@
+
+<h1 class="sr">Recuperação de vendas da StratAI: veja se a sua operação é aprovada</h1>
+<!-- V1: telas, fim com "seu perfil entrou em análise". O motor é comum/telas.js; texto e regras em comum/funil.js. -->
+<header class="topo">
+  <div class="topo-in">
+    <a class="logo" href="https://stratai.com.br/" aria-label="StratAI"><img src="/recuperacao/comum/strat-wordmark-branco.png" alt="Strat" width="61" height="22"><span>.ai</span></a>
+    <span class="mono tag">Recuperação de vendas</span>
+    <div class="direita">
+      <span class="mono" id="contador" aria-live="polite"></span>
+      <button class="reiniciar" id="reiniciar" type="button" hidden>Recomeçar</button>
+    </div>
+  </div>
+  <div class="barra" aria-hidden="true"><i id="barra"></i></div>
+</header>
+<main id="app" tabindex="-1" data-pre="abertura"><section class="tela"><div class="abertura tela"><span class="mono"><span class="ponto"></span>&nbsp; Recuperação de vendas · 15% só do que voltar</span><h2 class="titulo-abertura">Quanto da sua venda <span class="lima">morre</span> entre o Pix gerado e o Pix pago?</h2><p class="texto">A gente vai atrás de quem gerou o Pix, o boleto ou largou o carrinho, e traz essa venda de volta. Sem setup, sem mensalidade: a gente fica com 15% só do que recuperar. Do que você já fatura, a gente não toca em um real.</p><div class="pilares"><div class="pilar"><b>R$ 0</b><span>de setup</span></div><div class="pilar"><b>R$ 0</b><span>de mensalidade</span></div><div class="pilar"><b>15%</b><span>só do que a gente recuperar</span></div></div><p class="garantia">Você não tem nada a perder: se a gente não recuperar nada, você não paga nada.</p><div class="acao"><button class="btn btn-lima" id="comecar" type="button">Ver se a minha operação é aprovada<svg class="seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button><p class="letra-miuda">7 perguntas · 2 minutos. No fim, o seu perfil entra em análise e a gente responde no seu WhatsApp em até 1 dia útil.</p><p class="nao-e">Não é para quem ainda não vende pela internet.</p></div></div></section></main>
+
+<script src="/recuperacao/comum/funil.js"></script>
+<script src="/recuperacao/comum/cases.js"></script>
+<script src="/recuperacao/comum/laminas.js"></script>
+<script src="/recuperacao/comum/telas.js"></script>
+<script>TELAS.iniciar({ versao: 'v1' });</script>

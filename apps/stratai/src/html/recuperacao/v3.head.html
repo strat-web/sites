@@ -1,0 +1,90 @@
+<!-- Gerado por FunilRecuperacao-StratAI/scripts/para-o-repo.py a partir de site/v3/index.html. -->
+<link rel="icon" href="/midia/favicon/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="/midia/favicon/favicon-192.png">
+<link rel="apple-touch-icon" href="/midia/favicon/favicon-180.png">
+<meta name="theme-color" content="#191919">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="/recuperacao/comum/base.css">
+<link rel="stylesheet" href="/recuperacao/comum/laminas.css">
+<style>
+  /* V3: conversa em tela cheia (modelo enviado pelo Jhonathan em 12/11): etapas no topo, avatar em cada fala da
+     StratAI e a caixinha de resposta logo abaixo da última mensagem, com o rótulo em cima. */
+  html, body { height: 100%; }
+  .app { height: 100vh; height: 100dvh; display: flex; flex-direction: column; }
+  .cab { flex: none; background: var(--card); border-bottom: 1px solid var(--line); box-shadow: 0 6px 24px rgba(0,0,0,.25); position: relative; z-index: 2; }
+  .cab-in { max-width: 1240px; margin: 0 auto; padding: 18px 20px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px; }
+  .reiniciar { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: none; color: var(--ink-2); display: grid; place-items: center; }
+  .reiniciar:hover { color: var(--ink); border-color: var(--ink-2); }
+
+  /* etapas: bolinhas ligadas por linha */
+  .etapas { list-style: none; margin: 0 auto; padding: 0; display: flex; align-items: flex-start; width: 100%; max-width: 640px; }
+  .etapas li { flex: 1; position: relative; display: grid; justify-items: center; gap: 8px; }
+  .etapas li::before { content: ""; position: absolute; top: 8px; left: calc(-50% + 10px); right: calc(50% + 10px); height: 2px; background: var(--line); }
+  .etapas li:first-child::before { display: none; }
+  .etapas li.feito::before, .etapas li.agora::before { background: var(--lime); }
+  .etapas i { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #5a5a55; background: var(--card); position: relative; z-index: 1; transition: background .3s, border-color .3s, box-shadow .3s; }
+  .etapas li.feito i { background: var(--lime); border-color: var(--lime); }
+  .etapas li.agora i { background: var(--ink); border-color: var(--ink); box-shadow: 0 0 0 5px rgba(198,255,52,.22); }
+  .etapas small { font: 500 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--mute); white-space: nowrap; }
+  .etapas li.agora small, .etapas li.feito small { color: var(--ink-2); }
+  @media (max-width: 640px) { .etapas small { display: none; } .cab-in { padding: 14px 16px; } .cab .logo span, .cab .logo { transform: scale(.92); } }
+
+  .rolagem { flex: 1; overflow-y: auto; scroll-behavior: smooth;
+    background-image: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px); background-size: 48px 48px; }
+  .coluna { max-width: 1040px; margin: 0 auto; padding: 32px 20px 120px; display: flex; flex-direction: column; gap: 22px; }
+  @media (max-width: 640px) { .coluna { padding: 20px 14px 96px; gap: 16px; } }
+  .conversa { display: flex; flex-direction: column; gap: 22px; }
+  @media (max-width: 640px) { .conversa { gap: 14px; } }
+  .aviso-topo { align-self: center; max-width: 520px; text-align: center; font-size: 13px; color: var(--ink-2); border: 1px solid var(--line); border-radius: 12px; padding: 8px 14px; }
+
+  .linha { display: flex; gap: 18px; align-items: flex-start; animation: entra .4s var(--ease) both; }
+  .linha.eu { justify-content: flex-end; }
+  .av { width: 56px; height: 56px; border-radius: 50%; background: #111; border: 2px solid var(--lime); display: grid; place-items: center; flex: none; box-shadow: 0 8px 22px rgba(0,0,0,.35); }
+  .av img { width: 38px; height: auto; display: block; }
+  @media (max-width: 640px) { .linha { gap: 10px; } .av { width: 38px; height: 38px; } .av img { width: 26px; } }
+
+  .msg { max-width: 760px; padding: 18px 24px; border-radius: 22px; font-size: 18px; line-height: 1.55; word-wrap: break-word; min-width: 0; }
+  @media (max-width: 640px) { .msg { padding: 13px 16px; border-radius: 18px; font-size: 16px; } }
+  .msg.eles { background: var(--card); border: 1px solid var(--line); }
+  .msg.eu { background: var(--lime); color: var(--lime-ink); font-weight: 500; max-width: 560px; }
+  .msg b.l { color: var(--lime); }
+  .msg .grande { display: block; font-size: 34px; font-weight: 700; line-height: 1.1; color: var(--lime); margin: 6px 0; font-variant-numeric: tabular-nums; }
+  .msg .miuda { display: block; font-size: 13px; color: var(--ink-2); margin-top: 8px; }
+  .msg ol { margin: 6px 0 2px; padding-left: 22px; }
+  .msg ol li { margin: 4px 0; }
+  .msg .ficha { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin-top: 8px; font-size: 16px; }
+  .msg .ficha span { color: var(--ink-2); }
+  .msg .btn { margin-top: 12px; min-height: 46px; font-size: 15px; }
+  .msg.lamina { max-width: 900px; width: 100%; padding: 22px; }
+  .msg.msg-aviso { background: none; border: 0; padding: 0; }
+  .digitando { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 22px 24px; display: flex; gap: 6px; }
+  .digitando i { width: 8px; height: 8px; border-radius: 50%; background: var(--ink-2); animation: pula 1.1s infinite; }
+  .digitando i:nth-child(2) { animation-delay: .15s; } .digitando i:nth-child(3) { animation-delay: .3s; }
+  @keyframes pula { 0%, 60%, 100% { transform: none; opacity: .5; } 30% { transform: translateY(-4px); opacity: 1; } }
+
+  /* a caixinha de resposta, à direita, logo abaixo da conversa */
+  .zona { align-self: flex-end; width: min(600px, 100%); display: grid; gap: 12px; animation: entra .4s var(--ease) both; }
+  .rotulo { padding-left: 8px; color: var(--ink-2); }
+  #priv .letra-miuda { padding: 0 12px; text-align: right; }
+  .respostas { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+  .resp { width: 100%; border: 1.5px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: 14px 22px; min-height: 56px; font-size: 17px; font-weight: 500; text-align: left; line-height: 1.3; transition: border-color .2s, background .2s; }
+  .resp:hover { border-color: var(--lime); background: #2a3016; }
+  .resp.lima { background: var(--lime); color: var(--lime-ink); border-color: var(--lime); text-align: center; font-weight: 600; }
+  .resp.lima:hover { box-shadow: 0 0 0 6px rgba(198,255,52,.14); }
+  .caixa { display: flex; align-items: center; gap: 8px; padding: 8px 8px 8px 26px; border-radius: 999px; background: var(--card); border: 2px solid var(--line); box-shadow: 0 10px 30px rgba(0,0,0,.3); transition: border-color .2s, box-shadow .2s; }
+  .caixa:focus-within { border-color: var(--lime); box-shadow: 0 0 0 4px rgba(198,255,52,.14), 0 10px 30px rgba(0,0,0,.3); }
+  .caixa input { flex: 1; min-width: 0; min-height: 52px; border: 0; background: transparent; font-size: 18px; color: var(--ink); }
+  .caixa input:focus, .caixa input:focus-visible { outline: none; box-shadow: none; } /* o foco aparece na borda da caixinha */
+  .caixa input::placeholder { color: var(--mute); }
+  .caixa button { width: 52px; height: 52px; border-radius: 50%; border: 0; background: var(--card-2); color: var(--mute); display: grid; place-items: center; flex: none; transition: background .2s, color .2s; }
+  .caixa.cheia button { background: var(--lime); color: var(--lime-ink); }
+  @media (max-width: 640px) { .caixa { padding-left: 18px; } .caixa input { font-size: 16px; min-height: 46px; } .caixa button { width: 46px; height: 46px; } .resp { font-size: 16px; min-height: 50px; } }
+</style>
+<link rel="preload" as="script" href="/recuperacao/comum/funil.js">
+<link rel="preload" as="script" href="/recuperacao/comum/cases.js">
+<link rel="preload" as="script" href="/recuperacao/comum/laminas.js">
+<link rel="preload" as="script" href="/recuperacao/comum/conversa.js">
