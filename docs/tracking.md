@@ -83,11 +83,12 @@ com teste).
 **Conteúdo:** carrega o mesmo da marca e não tem formulário de lead (`data-strat-leadform`) na página.
 
 **Páginas de teste** (noindex, só no preview; saem antes de o domínio virar), cada uma com a lista do que deve
-disparar: `agenciastrat/kit/lead/` (lead sem Rastro, banner), `stratai/kit/lead/` (lead com Rastro e MetricaaS),
-`stratai/kit/conteudo/`, `stratacademy/kit/venda/` (produto `mentoria`, launcher da Hotmart) e
-`stratacademy/kit/conteudo/` (Rastro com `banner`: produto `site` em `strict`, o aviso é o do Rastro; WEB-81). A página do
-portão F2, `agenciastrat/kit/portao/` (conteúdo sem Rastro, banner; WEB-22), junta o kit inteiro, e a linha dela no
-catálogo leva `"teste": true`, como toda página de teste nova.
+disparar: `agenciastrat/kit/lead/` (lead sem Rastro, banner), `stratacademy/kit/venda/` (produto `mentoria`,
+launcher da Hotmart) e `stratacademy/kit/conteudo/` (Rastro com `banner`: produto `site` em `strict`, o aviso é o do
+Rastro; WEB-81). A página do portão F2, `agenciastrat/kit/portao/` (conteúdo sem Rastro, banner; WEB-22), junta o kit
+inteiro, e a linha dela no catálogo leva `"teste": true`, como toda página de teste nova. As da StratAI (`/kit/lead/`,
+lead com Rastro e MetricaaS, e `/kit/conteudo/`) saíram antes de o domínio virar (WEB-32): o lead com Rastro e
+MetricaaS se confere na home e no `/raio-x/` da StratAI.
 
 ## Ids por marca (conferir no catálogo; aqui é referência)
 
