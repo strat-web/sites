@@ -2,9 +2,14 @@
 
 Uma entrada por decisão, com data e quem decidiu. A mais nova em cima.
 
+## 2026-11-13 · Sem limite de PRs abertos (Helbert e Jhonathan, conversa pessoal; trazida pelo Jhonathan)
+Cai a regra de "no máximo 6 PRs abertos" de 12/11: item pronto vira PR na hora, sem esperar vaga numa branch. As
+outras regras de fluxo de 12/11 continuam (pilha de 2 níveis, janelas de revisão, D11, rebase que muda código e lead
+de teste). Motivo: as branches prontas paravam dias esperando vaga e envelheciam atrás da `main`, o que gerava conflito
+na hora de abrir o PR.
+
 ## 2026-11-12 · Regras de fluxo dos PRs (Helbert, sessão de 12/11 pela cabine; trazida pelo Jhonathan)
-- **No máximo 6 PRs abertos** ao mesmo tempo no `strat-web/sites`. PR novo só abre quando ficarem menos de 6; até lá,
-  o trabalho fica pronto numa branch, com o corpo do PR escrito.
+- ~~**No máximo 6 PRs abertos** ao mesmo tempo no `strat-web/sites`.~~ Revogada em 13/11 (entrada acima).
 - **Pilha de no máximo 2 níveis:** um PR pode depender de outro PR aberto, mas esse outro não pode depender de um terceiro.
 - **Janelas de revisão do Helbert:** 9h e 17h (horário de Brasília).
 - **D11 na prática:** PR que só mexe em `apps/<app>` (sem `packages/` e sem `catalogo/`), com as 6 checagens verdes e
