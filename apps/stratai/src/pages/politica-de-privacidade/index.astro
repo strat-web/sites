@@ -1,0 +1,20 @@
+---
+// Política de privacidade da StratAI, migrada do strat-lps (lps/stratai/politica-de-privacidade.html) com o mesmo
+// texto (WEB-32). Agora com barra no fim; a forma sem barra responde 301 pelo public/_redirects. Sem tracking, como no
+// ar (linha "stratai-politica-de-privacidade" do catálogo, consentimento sem-tracking).
+import Layout from '@strat/kit/Layout.astro';
+import head from '../../html/politica-de-privacidade.head.html?raw';
+import corpo from '../../html/politica-de-privacidade.corpo.html?raw';
+---
+<Layout
+  marca="stratai"
+  perfil="conteudo"
+  tipo="article"
+  titulo="Política de privacidade · StratAI"
+  descricao="Como a StratAI trata os dados pessoais de quem visita a página e faz o diagnóstico: o que coletamos, para quê, com quem compartilhamos, por quanto tempo guardamos e como exercer os seus direitos."
+  descricaoSocial="Como a StratAI trata os dados pessoais de quem visita a página e faz o diagnóstico."
+  imagem="/midia/og.png"
+>
+  <Fragment slot="head" set:html={head} />
+  <Fragment set:html={corpo} />
+</Layout>

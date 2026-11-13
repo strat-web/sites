@@ -7,9 +7,10 @@ import { dirname, join } from 'node:path';
 import { checarCatalogo } from '../src/catalogo.js';
 import { RAIZ, checarApps, montarContexto } from '../src/contexto.js';
 import { checarLinks } from '../src/links.js';
-import { bytesDaPagina } from '../src/peso.js';
+import { bytesDaPagina, julgarMedicao } from '../src/peso.js';
 import { checarSeo } from '../src/seo.js';
 import { checarTracking, diferencasDoRastro, lerRastro, slugConhecido } from '../src/tracking.js';
+import { EXCECOES_LIGHTHOUSE } from '../src/excecoes-peso.js';
 
 const SITE = 'https://stratai.com.br';
 const linha = (extra = {}) => ({
@@ -128,11 +129,22 @@ test('tracking: Umami com id no catálogo exige o script; sem id é só aviso', 
 });
 
 test('tracking: esqueleto passa sem tracking e barra quando ganha tracking', async () => {
-  const esqueleto = pagina({ caminho: '/', head: '' });
-  const linhas = [linha({ id: 'stratai', url: `${SITE}/` })];
+  // metricaas.com.br/ segue esqueleto até o WEB-36 (packages/checagens/src/esqueletos.js).
+  const MET = 'https://metricaas.com.br/';
+  const comUrl = (p) => ({ ...p, url: MET });
+  const linhas = [linha({ id: 'metricaas', url: MET })];
+  const esqueleto = comUrl(pagina({ caminho: '/', head: '' }));
   assert.deepEqual((await checarTracking(ctx([esqueleto], { linhas }), { semRede: true })).erros, []);
-  const migrada = pagina({ caminho: '/' });
+  const migrada = comUrl(pagina({ caminho: '/' }));
   assert.match(msgs(await checarTracking(ctx([migrada], { linhas }), { semRede: true })), /tirar a URL de packages\/checagens\/src\/esqueletos\.js/);
+});
+
+test('tracking: a home da StratAI saiu dos esqueletos (WEB-32) e passa com o Tracking do catálogo', async () => {
+  const linhas = [linha({ id: 'stratai', url: `${SITE}/` })];
+  const home = pagina({ caminho: '/' });
+  assert.deepEqual((await checarTracking(ctx([home], { linhas }), { semRede: true })).erros, []);
+  const semTracking = pagina({ caminho: '/', head: '' });
+  assert.match(msgs(await checarTracking(ctx([semTracking], { linhas }), { semRede: true })), /falta https:\/\/t\.metricaas\.com\.br\/m\.js/);
 });
 
 test('slugConhecido lê o known do script do Rastro', async () => {
@@ -205,6 +217,21 @@ test('diferencasDoRastro: tag do Google aceita o googleTagId ou o googleAdsId, e
   assert.deepEqual(diferencasDoRastro(mentoria, l), []);
   assert.deepEqual(diferencasDoRastro({ known: true }, l), []);
   assert.equal(diferencasDoRastro({ ...mentoria, googleTagId: 'GT-X' }, l).length, 1);
+});
+
+test('peso: exceção do Lighthouse avisa acima do piso e barra abaixo dele (WEB-32)', () => {
+  const exc = { 'https://x.com.br/': { item: 'WEB-0', motivo: 'teste', piso: { performance: 68, lcpMs: 5400, cls: 0.1 } } };
+  assert.equal(julgarMedicao('https://x.com.br/', { performance: 95, lcpMs: 1200, cls: 0 }, exc), 'ok');
+  assert.equal(julgarMedicao('https://x.com.br/', { performance: 80, lcpMs: 3900, cls: 0 }, exc), 'aviso');
+  assert.equal(julgarMedicao('https://x.com.br/', { performance: 60, lcpMs: 3900, cls: 0 }, exc), 'erro');
+  assert.equal(julgarMedicao('https://x.com.br/', { performance: 80, lcpMs: 6000, cls: 0 }, exc), 'erro');
+  assert.equal(julgarMedicao('https://y.com.br/', { performance: 80, lcpMs: 3900, cls: 0 }, exc), 'erro');
+  // exceções reais hoje: a home da StratAI (WEB-87) e duas páginas com falso vermelho da CI (WEB-88)
+  assert.deepEqual(Object.keys(EXCECOES_LIGHTHOUSE), [
+    'https://stratai.com.br/',
+    'https://stratai.com.br/politica-de-privacidade/',
+    'https://stratai.com.br/raio-x/',
+  ]);
 });
 
 // WEB-76: checagem de tracking sem falso verde.

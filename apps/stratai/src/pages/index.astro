@@ -1,12 +1,20 @@
 ---
+// Home da StratAI, migrada do strat-lps (lps/stratai/index.html) sem mudar texto, layout nem tracking (WEB-32).
+// O HTML da página mora em src/html/ (head e corpo); o kit põe título, descrição, canonical, Open Graph, JSON-LD
+// e o <Tracking> (Rastro stratai e MetricaaS agencia-strat, da linha "stratai" do catálogo). O que mudou em relação
+// ao strat-lps está no README do app.
 import Layout from '@strat/kit/Layout.astro';
+import head from '../html/home.head.html?raw';
+import corpo from '../html/home.corpo.html?raw';
 ---
 <Layout
   marca="stratai"
-  titulo="StratAI · esqueleto do monorepo"
-  descricao="Esqueleto do app stratai no monorepo strat-web/sites. A migração do site vem em item próprio."
-  indexar={false}
+  perfil="lead"
+  titulo="StratAI · Agentes de IA para a sua empresa"
+  descricao="A StratAI mapeia onde a sua empresa perde tempo e constrói os agentes de IA que assumem esse trabalho: no WhatsApp, no CRM e nas rotinas do time."
+  descricaoSocial="Mapeamos onde a sua operação perde tempo e construímos os agentes de IA que assumem esse trabalho. Faça o diagnóstico grátis em 3 minutos."
+  imagem="/midia/og.png"
 >
-  <h1>StratAI</h1>
-  <p>Esqueleto do app <code>stratai</code> (WEB-15), já com o Layout do kit (WEB-16). A migração do site vem em item próprio; nenhuma página real está aqui.</p>
+  <Fragment slot="head" set:html={head} />
+  <Fragment set:html={corpo} />
 </Layout>

@@ -1,0 +1,515 @@
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3.5 7.5 12 13l8.5-5.5"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5ZM14 3v5h5M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-print" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></symbol>
+  <symbol id="i-turn" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 13.7-5.7L20 8.5M20 4v4.5h-4.5M20 12a8 8 0 0 1-13.7 5.7L4 15.5M4 20v-4.5h4.5"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+  <symbol id="bot" viewBox="0 0 32 32"><circle class="bot-ant" cx="16" cy="4.6" r="2.2"/><path d="M15.2 6.5h1.6V10h-1.6zM3 15.5h2v5H3zM27 15.5h2v5h-2z"/><rect x="6" y="10" width="20" height="15" rx="5"/><g class="bot-eyes"><circle cx="12" cy="17" r="2.3"/><circle cx="20" cy="17" r="2.3"/></g><rect class="bot-mouth" x="13" y="21.2" width="6" height="1.5" rx=".75"/></symbol>
+</svg>
+
+<div class="app" id="app">
+  <div class="grid-bg" aria-hidden="true"></div>
+  <div class="glow" aria-hidden="true"></div>
+
+  <header class="top">
+    <span class="brand" aria-label="StratAI"><img src="/midia/strat-branco.png" alt="Strat" width="705" height="230"><span>.ai</span></span>
+    <span class="tag" id="topTag">Raio-X de IA</span>
+    <div class="top-acts"><button class="btn btn-ghost" type="button" id="topRestart" hidden><svg class="i"><use href="#i-turn"/></svg>Recomeçar</button></div>
+  </header>
+
+  <main class="stage" id="stage">
+    <!-- 1. abertura -->
+    <section class="screen intro" id="s-intro" aria-labelledby="h1">
+      <span class="eyebrow rise">Raio-X de IA · StratAI</span>
+      <h1 class="rise" id="h1">Quanto a sua empresa <em>perde por mês</em> sem IA?</h1>
+      <p class="lead rise">Cinco perguntas, só tocando. No fim, um laudo feito pra sua empresa: quanto custa o trabalho repetitivo, onde a IA ajuda mais e por onde começar.</p>
+      <div class="ctas rise"><button class="btn btn-lime lg" type="button" id="start">Fazer meu diagnóstico <small>2 MIN</small><svg class="i"><use href="#i-arrow"/></svg></button></div>
+      <div class="meta rise"><span>5 perguntas</span><span>laudo em PDF no seu e-mail</span><span>grátis, sem compromisso</span></div>
+      <div class="gets rise" aria-label="O que vem no laudo">
+        <div><small>Você descobre</small><b class="r">Quanto o repetitivo custa por mês</b></div>
+        <div><small>E quanto</small><b class="l">Dá pra recuperar com agentes</b></div>
+        <div><small>E por onde</small><b>Começar, com um plano em 3 passos</b></div>
+      </div>
+    </section>
+
+    <!-- 2. perguntas e dados -->
+    <section class="screen q" id="s-q" hidden>
+      <div class="prog"><span><b id="stage-lbl"></b> · <span id="count"></span></span><button class="back" id="back" type="button"><svg class="i" style="width:15px;height:15px"><use href="#i-back"/></svg>Voltar</button></div>
+      <div class="dots" id="dots" aria-hidden="true"></div>
+      <div class="card" id="card" aria-live="polite"></div>
+      <p class="fine hint" id="kbdHint">No computador: teclas 1 a 9 escolhem e Enter avança.</p>
+    </section>
+
+    <!-- 3. análise -->
+    <section class="screen an" id="s-an" hidden>
+      <div class="card">
+        <div class="an-head"><span class="av-bot" aria-hidden="true"><svg class="bot-ic"><use href="#bot"/></svg></span><div><h2 id="anTitle">Escrevendo o seu laudo</h2><p class="sub">Cruzando as suas respostas com o que agentes já fazem no seu segmento.</p></div></div>
+        <div class="writing" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        <ul class="an-list" id="anList"></ul>
+      </div>
+    </section>
+
+    <!-- 4. laudo pronto + e-mail + leitura -->
+    <section class="screen done" id="s-done" hidden></section>
+
+    <!-- 5. o laudo completo -->
+    <section class="screen report" id="s-laudo" hidden>
+      <div class="report-bar">
+        <button class="btn btn-ghost" type="button" id="backDone"><svg class="i"><use href="#i-back"/></svg>Voltar</button>
+        <span class="eyebrow mute">O laudo completo · o mesmo que vai em PDF</span>
+        <button class="btn btn-ghost" type="button" id="printBtn"><svg class="i"><use href="#i-print"/></svg>Salvar em PDF</button>
+      </div>
+      <article class="doc" id="doc"></article>
+    </section>
+  </main>
+
+  <footer class="bottom">
+    <span>StratAI · Grupo Strat · Joinville/SC · CNPJ 54.740.945/0001-79</span>
+    <span>Toda alavanca tem um número. · <a href="/politica-de-privacidade/" target="_blank" rel="noopener">Política de privacidade</a></span>
+  </footer>
+</div>
+
+<script>
+(() => {
+  'use strict';
+  /* ===== CONFIGURAÇÃO =====
+     CAL_LINK ..... link do Cal.com da "Leitura do laudo". Vazio = o botão aparece como "em breve".
+     WEBHOOK_URL .. automação (n8n) que recebe o pacote do laudo, gera o PDF e manda o e-mail. Vazio = nada é enviado;
+                    o Lead continua indo pelo Rastro (stratTrack). */
+  const CONFIG = { CAL_LINK: 'https://cal.com/helbert-paranhos-z6ssu5/leitura-do-laudo', WEBHOOK_URL: '' };
+  const HOURS_MONTH = 160; // a mesma conta da calculadora da LP: pessoas × 160 h × parte repetitiva
+  const CAP = [0.08, 0.2, 0.4, 0.6]; // parte do repetitivo que a IA assume em cada nível
+
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const fmt = (n) => Math.round(n).toLocaleString('pt-BR');
+  const brl = (n) => 'R$ ' + fmt(n);
+  const first = (n) => (n || '').trim().split(/\s+/)[0] || '';
+  const find = (list, v) => list.find((x) => x.v === v) || null;
+  const ph = (nome, props) => { try { if (window.posthog && posthog.capture) posthog.capture(nome, Object.assign({ product: 'raio-x-ia', pagina: 'raio-x' }, props)); } catch (e) {} };
+  const app = $('#app');
+  app.addEventListener('pointermove', (e) => { app.style.setProperty('--mx', (e.clientX / innerWidth * 100).toFixed(1) + '%'); app.style.setProperty('--my', (e.clientY / innerHeight * 100).toFixed(1) + '%'); });
+
+  /* ---------- dados ---------- */
+  const SEGMENTS = [
+    { v: 'servicos', l: 'Serviços', t: 'montar propostas, responder orçamento na hora e cobrar cliente', tilt: { Vendas: 15, Gestão: 5 } },
+    { v: 'saude', l: 'Saúde', t: 'agendar e confirmar consultas, fazer o pré-atendimento e reduzir faltas', tilt: { Atendimento: 20 } },
+    { v: 'varejo', l: 'Varejo', t: 'responder preço e estoque, recuperar carrinho e cuidar do pós-venda', tilt: { Atendimento: 15, Vendas: 10 } },
+    { v: 'alimentacao', l: 'Alimentação', t: 'anotar pedidos e reservas, responder cardápio e confirmar presença', tilt: { Atendimento: 20 } },
+    { v: 'industria', l: 'Indústria', t: 'cotar compras, acompanhar pedidos e fechar o relatório de produção', tilt: { Operação: 20 } },
+    { v: 'construcao', l: 'Construção e imóveis', t: 'qualificar o lead, agendar visita e montar orçamento', tilt: { Vendas: 20 } },
+    { v: 'educacao', l: 'Educação', t: 'atender aluno e responsável, conduzir matrícula e cobrar mensalidade', tilt: { Atendimento: 15 } },
+    { v: 'juridico', l: 'Jurídico e contábil', t: 'triar casos novos, controlar prazos e cobrar documentos do cliente', tilt: { Conhecimento: 15, Operação: 5 } },
+    { v: 'beleza', l: 'Beleza', t: 'confirmar horários, preencher buracos da agenda e reativar cliente sumido', tilt: { Atendimento: 20 } },
+    { v: 'logistica', l: 'Logística', t: 'responder o "cadê minha entrega", cotar frete e avisar atrasos', tilt: { Operação: 15, Atendimento: 5 } },
+    { v: 'agencia', l: 'Agência e marketing', t: 'montar relatório de cliente, gerar variações de criativo e organizar a fila de jobs', tilt: { Gestão: 15, Operação: 5 } },
+    { v: 'outro', l: 'Outro', t: 'atender, organizar dados e montar relatórios', tilt: {} }
+  ];
+  const SIZES = [
+    { v: '1', l: 'Só eu', p: 1, pts: 3 }, { v: '2-10', l: '2 a 10', p: 4, pts: 8 }, { v: '11-50', l: '11 a 50', p: 15, pts: 14 },
+    { v: '51-200', l: '51 a 200', p: 60, pts: 18 }, { v: '200+', l: 'Mais de 200', p: 200, pts: 20 }
+  ];
+  const GARG = [
+    { v: 'atend', l: 'Responder clientes', s: 'Atendimento lento ou fora do horário', a: 'Atendimento' },
+    { v: 'lead', l: 'Fazer follow-up de vendas', s: 'Lead sem follow-up', a: 'Vendas' },
+    { v: 'planilha', l: 'Copiar dados entre planilhas e sistemas', s: 'Digitação manual entre planilha e sistema', a: 'Operação' },
+    { v: 'relatorio', l: 'Montar relatórios', s: 'Relatório montado na mão', a: 'Gestão' },
+    { v: 'dono', l: 'Tudo passa por mim', s: 'Dono como gargalo', a: 'Gestão' },
+    { v: 'cabeca', l: 'Tudo depende de poucas pessoas', s: 'Conhecimento na cabeça de poucas pessoas', a: 'Conhecimento' }
+  ];
+  const FRACS = [
+    { v: '.15', l: 'Pouco', f: .15 }, { v: '.3', l: 'Uns 30%', f: .3 }, { v: '.5', l: 'Metade', f: .5 }, { v: '.7', l: 'Mais da metade', f: .7 }, { v: '?', l: 'Não sei dizer', f: .25 }
+  ];
+  const IA = [{ v: '0', l: 'Ainda não usamos', sc: 10 }, { v: '1', l: 'Cada um usa do seu jeito', sc: 35 }, { v: '2', l: 'Já faz parte da rotina', sc: 65 }, { v: '3', l: 'Já tem coisa rodando sozinha', sc: 90 }];
+  const URG = [{ v: 'ja', l: 'O quanto antes', pts: 15 }, { v: '3m', l: 'Nos próximos 3 meses', pts: 8 }, { v: 'pesq', l: 'Sem prazo, só pesquisando', pts: 1 }];
+  const AREAS = ['Atendimento', 'Vendas', 'Operação', 'Conhecimento', 'Gestão'];
+  const LEVERS = {
+    'Atendimento': { n: 'Agente de atendimento no WhatsApp', d: 'Responde na hora, a qualquer hora, resolve o que é repetido e só chama o time quando precisa de gente.' },
+    'Vendas': { n: 'Agente de qualificação e follow-up', d: 'Responde o lead em segundos, faz as perguntas certas, insiste no tempo certo e entrega a reunião marcada pro vendedor.' },
+    'Operação': { n: 'Automação entre planilha, sistema e CRM', d: 'O dado entra uma vez e vai sozinho pra onde precisa. Ninguém mais copia e cola entre telas.' },
+    'Conhecimento': { n: 'Segundo cérebro da empresa', d: 'O jeito de fazer da empresa organizado num lugar só, que o time e os agentes consultam na hora.' },
+    'Gestão': { n: 'Relatório que se monta sozinho', d: 'Segunda às 7h o número da semana já chega no seu WhatsApp, sem ninguém montar planilha.' }
+  };
+  const LEVELS = [
+    { n: 'IA solta', d: 'Cada um usa quando lembra. O ganho não aparece na empresa.' },
+    { n: 'IA no time', d: 'Uso frequente, mas sem padrão e sem o contexto da empresa.' },
+    { n: 'IA com contexto', d: 'A IA conhece a empresa e já roda algumas rotinas.' },
+    { n: 'Operação com agentes', d: 'Agentes fecham processos; o time cuida da exceção.' }
+  ];
+  const GTXT = {
+    atend: 'Cada mensagem que espera vira cliente que procura outra empresa. Fora do horário, a resposta simplesmente não existe.',
+    lead: 'Lead que não recebe retorno no mesmo dia esfria rápido. Sem follow-up, o investimento pra trazer esse contato se perde.',
+    planilha: 'Copiar dado entre telas toma horas do time e abre espaço pra erro de digitação que só aparece depois.',
+    cabeca: 'Quando o jeito de fazer está na cabeça de poucas pessoas, a empresa trava nas férias, na saída ou na sobrecarga delas.',
+    dono: 'Se tudo passa pelo dono, o crescimento fica limitado ao tempo de uma pessoa.',
+    relatorio: 'Relatório montado na mão chega atrasado e consome horas que poderiam ir pra decisão.'
+  };
+  const EXTXT = {
+    'Atendimento': 'Sábado, 22h47: um cliente pergunta horário e valor. O agente responde em segundos, reserva o horário e avisa o time na segunda às 8h.',
+    'Vendas': 'Terça, 23h10: chega um lead do anúncio. O agente faz duas perguntas, entende o tamanho da empresa e deixa a reunião marcada pro vendedor.',
+    'Operação': 'Segunda, 7h02: os pedidos do fim de semana já estão lançados no sistema, as notas emitidas e a planilha de estoque atualizada.',
+    'Conhecimento': 'Quarta, 15h20: um funcionário novo pergunta a regra de troca. O agente responde com o trecho do manual da empresa.',
+    'Gestão': 'Segunda, 7h00: o fechamento da semana chega no seu WhatsApp com faturamento, atendimentos e as propostas paradas.'
+  };
+  const DEMOS = {
+    'Atendimento': [['c', 'Oi! Vocês atendem sábado? Queria saber valor e horário'], ['a', 'Oi! Atendemos sim. Sábado tenho 9h ou 10h30. Te passo os valores e já deixo reservado?'], ['c', '10h30, pode reservar'], ['a', 'Prontinho: sábado, 10h30, no seu nome. Te lembro na sexta.'], ['sys', '✓ horário reservado · equipe avisada às 8h']],
+    'Vendas': [['c', 'Boa noite, vi o anúncio. Quanto custa pra minha empresa?'], ['a', 'Boa noite! Depende de 2 coisas: quantas pessoas são e pra quando você precisa?'], ['c', 'Somos 12, queria começar mês que vem'], ['a', 'Perfeito. Deixo uma conversa de 20 min com o consultor amanhã às 10h?'], ['sys', '✓ lead qualificado · reunião marcada no CRM']],
+    'Operação': [['c', 'Lançou os pedidos de ontem?'], ['a', 'Lancei os 14 pedidos no sistema, emiti as notas e atualizei a planilha de estoque.'], ['a', '2 pedidos estão com endereço incompleto. Já pedi o complemento pros clientes.'], ['sys', '✓ 14 pedidos lançados · ninguém digitou nada']],
+    'Conhecimento': [['c', 'Qual o prazo de troca pra quem comprou no atacado?'], ['a', '30 dias com a nota fiscal. Está no manual de trocas, item 4. Quer o texto pronto pro cliente?'], ['c', 'Manda'], ['a', 'Enviado. Também registrei o caso no histórico do cliente.'], ['sys', '✓ resposta tirada do manual da empresa']],
+    'Gestão': [['a', 'Bom dia! Fechamento da semana:'], ['a', '38 atendimentos, 9 propostas enviadas e 3 paradas há 5 dias.'], ['c', 'Quais estão paradas?'], ['a', 'Te mandei a lista com o último contato de cada uma. Quer que eu faça o follow-up?'], ['sys', '✓ relatório montado sozinho · 0 planilhas']]
+  };
+
+  /* ---------- estado e conta ---------- */
+  let S = {}, RUN = {}, HOURLY = 30;
+  const newRun = () => ({ id: 'r' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), no: 'RX-' + Date.now().toString(36).toUpperCase().slice(-6) });
+  function reset() { S = { seg: null, size: null, garg: [], frac: null, ia: null, urg: null, name: '', company: '', phone: '', email: '' }; RUN = newRun(); HOURLY = 30; }
+  function calc(st = S) {
+    const size = find(SIZES, st.size) || SIZES[1], fr = find(FRACS, st.frac) || FRACS[1], urg = find(URG, st.urg);
+    const hm = Math.max(16, Math.round(size.p * HOURS_MONTH * fr.f)), dev = [Math.round(hm * .4), Math.round(hm * .6)];
+    const iaO = find(IA, st.ia) || IA[0], mat = iaO.sc, lv = +iaO.v;
+    const seg = find(SEGMENTS, st.seg) || SEGMENTS[11];
+    const scores = {};
+    AREAS.forEach((a) => {
+      let s = 15 + (seg.tilt[a] || 0);
+      st.garg.forEach((g) => { const G = find(GARG, g); if (G && G.a === a) s += 38; });
+      if (a === 'Operação' && fr.f >= .5) s += 10;
+      scores[a] = Math.max(12, Math.min(97, s));
+    });
+    const ranked = AREAS.slice().sort((x, y) => scores[y] - scores[x]);
+    const pts = size.pts + (urg ? urg.pts : 0) + Math.min(15, st.garg.length * 3) + (fr.f >= .5 ? 5 : 0);
+    return { size, fr, urg, hm, dev, eq: hm / HOURS_MONTH, mat, lv, seg, scores, ranked, lever: ranked[0],
+      pri: pts >= 36 ? 'A' : pts >= 24 ? 'B' : 'C',
+      cost: (h) => hm * h, rec: (h) => [dev[0] * h, dev[1] * h] };
+  }
+  const emp = () => S.company || 'sua empresa';
+  function texto(c) {
+    const L = LEVERS[c.lever], gs = S.garg.map((v) => find(GARG, v));
+    return {
+      resumo: first(S.name) + ', a ' + emp() + ' gasta cerca de ' + fmt(c.hm) + ' horas por mês em tarefa repetitiva, o que custa perto de ' + brl(c.cost(HOURLY)) + ' por mês. A maior oportunidade está em ' + c.lever.toLowerCase() + ', e a empresa está no nível ' + (c.lv + 1) + ' de 4 em maturidade de IA (' + LEVELS[c.lv].n + ').',
+      gargalos: gs.slice(0, 3).map((g, i) => ({ titulo: g.s, explicacao: GTXT[g.v], impacto: (g.a === c.lever || i === 0) ? 'alto' : 'medio' })),
+      alavanca: { nome: L.n, como_funciona: L.d + ' Em ' + c.seg.l.toLowerCase() + ', isso cobre trabalhos como ' + c.seg.t + '.', exemplo: EXTXT[c.lever] },
+      plano: [
+        { quando: 'Semanas 1 e 2', titulo: 'Mapear e escolher', descricao: 'Listar as tarefas repetitivas de ' + c.lever.toLowerCase() + ', medir quanto tempo cada uma toma e escolher a primeira.' },
+        { quando: 'Semanas 3 e 4', titulo: 'Primeiro agente no ar', descricao: 'Montar o agente com as regras e o jeito de falar da ' + emp() + ', começando com o time acompanhando.' },
+        { quando: 'Mês 2', titulo: 'Medir e ampliar', descricao: 'Comparar as horas antes e depois, ajustar o que travou e levar o mesmo modelo pra próxima área: ' + c.ranked[1].toLowerCase() + '.' }
+      ],
+      atencao: 'Agente de IA não substitui o time: ele tira o repetitivo do caminho. O ganho depende de regras claras e de alguém dono do processo.'
+    };
+  }
+
+  /* ---------- telas ---------- */
+  const SCREENS = ['s-intro', 's-q', 's-an', 's-done', 's-laudo'];
+  function show(id) {
+    SCREENS.forEach((s) => { $('#' + s).hidden = s !== id; });
+    const st = $('#stage'); st.classList.toggle('scroll', id === 's-laudo'); st.scrollTop = 0;
+    $('#topRestart').hidden = id === 's-intro';
+    $('#topTag').textContent = { 's-intro': 'Raio-X de IA', 's-q': 'Raio-X de IA · em andamento', 's-an': 'Raio-X de IA · escrevendo', 's-done': 'Laudo nº ' + RUN.no, 's-laudo': 'Laudo nº ' + RUN.no }[id];
+    ph('raiox_tela', { tela: id });
+  }
+
+  /* ---------- perguntas: um cartão por vez ---------- */
+  const P = [
+    { k: 'seg', stage: 'Sua empresa', type: 'one', two: true, list: SEGMENTS, t: 'Qual é o seu ramo?' },
+    { k: 'size', stage: 'Sua empresa', type: 'one', two: true, list: SIZES, t: 'Quantas pessoas no time?', s: 'Contando você.' },
+    { k: 'garg', stage: 'Sua empresa', type: 'many', list: GARG, t: 'O que mais toma tempo hoje?', s: 'Pode marcar mais de um.' },
+    { k: 'frac', stage: 'Sua empresa', type: 'one', list: FRACS, t: 'Quanto do dia vai em tarefa repetitiva?', s: 'Responder a mesma pergunta, copiar e colar, planilha, relatório.' },
+    { k: 'ia', stage: 'Sua empresa', type: 'one', list: IA, t: 'E a IA, como está aí hoje?' },
+    { k: 'urg', stage: 'Sua empresa', type: 'one', list: URG, t: 'Pra quando você quer mexer nisso?' },
+    { k: 'who', stage: 'Seus dados', type: 'who', t: 'Pra quem é o laudo?', s: 'Ele sai com o seu nome e o nome da empresa.' },
+    { k: 'reach', stage: 'Seus dados', type: 'reach', t: 'Onde a gente te encontra?', s: 'Último passo. Depois disso o laudo é escrito.' }
+  ];
+  let idx = 0, busy = false, runSeq = 0, demoReq = 0;
+  const maskPhone = (v) => { const d = v.replace(/\D/g, '').slice(0, 11); return d.length > 6 ? '(' + d.slice(0, 2) + ') ' + d.slice(2, d.length - 4) + '-' + d.slice(-4) : d.length > 2 ? '(' + d.slice(0, 2) + ') ' + d.slice(2) : d; };
+  const fixEmail = (e) => {
+    const map = { 'gmial.com': 'gmail.com', 'gmai.com': 'gmail.com', 'gmail.co': 'gmail.com', 'gmail.con': 'gmail.com', 'gamil.com': 'gmail.com', 'gnail.com': 'gmail.com', 'hotmial.com': 'hotmail.com', 'hotmai.com': 'hotmail.com', 'hotmail.co': 'hotmail.com', 'hotmail.con': 'hotmail.com', 'outlok.com': 'outlook.com', 'outlook.co': 'outlook.com', 'outlook.con': 'outlook.com', 'yaho.com': 'yahoo.com', 'yahoo.con': 'yahoo.com', 'yahoo.com.b': 'yahoo.com.br', 'uol.com': 'uol.com.br', 'bol.com': 'bol.com.br' };
+    const at = e.lastIndexOf('@'), dom = e.slice(at + 1);
+    return map[dom] ? e.slice(0, at + 1) + map[dom] : e;
+  };
+  const field = (id, label, type, ac, phd, val, key) => '<div class="fld"><label for="' + id + '">' + label + '</label><input id="' + id + '" type="' + type + '" autocomplete="' + ac + '" placeholder="' + phd + '" value="' + esc(val) + '" maxlength="80"' + (type === 'email' ? ' inputmode="email" autocapitalize="off" spellcheck="false"' : '') + '><div class="err" id="e-' + key + '" hidden></div></div>';
+  function render() {
+    busy = false;
+    const p = P[idx];
+    $('#stage-lbl').textContent = p.stage; $('#count').textContent = (idx + 1) + ' de ' + P.length;
+    $('#dots').innerHTML = P.map((_, i) => '<i class="' + (i < idx ? 'done' : i === idx ? 'now' : '') + '"></i>').join('');
+    $('#back').style.visibility = idx === 0 ? 'hidden' : 'visible';
+    $('#kbdHint').hidden = p.type === 'who' || p.type === 'reach';
+    let h = '<h2 id="qt">' + esc(p.t) + '</h2>' + (p.s ? '<p class="sub">' + esc(p.s) + '</p>' : '');
+    if (p.type === 'one' || p.type === 'many') {
+      h += '<div class="opts' + (p.two ? ' two' : '') + '" id="opts" role="group" aria-labelledby="qt">';
+      p.list.forEach((o, i) => {
+        const on = p.type === 'many' ? S.garg.includes(o.v) : S[p.k] === o.v;
+        h += '<button class="opt" type="button" data-v="' + o.v + '" aria-pressed="' + on + '">' + (i < 9 ? '<kbd>' + (i + 1) + '</kbd>' : '') + '<span>' + esc(o.l) + '</span>' + (p.type === 'many' ? '<span class="ck"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg></span>' : '') + '</button>';
+      });
+      h += '</div>';
+      if (p.type === 'many') h += '<div class="foot-row"><span class="fine" id="mc"></span><button class="btn btn-lime" id="go" type="button">Continuar<svg class="i"><use href="#i-arrow"/></svg></button></div>';
+    } else {
+      h += '<form class="fields" id="ff" novalidate>';
+      if (p.type === 'who') h += field('f-name', 'Seu nome', 'text', 'name', 'Ex.: Mariana Souza', S.name, 'name') + field('f-company', 'Nome da empresa', 'text', 'organization', 'Ex.: Clínica Bem Viver', S.company, 'company');
+      if (p.type === 'reach') h += '<div class="fld"><label for="f-phone">WhatsApp</label><div class="phone-in"><span class="ddi" aria-hidden="true">🇧🇷 +55</span><input id="f-phone" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="(47) 99999-9999" value="' + esc(S.phone) + '" maxlength="16"></div><div class="err" id="e-phone" hidden></div></div>' + field('f-email', 'E-mail (recebe o laudo em PDF)', 'email', 'email', 'voce@empresa.com.br', S.email, 'email') + '<div class="tip" id="t-email" hidden></div><p class="consent">Ao gerar o laudo, você concorda em receber contato da StratAI sobre o seu diagnóstico, conforme a <a href="/politica-de-privacidade/" target="_blank" rel="noopener">política de privacidade</a>.</p>';
+      h += '<div class="foot-row"><span></span><button class="btn btn-lime" type="submit">' + (idx === P.length - 1 ? 'Gerar meu laudo' : 'Continuar') + '<svg class="i"><use href="#i-arrow"/></svg></button></div></form>';
+    }
+    const card = $('#card'); card.innerHTML = h; card.style.animation = 'none'; void card.offsetWidth; card.style.animation = '';
+    wire(p);
+  }
+  function next() { ph('raiox_passo', { passo: idx + 1, campo: P[idx].k }); if (idx < P.length - 1) { idx++; render(); } else analyze(); }
+  const fail = (key, msg, input) => { const e = $('#e-' + key); e.textContent = msg; e.hidden = false; if (input) { input.setAttribute('aria-invalid', 'true'); input.focus(); } };
+  function wire(p) {
+    if (p.type === 'one') {
+      $$('#opts .opt').forEach((b) => b.addEventListener('click', () => {
+        if (busy) return; busy = true; S[p.k] = b.dataset.v;
+        $$('#opts .opt').forEach((x) => x.setAttribute('aria-pressed', x === b));
+        setTimeout(next, reduce ? 0 : 240);
+      }));
+      return;
+    }
+    if (p.type === 'many') {
+      const upd = () => { const n = S.garg.length; $('#mc').textContent = n ? n + (n === 1 ? ' marcado' : ' marcados') : 'Marque pelo menos um'; $('#go').disabled = !n; };
+      $$('#opts .opt').forEach((b) => b.addEventListener('click', () => { const v = b.dataset.v, i = S.garg.indexOf(v); if (i >= 0) S.garg.splice(i, 1); else S.garg.push(v); b.setAttribute('aria-pressed', i < 0); upd(); }));
+      $('#go').addEventListener('click', () => { if (S.garg.length) next(); });
+      upd(); return;
+    }
+    const f = $('#ff'), phn = $('#f-phone');
+    if (phn) phn.addEventListener('input', () => { phn.value = maskPhone(phn.value); phn.removeAttribute('aria-invalid'); $('#e-phone').hidden = true; });
+    f.addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      if (p.type === 'who') {
+        const n = $('#f-name').value.trim(), c = $('#f-company').value.trim();
+        if (n.length < 2 || !/[a-zà-ú]/i.test(n)) return fail('name', 'Escreve seu nome pra gente montar o laudo.', $('#f-name'));
+        $('#e-name').hidden = true; $('#f-name').removeAttribute('aria-invalid');
+        if (c.length < 2) return fail('company', 'Escreve o nome da empresa.', $('#f-company'));
+        S.name = n; S.company = c;
+      }
+      if (p.type === 'reach') {
+        const d = phn.value.replace(/\D/g, '');
+        if (d.length < 10) return fail('phone', 'Faltou número. Coloca com DDD.', phn);
+        if (+d.slice(0, 2) < 11) return fail('phone', 'Esse DDD não existe.', phn);
+        if (/^(\d)\1+$/.test(d.slice(2))) return fail('phone', 'Esse número não parece real.', phn);
+        S.phone = maskPhone(d);
+        const inp = $('#f-email'), em = inp.value.trim().toLowerCase();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) return fail('email', 'Esse e-mail não parece completo. Confere?', inp);
+        const fixed = fixEmail(em);
+        if (fixed !== em && $('#t-email').hidden) { inp.value = fixed; $('#t-email').textContent = 'Corrigimos pra ' + fixed + '. Se estiver certo, é só gerar o laudo.'; $('#t-email').hidden = false; return; }
+        S.email = inp.value.trim().toLowerCase();
+      }
+      next();
+    });
+    setTimeout(() => { if (window.matchMedia('(min-width: 800px)').matches) { const fi = f.querySelector('input'); try { fi.focus({ preventScroll: true }); } catch (e) {} } }, 60);
+  }
+  $('#back').addEventListener('click', () => { if (idx > 0) { idx--; render(); } });
+  document.addEventListener('keydown', (ev) => {
+    if ($('#s-q').hidden || ev.metaKey || ev.ctrlKey || ev.altKey) return;
+    const tag = (ev.target && ev.target.tagName) || '';
+    if (tag === 'INPUT') return;
+    const p = P[idx];
+    if (/^[1-9]$/.test(ev.key) && p.list) { const o = p.list[+ev.key - 1]; if (!o) return; const b = $('#opts .opt[data-v="' + o.v + '"]'); if (b) b.click(); }
+    else if (ev.key === 'Enter' && p.type === 'many' && tag !== 'BUTTON') { ev.preventDefault(); if (S.garg.length) next(); }
+  });
+  function startForm() { runSeq++; reset(); idx = 0; show('s-q'); render(); }
+  $('#start').addEventListener('click', () => { ph('raiox_comecar', {}); startForm(); });
+  // Recomeçar cancela o que estiver rodando (análise, demo do celular) antes de voltar pra abertura.
+  $('#topRestart').addEventListener('click', () => { runSeq++; demoReq++; leadSent = false; reset(); show('s-intro'); });
+
+  /* ---------- análise ---------- */
+  async function analyze() {
+    const my = ++runSeq;
+    show('s-an');
+    const c = calc();
+    $('#anTitle').textContent = 'Escrevendo o laudo da ' + emp();
+    const steps = ['Lendo o porte da ' + emp(), 'Somando ' + fmt(c.hm) + ' h por mês em tarefa repetitiva', 'Cruzando ' + S.garg.length + (S.garg.length === 1 ? ' gargalo' : ' gargalos') + ' com ' + c.seg.l.toLowerCase(), 'Medindo a maturidade em IA', 'Escrevendo o laudo e o plano de 3 passos'];
+    $('#anList').innerHTML = steps.map((s) => '<li><span class="s">✓</span>' + esc(s) + '</li>').join('');
+    const items = $$('#anList li');
+    for (let i = 0; i < items.length; i++) { items[i].classList.add('run'); await sleep(reduce ? 0 : 700); if (my !== runSeq) return; items[i].classList.remove('run'); items[i].classList.add('on'); }
+    await sleep(reduce ? 0 : 350);
+    if (my !== runSeq) return;
+    const T = texto(c);
+    renderReport(c, T); renderDone(c, T); show('s-done');
+    trackLead(c, T);
+  }
+
+  /* ---------- laudo pronto ---------- */
+  function renderDone(c, T) {
+    const r = c.rec(HOURLY), cal = calLink(c);
+    $('#s-done').innerHTML =
+      '<div class="card"><span class="eyebrow">Laudo de IA nº ' + esc(RUN.no) + ' · pronto</span>' +
+      '<h2>' + esc(first(S.name)) + ', o laudo da ' + esc(emp()) + ' está pronto.</h2>' +
+      '<p class="sub">São 6 partes: quanto custa o repetitivo, o que está travando, o simulador de níveis, por onde começar e um plano de 3 passos. A gente manda em PDF pro seu e-mail.</p>' +
+      '<div class="r-grid">' +
+        '<div class="r-card loss"><small>Custo do repetitivo</small><b>' + brl(c.cost(HOURLY)) + '</b><p>por mês, a R$ ' + HOURLY + ' por hora</p></div>' +
+        '<div class="r-card"><small>Dá pra recuperar</small><b>' + brl(r[0]) + '+</b><p>por mês, com agentes</p></div>' +
+        '<div class="r-card first"><small>Por onde começar</small><b>' + esc(LEVERS[c.lever].n) + '</b><p>' + esc(c.seg.l) + ' · nível ' + (c.lv + 1) + ' de 4 em IA</p></div>' +
+      '</div>' +
+      '<div id="sendBox">' +
+        '<div class="mail-row"><small>Vai para</small><b id="mailShow">' + esc(S.email) + '</b><button class="link-btn" type="button" id="fixMail">corrigir</button></div>' +
+        '<form class="mail-edit" id="mailEdit" hidden novalidate><input id="mailInput" type="email" inputmode="email" autocomplete="email" value="' + esc(S.email) + '" aria-label="E-mail"><button class="btn btn-ghost" type="submit">Salvar</button></form><div class="err" id="mailErr" hidden>Esse e-mail não parece completo.</div>' +
+        '<div class="done-acts"><button class="btn btn-lime" type="button" id="sendBtn"><svg class="i"><use href="#i-mail"/></svg>Receber meu laudo no e-mail</button><button class="btn btn-ghost" type="button" id="seeLaudo"><svg class="i"><use href="#i-file"/></svg>Ler o laudo na tela</button></div>' +
+      '</div>' +
+      '<div id="sentBox" hidden><div class="sent-ok"><i>✓</i><div><b>Enviado pra <span id="mailSent"></span></b><p>Chega em até 2 minutos. Se não aparecer, olha a caixa de promoções.</p><div class="acts"><button class="link-btn" type="button" id="resend">Reenviar</button><button class="link-btn" type="button" id="fixMail2">Corrigir e-mail</button></div></div></div>' +
+        '<div class="done-acts"><button class="btn btn-ghost" type="button" id="seeLaudo2"><svg class="i"><use href="#i-file"/></svg>Ler o laudo na tela</button></div></div>' +
+      '</div>' +
+      '<div class="book"><div><span class="eyebrow">Próximo passo · opcional</span><h3>Leitura do laudo · 20 min</h3><p>Um sócio da StratAI lê o laudo com você e mostra o que fazer primeiro. Você escolhe o dia e o horário.</p></div>' +
+        (cal ? '<a class="btn btn-lime" href="' + esc(cal) + '" target="_blank" rel="noopener" id="bookBtn"><svg class="i"><use href="#i-calendar"/></svg>Escolher um horário</a>' : '<span class="btn btn-ghost off" id="bookBtn" title="A agenda entra aqui quando estiver ligada"><svg class="i"><use href="#i-calendar"/></svg>Agenda em breve</span>') +
+      '</div>';
+    const openFix = () => { $('#sentBox').hidden = true; $('#sendBox').hidden = false; $('#sendBtn').disabled = false; $('#mailEdit').hidden = false; $('#mailInput').focus(); };
+    $('#fixMail').onclick = openFix; $('#fixMail2').onclick = openFix;
+    $('#mailEdit').onsubmit = (ev) => {
+      ev.preventDefault(); const v = fixEmail($('#mailInput').value.trim().toLowerCase());
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) { $('#mailErr').hidden = false; return; }
+      $('#mailErr').hidden = true; S.email = v; $('#mailShow').textContent = v; $('#mailInput').value = v; $('#mailEdit').hidden = true;
+    };
+    $('#sendBtn').onclick = () => { $('#sendBtn').disabled = true; $('#sendBox').hidden = true; $('#sentBox').hidden = false; $('#mailSent').textContent = S.email; send(c, T); };
+    $('#resend').onclick = function () { send(c, T); this.textContent = 'Reenviado'; };
+    $('#seeLaudo').onclick = () => show('s-laudo'); $('#seeLaudo2').onclick = () => show('s-laudo');
+    if (cal) $('#bookBtn').addEventListener('click', () => { ph('raiox_agenda', { laudo: RUN.no }); try { window.stratTrack && window.stratTrack('Contact', { method: 'cal', cta: 'laudo-leitura' }); } catch (e) {} });
+  }
+  $('#backDone').addEventListener('click', () => show('s-done'));
+  $('#printBtn').addEventListener('click', () => { ph('raiox_imprimir', { laudo: RUN.no }); window.print(); });
+
+  /* ---------- envio: Lead pelo Rastro + pacote completo pra automação ---------- */
+  function payload(c, T) {
+    const r = c.rec(HOURLY);
+    return {
+      laudo_numero: RUN.no, criado_em: new Date().toISOString(), escrito_por_ia: false,
+      contato: { nome: S.name, empresa: S.company, whatsapp: S.phone, email: S.email },
+      respostas: { segmento: c.seg.l, segmento_id: c.seg.v, time: c.size.l, gargalos: S.garg.map((v) => find(GARG, v).l), tempo_repetitivo: (find(FRACS, S.frac) || {}).l, ia_hoje: (find(IA, S.ia) || IA[0]).l, urgencia: c.urg ? c.urg.l : null },
+      numeros: { horas_mes: c.hm, custo_hora: HOURLY, custo_mes: Math.round(c.cost(HOURLY)), recupera_min: Math.round(r[0]), recupera_max: Math.round(r[1]), maturidade: c.mat, nivel: c.lv + 1, nivel_nome: LEVELS[c.lv].n, prioridade: c.pri },
+      areas: c.ranked.map((a) => ({ area: a, indice: c.scores[a] })),
+      primeira_alavanca: LEVERS[c.lever].n, texto: T, link_laudo: laudoUrl(), link_agenda: calLink(c)
+    };
+  }
+  let leadSent = false;
+  function trackLead(c, T) {
+    if (leadSent) return; leadSent = true;
+    ph('raiox_laudo', { segmento: c.seg.l, prioridade: c.pri, alavanca: LEVERS[c.lever].n });
+    try {
+      if (typeof window.stratTrack === 'function') {
+        const p = (S.name || '').trim().split(/\s+/);
+        const r = c.rec(HOURLY);
+        window.stratTrack('Lead', {
+          form: 'raio-x-ia', laudo: RUN.no, primeiro_nome: first(S.name), empresa: emp(), segmento: c.seg.l, time: c.size.l,
+          gargalos: S.garg.map((v) => find(GARG, v).l).join(', '), repetitivo: (find(FRACS, S.frac) || {}).l, ia_hoje: (find(IA, S.ia) || IA[0]).l, urgencia: c.urg ? c.urg.l : '',
+          horas_mes: String(c.hm), custo_mes: brl(c.cost(HOURLY)), recupera_min: brl(r[0]), recupera_max: brl(r[1]),
+          nivel: String(c.lv + 1), nivel_nome: LEVELS[c.lv].n, maturidade: String(c.mat), alavanca: LEVERS[c.lever].n, prioridade: c.pri,
+          resumo: T.resumo, link_laudo: laudoUrl(), link_agenda: calLink(c) || laudoUrl() + '#agenda'
+        }, { em: S.email, ph: '55' + (S.phone || '').replace(/\D/g, ''), fn: p[0], ln: p.slice(1).join(' ') });
+      }
+    } catch (e) {}
+  }
+  function send(c, T) {
+    ph('raiox_email', { laudo: RUN.no });
+    if (!CONFIG.WEBHOOK_URL) return;
+    try { fetch(CONFIG.WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload(c, T)) }).catch(() => {}); } catch (e) {}
+  }
+  function calLink(c) {
+    if (!CONFIG.CAL_LINK) return '';
+    const resumo = 'Laudo de IA nº ' + RUN.no + ' · ' + emp() + ' (' + c.seg.l + ', ' + c.size.l + ' pessoas). Custo do repetitivo: ' + brl(c.cost(HOURLY)) + ' por mês. Maturidade: nível ' + (c.lv + 1) + ' de 4. Por onde começar: ' + LEVERS[c.lever].n + '.';
+    return CONFIG.CAL_LINK + (CONFIG.CAL_LINK.includes('?') ? '&' : '?') + 'name=' + encodeURIComponent(S.name) + '&email=' + encodeURIComponent(S.email) + '&notes=' + encodeURIComponent(resumo);
+  }
+  // o laudo cabe na URL: é o link que vai no e-mail e o que o gerador de PDF abre. Sem banco.
+  function laudoUrl() {
+    const q = new URLSearchParams({ s: S.seg, t: S.size, g: S.garg.join('.'), f: S.frac, i: S.ia, u: S.urg || '', n: S.name, e: S.company, m: S.email || '', h: String(HOURLY), lx: RUN.no });
+    return location.origin + location.pathname + '?' + q.toString();
+  }
+
+  /* ---------- o laudo ---------- */
+  let SIMC = null, SIML = 0;
+  const gainHtml = (r) => brl(r[0]) + ' <em>a</em> ' + brl(r[1]);
+  function simUpdate(L) {
+    const c = SIMC; if (!c) return; SIML = L;
+    const sum = AREAS.reduce((s, a) => s + c.scores[a], 0);
+    const maxH = c.hm * CAP[3] * c.scores[c.ranked[0]] / sum, hrs = c.hm * CAP[L];
+    $('#simLbl').textContent = L === c.lv ? 'Hoje, no nível ' + (L + 1) + ' · ' + LEVELS[L].n : (L > c.lv ? 'Se a ' + emp() + ' chegar ao nível ' + (L + 1) : 'No nível ' + (L + 1) + ' · ' + LEVELS[L].n);
+    $('#simBig').textContent = fmt(hrs) + ' h e ' + brl(hrs * HOURLY) + ' por mês';
+    $('#simTxt').textContent = L === c.lv ? 'é o que a IA já assume com o uso de hoje. Toque nos outros níveis pra ver o que muda.' : (L > c.lv ? 'voltariam pro time, divididas assim por área:' : 'era o que a IA assumia nesse nível.');
+    c.ranked.forEach((a, i) => { const h = c.hm * CAP[L] * c.scores[a] / sum; $('#sf' + i).style.transform = 'scaleX(' + Math.max(.02, h / maxH) + ')'; $('#sv' + i).textContent = fmt(h) + ' h'; });
+    $$('.lv-btn').forEach((b) => b.setAttribute('aria-pressed', +b.dataset.l === L));
+  }
+  function bookHtml(c) {
+    const cal = calLink(c);
+    return '<div class="book book-doc" id="agenda"><div><span class="eyebrow">Próximo passo</span><h3>Leitura do laudo · 20 min</h3><p>Um sócio da StratAI lê o laudo com você e mostra o que fazer primeiro. Você escolhe o dia e o horário.</p></div>' +
+      (cal ? '<a class="btn btn-lime" href="' + esc(cal) + '" target="_blank" rel="noopener" data-book="1"><svg class="i"><use href="#i-calendar"/></svg>Escolher um horário</a>' : '<span class="btn btn-ghost off"><svg class="i"><use href="#i-calendar"/></svg>Agenda em breve</span>') + '</div>';
+  }
+  const botSvg = '<span class="av-bot" aria-hidden="true"><svg class="bot-ic"><use href="#bot"/></svg></span>';
+  function renderReport(c, d) {
+    const dateTxt = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+    SIMC = c;
+    const r = c.rec(HOURLY);
+    const bars = c.ranked.map((a, i) => '<div class="bar-row' + (i === 0 ? ' top' : '') + '"><span>' + a + '</span><div class="track"><div class="bar-fill" id="sf' + i + '" style="transform:scaleX(.02)"></div></div><b id="sv' + i + '">0 h</b></div>').join('');
+    const ladder = LEVELS.map((l, i) => '<li><button class="lv-btn" type="button" data-l="' + i + '" aria-pressed="' + (i === c.lv) + '"><span class="n">' + (i + 1) + '</span><span><b>' + l.n + '</b>' + (i === c.lv ? '<span class="you">você está aqui</span>' : '') + '<span class="d">' + l.d + '</span></span></button></li>').join('');
+    const gargs = d.gargalos.map((g) => '<div class="garg"><span class="st ' + g.impacto + '">Impacto ' + (g.impacto === 'alto' ? 'alto' : 'médio') + '</span><div><b>' + esc(g.titulo) + '</b><p>' + esc(g.explicacao) + '</p></div></div>').join('');
+    const plan = d.plano.map((p) => '<li><span class="when">' + esc(p.quando) + '</span><b>' + esc(p.titulo) + '</b><p>' + esc(p.descricao) + '</p></li>').join('');
+    const chip = (k, v) => '<span>' + k + ': <b>' + esc(v) + '</b></span>';
+    $('#doc').innerHTML =
+      '<div class="doc-top"><div><span class="eyebrow">Laudo de IA nº ' + esc(RUN.no) + ' · ' + dateTxt + '</span><h2>' + esc(emp()) + '</h2>' +
+        '<div class="dm">' + chip('Responsável', S.name) + chip('Segmento', c.seg.l) + chip('Time', c.size.l + ' pessoas') + '</div></div>' +
+        '<span class="tag">Gerado automaticamente</span></div>' +
+      '<div class="doc-body">' +
+        '<section class="dsec"><div class="dsec-h"><span class="n">1</span><h3>Resumo</h3></div><p class="summary">' + esc(d.resumo) + '</p><span class="verdict">Maturidade em IA · nível ' + (c.lv + 1) + ' de 4 · ' + LEVELS[c.lv].n + '</span></section>' +
+        '<section class="dsec"><div class="dsec-h"><span class="n">2</span><h3>Quanto custa o repetitivo hoje</h3></div><div class="kpis">' +
+          '<div class="kpi loss"><small>Custo do repetitivo</small><b id="kLoss">' + brl(c.cost(HOURLY)) + '</b><p id="kLossNote">por mês, a R$ ' + HOURLY + ' por hora</p></div>' +
+          '<div class="kpi gain"><small>Dá pra recuperar com agentes</small><b id="kGain">' + gainHtml(r) + '</b><p>por mês, de 40% a 60% do repetitivo</p></div>' +
+          '<div class="kpi"><small>Horas repetitivas</small><b>' + fmt(c.hm) + ' h</b><p>por mês, umas ' + c.eq.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + (c.eq < 2 ? ' pessoa' : ' pessoas') + ' em tempo integral</p></div>' +
+          '<div class="kpi"><small>Maturidade em IA</small><b>' + c.mat + '<em> /100</em></b><p>' + LEVELS[c.lv].n + '</p></div></div>' +
+          '<div class="rng"><label for="hourly">Quanto custa uma hora do seu time?<output id="hourlyOut" for="hourly">R$ ' + HOURLY + '/h</output></label><input type="range" id="hourly" min="15" max="150" step="5" value="' + HOURLY + '" style="--p:' + ((HOURLY - 15) / 135 * 100) + '%"><small>R$ 30 por hora é o custo de alguém que ganha uns R$ 3 mil por mês, com encargos. Mexe aí que os valores mudam na hora.</small></div></section>' +
+        '<section class="dsec"><div class="dsec-h"><span class="n">3</span><h3>O que está travando</h3></div><div class="gargs">' + gargs + '</div></section>' +
+        '<section class="dsec"><div class="dsec-h"><span class="n">4</span><h3>O que muda em cada nível</h3></div><div class="sim">' +
+          '<div class="sim-chart"><div class="sim-head" aria-live="polite"><small id="simLbl"></small><b id="simBig"></b><p id="simTxt"></p></div><div class="bars">' + bars + '</div></div>' +
+          '<div><ol class="ladder">' + ladder + '</ol><p class="ladder-cap">Toque nos níveis pra ver o que muda.</p></div></div></section>' +
+        '<section class="dsec"><div class="dsec-h"><span class="n">5</span><h3>Por onde começar</h3></div><div class="lever"><div><h4>' + esc(d.alavanca.nome) + '</h4><p>' + esc(d.alavanca.como_funciona) + '</p><div class="ex"><small>Imagina só</small>' + esc(d.alavanca.exemplo) + '</div></div>' +
+          '<div><div class="phone" aria-label="Exemplo de conversa com o agente"><div class="phone-top">' + botSvg + '<div><b>Agente da ' + esc(emp()) + '</b><small>online · responde na hora</small></div></div><div class="chat" id="demoChat"></div></div><p class="fine phone-cap">Exemplo ilustrativo</p></div></div></section>' +
+        '<section class="dsec"><div class="dsec-h"><span class="n">6</span><h3>Plano em 3 passos</h3></div><ol class="plan">' + plan + '</ol><p class="attention"><b>Um cuidado:</b> ' + esc(d.atencao) + '</p></section>' +
+        bookHtml(c) +
+        '<div class="doc-foot"><p class="fine">Laudo gerado em ' + dateTxt + ' com base nas respostas de ' + esc(S.name) + '. Conta: pessoas × 160 h por mês × parte em repetitivo; agentes assumem de 40% a 60% disso. No simulador, a IA assume 8%, 20%, 40% e 60% do repetitivo nos níveis 1 a 4. O número real sai do mapeamento.</p><button class="btn btn-ghost" id="redo" type="button"><svg class="i"><use href="#i-turn"/></svg>Refazer o Raio-X</button></div>' +
+      '</div>';
+    fillDemo(c.lever);
+    requestAnimationFrame(() => requestAnimationFrame(() => simUpdate(c.lv)));
+    $$('.lv-btn').forEach((b) => b.addEventListener('click', () => simUpdate(+b.dataset.l)));
+    $('#hourly').addEventListener('input', function () {
+      HOURLY = +this.value; this.style.setProperty('--p', ((HOURLY - 15) / 135 * 100) + '%');
+      $('#hourlyOut').textContent = 'R$ ' + HOURLY + '/h'; $('#kLoss').textContent = brl(c.cost(HOURLY)); $('#kGain').innerHTML = gainHtml(c.rec(HOURLY)); $('#kLossNote').textContent = 'por mês, a R$ ' + HOURLY + ' por hora';
+      simUpdate(SIML);
+    });
+    $('#redo').addEventListener('click', () => { leadSent = false; startForm(); });
+    $$('[data-book]').forEach((a) => a.addEventListener('click', () => { ph('raiox_agenda', { laudo: RUN.no, de: 'laudo' }); try { window.stratTrack && window.stratTrack('Contact', { method: 'cal', cta: 'laudo-leitura' }); } catch (e) {} }));
+    if (!reduce) watchOnce($('#demoChat'), () => playDemo(c.lever));
+  }
+  function fillDemo(area) { $('#demoChat').innerHTML = DEMOS[area].map((m) => '<div class="msg ' + m[0] + '" style="animation:none">' + esc(m[1]) + '</div>').join(''); }
+  async function playDemo(area) {
+    const my = ++demoReq, chat = $('#demoChat'); if (!chat) return;
+    chat.innerHTML = '';
+    const m = DEMOS[area];
+    for (let k = 0; k < m.length; k++) {
+      if (m[k][0] === 'a') { const ty = document.createElement('div'); ty.className = 'msg a typing'; ty.innerHTML = '<i></i><i></i><i></i>'; chat.appendChild(ty); await sleep(Math.min(1300, 380 + m[k][1].length * 10)); ty.remove(); }
+      else await sleep(700);
+      if (my !== demoReq || !document.body.contains(chat)) return;
+      const el = document.createElement('div'); el.className = 'msg ' + m[k][0]; el.textContent = m[k][1]; chat.appendChild(el);
+    }
+  }
+  function watchOnce(el, fn) {
+    if (!('IntersectionObserver' in window)) return fn();
+    const o = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { o.disconnect(); fn(); } }, { threshold: .3 });
+    o.observe(el);
+  }
+
+  /* ---------- laudo pela URL (link do e-mail e gerador de PDF) ---------- */
+  reset();
+  (function fromUrl() {
+    const q = new URLSearchParams(location.search);
+    if (!q.get('s') || !q.get('t')) return;
+    S.seg = q.get('s'); S.size = q.get('t'); S.garg = (q.get('g') || '').split('.').filter((v) => find(GARG, v)); S.frac = q.get('f') || '.3'; S.ia = q.get('i') || '0'; S.urg = q.get('u') || null;
+    S.name = (q.get('n') || '').slice(0, 80); S.company = (q.get('e') || '').slice(0, 80); S.email = (q.get('m') || '').slice(0, 120); HOURLY = Math.min(150, Math.max(15, +q.get('h') || 30));
+    if (q.get('lx')) RUN.no = q.get('lx').replace(/[^A-Z0-9-]/gi, '').slice(0, 12);
+    if (!S.garg.length) S.garg = ['atend'];
+    if (!find(SEGMENTS, S.seg) || !find(SIZES, S.size)) return;
+    const c = calc(); leadSent = true;
+    renderReport(c, texto(c)); show('s-laudo'); $('#backDone').hidden = true;
+    if (q.get('print')) setTimeout(() => window.print(), 800);
+  })();
+})();
+</script>
