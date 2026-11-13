@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- docs(catalogo): a observação da agenciastrat e o achado do formulário na auditoria da Agência passam a dizer que os 6 campos da empresa já chegavam ao lead em lead_custom_values (premissa corrigida na revisão do strat-lps#86) (WEB-71)
 - docs(pages): caminho observado dos 4 projetos do Pages com package.json, pnpm-workspace.yaml, .npmrc e .nvmrc da raiz, e token na zona stratacademy dado como ativo em infisical.md e dominios.md (WEB-78)
 - docs(dominios): zona agenciastrat.com.br ativa na Cloudflare desde 2026-11-04 (nameservers no registro.br trocados no WEB-1), conferida pela API em 2026-11-13 (WEB-90)
 - feat(kit): banner do catálogo = strict do Rastro: o kit monta Rastro com banner sem o banner de cookies do kit (o aviso é o do Rastro), a checagem tracking compara banner = strict, soft = soft e off = off e barra o /sa sem consentMode, venda com banner quebra o build e script da Hotmart em página com banner barra (o launcher carregaria antes do aceite, até o WEB-85), e a página de teste stratacademy.com.br/kit/conteudo/ (noindex) (WEB-81)
