@@ -1,0 +1,61 @@
+---
+import { programa } from '../../lib/parcerias.js';
+const nomes = programa.perfis.map((p) => p.nome);
+---
+<section class="faixa-perfis" aria-hidden="true">
+  <div class="trilho">
+    {[0, 1].map(() => (
+      <ul>{[...nomes, ...nomes].map((n, i) => <li class={i % 2 ? 'vazado' : ''}>{n}<span class="sep">+</span></li>)}</ul>
+    ))}
+  </div>
+</section>
+
+<section class="faixa perfis" id="para-quem" data-mtc-section="para-quem" aria-labelledby="perfis-titulo">
+  <div data-revelar>
+    <p class="mono destaque eyebrow">PARA QUEM É</p>
+    <h2 id="perfis-titulo" class="titulo-secao">Você já está perto de empresas que precisam de IA.</h2>
+    <p class="sub-secao">Se você trabalha com IA, tecnologia ou marketing, as indicações já passam pela sua mão. Agora elas pagam todo mês.</p>
+  </div>
+  <ul class="perfis-grade">
+    {programa.perfis.map((p, i) => (
+      <li data-revelar data-brilho style={`--atraso:${i * 0.08}s`}>
+        <span class="num mono">{String(i + 1).padStart(2, '0')}</span>
+        <h3>{p.nome}</h3>
+        <p>{p.texto}</p>
+      </li>
+    ))}
+    <li class="nao" data-revelar style="--atraso:.4s">
+      <span class="num mono">PARA QUEM NÃO É</span>
+      <p>{programa.nao_e_para}</p>
+    </li>
+  </ul>
+</section>
+
+<style>
+  .faixa-perfis { margin-top: var(--secao); border-block: 1px solid var(--line); background: rgba(36,36,36,.5); overflow: clip; padding: 20px 0; mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+  .trilho { display: flex; width: max-content; animation: deslizar 46s linear infinite; }
+  .faixa-perfis ul { list-style: none; margin: 0; padding: 0; display: flex; }
+  .faixa-perfis li { display: flex; align-items: center; font: 700 clamp(24px, 3.4vw, 42px)/1 var(--sans); letter-spacing: -.02em; white-space: nowrap; }
+  .faixa-perfis li.vazado { color: transparent; -webkit-text-stroke: 1px #6a6a64; }
+  .sep { color: var(--lime-text); -webkit-text-stroke: 0; margin: 0 clamp(18px, 3vw, 36px); font-weight: 500; }
+  @keyframes deslizar { to { transform: translateX(-50%); } }
+
+  .perfis { margin-top: var(--secao); }
+  .perfis h2 { margin-top: 14px; }
+  .perfis-grade { list-style: none; padding: 0; margin: 40px 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .perfis-grade li {
+    --mx: 50%; --my: 0%;
+    position: relative; overflow: clip; display: grid; gap: 10px; align-content: start; padding: 26px; background: var(--card); border: 1px solid var(--line); border-radius: var(--raio-g);
+    transition: border-color .35s var(--ease), translate .35s var(--ease), opacity .7s var(--ease) var(--atraso, 0s), transform .7s var(--ease) var(--atraso, 0s);
+  }
+  .perfis-grade li[data-brilho]::before { content: ""; position: absolute; inset: 0; opacity: 0; transition: opacity .35s; background: radial-gradient(360px circle at var(--mx) var(--my), rgba(198,255,52,.1), transparent 45%); pointer-events: none; }
+  .perfis-grade li[data-brilho]:hover { border-color: #55574a; translate: 0 -4px; }
+  .perfis-grade li[data-brilho]:hover::before { opacity: 1; }
+  .num { color: var(--lime-text) !important; }
+  .perfis-grade h3 { font-size: 21px; }
+  .perfis-grade p { color: var(--ink-2); }
+  .nao { background: transparent !important; border-style: dashed !important; }
+  .nao .num { color: var(--ink-2) !important; }
+  @media (max-width: 900px) { .perfis-grade { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 600px) { .perfis-grade { grid-template-columns: 1fr; } }
+</style>
