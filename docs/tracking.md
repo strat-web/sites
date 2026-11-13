@@ -32,7 +32,7 @@ A regra mora em `packages/kit/src/tracking.js` e tem teste (`pnpm --filter @stra
 | `metricaas_ws` | `m.js` com `data-ws`, `defer`, **antes** de tudo (regra dura do lead); a checagem `tracking` da CI barra o `m.js` sem `defer`, com `async`, com `type`, fora do `<head>` ou depois de outro script |
 | `metricaas_ws` + `meta_pixel`, sem `rastro_slug` | o `m.js` também liga o pixel (`data-pixel`); com `consentimento: banner`, `data-pixel-consent="aguardar"` e o banner de cookies do kit |
 | `rastro_slug` | `/sa?product=<slug>` com `defer`; pixel, GA4 e Google Ads vêm do produto no Rastro, então o `m.js` vai **sem** `data-pixel`. O produto tem de estar no `consentMode` do catálogo: `banner` = `strict`, `soft` = `soft`, `off` = `off` |
-| perfil `venda` | também o launcher da Hotmart com `hot('account', <hotmart_conta>)` escrito no HTML |
+| perfil `venda` | também o launcher da Hotmart com `hot('account', <hotmart_conta>)` escrito no HTML. Ele carrega na abertura, então `venda` com `consentimento: banner` quebra o build (até o WEB-85) |
 | `umami_website_id` | `/u/script.js` com `data-website-id`, pelo proxy `/u/` do próprio domínio (o proxy é do Strat Tracking) |
 | `consentimento: sem-tracking` | nada |
 | `consentimento: por-funil` | nada pelo kit: a própria página liga o Rastro do funil pelo `?f=` (registro `FUNIS`, com o consentimento do produto); sem `?f=`, nada. Hoje só a comunidade da Academy (T5); entra no kit na migração (WEB-48) |
@@ -63,12 +63,22 @@ aviso. Lido no `/sa?product=site` em 12/11/2026. Os dois avisos juntos pediriam 
 diferentes (`strat_cookies` e `strat_consent`), e o "Aceitar" do kit chama o `mtc.consentir()`, que nessa página não
 segura nada (o `m.js` vai sem `data-pixel`). Por isso o kit só desenha o banner dele sem Rastro.
 
+**Venda com `banner`** (revisão do WEB-81, até o WEB-85): não monta. O launcher da Hotmart do kit vai escrito no HTML
+(o "verificar instalação" da Hotmart lê o HTML estático) e carrega na abertura. O Rastro em `strict` só carrega a
+Hotmart dele depois do "aceitar" e pula o próprio launcher quando já existe `window.hot`, então nada seguraria o da
+página: o checkout carregaria antes do aceite. O kit quebra o build nessa combinação, e a checagem `tracking` barra
+também qualquer script da Hotmart (`hotmart.com`: launcher, checkout, widget) numa página com `banner`, venha de onde
+vier. Hoje nenhuma linha do catálogo está em `venda` + `banner`; as LPs de venda são exceção em `off`. O WEB-85 decide
+como segurar o launcher até o aceite.
+
 **O build quebra quando:** a URL não tem linha no catálogo; o perfil da página difere do catálogo; `venda` sem
 `rastro_slug` ou sem `hotmart_conta`; `lead` sem `metricaas_ws` e sem `rastro_slug`; pixel sem Rastro e sem MetricaaS;
 GA4 ou tag do Google sem Rastro (ainda sem regra: WEB-73); Rastro com um `consentimento` que não tem par no Rastro
-(só `banner`, `soft` e `off` têm). O build não lê a rede: quem confere se o produto está mesmo no `consentMode` do
-catálogo é a checagem `tracking` da CI, que lê o `/sa?product=<slug>` e barra `banner` com o produto fora de `strict`,
-`soft` fora de `soft` e `off` fora de `off` (`packages/checagens/src/tracking.js`, com teste).
+(só `banner`, `soft` e `off` têm); `venda` com `banner` (até o WEB-85). O build não lê a rede: quem confere se o
+produto está mesmo no `consentMode` do catálogo é a checagem `tracking` da CI, que lê o `/sa?product=<slug>` e barra
+`banner` com o produto fora de `strict`, `soft` fora de `soft`, `off` fora de `off` e o `/sa` que não manda
+`consentMode` (sem o campo não dá para conferir o par; não vale como verde) (`packages/checagens/src/tracking.js`,
+com teste).
 
 **Conteúdo:** carrega o mesmo da marca e não tem formulário de lead (`data-strat-leadform`) na página.
 
@@ -123,10 +133,11 @@ O kit garante que o catálogo bate com o Rastro.
   `/bio/`), metricaas.com.br e as LPs de venda da Academy (claude., skills., mentoria., bootcamp.).
 - **Com Rastro**, quem segura o pixel é o `consentMode` do produto, não a página. A regra: o catálogo diz o mesmo
   que o produto, `off` = `off`, `soft` = `soft`, `banner` = `strict`.
-- **O que o código faz hoje (12/11):** a checagem `tracking` da CI lê o `/sa?product=<slug>` de cada página dos apps e
-  barra quando consentimento, pixel, GA4 ou Google Ads diferem da linha do catálogo. O consentimento é comparado ao pé
-  da letra, então `off` e `soft` já são conferidos. `banner` com Rastro não chega lá: o kit ainda recusa essa
-  combinação no build. A correspondência `banner` = `strict`, no kit e na checagem, é o WEB-81.
+- **O que o código faz (WEB-81):** a checagem `tracking` da CI lê o `/sa?product=<slug>` de cada página dos apps e
+  barra quando consentimento, pixel, GA4 ou Google Ads diferem da linha do catálogo. O consentimento segue o par
+  (`banner` = `strict`, `soft` = `soft`, `off` = `off`), e o `/sa` sem `consentMode` barra. O kit monta Rastro com
+  `banner` sem o banner de cookies dele (o aviso é o do Rastro), menos no perfil `venda`, que quebra o build até o
+  WEB-85 (o launcher da Hotmart carregaria antes do aceite).
 - **Sem Rastro** (hoje só a Agência), `banner` é o banner de cookies do kit, e o pixel vem pelo `m.js` do MetricaaS.
 - Outros valores do campo: `por-funil` (a página liga o Rastro do funil pelo `?f=`, hoje só a comunidade da Academy)
   e `sem-tracking`.
@@ -157,7 +168,7 @@ cadastro do lead no MetricaaS não depende do aceite.
    formulário com o mesmo `event_id` no navegador e na CAPI; evento no MetricaaS. No celular emulado (4G lento),
    tocar no WhatsApp do topo logo que ele aparece: o código do MetricaaS tem de estar no texto.
 4. Com e sem aceitar cookies, conferindo o modo da linha do catálogo (seção "Consentimento"). Com Rastro, o
-   `consentMode` do `/sa?product=<slug>` tem de ser o mesmo do catálogo (`banner` = `strict`; o kit só aceita
-   `banner` com Rastro depois do WEB-81).
+   `consentMode` do `/sa?product=<slug>` tem de ser o par do catálogo (`banner` = `strict`, `soft` = `soft`,
+   `off` = `off`); `venda` com `banner` ainda não monta (WEB-85).
 
 Referência completa do Rastro: `strat-web/rastro` (hoje `Strat-Ai-Horus-OS/rastro-stratacademy`), `docs/TRACKING-ARCHITECTURE.md`.
