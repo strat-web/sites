@@ -36,7 +36,9 @@ test('montarLead: contato, tipo do cadastro e respostas em campos', () => {
       experiencia: 'Nunca participei',
       inicio: 'Agora',
     },
+    meta: false,
   });
+  assert.equal(lead.meta, false, 'cadastro de parceiro não vira Lead na Meta (meta:false do MetricaaS)');
   assert.ok(!('detalhes' in lead.campos), 'campo vazio não vai');
 });
 

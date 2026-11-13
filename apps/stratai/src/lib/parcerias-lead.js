@@ -3,7 +3,7 @@
 
 // Campos de múltipla escolha e de texto que vão em `campos` do mtc.lead(), com a chave que o MetricaaS grava.
 // Chave que o workspace não tem é descartada sem erro; as chaves precisam existir em Configurações → Campos
-// personalizados do agencia-strat (conferir com o acesso ao MetricaaS).
+// personalizados do agencia-strat (criadas em 13/11/2026, com rótulo "Parceria: …").
 export const CAMPOS = ['atuacao', 'contatos', 'segmentos', 'tem_indicacao', 'experiencia', 'inicio', 'detalhes'];
 
 /** Telefone para o MetricaaS: só dígitos, com 55 na frente quando vier com DDD (10 ou 11 dígitos). */
@@ -30,5 +30,9 @@ export function montarLead(respostas) {
     telefone: telefoneParaLead(respostas.whatsapp),
     email: texto(respostas.email).toLowerCase(),
     campos,
+    // Parceiro não é cliente: o cadastro não vira Lead na Meta (nem CAPI nem pixel), para não ensinar os anúncios da
+    // StratAI a trazer parceiro (decisão do Helbert de 13/11; opção meta:false do MetricaaS, PR 697, tag v11). O lead
+    // cai no funil Parceiros pelo fluxo do agencia-strat ("lead criado" + tipo_cadastro = parceria), sem evento.
+    meta: false,
   };
 }
