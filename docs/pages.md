@@ -9,10 +9,10 @@ app. Conta "Strat Academy" (`6258e000cf06b29a9f3fa797f8592171`); mexer só com o
 
 | Projeto | Endereço `.pages.dev` | Comando de build | Saída | Caminho observado (inclui) | Domínio entra no |
 |---|---|---|---|---|---|
-| `agenciastrat` | https://agenciastrat.pages.dev | `pnpm --filter @strat/agenciastrat build` | `apps/agenciastrat/dist` | `apps/agenciastrat/*`, `packages/*`, `catalogo/*`, `pnpm-lock.yaml` | WEB-26 |
-| `stratai` | https://stratai-ti7.pages.dev | `pnpm --filter @strat/stratai build` | `apps/stratai/dist` | `apps/stratai/*`, `packages/*`, `catalogo/*`, `pnpm-lock.yaml` | WEB-32 |
-| `metricaas` | https://metricaas.pages.dev | `pnpm --filter @strat/metricaas build` | `apps/metricaas/dist` | `apps/metricaas/*`, `packages/*`, `catalogo/*`, `pnpm-lock.yaml` | WEB-36 |
-| `sites-stratacademy` | https://sites-stratacademy.pages.dev | `pnpm --filter @strat/stratacademy build` | `apps/stratacademy/dist` | `apps/stratacademy/*`, `packages/*`, `catalogo/*`, `pnpm-lock.yaml` | WEB-49 |
+| `agenciastrat` | https://agenciastrat.pages.dev | `pnpm --filter @strat/agenciastrat build` | `apps/agenciastrat/dist` | `apps/agenciastrat/*`, `packages/*`, `catalogo/*`, `functions/*`, `pnpm-lock.yaml` | WEB-26 |
+| `stratai` | https://stratai-ti7.pages.dev | `pnpm --filter @strat/stratai build` | `apps/stratai/dist` | `apps/stratai/*`, `packages/*`, `catalogo/*`, `functions/*`, `pnpm-lock.yaml` | WEB-32 |
+| `metricaas` | https://metricaas.pages.dev | `pnpm --filter @strat/metricaas build` | `apps/metricaas/dist` | `apps/metricaas/*`, `packages/*`, `catalogo/*`, `functions/*`, `pnpm-lock.yaml` | WEB-36 |
+| `sites-stratacademy` | https://sites-stratacademy.pages.dev | `pnpm --filter @strat/stratacademy build` | `apps/stratacademy/dist` | `apps/stratacademy/*`, `packages/*`, `catalogo/*`, `functions/*`, `pnpm-lock.yaml` | WEB-49 |
 
 Nos quatro, `docs/*` fica fora do caminho observado. Mudou `packages/kit` ou `catalogo/`, os quatro buildam (é o que se
 quer: ajuste no kit vale para todos).
@@ -62,7 +62,15 @@ direto, só para ver o esqueleto: `web-15-agenciastrat-preview`, `web-15-stratai
 Projeto criado por upload direto nunca pode ser ligado ao GitHub depois, por isso eles não viraram os definitivos.
 Ficam até o Helbert dizer se desliga.
 
+## Functions (`functions/` na raiz)
+O Pages procura a pasta `functions/` no diretório raiz do projeto, que aqui é `/` nos quatro. Então
+`functions/u/[[caminho]].js` (proxy do Umami, `tracking.md`) vale para todos os apps e LPs. `functions/*` está no caminho observado dos
+quatro projetos desde 12/11/2026:
+mudou a Function, os quatro buildam (como `packages/*` e `catalogo/*`).
+
 ## Armadilhas
+- **Sem `404.html` na raiz da saída**, o Pages trata o projeto como aplicação de página única e responde 200 com a
+  home em qualquer caminho. Todo app tem `src/pages/404.astro` (WEB-75, `padroes.md`, "Página 404").
 - **wrangler 4.160+:** `wrangler pages project create` tenta delegar para o Workers e falha num monorepo
   ("workspace root unsupported"), sem criar nada. Para upload direto, use `--force`.
 - **Projeto ligado ao GitHub** não sai pelo `wrangler`: crie pela API (`POST /accounts/<id>/pages/projects` com
