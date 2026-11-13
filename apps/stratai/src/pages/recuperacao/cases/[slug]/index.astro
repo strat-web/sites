@@ -1,0 +1,47 @@
+---
+// Uma página por case (WEB-91): /recuperacao/cases/<slug>/. O conteúdo sai de public/recuperacao/comum/cases.js
+// (CASES.pagina); esta lista só gera as rotas e o <title>/<h1> do HTML. Case novo: entra no cases.js E aqui.
+// Rascunho: validado/autorizado = false no cases.js mostra a faixa "Rascunho" na página.
+import Layout from '@strat/kit/Layout.astro';
+
+export function getStaticPaths() {
+  return [
+    { params: { slug: 'schatz' }, props: { foto: 'schatz-foto.jpg', nome: 'Schatz', sobre: 'recuperação de vendas com IA no WhatsApp' } },
+    { params: { slug: 'so-churrasco' }, props: { foto: 'so-churrasco-wide.jpg', nome: 'Só Churrasco', sobre: 'o agente de reservas no WhatsApp' } },
+    { params: { slug: 'guizeline' }, props: { foto: 'guizeline-foto.jpg', nome: 'Guizeline', sobre: 'o agente SDR que atende fora do horário' } },
+    { params: { slug: 'vida-probioticos' }, props: { foto: 'vida-probioticos-foto.jpg', nome: 'Vida Probióticos', sobre: 'o suporte com agentes especialistas' } },
+    { params: { slug: 'contato' }, props: { foto: 'contato-foto.jpg', nome: 'Contato Indenizações', sobre: 'o quiz que qualifica o lead no WhatsApp' } },
+  ];
+}
+const { slug } = Astro.params;
+const { nome, sobre, foto } = Astro.props;
+---
+<Layout
+  marca="stratai"
+  perfil="lead"
+  indexar={false}
+  titulo={`${nome} · Case StratAI`}
+  descricao={`Case da StratAI: ${sobre}.`}
+  imagem="/midia/og.png"
+>
+  <Fragment slot="head">
+    <link rel="icon" href="/midia/favicon/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="/midia/favicon/favicon-180.png" />
+    <meta name="theme-color" content="#191919" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" /></noscript>
+    <link rel="preload" as="script" href="/recuperacao/comum/funil.js" />
+    <link rel="preload" as="script" href="/recuperacao/comum/cases.js" />
+    <link rel="preload" as="image" href={`/recuperacao/cases/midia/${foto}`} fetchpriority="high" />
+    <link rel="stylesheet" href="/recuperacao/comum/base.css" />
+    <link rel="stylesheet" href="/recuperacao/comum/laminas.css" />
+  </Fragment>
+  <h1 class="sr">{`Case ${nome}: ${sobre}`}</h1>
+  <div id="app" data-case={slug}></div>
+  <script is:inline src="/recuperacao/comum/funil.js"></script>
+  <script is:inline src="/recuperacao/comum/cases.js"></script>
+  <script is:inline>CASES.pagina(document.getElementById('app').dataset.case, '../../');</script>
+</Layout>

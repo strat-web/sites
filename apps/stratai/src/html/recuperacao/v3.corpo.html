@@ -1,0 +1,39 @@
+
+<h1 class="sr">Conversa com a StratAI sobre a recuperação de vendas da sua operação</h1>
+<div class="app">
+  <header class="cab">
+    <div class="cab-in">
+      <a class="logo" href="https://stratai.com.br/" aria-label="StratAI"><img src="/recuperacao/comum/strat-wordmark-branco.png" alt="Strat" width="61" height="22"><span>.ai</span></a>
+      <ol class="etapas" id="etapas" aria-label="Etapas da conversa">
+        <li><i></i><small>Início</small></li>
+        <li><i></i><small>Sua operação</small></li>
+        <li><i></i><small>Seus números</small></li>
+        <li><i></i><small>O combinado</small></li>
+        <li><i></i><small>Contato</small></li>
+      </ol>
+      <button class="reiniciar" id="reiniciar" type="button" aria-label="Recomeçar a conversa" title="Recomeçar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+      </button>
+    </div>
+  </header>
+  <main class="rolagem" id="rolagem">
+    <div class="coluna">
+      <div class="conversa" id="conversa" aria-live="polite" aria-label="Conversa"></div>
+      <div class="zona" id="zona" hidden>
+        <span class="mono rotulo" id="rotulo"></span>
+        <div class="respostas" id="respostas"></div>
+        <form class="caixa" id="barra" hidden>
+          <label class="sr" for="entrada">Sua resposta</label>
+          <input id="entrada" autocomplete="off" enterkeyhint="send">
+          <button type="submit" aria-label="Enviar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
+        </form>
+        <div id="priv" hidden></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="/recuperacao/comum/funil.js"></script>
+<script src="/recuperacao/comum/cases.js"></script>
+<script src="/recuperacao/comum/laminas.js"></script>
+<script src="/recuperacao/comum/conversa.js"></script>
