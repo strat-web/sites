@@ -32,7 +32,8 @@
   // Lâmina 2: carrossel de cards em pé (9:16) em loop, que passa sozinho na tela. As métricas do cliente são o
   // destaque. NADA é clicável aqui (pedido do Jhonathan, 12/11): o lead vê os números e segue até o formulário,
   // sem sair da página. Para o loop não ter emenda, a lista vai duas vezes (a cópia fica escondida do leitor de
-  // tela). Passar o mouse pausa.
+  // tela). Passar o mouse NÃO pausa (pedido do Jhonathan); o foco do teclado e o toque pausam (WCAG 2.2.2, nível A,
+  // revisão do Helbert no PR #24, 13/11/2026). Ver "pausa do carrossel" no fim do arquivo.
   function slide(c, raiz, dup) {
     var outros = (c.numeros || []).slice(1, 3);
     return '<div class="case-slide"' + (dup ? ' aria-hidden="true"' : '') + '>' +
@@ -58,7 +59,7 @@
       '<span class="mono">' + esc(L.rotulo) + '</span>' +
       '<h2>' + esc(L.titulo) + '</h2>' +
       '<p class="lam-texto">' + esc(L.texto) + '</p>' +
-      '<div class="carrossel' + (o && o.largo ? ' largo' : '') + '" role="region" aria-label="Cases da StratAI">' +
+      '<div class="carrossel' + (o && o.largo ? ' largo' : '') + '" role="region" tabindex="0" aria-label="Cases da StratAI. Para pausar, toque ou deixe o foco aqui.">' +
         '<div class="carrossel-trilho" style="--itens:' + lista.length + '">' + um + dois + '</div>' +
       '</div>' +
       '<p class="letra-miuda">' + esc(L.nota) + '</p>' +
@@ -136,6 +137,23 @@
     if (a) F.track('cta_click', { tipo: a.getAttribute('data-cta') });
     var c = e.target.closest && e.target.closest('[data-copiar]');
     if (c) { try { navigator.clipboard.writeText(c.getAttribute('data-copiar')); c.textContent = 'Copiado'; } catch (err) {} }
+  });
+
+  // pausa do carrossel (WCAG 2.2.2): para enquanto tem o foco do teclado; um toque pausa e outro toque solta.
+  // O último pointerdown diz quem foi: rolar a página não dispara click, e clicar ou passar o mouse não pausa.
+  // O foco só pausa quando veio do teclado (uma tecla zera o tipo do ponteiro).
+  function carrosselDe(el) { return el && el.closest ? el.closest('.carrossel') : null; }
+  var ultimoPonteiro = '';
+  document.addEventListener('pointerdown', function (e) { ultimoPonteiro = e.pointerType || 'mouse'; }, true);
+  document.addEventListener('keydown', function () { ultimoPonteiro = ''; }, true);
+  document.addEventListener('click', function (e) {
+    var c = carrosselDe(e.target);
+    if (c && ultimoPonteiro === 'touch') c.classList.toggle('pausado');
+  });
+  document.addEventListener('focusin', function (e) { var c = carrosselDe(e.target); if (c && ultimoPonteiro === '') c.classList.add('pausado'); });
+  document.addEventListener('focusout', function (e) {
+    var c = carrosselDe(e.target);
+    if (c && !c.contains(e.relatedTarget)) c.classList.remove('pausado');
   });
 
   window.LAMINAS_UI = { beneficios: beneficios, cases: cases, compraRapida: compraRapida, agenda: agenda, falta: falta };

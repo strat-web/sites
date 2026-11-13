@@ -144,9 +144,15 @@
         if (primeiro) return primeiro.focus();
         form.email.value = F.corrigirEmail(form.email.value);
         C.campos.forEach(function (c) { st.contato[c.id] = form[c.id].value.trim(); });
-        var b = document.getElementById('enviar'); b.disabled = true; b.textContent = 'Enviando…';
+        var b = document.getElementById('enviar'), antes = document.getElementById('erro-envio');
+        if (antes) antes.remove();
+        b.disabled = true; b.textContent = 'Enviando…';
         F.enviarLead(VERSAO, st.r, st.contato).then(function (res) {
           st.protocolo = res.codigo; st.tela = 'analise'; render(); F.apagar(VERSAO);
+        }, function () {
+          // Falhou: as respostas ficam (nada é apagado), o aviso aparece acima do botão e ele vira "Tentar de novo".
+          b.insertAdjacentHTML('beforebegin', F.erroEnvioHTML().replace('<div ', '<div id="erro-envio" '));
+          b.disabled = false; b.innerHTML = esc(F.ERRO_ENVIO.botao) + SETA;
         });
       });
     }

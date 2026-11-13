@@ -152,15 +152,18 @@
   function lamina1() { lamina(window.LAMINAS_UI.beneficios(), 'lamina2', 'resumo', F.LAMINAS.beneficios.botao); }
   function lamina2() { lamina(window.LAMINAS_UI.cases({ raiz: '../' }), 'contato', 'lamina1', F.LAMINAS.cases.botao); }
 
-  function contato() {
+  // falhou = true quando volta do envio com erro: mostra o aviso e o botão vira "Tentar de novo".
+  function contato(falhou) {
     var C = F.CONTATO;
+    falhou = falhou === true;
     montar(
       '<div class="contato fluxo"><span class="mono">Para onde vai a resposta</span><h2>' + esc(C.titulo) + '</h2>' + F.avisoHTML() +
       '<form id="form" novalidate>' +
         C.campos.map(function (c) {
           return '<div class="campo"><label for="c-' + c.id + '">' + esc(c.rotulo) + '</label><input id="c-' + c.id + '" name="' + c.id + '" type="' + c.tipo + '" autocomplete="' + c.auto + '" placeholder="' + esc(c.placeholder) + '"' + (c.tipo === 'tel' ? ' inputmode="tel"' : '') + ' value="' + esc(st.contato[c.id] || '') + '"><span class="erro" id="e-' + c.id + '" hidden></span></div>';
         }).join('') +
-        '<button class="btn btn-lima" type="submit" id="enviar">' + esc(C.botao) + SETA + '</button>' + F.privacidadeHTML() +
+        (falhou ? F.erroEnvioHTML() : '') +
+        '<button class="btn btn-lima" type="submit" id="enviar">' + esc(falhou ? F.ERRO_ENVIO.botao : C.botao) + SETA + '</button>' + F.privacidadeHTML() +
       '</form><button type="button" class="voltar" id="voltar">← Voltar</button></div>'
     );
     var form = document.getElementById('form');
@@ -179,13 +182,15 @@
       C.campos.forEach(function (c) { st.contato[c.id] = form[c.id].value.trim(); });
       var b = document.getElementById('enviar'); b.disabled = true; b.textContent = 'Enviando…';
       var envio = F.enviarLead(VERSAO, st.r, st.contato);
+      envio.catch(function () {}); // a falha é tratada no fim do terminal; isto só evita o aviso de promessa sem tratamento
       analise(envio);
     });
   }
 
-  // terminal "conferindo" e depois o status. O envio corre em paralelo; o status só aparece com ele resolvido.
+  // terminal "conferindo" e depois o status. O envio corre em paralelo; o status só aparece com ele confirmado.
+  // Se o envio falha, volta ao contato com o aviso de erro e as respostas guardadas (só se apaga depois do OK).
   function analise(envio) {
-    st.tela = 'analise'; F.apagar(VERSAO);
+    st.tela = 'analise';
     montar('<span class="mono"><span class="ponto"></span>&nbsp; Enviando para o time de análise</span><div class="terminal" id="term" aria-live="polite"></div>');
     var linhas = ['conferindo onde você vende', 'conferindo volume de vendas paradas', 'conferindo ticket médio', 'anexando o seu raio-x', 'entregando ao time de análise'];
     var term = document.getElementById('term'), k = 0;
@@ -195,7 +200,8 @@
         term.insertAdjacentHTML('beforeend', '<div>' + hora(true) + '  &gt; ' + linhas[k] + '… <span class="ok">ok</span></div>');
         k++; return setTimeout(proxima, reduzido ? 0 : 420);
       }
-      envio.then(function (res) { st.protocolo = res.codigo; final(); });
+      envio.then(function (res) { st.protocolo = res.codigo; F.apagar(VERSAO); final(); },
+        function () { st.tela = 'contato'; guardar(); contato(true); });
     })();
   }
   function final() {

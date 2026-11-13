@@ -84,6 +84,12 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus { box-shadow: none; outline: no
 .aviso-forte strong { font-weight: 700; }
 .aviso-forte svg { width: 26px; height: 26px; }
 .letra-miuda { font-size: 13px; color: var(--ink-2); line-height: 1.5; }
+/* o envio do lead falhou: as respostas ficam e dá para tentar de novo (revisão do PR #24, 13/11/2026) */
+.erro-envio { margin: 4px 0 14px; padding: 14px 16px; border: 1px solid var(--err); border-radius: var(--r-med);
+  background: rgba(255,107,94,.08); color: var(--ink); font-size: 15px; line-height: 1.5; }
+.erro-envio strong, .msg.erro-envio b { color: var(--err); }
+.erro-envio a { color: var(--ink); text-decoration: underline; }
+.msg.erro-envio { border-color: var(--err); }
 
 .ponto { width: 8px; height: 8px; border-radius: 50%; background: var(--lime); display: inline-block; box-shadow: 0 0 0 0 rgba(198,255,52,.5); animation: pulso 2s infinite; }
 @keyframes pulso { 0% { box-shadow: 0 0 0 0 rgba(198,255,52,.45); } 70% { box-shadow: 0 0 0 8px rgba(198,255,52,0); } 100% { box-shadow: 0 0 0 0 rgba(198,255,52,0); } }

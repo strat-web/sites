@@ -10,7 +10,9 @@
   var reduzido = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   function novo() { return { fase: 'abertura', i: 0, k: 0, r: {}, contato: {}, hist: [], perguntado: false }; }
   var st = F.carregar(VERSAO) || novo();
-  if (st.fase === 'fim' || st.fase === 'saida' || st.fase === 'enviando') st = novo();
+  if (st.fase === 'fim' || st.fase === 'saida') st = novo();
+  // fechou a página no meio do envio: volta para a confirmação, com tudo o que já respondeu
+  if (st.fase === 'enviando') { st.fase = 'confirmar'; st.perguntado = false; }
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function hora() { var d = new Date(); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
@@ -181,6 +183,7 @@
   function enviar() {
     st.fase = 'enviando'; guardar();
     var envio = F.enviarLead(VERSAO, st.r, st.contato);
+    envio.catch(function () {}); // a falha é tratada depois da mensagem; isto só evita o aviso de promessa sem tratamento
     falar(['Só um instante, estou entregando o seu perfil para o time de análise…'], function () {
       envio.then(function (res) {
         var A = F.ANALISE, nome = F.primeiroNome(st.contato.nome);
@@ -192,6 +195,18 @@
           'Se for aprovado, é assim:<ol>' + A.passos.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('') + '</ol>',
           'Protocolo: <b class="l">' + esc(res.codigo) + '</b>'
         ], function () { limparRespostas(); });
+      }, function () {
+        // Falhou: nada é apagado. A StratAI avisa na conversa e oferece tentar de novo (ou corrigir os dados).
+        var E = F.ERRO_ENVIO;
+        st.fase = 'confirmar'; st.perguntado = true; guardar();
+        falar([{ html: '<b>' + esc(E.titulo) + '</b> ' + esc(E.texto) + ' ' + esc(E.reserva) + ' <a href="mailto:' + E.email + '">' + E.email + '</a>.', extra: 'erro-envio' }], function () {
+          oferecer([{ t: E.botao, lima: true, ok: true }, { t: 'Corrigir os dados' }], function (o) {
+            registrar('eu', esc(o.t)); st.perguntado = false;
+            if (o.ok) return enviar();
+            st.fase = 'campo'; st.k = 0; guardar();
+            falar(['Sem problema, vamos de novo.'], pedirCampo);
+          });
+        });
       });
     });
   }

@@ -26,7 +26,7 @@
       // em 05/11) e o desenho da recuperação na DEV-85. É o único case que já é de recuperação de vendas.
       slug: 'schatz',
       validado: false,
-      autorizado: false,
+      autorizado: true,   // autorizado pelo Helbert na revisão do PR #24 (13/11/2026)
       cliente: 'Schatz',
       segmento: 'Cursos e conteúdo',
       cidade: '[Cidade/UF]',
@@ -141,7 +141,7 @@
       // Texto sem "advogado", "jurídico" e "processo", e sem promessa de valor (regra da cliente).
       slug: 'contato',
       validado: false,
-      autorizado: false,
+      autorizado: true,   // autorizado pelo Helbert na revisão do PR #24 (13/11/2026)
       cliente: 'Contato Indenizações',
       segmento: 'Auxílio-acidente',
       cidade: '[Cidade/UF]',

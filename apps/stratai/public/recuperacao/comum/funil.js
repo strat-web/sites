@@ -309,6 +309,8 @@
     try {
       var s = JSON.parse(localStorage.getItem(chave(versao)) || 'null');
       if (s && Date.now() - s.salvoEm < CONFIG.guardarHoras * 3600 * 1000) return s;
+      // passou de 24 h: apaga de vez (a política de privacidade promete que some do navegador)
+      if (s) localStorage.removeItem(chave(versao));
     } catch (e) {}
     return null;
   }
@@ -342,8 +344,19 @@
     return s;
   }
 
+  // Até quando esperar o MetricaaS: a tag tem 8 s para carregar e o mtc.lead() (que espera o mf.js) mais 15 s para
+  // responder. Passou disso, conta como falha (revisão do Helbert no PR #24, 13/11/2026; o mesmo da /parcerias/).
+  var ESPERA_TAG = 8000, ESPERA_LEAD = 15000;
+  function comPrazo(promessa, ms) {
+    return Promise.race([promessa, new Promise(function (ok, falha) { setTimeout(function () { falha({ erro: 'sem-resposta' }); }, ms); })]);
+  }
+  // Prévia (fora de *.stratai.com.br): ?simular=erro faz o envio falhar, para conferir a tela de erro.
+  function simularErro() { return !publicado() && /[?&]simular=erro\b/.test(location.search || ''); }
+
   // Uma chamada só, no fim, com tudo. A (prioridade) e B viram "qualificado"; C vai como "desqualificado"
   // (o lead é criado no MetricaaS, mas não vira evento na Meta e não ensina o anúncio a trazer perfil fraco).
+  // Resolve com { codigo } só quando o MetricaaS confirma. Se a tag não carrega, o envio falha ou demora demais, a
+  // promessa é rejeitada: quem chama mostra o erro, deixa tentar de novo e NÃO apaga as respostas.
   function enviarLead(versao, respostas, contato) {
     var cl = classificar(respostas), est = estimar(respostas);
     var tel = telefoneLocal(contato.whatsapp);
@@ -359,15 +372,38 @@
       resultado: cl.classe === 'C' ? 'desqualificado' : 'qualificado'
     };
     if (cl.classe === 'C') pedido.motivo = 'perfil-c';
-    track('funil_lead', { versao: versao, classe: cl.classe });
+    var falhou = function (err) {
+      var motivo = (err && err.erro) || 'falha-no-envio';
+      track('funil_lead_erro', { versao: versao, classe: cl.classe, motivo: motivo });
+      return Promise.reject({ erro: motivo });
+    };
+    if (simularErro()) return falhou({ erro: 'simulado' });
     if (!publicado()) {
-      console.info('[funil] prévia: lead não enviado (só em *.stratai.com.br).', pedido);
-      return Promise.resolve({ codigo: protocoloLocal(), previa: true, pedido: pedido });
+      // Nada de dado pessoal no console: só a classe e a versão.
+      console.info('[funil] prévia: lead não enviado (só em *.stratai.com.br).', { classe: cl.classe, versao: versao });
+      track('funil_lead', { versao: versao, classe: cl.classe });
+      return Promise.resolve({ codigo: protocoloLocal(), previa: true });
     }
-    return esperarTag(8000)
-      .then(function (m) { return m.lead(pedido); })
-      .then(function (r) { return { codigo: (r && r.codigo) || protocoloLocal() }; })
-      .catch(function (err) { console.warn('[funil] lead não enviado', err && err.erro); return { codigo: protocoloLocal(), erro: true }; });
+    return esperarTag(ESPERA_TAG)
+      .then(function (m) { return comPrazo(m.lead(pedido), ESPERA_LEAD); })
+      .then(function (r) {
+        track('funil_lead', { versao: versao, classe: cl.classe });
+        return { codigo: (r && r.codigo) || protocoloLocal() };
+      }, falhou);
+  }
+
+  // Mensagem de erro do envio, igual nas 4 versões. O contato de reserva é o mesmo da /parcerias/.
+  var ERRO_ENVIO = {
+    titulo: 'Não conseguimos enviar agora.',
+    texto: 'As suas respostas continuam aqui. Confira a conexão e tente de novo.',
+    reserva: 'Se continuar, escreva para',
+    email: 'contato@strat.tec.br',
+    botao: 'Tentar de novo'
+  };
+  function erroEnvioHTML() {
+    var E = ERRO_ENVIO;
+    return '<div class="erro-envio" role="alert"><strong>' + E.titulo + '</strong> ' + E.texto + ' ' + E.reserva +
+      ' <a href="mailto:' + E.email + '">' + E.email + '</a>.</div>';
   }
 
   window.FUNIL = {
@@ -376,6 +412,6 @@
     opcao: opcao, classificar: classificar, estimar: estimar, dinheiro: dinheiro,
     avisoHTML: avisoHTML, privacidadeHTML: privacidadeHTML, validar: validar, mascaraTelefone: mascaraTelefone, corrigirEmail: corrigirEmail, primeiroNome: primeiroNome,
     carregar: carregar, salvar: salvar, apagar: apagar,
-    track: track, enviarLead: enviarLead, publicado: publicado
+    track: track, enviarLead: enviarLead, publicado: publicado, ERRO_ENVIO: ERRO_ENVIO, erroEnvioHTML: erroEnvioHTML
   };
 })();

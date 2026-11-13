@@ -140,6 +140,9 @@
 .carrossel.largo { margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); }
 .carrossel-trilho { display: flex; width: max-content; animation: carrossel calc(var(--itens, 5) * 6s) linear infinite; }
 @keyframes carrossel { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+/* pausa por foco do teclado ou toque (WCAG 2.2.2), ligada pelo laminas.js; passar o mouse não pausa */
+.carrossel.pausado .carrossel-trilho, .carrossel.pausado .case-slide-foto { animation-play-state: paused; }
+.carrossel:focus-visible { outline: 2px solid var(--lime); outline-offset: -2px; }
 
 .case-slide { flex: none; transform-origin: 50% 100%; will-change: transform, opacity; width: clamp(230px, 19vw, 280px); aspect-ratio: 9 / 16; margin-right: 16px;
   border-radius: 22px; overflow: hidden; border: 1px solid var(--line); background: var(--card);
