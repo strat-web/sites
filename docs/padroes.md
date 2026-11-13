@@ -30,6 +30,10 @@ Toda página começa pelo `Layout`. Ele põe no `<head>` o título, a descriçã
 `site` em `pages.dev`, quebram o build), o robots, o Open Graph e o JSON-LD da marca. `Breadcrumb` e `Faq`
 mostram o conteúdo e geram o JSON-LD da mesma lista, então o texto estruturado nunca diverge do visível.
 
+Barra no fim: só arquivo com extensão conhecida (`/feed.xml`, `/llms.txt`, imagem) fica sem ela; ponto no meio do slug
+não faz arquivo (`/blog/gpt-4.1/` é página). A regra é a `ehArquivo` de `packages/kit/src/schema.js`, a mesma do
+canonical, do `href` e do `item` do `Breadcrumb` e da checagem `catalogo` (WEB-77).
+
 ```astro
 ---
 import Layout from '@strat/kit/Layout.astro';
@@ -54,20 +58,25 @@ const perguntas = [
 
 | Componente | Props | Gera |
 |---|---|---|
-| `Layout` | `marca`, `titulo`, `descricao`, `imagem?`, `indexar?` (padrão `true`), `tipo?` (`website` ou `article`), `perfil?` (`venda`, `lead` ou `conteudo`), `tituloSocial?` e `descricaoSocial?` (og:title e og:description quando diferem, WEB-32), `viewport?`; slots: padrão (`<body>`) e `head` | `<html lang="pt-BR">`, `Seo`, `JsonLd` da marca e, com `perfil`, o `Tracking` |
+| `Layout` | `marca`, `titulo`, `descricao`, `imagem?`, `indexar?` (padrão `true`), `tipo?` (`website` ou `article`), `perfil?` (`venda`, `lead` ou `conteudo`), `tituloSocial?` e `descricaoSocial?` (og:title e og:description quando diferem, WEB-32), `viewport?`, `atualizado?` (data da última mudança do conteúdo, ver o `lastmod` abaixo); slots: padrão (`<body>`) e `head` | `<html lang="pt-BR">`, `Seo`, `JsonLd` da marca e, com `perfil`, o `Tracking` |
 | `Tracking` | `perfil`, `caminho?` | os scripts do perfil com os ids da linha do catálogo (ver `docs/tracking.md`) |
-| `Seo` | as mesmas do `Layout` e `caminho?` | title, description, canonical, robots, `og:*`, `twitter:card` |
+| `Seo` | as mesmas do `Layout` e `caminho?` | title, description, canonical, robots, `og:*`, `twitter:card` e, com `atualizado`, `article:modified_time` |
 | `JsonLd` | `marca?` e/ou `dados?` (objeto ou lista já montada, ex.: `Article`) | `<script type="application/ld+json">` com `<` escapado |
-| `Breadcrumb` | `itens` (`{ nome, caminho }`, do início à página atual) | trilha visível + `BreadcrumbList` |
+| `Breadcrumb` | `itens` (`{ nome, caminho }`, do início à página atual) | trilha visível + `BreadcrumbList`; `href` e `item` com a barra no fim, mesmo se o `caminho` vier sem ela |
 | `Faq` | `perguntas` (`{ pergunta, resposta }`, texto puro), `titulo?` | `<details>` visíveis + `FAQPage` |
 | `PaginaNaoEncontrada` | `marca`, `titulo`, `descricao`, `h1`, `links?` (`{ nome, caminho }`), `inicio?`, `whatsapp?`; slot: o texto | a 404 do app: `Layout` com noindex e sem tracking, o texto e a lista de links (ver "Página 404") |
 
 - `marca` é a chave do catálogo: `agencia`, `stratai`, `academy`, `metricaas`. Marca nova ou rede nova entra em
   `packages/kit/src/marcas.js`, com a fonte no PR.
 - Sem `imagem`, o Open Graph usa a imagem da marca. Caminho relativo vira absoluto pelo `site`.
+- O `logo` do JSON-LD da marca é o logotipo (`logo` em `marcas.js`), não a imagem de compartilhamento: o arquivo mora
+  em `apps/<app>/public/midia/logo/` e a URL fica no domínio da marca. Um teste do kit quebra se o arquivo faltar ou se
+  o `logo` apontar para o `og.png` (WEB-77).
 - Página fora do índice (bio, obrigado, teste): `indexar={false}`.
 - As regras ficam em `packages/kit/src/schema.js`, testadas com `pnpm --filter @strat/kit test`.
-- Página de teste com tudo junto: `apps/stratai/src/pages/kit/index.astro` (`/kit/`, noindex).
+- Página de teste com tudo junto: `apps/stratai/src/pages/kit/index.astro` (`/kit/`, noindex). Rota dinâmica com
+  ponto no slug e `atualizado`: `apps/agenciastrat/src/pages/kit/[slug].astro` (`/kit/gpt-4.1/`, noindex, sai com a
+  `/kit/lead/` antes da virada, WEB-77).
 - Página com tracking: `perfil` no `Layout` e a linha da URL no catálogo com o mesmo perfil, senão o build quebra.
   Páginas de teste de cada perfil: `/kit/lead/`, `/kit/conteudo/` e `/kit/venda/` (WEB-17).
 
@@ -109,13 +118,20 @@ export default defineConfig({ site: 'https://stratai.com.br', integrations: [arq
 
 | Arquivo | O que sai | De onde vem |
 |---|---|---|
-| `sitemap.xml` | só as páginas indexáveis, com `lastmod` | página com `indexar: true` no `catalogo/sites.json` **e** sem noindex no HTML; `lastmod` = data do último commit do arquivo da página |
+| `sitemap.xml` | só as páginas indexáveis, com `lastmod` | página com `indexar: true` no `catalogo/sites.json` **e** sem noindex no HTML; `lastmod` = a data que a página declara (`<Layout atualizado>`) ou, sem ela, a do último commit do arquivo da rota, fixa ou dinâmica |
 | `robots.txt` | `Allow: /` para todos e para cada robô de IA, e a linha `Sitemap:` | lista `ROBOS_DE_IA` em `packages/kit/src/arquivos-do-site.js` |
-| `llms.txt` | nome, resumo, contato, endereço e redes da marca, as páginas indexáveis (título e descrição do HTML) e as outras marcas do grupo | `packages/kit/src/marcas.js` (campo `resumo`) e o catálogo |
+| `llms.txt` | nome, resumo, contato, endereço e redes da marca, as páginas indexáveis (título e descrição do HTML) e as outras marcas do grupo que já estão no ar | `packages/kit/src/marcas.js` (campo `resumo`) e o catálogo (linha `tipo: site` da raiz do domínio, com `indexar: true` e `no_ar: true`) |
 
 - Página no catálogo com `indexar: true` mas com noindex no HTML fica fora e o build avisa. Página gerada sem linha no
   catálogo também fica fora, com aviso (regra 3).
 - `public/robots.txt`, `public/sitemap.xml` ou `public/llms.txt` no app quebram o build: o kit é a única fonte.
+- Rota dinâmica (`[slug].astro`, `[...caminho].astro`) também tem `lastmod` (WEB-77). Página que sai de dado (post
+  do blog, item de lista) passa a data do conteúdo no `Layout`, senão todas as páginas da rota levam a data do molde:
+  `<Layout ... atualizado={post.data.updatedDate ?? post.data.pubDate}>`. A data vai no `article:modified_time` do HTML,
+  e o kit lê de lá. Página fixa não precisa: vale o commit do arquivo.
+- Domínio que ainda não está no ar não entra nas "Outras marcas" do `llms.txt`: vale o campo `no_ar` da linha
+  `tipo: site` no catálogo (obrigatório nela; a checagem `catalogo` barra sem ele). Quando o domínio virar, o PR da
+  virada põe `no_ar: true` (hoje só o agenciastrat.com.br está com `false`, até o WEB-23).
 - O Pages clona raso (um commit só). Antes de ler as datas, o build roda `git fetch --unshallow` (o repositório é
   público). Se o fetch falhar, o `lastmod` sai em branco e o build avisa, em vez de levar a mesma data para todas as páginas.
 - Bloquear página no robots impediria o robô de ler o noindex: página fora do índice usa `indexar={false}` no `Layout`.
