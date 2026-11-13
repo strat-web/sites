@@ -22,7 +22,10 @@ const etapas = ['Sobre você', 'Seu trabalho', 'Suas indicações'];
       </ul>
     </div>
 
-    <form class="form" novalidate data-cadastro data-strat-leadform data-mtc-form="parcerias">
+    {/* Sem o atributo de formulário de lead do Rastro: o /sa intercepta esse atributo e chama f.submit(), o que
+        mandava os dados por GET na URL (revisão do PR #22). O lead vai só pelo mtc.lead() no script abaixo;
+        action/method são defesa caso algum script envie o form por fora. */}
+    <form class="form" action="#" method="post" novalidate data-cadastro data-mtc-form="parcerias">
       <div class="etapas" aria-hidden="true">
         {etapas.map((e, i) => <span class:list={['etapa-pill', { ativa: i === 0 }]} data-pill={i}><b>{i + 1}</b>{e}</span>)}
       </div>
@@ -161,6 +164,7 @@ const etapas = ['Sobre você', 'Seu trabalho', 'Suas indicações'];
 
 <script>
   import { montarLead } from '../../lib/parcerias-lead.js';
+  import { decidirEnvio } from '../../lib/parcerias-etapas.js';
 
   // A tag do MetricaaS carrega com defer; espera até 8 s por ela (o mesmo da página da Agência).
   const esperarMtc = (ms: number) => new Promise<any>((ok, falha) => {
@@ -221,7 +225,12 @@ const etapas = ['Sobre você', 'Seu trabalho', 'Suas indicações'];
     let enviando = false;
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      if (enviando || !valida(atual)) return;
+      if (enviando) return;
+      // Enter fora da última etapa avança; na última, valida todas antes de enviar (lib/parcerias-etapas.js).
+      const passo = decidirEnvio(atual, etapas.length, valida);
+      if (passo.acao === 'avancar') { ir(passo.etapa); return; }
+      if (passo.acao === 'voltar') { ir(passo.etapa); valida(passo.etapa); return; }
+      if (passo.acao === 'ficar') return;
       const dados = new FormData(form);
       const respostas: Record<string, string | string[]> = {};
       for (const k of new Set(dados.keys())) {

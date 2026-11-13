@@ -13,9 +13,10 @@ const DIAGNOSTICO = '/raio-x/';
     <link rel="icon" href="/midia/favicon/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="192x192" href="/midia/favicon/favicon-192.png" />
     <link rel="apple-touch-icon" href="/midia/favicon/favicon-180.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+    {/* Fontes pelo próprio app (public/fontes/, licença OFL ao lado), sem a folha do Google: ela bloqueava a
+        renderização (~0,9 s no celular) e passava o IP de quem visita ao Google. A Space Grotesk é variável: o mesmo
+        arquivo cobre 400, 500 e 700, então um preload só serve a 400 e a 700. */}
+    <link rel="preload" href="/fontes/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin />
     <script is:inline>document.documentElement.classList.add('js');</script>
   </Fragment>
   <div class="progresso" aria-hidden="true"><span></span></div>
@@ -108,6 +109,17 @@ const DIAGNOSTICO = '/raio-x/';
   </script>
 </Layout>
 <style is:global>
+  /* Subset latin do Google Fonts (mesmo unicode-range), servido de /fontes/. */
+  @font-face {
+    font-family: "Space Grotesk"; font-style: normal; font-weight: 400 700; font-display: swap;
+    src: url("/fontes/space-grotesk-latin.woff2") format("woff2");
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+  @font-face {
+    font-family: "JetBrains Mono"; font-style: normal; font-weight: 500; font-display: swap;
+    src: url("/fontes/jetbrains-mono-500-latin.woff2") format("woff2");
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
   :root {
     --bg: #191919; --card: #242424; --card-2: #2b2b2b; --line: #353535;
     --ink: #f3f3ee; --ink-2: #b9b9b1; --mute: #8a8a83;
