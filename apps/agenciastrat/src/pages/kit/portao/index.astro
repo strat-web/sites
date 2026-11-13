@@ -1,0 +1,107 @@
+---
+// Portão F2 (WEB-22): uma página feita só com o kit inteiro (Layout, Seo, JsonLd, Breadcrumb, Faq e Tracking) tem de
+// passar nas 6 checagens da CI e nos itens A a E de docs/checklist-publicar.md. O preenchimento do checklist está em
+// docs/auditoria/2026-11/portao-f2.md. Perfil conteudo com banner, como pede o WEB-72 para página nova de conteúdo,
+// e linha do catálogo marcada com "teste": true. Noindex; sai antes de o domínio virar (WEB-23).
+import Layout from '@strat/kit/Layout.astro';
+import JsonLd from '@strat/kit/JsonLd.astro';
+import Breadcrumb from '@strat/kit/Breadcrumb.astro';
+import Faq from '@strat/kit/Faq.astro';
+import { marca, urlCanonica } from '@strat/kit';
+
+const titulo = 'Portão F2: página de teste do kit · Agência Strat';
+const descricao =
+  'Página de teste do portão F2 dos sites do Grupo Strat: Layout, Seo, JsonLd, Breadcrumb, Faq e Tracking do kit juntos (WEB-22).';
+const url = urlCanonica(Astro.site, Astro.url.pathname);
+const agencia = marca('agencia');
+const whatsapp = `https://wa.me/554831994338?text=${encodeURIComponent('Olá! Teste do portão F2 dos sites (WEB-22), pode ignorar.')}`;
+
+// JSON-LD da própria página (além do da marca, que o Layout já põe): WebPage ligada à Agência.
+const pagina = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: titulo,
+  description: descricao,
+  url,
+  inLanguage: 'pt-BR',
+  isPartOf: { '@type': 'WebSite', name: agencia.nome, url: agencia.url },
+};
+
+const perguntas = [
+  {
+    pergunta: 'O que esta página testa?',
+    resposta:
+      'Se uma página feita só com o kit dos sites passa nas 6 checagens da CI (build, seo, tracking, links, peso e catalogo) e no checklist de publicar, do conteúdo ao tracking.',
+  },
+  {
+    pergunta: 'Esta página aparece no Google?',
+    resposta:
+      'Não. Ela sai com noindex, fica fora do sitemap.xml e do llms.txt e é removida antes de o domínio passar a ser servido por este repositório.',
+  },
+  {
+    pergunta: 'O pixel da Meta dispara ao abrir a página?',
+    resposta:
+      'Não. A página é de conteúdo e nasce com o banner de cookies: o pixel só liga depois de Aceitar. O MetricaaS carrega na hora, sem depender do aceite.',
+  },
+];
+---
+<Layout marca="agencia" perfil="conteudo" indexar={false} titulo={titulo} descricao={descricao}>
+  <JsonLd slot="head" dados={pagina} />
+  <style slot="head" is:inline>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; font: 16px/1.6 system-ui, -apple-system, 'Segoe UI', sans-serif; color: #161616; background: #fbfaf7; }
+    main { max-width: 720px; margin: 0 auto; padding: 24px 16px 96px; }
+    img { max-width: 100%; height: auto; display: block; }
+    code { overflow-wrap: anywhere; }
+    .kit-breadcrumb ol { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; padding: 0; font-size: 14px; }
+    .kit-breadcrumb li + li::before { content: '›'; margin-right: 8px; color: #6b675e; }
+    .cta { display: inline-block; margin: 8px 0 0; padding: 14px 20px; border-radius: 10px; background: #161616; color: #fff; font-weight: 600; text-decoration: none; }
+    .cta:focus-visible, a:focus-visible { outline: 3px solid #4a7d00; outline-offset: 2px; }
+    section { margin-top: 32px; }
+    .kit-faq details { padding: 12px 0; border-top: 1px solid #d6d2c6; }
+    .kit-faq summary { cursor: pointer; font-weight: 600; }
+    footer { margin-top: 48px; font-size: 14px; color: #4a463f; }
+  </style>
+  <main id="topo">
+    <Breadcrumb itens={[{ nome: 'Início', caminho: '/' }, { nome: 'Portão F2', caminho: '/kit/portao/' }]} />
+    <img src="/kit/portao/selo.svg" width="320" height="120" alt="Selo verde de aprovado com o texto Portão F2" fetchpriority="high" />
+    <h1>Portão F2: a página de teste do kit</h1>
+    <p>Esta página junta todos os componentes do kit dos sites para provar que uma página nova feita com ele passa
+      nas checagens da CI e no checklist de publicar.
+      Abra com <code>?utm_source=teste&amp;utm_medium=verificacao</code> e confira a aba Rede.</p>
+    <a class="cta" href={whatsapp} data-strat-cta="hero-whatsapp" rel="noopener">Falar com a Agência no WhatsApp</a>
+
+    <section data-mtc-section="portao-esperado">
+      <h2>O que deve disparar</h2>
+      <ul>
+        <li>Na abertura: <code>t.metricaas.com.br/m.js</code> com <code>data-ws=strat-marketing</code>, <code>data-pixel=1815630929780241</code> e <code>data-pixel-consent=aguardar</code>; o banner de cookies
+          aparece com Recusar e Aceitar.</li>
+        <li>Antes do aceite: nenhum <code>facebook.com/tr</code>. Recusar: continua sem nenhum.</li>
+        <li>Depois de Aceitar: <code>fbevents.js</code> e um <code>PageView</code> do pixel 1815630929780241.</li>
+        <li>Clique no botão do WhatsApp: <code>CTAClick</code> (<code>hero-whatsapp</code>) e <code>Contact</code>, com o
+          código do MetricaaS no texto da mensagem.</li>
+        <li>Sem Rastro, sem GA4 e sem tag do Google (a Agência não usa: WEB-73). Sem formulário de lead: o perfil é
+          conteúdo.</li>
+      </ul>
+    </section>
+
+    <section data-mtc-section="portao-kit">
+      <h2>O que vem do kit</h2>
+      <ul>
+        <li><code>Layout</code> e <code>Seo</code>: título, descrição, canonical
+          para <code>agenciastrat.com.br</code>, robots noindex, Open Graph e <code>lang="pt-BR"</code>.</li>
+        <li><code>JsonLd</code>: a marca (pelo Layout) e esta página como <code>WebPage</code>.</li>
+        <li><code>Breadcrumb</code> e <code>Faq</code>: a trilha e as perguntas visíveis, com
+          o <code>BreadcrumbList</code> e o <code>FAQPage</code> tirados da mesma lista.</li>
+        <li><code>Tracking</code>: os ids saem da linha <code>agenciastrat-kit-portao</code> do catálogo, marcada
+          como teste.</li>
+      </ul>
+    </section>
+
+    <Faq perguntas={perguntas} />
+
+    <footer>
+      <p>{agencia.nome} · <a href={agencia.privacidade}>Política de privacidade</a></p>
+    </footer>
+  </main>
+</Layout>
