@@ -8,7 +8,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "checar:posts": "checar-posts",
-    "test": "checar-posts"
+    "test": "node --test && checar-posts"
   },
   "dependencies": {
     "astro": "7.4.3",
