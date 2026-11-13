@@ -62,7 +62,8 @@ const ctx = (paginas, { linhas = [linha()], sitemap = [], dist = '/nao-existe', 
 const msgs = (r) => r.erros.map((e) => e.msg).join(' | ');
 const rastroConhece = (conhecidos) => async (url) => ({
   ok: true,
-  text: async () => `var CFG={"known":${conhecidos.includes(new URL(url).searchParams.get('product'))}};`,
+  // O /sa de verdade manda o consentMode de todo produto conhecido; sem ele a checagem barra (WEB-81).
+  text: async () => `var CFG={"known":${conhecidos.includes(new URL(url).searchParams.get('product'))},"consentMode":"off"};`,
 });
 
 test('seo: href="#" barra; o mesmo link com destino passa', () => {
@@ -215,8 +216,78 @@ test('diferencasDoRastro: tag do Google aceita o googleTagId ou o googleAdsId, e
   const l = linha({ ga4: 'G-R84BNVV2HX', google_tag: 'AW-17263684860', meta_pixel: '860500981882285' });
   const mentoria = { metaPixelId: '860500981882285', ga4Id: 'G-R84BNVV2HX', googleTagId: '', googleAdsId: 'AW-17263684860', consentMode: 'off' };
   assert.deepEqual(diferencasDoRastro(mentoria, l), []);
-  assert.deepEqual(diferencasDoRastro({ known: true }, l), []);
+  assert.deepEqual(diferencasDoRastro({ known: true, consentMode: 'off' }, l), []);
   assert.equal(diferencasDoRastro({ ...mentoria, googleTagId: 'GT-X' }, l).length, 1);
+});
+
+test('diferencasDoRastro: banner = strict, soft = soft, off = off; o resto barra (WEB-81)', () => {
+  const ok = [['banner', 'strict'], ['soft', 'soft'], ['off', 'off']];
+  for (const [consentimento, consentMode] of ok) {
+    assert.deepEqual(diferencasDoRastro({ ...STRATAI, consentMode }, linha({ consentimento })), [], `${consentimento} × ${consentMode}`);
+  }
+  const ruins = [
+    ['banner', 'soft'], ['banner', 'off'], ['banner', 'banner'],
+    ['soft', 'strict'], ['soft', 'off'],
+    ['off', 'strict'], ['off', 'soft'],
+    ['sem-tracking', 'off'], ['por-funil', 'strict'],
+    ['off', 'outro'],
+  ];
+  for (const [consentimento, consentMode] of ruins) {
+    const difs = diferencasDoRastro({ ...STRATAI, consentMode }, linha({ consentimento }));
+    assert.equal(difs.length, 1, `${consentimento} × ${consentMode}`);
+    assert.match(difs[0], /^consentimento: /);
+  }
+  assert.match(diferencasDoRastro({ ...STRATAI, consentMode: 'soft' }, linha({ consentimento: 'banner' }))[0], /pede "strict"/);
+});
+
+test('tracking: página com Rastro e banner passa com o produto em strict e barra com o produto em soft (WEB-81)', async () => {
+  const linhas = [linha({ consentimento: 'banner' })];
+  const head = TRACKING_OK; // sem data-pixel e sem banner do kit: o aviso é o do Rastro
+  const strict = await checarTracking(ctx([pagina({ head })], { linhas }), { buscar: rastroCom({ ...STRATAI, consentMode: 'strict' }) });
+  assert.deepEqual(strict.erros, []);
+  const soft = await checarTracking(ctx([pagina({ head })], { linhas }), { buscar: rastroCom({ ...STRATAI, consentMode: 'soft' }) });
+  assert.match(msgs(soft), /consentMode "soft", o catálogo diz "banner" \(pede "strict" no Rastro\)/);
+  // m.js com data-pixel-consent numa página com Rastro: o kit não pede, então barra (pixel em dobro e aviso em dobro)
+  const dobro = await checarTracking(
+    ctx([pagina({ head: TRACKING_OK.replace('data-ws="agencia-strat"', 'data-ws="agencia-strat" data-pixel-consent="aguardar"') })], { linhas }),
+    { buscar: rastroCom({ ...STRATAI, consentMode: 'strict' }) },
+  );
+  assert.match(msgs(dobro), /data-pixel-consent="aguardar", mas o catálogo pede ""/);
+});
+
+test('diferencasDoRastro: sem consentMode no /sa barra, em vez de passar calado (WEB-81)', () => {
+  for (const consentimento of ['banner', 'soft', 'off']) {
+    for (const cfg of [{ ...STRATAI, consentMode: undefined }, { ...STRATAI, consentMode: '' }, { ...STRATAI, consentMode: null }]) {
+      const difs = diferencasDoRastro(cfg, linha({ consentimento }));
+      assert.equal(difs.length, 1, `${consentimento} × ${JSON.stringify(cfg.consentMode)}`);
+      assert.match(difs[0], /o Rastro não mandou consentMode/);
+    }
+  }
+  const { consentMode, ...semCampo } = STRATAI;
+  assert.match(diferencasDoRastro(semCampo, linha({ consentimento: 'banner' }))[0], /não dá para conferir o "banner" do catálogo/);
+});
+
+test('tracking: página com Rastro e banner barra quando o /sa não manda consentMode (WEB-81)', async () => {
+  const { consentMode, ...semCampo } = STRATAI;
+  const r = await checarTracking(ctx([pagina()], { linhas: [linha({ consentimento: 'banner' })] }), { buscar: rastroCom(semCampo) });
+  assert.match(msgs(r), /produto "stratai" no Rastro × catálogo, consentimento: o Rastro não mandou consentMode/);
+});
+
+test('tracking: venda com banner barra, e script da Hotmart em página com banner barra (WEB-81, até o WEB-85)', async () => {
+  const LAUNCHER = `<script id="hotmart_launcher_script">(function(l,a,u,n,c){})(window,document,'script','//launcher.hotmart.com/launcher.js','hot');hot('account','h');</script>`;
+  const venda = linha({ perfil: 'venda', metricaas_ws: null, rastro_slug: 'stratai', hotmart_conta: 'h', consentimento: 'banner' });
+  const sa = '<script defer src="https://tracking.stratacademy.com.br/sa?product=stratai"></script>';
+  const r = await checarTracking(ctx([pagina({ head: sa + LAUNCHER })], { linhas: [venda] }), { semRede: true });
+  assert.match(msgs(r), /perfil venda com consentimento "banner" e Rastro/);
+  assert.match(msgs(r), /script da Hotmart em página com consentimento "banner": <script id="hotmart_launcher_script"> inline/);
+  // Widget de checkout colado à mão numa página de conteúdo com banner: também carrega antes do aceite.
+  const widget = '<script src="https://static.hotmart.com/checkout/widget.min.js"></script>';
+  const conteudo = linha({ perfil: 'conteudo', metricaas_ws: null, meta_pixel: null, consentimento: 'banner' });
+  const w = await checarTracking(ctx([pagina({ head: sa, corpo: widget })], { linhas: [conteudo] }), { semRede: true });
+  assert.match(msgs(w), /script da Hotmart em página com consentimento "banner": https:\/\/static\.hotmart\.com\/checkout\/widget\.min\.js carrega antes do "aceitar"/);
+  // Venda em off com o launcher do kit passa (o Rastro em off não pede aceite).
+  const off = await checarTracking(ctx([pagina({ head: sa + LAUNCHER })], { linhas: [{ ...venda, consentimento: 'off' }] }), { semRede: true });
+  assert.deepEqual(off.erros, []);
 });
 
 test('peso: exceção do Lighthouse avisa acima do piso e barra abaixo dele (WEB-32)', () => {
@@ -331,7 +402,7 @@ test('Rastro: oscilação (rede caiu, 503) ganha nova tentativa e passa', async 
   const { buscar, chamadas } = rastroEmSequencia([new TypeError('fetch failed'), 503, { known: true }]);
   assert.equal((await lerRastro('stratai', buscar, { esperar: semEspera })).known, true);
   assert.equal(chamadas.length, 3);
-  const r = await checarTracking(ctx([pagina()]), { buscar: rastroEmSequencia([502, { known: true }]).buscar, esperar: semEspera });
+  const r = await checarTracking(ctx([pagina()]), { buscar: rastroEmSequencia([502, { known: true, consentMode: 'off' }]).buscar, esperar: semEspera });
   assert.deepEqual(r.erros, []);
 });
 
