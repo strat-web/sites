@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- chore(stratai): saem as páginas de teste /kit/, /kit/lead/ e /kit/conteudo/ (noindex) e as 3 linhas delas no catálogo, antes de o domínio virar; os testes do kit passam a usar as linhas da home e do /raio-x/ (WEB-32)
 - docs(catalogo): a observação da agenciastrat e o achado do formulário na auditoria da Agência passam a dizer que os 6 campos da empresa já chegavam ao lead em lead_custom_values (premissa corrigida na revisão do strat-lps#86) (WEB-71)
 - docs(pages): caminho observado dos 4 projetos do Pages com package.json, pnpm-workspace.yaml, .npmrc e .nvmrc da raiz, e token na zona stratacademy dado como ativo em infisical.md e dominios.md (WEB-78)
 - docs(dominios): zona agenciastrat.com.br ativa na Cloudflare desde 2026-11-04 (nameservers no registro.br trocados no WEB-1), conferida pela API em 2026-11-13 (WEB-90)
