@@ -1,0 +1,10 @@
+# Redirecionamentos do stratai.com.br no Cloudflare Pages (WEB-32). A query (UTM, fbclid) segue junto.
+# Política de privacidade: a URL passa a ter barra no fim (docs/padroes.md); a forma antiga responde 301.
+/politica-de-privacidade /politica-de-privacidade/ 301
+/politica-de-privacidade.html /politica-de-privacidade/ 301
+# A página da Agência saiu do stratai.com.br em 31/10/2026 (MARKETING-73): o mesmo 301 que o strat-lps fazia.
+/agencia https://agencia.stratai.com.br/ 301
+/agencia/* https://agencia.stratai.com.br/:splat 301
+# Primeira versão do Raio-X (noindex, só referência, não divulgada) não veio para cá: cai na versão no ar.
+/raio-x/v1 /raio-x/ 301
+/raio-x/v1/* /raio-x/ 301

@@ -13,7 +13,7 @@ pnpm --filter @strat/checagens test                      # testes das regras
 
 | Arquivo | O quê |
 |---|---|
-| `src/contexto.js` | lê o catálogo e, de cada app com `dist/`, o domínio, as páginas e o sitemap |
+| `src/contexto.js` | lê o catálogo e, de cada app com `dist/`, o domínio, as páginas, os `.js` do build e o sitemap; app sem `dist/` barra (`checarApps`) |
 | `src/seo.js`, `src/tracking.js`, `src/links.js`, `src/peso.js`, `src/catalogo.js` | uma checagem cada, função que devolve `{ erros, avisos }` |
 | `src/esqueletos.js` | as homes-esqueleto do WEB-15, com o item que migra cada uma |
 | `src/cli.js` | roda as checagens e sai com 1 se alguma barrar (anotação no PR quando roda no GitHub Actions) |

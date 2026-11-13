@@ -1,0 +1,14 @@
+---
+// Página 404 do Metricaas (WEB-75). O Pages serve o 404.html com status 404 em todo caminho que não existe.
+import PaginaNaoEncontrada from '@strat/kit/PaginaNaoEncontrada.astro';
+---
+<PaginaNaoEncontrada
+  marca="metricaas"
+  titulo="Página não encontrada · Metricaas"
+  descricao="Este endereço não leva a nenhuma página do Metricaas. Volte para o início e veja de onde vem cada cliente do seu WhatsApp."
+  h1="Esta página não existe"
+  inicio="Voltar para o início do Metricaas"
+>
+  <p>O endereço que você abriu não leva a nenhuma página do Metricaas. Pode ter mudado de lugar ou ter sido digitado diferente.</p>
+  <p>No início você vê como o Metricaas mostra qual anúncio gerou cada conversa no seu WhatsApp.</p>
+</PaginaNaoEncontrada>

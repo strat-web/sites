@@ -15,7 +15,7 @@ interface Props {
 
 const { perfil, esperado, whatsapp, checkout } = Astro.props;
 const url = urlCanonica(Astro.site, Astro.url.pathname);
-const { linha, scripts, hotmart, banner } = planoDeTracking({ catalogo, url, perfil });
+const { linha, scripts, hotmart, banner, consentMode } = planoDeTracking({ catalogo, url, perfil });
 const texto = encodeURIComponent('Olá! Teste do kit de tracking (WEB-17), pode ignorar.');
 ---
 <main id="topo" style="max-width:720px;margin:0 auto;padding:32px 16px;font:16px/1.6 system-ui,sans-serif">
@@ -30,7 +30,8 @@ const texto = encodeURIComponent('Olá! Teste do kit de tracking (WEB-17), pode 
       <li>id: <code>{linha.id}</code> · marca: <code>{linha.marca}</code> · consentimento: <code>{linha.consentimento}</code></li>
       <li>Rastro: <code>{linha.rastro_slug ?? 'não usa'}</code> · MetricaaS: <code>{linha.metricaas_ws ?? 'não usa'}</code> · pixel: <code>{linha.meta_pixel ?? '—'}</code></li>
       <li>Scripts no &lt;head&gt;: {scripts.map((s) => <code style="display:block">{s.src}</code>)}</li>
-      <li>Launcher da Hotmart: {hotmart ? 'sim' : 'não'} · banner de cookies do kit: {banner ? 'sim' : 'não'}</li>
+      <li>Launcher da Hotmart: {hotmart ? 'sim' : 'não'} · banner de cookies do kit: {banner ? 'sim' : 'não'}
+        · consentMode que o produto no Rastro tem de ter: <code>{consentMode ?? 'não usa Rastro'}</code></li>
     </ul>
   </section>
 

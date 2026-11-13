@@ -1,0 +1,39 @@
+---
+// Página 404 do app (WEB-75): entra em src/pages/404.astro e o build gera o 404.html que o Cloudflare Pages serve,
+// com status 404, em todo caminho que não existe. Sempre noindex e sem tracking (fora do catálogo e do sitemap).
+// O texto na voz da marca vai no slot; `links` traz as páginas principais e só aparece o que já existe no build.
+import Layout from './Layout.astro';
+import { linksDaPaginaDeErro } from './pagina-de-erro.js';
+import { marca as dadosMarca } from './marcas.js';
+
+interface Props {
+  marca: string;
+  titulo: string;
+  descricao: string;
+  h1: string;
+  links?: { nome: string; caminho: string }[];
+  inicio?: string; // texto do link para a home
+  whatsapp?: string; // texto do link para o WhatsApp da marca (o número vem de marcas.js)
+}
+
+const { marca, titulo, descricao, h1, links = [], inicio = 'Página inicial', whatsapp } = Astro.props;
+// '/src/pages' é a pasta do app que está buildando (raiz do Vite), não a do kit.
+const arquivos = Object.keys(import.meta.glob('/src/pages/**/*.{astro,md,mdx,html}'));
+const lista = linksDaPaginaDeErro([{ nome: inicio, caminho: '/' }, ...links], arquivos);
+if (whatsapp) {
+  const telefone = dadosMarca(marca).telefone;
+  if (!telefone) throw new Error(`[kit] PaginaNaoEncontrada: a marca "${marca}" não tem telefone em marcas.js`);
+  lista.push({ nome: whatsapp, caminho: `https://wa.me/${telefone.replace(/\D/g, '')}` });
+}
+---
+<Layout marca={marca} titulo={titulo} descricao={descricao} indexar={false}>
+  <main>
+    <h1>{h1}</h1>
+    <slot />
+    <nav aria-label="Páginas do site">
+      <ul>
+        {lista.map((l) => <li><a href={l.caminho}>{l.nome}</a></li>)}
+      </ul>
+    </nav>
+  </main>
+</Layout>

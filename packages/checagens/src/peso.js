@@ -12,6 +12,7 @@ import { extname, join, normalize } from 'node:path';
 import { ehPaginaDeErro } from './contexto.js';
 import { enderecos } from './html.js';
 import { resultado } from './resultado.js';
+import { EXCECOES_LIGHTHOUSE } from './excecoes-peso.js';
 
 export const ORCAMENTO = { bytes: 1_500_000, performance: 90, lcpMs: 2500, cls: 0.1 };
 
@@ -113,7 +114,18 @@ async function medirComLighthouse(url, porta) {
   };
 }
 
-const passa = (m) => m.performance >= ORCAMENTO.performance && m.lcpMs <= ORCAMENTO.lcpMs && m.cls <= ORCAMENTO.cls;
+const dentro = (m, o) => m.performance >= o.performance && m.lcpMs <= o.lcpMs && m.cls <= o.cls;
+const passa = (m) => dentro(m, ORCAMENTO);
+
+/**
+ * Julga uma medição do Lighthouse: 'ok' dentro do orçamento; 'aviso' para página de excecoes-peso.js abaixo do
+ * orçamento mas acima do piso dela (o número da página no ar); 'erro' no resto.
+ */
+export function julgarMedicao(url, m, excecoes = EXCECOES_LIGHTHOUSE) {
+  if (passa(m)) return 'ok';
+  const exc = excecoes[url];
+  return exc && dentro(m, exc.piso) ? 'aviso' : 'erro';
+}
 
 export async function checarPeso(ctx, { semLighthouse = false, log = () => {} } = {}) {
   const r = resultado();
@@ -143,13 +155,17 @@ export async function checarPeso(ctx, { semLighthouse = false, log = () => {} } 
           let m;
           try {
             m = await medirComLighthouse(url, chrome.port);
-            if (!passa(m)) m = await medirComLighthouse(url, chrome.port); // uma segunda medição antes de barrar
+            if (julgarMedicao(pagina.url, m) !== 'ok') m = await medirComLighthouse(url, chrome.port); // uma segunda medição antes de barrar
           } catch (e) {
             r.erro(pagina.url, `o Lighthouse não conseguiu medir: ${e.message}`);
             continue;
           }
           const texto = `performance ${m.performance}, LCP ${(m.lcpMs / 1000).toFixed(1)} s, CLS ${m.cls}`;
-          if (passa(m)) log(`${pagina.url}: ${texto}`);
+          const juizo = julgarMedicao(pagina.url, m);
+          const exc = EXCECOES_LIGHTHOUSE[pagina.url];
+          if (juizo === 'ok') log(`${pagina.url}: ${texto}`);
+          else if (juizo === 'aviso') r.aviso(pagina.url, `${texto}: abaixo do orçamento, acima do piso da exceção (${exc.motivo})`);
+          else if (exc) r.erro(pagina.url, `${texto}: pior que o piso da exceção em excecoes-peso.js (performance ≥ ${exc.piso.performance}, LCP ≤ ${(exc.piso.lcpMs / 1000).toFixed(1)} s)`);
           else r.erro(pagina.url, `${texto}: o orçamento é performance ≥ 90, LCP ≤ 2,5 s e CLS ≤ 0,1 (celular)`);
         }
       } finally {
