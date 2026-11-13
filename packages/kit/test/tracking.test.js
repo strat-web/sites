@@ -16,14 +16,14 @@ const falso = (extra, perfil = extra.perfil ?? 'lead') =>
   planoDeTracking({ catalogo: { urls: [linha(extra)] }, url: 'https://exemplo.com.br/', perfil });
 
 test('a URL acha a linha do catálogo pela forma canônica (sem query, com barra)', () => {
-  assert.equal(linhaDoCatalogo(catalogo, 'https://stratai.com.br/kit/lead?utm_source=teste#x').id, 'stratai-kit-lead');
+  assert.equal(linhaDoCatalogo(catalogo, 'https://stratai.com.br/raio-x?utm_source=teste#x').id, 'stratai-raio-x');
   assert.throws(() => linhaDoCatalogo(catalogo, 'https://stratai.com.br/nao-existe/'), /sem linha|não tem linha/);
 });
 
 test('perfil precisa existir e bater com o catálogo', () => {
   assert.deepEqual(PERFIS, ['venda', 'lead', 'conteudo']);
-  assert.throws(() => plano('https://stratai.com.br/kit/lead/', 'conteudo'), /catálogo diz "lead"/);
-  assert.throws(() => plano('https://stratai.com.br/kit/lead/', 'captura'), /não existe/);
+  assert.throws(() => plano('https://stratai.com.br/', 'conteudo'), /catálogo diz "lead"/);
+  assert.throws(() => plano('https://stratai.com.br/', 'captura'), /não existe/);
 });
 
 test('venda: Rastro do produto e launcher da Hotmart, sem MetricaaS', () => {
@@ -36,9 +36,10 @@ test('venda: Rastro do produto e launcher da Hotmart, sem MetricaaS', () => {
 });
 
 test('lead com Rastro: m.js primeiro e sem data-pixel (o pixel vem do Rastro)', () => {
-  const p = plano('https://stratai.com.br/kit/lead/', 'lead');
+  // Linha real: a home da StratAI (as páginas de teste /kit/ saíram antes da virada do domínio, WEB-32).
+  const p = plano('https://stratai.com.br/', 'lead');
   assert.deepEqual(srcs(p), ['https://t.metricaas.com.br/m.js', 'https://tracking.stratacademy.com.br/sa?product=stratai', '/u/script.js']);
-  // Umami do Strat Tracking: o website do host, o mesmo do stratai.com.br/ (TRACK-8)
+  // Umami do Strat Tracking: o website do host stratai.com.br (TRACK-8)
   assert.deepEqual(p.scripts[2].attrs, { 'data-website-id': 'd6394916-40aa-45da-b80e-7285ec5bcb45' });
   assert.deepEqual(p.scripts[0].attrs, { 'data-ws': 'agencia-strat' });
   assert.equal(p.hotmart, null);
@@ -64,8 +65,13 @@ test('lead precisa de MetricaaS ou Rastro; GA4 sem Rastro quebra (WEB-73)', () =
 });
 
 test('conteudo: o mesmo do site da marca, sem Hotmart', () => {
-  const site = plano('https://stratai.com.br/', 'lead');
-  const p = plano('https://stratai.com.br/kit/conteudo/', 'conteudo');
+  // Os mesmos ids da home da StratAI, com o perfil lead e com o perfil conteudo.
+  const ids = {
+    rastro_slug: 'stratai', metricaas_ws: 'agencia-strat', meta_pixel: '1823024821883911', ga4: 'G-3VJ019EH58',
+    google_tag: 'GT-M6J6NZQW', umami_website_id: 'd6394916-40aa-45da-b80e-7285ec5bcb45',
+  };
+  const site = falso({ ...ids, perfil: 'lead' });
+  const p = falso({ ...ids, perfil: 'conteudo' });
   assert.deepEqual(p.scripts, site.scripts);
   assert.equal(p.hotmart, null);
 });
