@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- fix(kit): o aceite do banner de cookies espera o m.js carregar, sem o prazo de 8 s, e liga o pixel uma vez só; script em banner-cookies.js com teste em DOM simulado (WEB-80)
 - docs: cai o limite de 6 PRs abertos (Helbert e Jhonathan, 13/11) em decisoes.md, padroes.md e CLAUDE.md; as outras regras de fluxo de 12/11 continuam (WEB-69)
 - test(agenciastrat): portão F2, página de teste /kit/portao/ (noindex) com o kit inteiro, linha do catálogo marcada com "teste": true e o checklist de publicar A a E em docs/auditoria/2026-11/portao-f2.md (WEB-22)
 - chore(stratai): saem as páginas de teste /kit/, /kit/lead/ e /kit/conteudo/ (noindex) e as 3 linhas delas no catálogo, antes de o domínio virar; os testes do kit passam a usar as linhas da home e do /raio-x/ (WEB-32)
