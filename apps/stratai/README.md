@@ -9,6 +9,7 @@ Site da StratAI no Cloudflare Pages (projeto `stratai`, prévia em https://strat
 | `/` | `src/pages/index.astro` + `src/html/home.*.html` | `stratai` | Rastro `stratai` e MetricaaS `agencia-strat` |
 | `/raio-x/` | `src/pages/raio-x/index.astro` + `src/html/raio-x.*.html` | `stratai-raio-x` | Rastro `raio-x-ia` e MetricaaS `agencia-strat` |
 | `/politica-de-privacidade/` | `src/pages/politica-de-privacidade/index.astro` + `src/html/politica-de-privacidade.*.html` | `stratai-politica-de-privacidade` | nenhum (como no ar) |
+| `/parcerias/` | `src/pages/parcerias/index.astro`, `src/layouts/Parcerias.astro`, `src/components/parcerias/`, textos em `src/data/parcerias.json` | `stratai-parcerias` | Rastro `stratai-parcerias` (soft) e MetricaaS `agencia-strat`; o cadastro vai pelo `mtc.lead()` (WEB-74) |
 
 ## Como as páginas migradas são montadas
 - O HTML de cada página está em `src/html/<página>.head.html` (favicon, cor do tema, fontes, `<style>`) e
@@ -41,3 +42,21 @@ antes de o domínio virar para cá (WEB-32). As de teste do `<Tracking>` que fic
 ## Desempenho
 A home mede abaixo do orçamento do Lighthouse (no ar em 12/11/2026: performance 68, LCP 5,4 s; no build: 80 e 3,9 s).
 Como a migração não muda a página, ela está em `packages/checagens/src/excecoes-peso.js`, com o número do ar como piso.
+
+## /parcerias/ (WEB-74)
+Programa de parceria e indicação, da prévia aprovada pelo Helbert em 12/11/2026 (texto, ordem e visual), só com a
+indicação: o bloco de ferramentas parceiras com desconto entra quando a lista chegar.
+- **Textos:** `src/data/parcerias.json` (perfis, oferta, passos, dúvidas e as opções do cadastro). Sem condição
+  comercial (percentual, valor, dia de pagamento, prazo de resposta) no texto nem no repositório: elas ficam para a
+  conversa de alinhamento. O teste `test/parcerias.test.js` barra percentual, `R$`, dia ou prazo no texto da página.
+- **Cadastro:** 3 etapas; no envio, `mtc.lead({ nome, telefone, email, campos })` do MetricaaS (`agencia-strat`),
+  montado por `src/lib/parcerias-lead.js`. `campos.tipo_cadastro = parceria` separa o parceiro do lead de cliente;
+  as respostas vão como `instagram_ou_linkedin`, `atuacao`, `contatos`, `segmentos`, `tem_indicacao`, `experiencia`,
+  `inicio` e `detalhes`. Chave que o workspace não tem é descartada sem erro: as chaves precisam existir em
+  Configurações → Campos personalizados do `agencia-strat` (criadas em 13/11/2026, rótulo "Parceria: …"). A tela de
+  recebido só aparece quando o MetricaaS confirma.
+- **Sem Lead na Meta:** o envio leva `meta: false` (MetricaaS, PR 697, tag v11): o parceiro não vira Lead no pixel
+  nem na CAPI. O fluxo "Parceiro do site vai para o funil Parceiros" do `agencia-strat` (lead criado, origem
+  formulário, `tipo_cadastro = parceria`) move o lead para o funil Parceiros, cujas etapas não têm evento.
+- **Consentimento:** `soft`, com o produto próprio `stratai-parcerias` no Rastro (WEB-72: página nova de lead).
+- O rodapé ganhou o link da política de privacidade (o cadastro coleta dados pessoais; checklist A5).

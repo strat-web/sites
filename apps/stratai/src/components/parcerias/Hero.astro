@@ -1,0 +1,136 @@
+---
+import { comissao } from '../../lib/parcerias.js';
+// Gráfico que sobe em degraus: cada degrau é um cliente indicado que fechou. Sem valores no eixo.
+const W = 420, H = 260, base = 232, topo = 34, n = 7;
+const passo = W / (n + 0.6);
+const alturas = Array.from({ length: n + 1 }, (_, i) => base - ((base - topo) * Math.pow(i / n, 1.25)));
+let d = `M 0 ${base}`;
+const pontos: { x: number; y: number }[] = [];
+alturas.slice(1).forEach((y, i) => {
+  const x0 = passo * (i + 0.6), y0 = alturas[i];
+  d += ` L ${x0} ${y0} C ${x0 + passo * 0.22} ${y0}, ${x0 + passo * 0.18} ${y}, ${x0 + passo * 0.4} ${y}`;
+  pontos.push({ x: x0 + passo * 0.4, y });
+});
+d += ` L ${W} ${topo - 6}`;
+const area = `${d} L ${W} ${H} L 0 ${H} Z`;
+---
+<section class="hero" data-mtc-section="hero">
+  <div class="hero-luz" aria-hidden="true"></div>
+  <div class="faixa hero-grade">
+    <div class="hero-texto">
+      <p class="mono destaque eyebrow entra" style="--i:0">PROGRAMA DE PARCERIA E INDICAÇÃO</p>
+      <h1 class="entra" style="--i:1">Indique empresas. Receba comissão <span class="marca-texto">todo mês</span>.</h1>
+      <p class="hero-sub entra" style="--i:2">
+        Você trabalha com IA e conhece empresas que precisam dela. A gente implementa agentes, automações e sistemas;
+        você recebe uma comissão {comissao.base}, {comissao.frequencia}, {comissao.duracao}.
+        <strong>Quanto mais você indicar, mais você vai ganhar.</strong>
+      </p>
+      <div class="hero-acoes entra" style="--i:3">
+        <a href="#quero-ser-parceiro" class="botao botao-lima" data-strat-cta="hero-cadastro" data-mtc-event="cta_hero_cadastro">Quero ser parceiro <span class="seta" aria-hidden="true">→</span></a>
+        <a href="#quanto-mais" class="botao botao-fantasma" data-strat-cta="hero-quanto-mais" data-mtc-event="cta_hero_quanto_mais">Ver como cresce</a>
+      </div>
+      <ul class="selos entra" style="--i:4">
+        <li><span class="mono">PAGAMENTO</span><strong>Mensal</strong><small>{comissao.frequencia}</small></li>
+        <li><span class="mono">DURAÇÃO</span><strong>Recorrente</strong><small>{comissao.duracao}</small></li>
+        <li><span class="mono">GANHO</span><strong>Sobe</strong><small>a cada nova indicação</small></li>
+      </ul>
+    </div>
+
+    <div class="painel entra" style="--i:2" role="img" aria-label="Gráfico subindo: cada cliente indicado que fecha soma mais uma comissão por mês.">
+      <div class="painel-topo">
+        <span class="mono">SUA COMISSÃO MENSAL</span>
+        <span class="subindo mono"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 9 L6 4 L8 6 L11 2 M8 2 H11 V5" /></svg>SUBINDO</span>
+      </div>
+      <svg viewBox={`0 0 ${W} ${H}`} class="grafico-sobe" aria-hidden="true" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="g-area" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#c6ff34" stop-opacity=".38" />
+            <stop offset="100%" stop-color="#c6ff34" stop-opacity="0" />
+          </linearGradient>
+        </defs>
+        {[0.25, 0.5, 0.75].map((k) => <line x1="0" x2={W} y1={H * k} y2={H * k} class="grade" />)}
+        <path d={area} class="area" />
+        <path d={d} class="linha" pathLength="1" />
+        {pontos.map((p, i) => (
+          <g class="ponto" style={`--k:${i}`}>
+            <circle cx={p.x} cy={p.y} r="5" />
+            <text x={p.x} y={p.y - 14} text-anchor="middle">+1</text>
+          </g>
+        ))}
+      </svg>
+      <div class="painel-pe">
+        <p class="mono">CADA DEGRAU = 1 CLIENTE INDICADO QUE FECHOU</p>
+        <p class="frase">Quanto mais você indicar, <span class="destaque">mais você vai ganhar.</span></p>
+      </div>
+      <div class="aviso" aria-hidden="true">
+        <span class="aviso-ic">✓</span>
+        <div><strong>Comissão do mês paga</strong><small class="mono">+1 CLIENTE INDICADO ATIVO</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero { position: relative; overflow: clip; padding: clamp(40px, 6vw, 80px) 0 clamp(56px, 7vw, 96px); }
+  .hero-luz { position: absolute; width: 1000px; height: 1000px; right: -300px; top: -380px; background: radial-gradient(circle, rgba(198,255,52,.13), transparent 60%); pointer-events: none; animation: respirar 9s ease-in-out infinite; }
+  .hero-grade { position: relative; display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(28px, 5vw, 72px); align-items: center; }
+  .hero h1 { font-size: clamp(2.4rem, 5.6vw, 4.4rem); margin: 20px 0 22px; max-width: 14ch; }
+  .marca-texto { color: var(--lime-text); position: relative; white-space: nowrap; }
+  .marca-texto::after { content: ""; position: absolute; left: 0; right: 0; bottom: .02em; height: .1em; background: var(--lime); transform: scaleX(0); transform-origin: left; animation: riscar .9s var(--ease) 1s forwards; }
+  .hero-sub { color: var(--ink-2); font-size: clamp(17px, 1.6vw, 20px); max-width: 52ch; }
+  .hero-sub strong { color: var(--ink); display: block; margin-top: 10px; }
+  .hero-acoes { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+  .selos { list-style: none; padding: 0; margin: 36px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; max-width: 560px; }
+  .selos li { display: grid; gap: 4px; padding: 14px 16px; background: rgba(36,36,36,.8); border: 1px solid var(--line); border-radius: var(--raio); }
+  .selos .mono { font-size: 10px; }
+  .selos strong { font: 700 22px/1.1 var(--sans); }
+  .selos small { color: var(--ink-2); font-size: 13px; line-height: 1.3; }
+  .entra { opacity: 0; transform: translateY(22px); animation: entrar .8s var(--ease) forwards; animation-delay: calc(var(--i) * .12s + .1s); }
+
+  .painel { position: relative; padding: 24px; background: linear-gradient(170deg, rgba(43,43,43,.95), rgba(30,30,30,.95)); border: 1px solid var(--line); border-radius: 24px; box-shadow: 0 40px 80px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.04); }
+  .painel-topo { display: flex; justify-content: space-between; align-items: center; }
+  .subindo { display: inline-flex; align-items: center; gap: 6px; color: var(--lime-text) !important; }
+  .subindo svg { width: 14px; height: 14px; fill: none; stroke: var(--lime); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; animation: quicar 1.6s var(--ease) infinite; }
+  .grafico-sobe { display: block; width: 100%; height: auto; aspect-ratio: 420 / 260; margin-top: 18px; overflow: visible; }
+  .grade { stroke: #333; stroke-width: 1; stroke-dasharray: 3 6; }
+  .linha { fill: none; stroke: var(--lime); stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; filter: drop-shadow(0 0 8px rgba(198,255,52,.5)); animation: desenhar 7s var(--ease) infinite .7s; }
+  .area { fill: url(#g-area); opacity: 0; animation: area 7s var(--ease) infinite .7s; }
+  .ponto { opacity: 0; transform-box: fill-box; transform-origin: center; animation: ponto 7s var(--ease) infinite; animation-delay: calc(.7s + var(--k) * .55s + .35s); }
+  .ponto circle { fill: var(--bg); stroke: var(--lime); stroke-width: 3; }
+  .ponto text { fill: var(--lime); font: 700 13px var(--mono); }
+  .painel-pe { margin-top: 14px; display: grid; gap: 6px; }
+  .painel-pe .mono { font-size: 10px; }
+  .frase { font: 700 clamp(19px, 2vw, 24px)/1.2 var(--sans); }
+
+  .aviso { position: absolute; left: -28px; top: 96px; display: flex; gap: 12px; align-items: center; padding: 12px 16px 12px 12px; background: rgba(25,25,25,.95); border: 1px solid #44463b; border-radius: 14px; box-shadow: 0 20px 40px rgba(0,0,0,.5); animation: avisar 7s var(--ease) infinite 3.2s; opacity: 0; }
+  .aviso-ic { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--lime); color: var(--lime-ink); font-weight: 700; }
+  .aviso strong { display: block; font-size: 14px; }
+  .aviso small { font-size: 10px; color: var(--lime-text) !important; }
+
+  @keyframes entrar { to { opacity: 1; transform: none; } }
+  @keyframes riscar { to { transform: scaleX(1); } }
+  @keyframes respirar { 0%, 100% { opacity: .8; transform: scale(1); } 50% { opacity: 1; transform: scale(1.06); } }
+  @keyframes desenhar { 0% { stroke-dashoffset: 1; } 60%, 90% { stroke-dashoffset: 0; opacity: 1; } 100% { stroke-dashoffset: 0; opacity: 0; } }
+  @keyframes area { 0%, 35% { opacity: 0; } 65%, 90% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes ponto { 0% { opacity: 0; transform: scale(.4); } 4% { opacity: 1; transform: scale(1.25); } 8%, 60% { opacity: 1; transform: none; } 70%, 100% { opacity: 0; } }
+  @keyframes quicar { 0%, 100% { transform: none; } 50% { transform: translate(1px, -2px); } }
+  @keyframes avisar { 0% { opacity: 0; transform: translateY(12px) scale(.96); } 8%, 40% { opacity: 1; transform: none; } 50%, 100% { opacity: 0; transform: translateY(-8px); } }
+
+  @media (max-width: 960px) {
+    .hero-grade { grid-template-columns: 1fr; }
+    .painel { max-width: 520px; width: 100%; justify-self: center; }
+    .aviso { left: 12px; }
+  }
+  @media (max-width: 480px) {
+    .selos { grid-template-columns: 1fr; }
+    .selos li { grid-template-columns: 96px auto; align-items: baseline; column-gap: 10px; }
+    .selos small { grid-column: 2; }
+    .aviso { top: 64px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .entra { opacity: 1; transform: none; }
+    .linha { stroke-dashoffset: 0; }
+    .area, .ponto, .aviso { opacity: 1; }
+    .marca-texto::after { transform: scaleX(1); }
+  }
+</style>
