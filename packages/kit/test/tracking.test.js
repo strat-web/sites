@@ -87,6 +87,21 @@ test('Rastro com banner monta: o produto tem de estar em strict e o banner do ki
   assert.equal(lead.consentMode, 'strict');
 });
 
+test('venda com banner e Rastro quebra o build: o launcher da Hotmart sairia antes do aceite (WEB-85)', () => {
+  const venda = { perfil: 'venda', rastro_slug: 'mentoria', hotmart_conta: 'h' };
+  assert.throws(() => falso({ ...venda, consentimento: 'banner' }), /perfil venda com consentimento "banner" e Rastro.*WEB-85/);
+  // soft e off montam com o launcher (em soft e off o Rastro não pede aceite antes de carregar nada).
+  for (const consentimento of ['soft', 'off']) {
+    const p = falso({ ...venda, consentimento });
+    assert.equal(p.hotmart, 'h', consentimento);
+    assert.equal(p.banner, false, consentimento);
+  }
+  // Lead e conteúdo com Rastro e banner continuam montando: não há launcher.
+  assert.equal(falso({ perfil: 'conteudo', rastro_slug: 'site', consentimento: 'banner' }).hotmart, null);
+  // Nenhuma linha do catálogo de hoje está em venda + banner.
+  assert.deepEqual(catalogo.urls.filter((l) => l.perfil === 'venda' && l.consentimento === 'banner').map((l) => l.id), []);
+});
+
 test('consentimento × consentMode do Rastro: banner = strict, soft = soft, off = off; o resto não tem par', () => {
   assert.deepEqual({ ...CONSENT_MODE_DO_RASTRO }, { banner: 'strict', soft: 'soft', off: 'off' });
   assert.equal(consentModeEsperado('banner'), 'strict');

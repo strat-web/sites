@@ -18,7 +18,8 @@ const plano = planoDeTracking({ catalogo, url, perfil });
 for (const aviso of plano.avisos) console.warn(`[kit] Tracking em ${url}: ${aviso}`);
 
 // Launcher da Hotmart com o id escrito no HTML: o "verificar instalação" da Hotmart lê o HTML estático. O snippet
-// do Rastro detecta o launcher e não duplica.
+// do Rastro detecta o launcher e não duplica. Ele carrega na abertura, sem esperar aceite: por isso venda com
+// consentimento "banner" não monta (tracking.js, até o WEB-85).
 const launcher = plano.hotmart && `
 (function(l,a,u,n,c,h,e,r){l['HotmartLauncherObject']=c;l[c]=l[c]||function(){
 (l[c].q=l[c].q||[]).push(arguments)},l[c].l=1*new Date();h=a.createElement(u),

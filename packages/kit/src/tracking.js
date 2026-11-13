@@ -80,6 +80,18 @@ export function planoDeTracking({ catalogo, url, perfil }) {
           `Use ${Object.entries(CONSENT_MODE_DO_RASTRO).map(([c, m]) => `"${c}" (${m})`).join(', ')}`,
       );
     }
+    // Venda com banner ainda não fecha: o launcher da Hotmart sai escrito no HTML (Tracking.astro) e carrega na
+    // abertura, antes do "aceitar". O Rastro em strict só carrega a Hotmart depois do aceite e pula o launcher dele
+    // quando já existe window.hot, então nada segura o nosso. Até o WEB-85 levar o launcher para depois do aceite,
+    // a combinação quebra o build (a checagem tracking da CI barra o mesmo, porque chama esta função).
+    if (perfil === 'venda' && linha.consentimento === 'banner') {
+      throw erro(
+        onde,
+        'perfil venda com consentimento "banner" e Rastro: o launcher da Hotmart sai no HTML e carrega antes do ' +
+          '"aceitar" (o Rastro em strict não segura o launcher da página). Ainda sem regra (WEB-85): use "soft" ou ' +
+          '"off" no catálogo, igual ao consentMode do produto',
+      );
+    }
   }
 
   // Sem Rastro, quem liga o pixel é o m.js (data-pixel). GA4 e tag do Google sem Rastro ainda não têm regra
