@@ -2,6 +2,7 @@
 // Casca de toda página: <head> com Seo, o JSON-LD da marca e o <Tracking> do perfil (WEB-17).
 // Sem `perfil`, a página sai sem tracking nenhum (placeholder, teste do kit); com ele, os ids vêm do catálogo.
 // Slots: o padrão é o <body>; `head` acrescenta itens ao <head> (fonte, estilo, JSON-LD da página).
+// `tituloSocial` e `descricaoSocial` mudam só o og:title e o og:description (WEB-32: a página migrada mantém o cartão).
 import Seo from './Seo.astro';
 import JsonLd from './JsonLd.astro';
 import Tracking from './Tracking.astro';
@@ -14,15 +15,18 @@ interface Props {
   indexar?: boolean;
   tipo?: 'website' | 'article';
   perfil?: 'venda' | 'lead' | 'conteudo';
+  tituloSocial?: string;
+  descricaoSocial?: string;
+  viewport?: string; // padrão: width=device-width, initial-scale=1 (ex.: o Raio-X usa viewport-fit=cover)
 }
 
-const props = Astro.props;
+const { viewport = 'width=device-width, initial-scale=1', ...props } = Astro.props;
 ---
 <!doctype html>
 <html lang="pt-BR">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content={viewport} />
     <Seo {...props} />
     <JsonLd marca={props.marca} />
     {props.perfil && <Tracking perfil={props.perfil} />}

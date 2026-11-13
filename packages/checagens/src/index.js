@@ -4,5 +4,6 @@ export { checarCatalogo, checarLinhas } from './catalogo.js';
 export { checarSeo } from './seo.js';
 export { checarTracking, slugConhecido } from './tracking.js';
 export { checarLinks } from './links.js';
-export { checarPeso, bytesDaPagina, ORCAMENTO } from './peso.js';
+export { checarPeso, bytesDaPagina, julgarMedicao, ORCAMENTO } from './peso.js';
+export { EXCECOES_LIGHTHOUSE } from './excecoes-peso.js';
 export { ESQUELETOS } from './esqueletos.js';

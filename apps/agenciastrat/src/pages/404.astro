@@ -1,0 +1,17 @@
+---
+// Página 404 da Agência Strat (WEB-75). O Pages serve o 404.html com status 404 em todo caminho que não existe.
+// Link de página ainda não migrada só aparece quando a página entra no build (PaginaNaoEncontrada do kit).
+import PaginaNaoEncontrada from '@strat/kit/PaginaNaoEncontrada.astro';
+---
+<PaginaNaoEncontrada
+  marca="agencia"
+  titulo="Página não encontrada · Agência Strat"
+  descricao="Este endereço não leva a nenhuma página da Agência Strat. Volte para o início ou fale com a gente no WhatsApp."
+  h1="Essa página não existe"
+  inicio="Voltar para o início"
+  whatsapp="Falar com a gente no WhatsApp"
+  links={[{ nome: 'Marketing para advogados', caminho: '/advogados/' }]}
+>
+  <p>O endereço que você abriu não leva a nenhuma página da Agência Strat. Pode ter mudado de lugar ou ter sido digitado diferente.</p>
+  <p>A gente continua aqui: tráfego pago, social media, conteúdo e IA, tudo medido em cliente novo.</p>
+</PaginaNaoEncontrada>

@@ -1,0 +1,17 @@
+---
+// Teste do <Tracking> com Rastro e banner (WEB-81): a mesma configuração da home da Academy (produto site do Rastro,
+// em strict). O aviso de cookies é o do Rastro; o banner do kit não entra. Sai antes de o domínio virar (WEB-49).
+import Layout from '@strat/kit/Layout.astro';
+import TesteTracking from '@strat/kit/TesteTracking.astro';
+---
+<Layout marca="academy" perfil="conteudo" indexar={false}
+  titulo="Teste do Tracking, conteúdo com banner · Strat Academy"
+  descricao="Página de teste do componente Tracking do kit dos sites: perfil conteúdo da Academy, com o Rastro em strict e o aviso de cookies do Rastro.">
+  <TesteTracking perfil="conteudo" esperado={[
+    'Na abertura: só tracking.stratacademy.com.br/sa?product=site (known: true, consentMode strict). Sem MetricaaS e sem launcher da Hotmart.',
+    'Antes do aceite (janela anônima): o aviso do Rastro aparece embaixo ("recusar" e "aceitar"); nenhuma chamada a connect.facebook.net nem a googletagmanager.com. O banner de cookies do kit não aparece.',
+    'Depois de "aceitar": PageView do pixel 860500981882285 uma vez, page_view do GA4 G-R84BNVV2HX e a tag do Google Ads AW-17263684860. O localStorage ganha strat_consent = granted.',
+    'Recarregue: o aviso não volta e as tags ligam na abertura. Com "recusar" (strat_consent = denied), nada de pixel nem GA4.',
+    'Clique no botão de teste depois do aceite: CTAClick.',
+  ]} />
+</Layout>

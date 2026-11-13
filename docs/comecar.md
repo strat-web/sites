@@ -7,7 +7,7 @@ Para quem vai trabalhar nos sites. Leva meia hora no primeiro dia.
 | O quê | Onde | Como conferir |
 |---|---|---|
 | GitHub, org `strat-web` | https://github.com/strat-web | `gh api orgs/strat-web/memberships/<seu-login>` responde `active` |
-| PR pela conta de serviço | `GITHUB_TOKEN` do seu `os-<nome>` `/mcp-global` = PAT `claude-<nome>` da `strat-aibr` | `gh api user` dentro do `infisical run` responde `strat-aibr` |
+| PR pela sua conta | `gh auth login` com a sua conta do GitHub, membro da `strat-web` (não mais a `strat-aibr`, decisão de 12/11) | `gh api user --jq .login` responde o seu login |
 | Infisical `strat-web` (member) | https://secrets.strat.tec.br | `infisical secrets --projectId=baffbac0-3e1a-47fb-b381-63326d430e39 --env=dev --path=/pagespeed` lista `PSI_API_KEY` |
 | Cloudflare (token, sem conta) | Infisical `strat-web` `/cloudflare` | `infisical run ... -- npx wrangler pages project list` |
 | Plane, projeto `WEB` | https://plane.strat.tec.br | seus itens aparecem em "Meus itens" |

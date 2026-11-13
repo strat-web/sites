@@ -27,7 +27,7 @@ ligados a este repositório e só com o endereço `.pages.dev` (ver `pages.md`).
 |---|---|---|---|---|
 | agenciastrat.com.br | site da Agência, /advogados, /bio, /blog | não publicado | Pages `agenciastrat` (existe desde 11/11, agenciastrat.pages.dev) | WEB-23 a 31 |
 | agencia.stratai.com.br | site da Agência (antigo) | Easypanel `strat-lps` | 301 para agenciastrat.com.br | WEB-29 |
-| stratai.com.br | site da StratAI, /raio-x | Easypanel `strat-lps` | Pages `stratai` (existe desde 11/11, stratai-ti7.pages.dev) | WEB-32 |
+| stratai.com.br | site da StratAI, /raio-x, /politica-de-privacidade/ | Easypanel `strat-lps` | Pages `stratai` (existe desde 11/11, stratai-ti7.pages.dev). As três páginas e os 301 da casa antiga (`/politica-de-privacidade` sem barra, `/agencia/*` para agencia.stratai.com.br, `/raio-x/v1/`) já estão no app desde o WEB-32; o DNS só vira com o "pode virar" do Helbert | WEB-32 |
 | bio.stratai.com.br | bio da StratAI e da Agência | Easypanel `strat-lps` | 301 para /bio de cada marca | WEB-25, WEB-35 |
 | metricaas.com.br | site do MetricaaS | Easypanel `strat-lps` (com proxy) | Pages `metricaas` (existe desde 11/11, metricaas.pages.dev) | WEB-36 |
 | app., go.metricaas.com.br | o produto | Easypanel `whatsapp/metricaas-app` | fica | — |
