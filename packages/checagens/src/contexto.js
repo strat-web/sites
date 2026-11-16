@@ -55,6 +55,7 @@ export function lerCatalogo(raiz = RAIZ) {
  * pedida que não é app. `apps` filtra pelas pastas pedidas (ex.: ['apps/stratai']).
  */
 export function montarContexto({ raiz = RAIZ, apps: filtro } = {}) {
+  filtro = filtro?.map((app) => app.replaceAll('\\', '/').replace(/^(?:\.\/)+/, '').replace(/\/+$/, ''));
   const catalogo = lerCatalogo(raiz);
   const apps = [];
   const semDist = [];

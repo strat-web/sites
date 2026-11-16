@@ -4,18 +4,18 @@
 // linha do catálogo; a checagem compara com o HTML gerado.
 import { HOTMART_LAUNCHER, METRICAAS, RASTRO, UMAMI, consentModeEsperado, planoDeTracking } from '@strat/kit';
 import { ehPaginaDeErro } from './contexto.js';
-import { lerPagina } from './html.js';
+import { lerPagina, semBlocosInertes, tags } from './html.js';
 import { ESQUELETOS } from './esqueletos.js';
 import { resultado } from './resultado.js';
 
 // Ninguém cola pixel, gtag ou GTM à mão: o Rastro injeta e daria evento em dobro (regra dura 2 do CLAUDE.md).
 const COLADO_A_MAO = [
   [/connect\.facebook\.net/i, 'pixel da Meta'],
-  [/\bfbq\s*\(/, 'pixel da Meta (fbq)'],
+  [/\bfbq\s*(?:\?\.)?\s*\(|\bwindow\s*\[\s*['"]fbq['"]\s*\]\s*(?:\?\.)?\s*\(/, 'pixel da Meta (fbq)'],
   [/facebook\.com\/tr(?![\w-])/i, 'pixel da Meta (imagem facebook.com/tr)'],
   [/googletagmanager\.com/i, 'gtag ou GTM'],
   [/google-analytics\.com/i, 'Google Analytics'],
-  [/\bgtag\s*\(/, 'gtag'],
+  [/\bgtag\s*(?:\?\.)?\s*\(|\bwindow\s*\[\s*['"]gtag['"]\s*\]\s*(?:\?\.)?\s*\(/, 'gtag'],
   [/analytics\.tiktok\.com/i, 'pixel do TikTok'],
 ];
 
@@ -24,12 +24,21 @@ const DE_VENDA = /hotmart\.com/i;
 
 const ATRIBUTOS = ['data-ws', 'data-pixel', 'data-pixel-consent', 'data-website-id'];
 
+function ehMjsDoMetricaas(src) {
+  try {
+    const url = new URL(src, 'https://pagina.invalid');
+    return (url.hostname === 'metricaas.com.br' || url.hostname.endsWith('.metricaas.com.br')) && /\/m\.js$/.test(url.pathname);
+  } catch {
+    return false;
+  }
+}
+
 /** Script que é do componente <Tracking> (Rastro, MetricaaS, Umami ou launcher da Hotmart). */
 export function ehScriptDeTracking(s) {
   const src = s.attrs.src || '';
   return (
     src.startsWith(RASTRO) ||
-    src === METRICAAS ||
+    ehMjsDoMetricaas(src) ||
     src === UMAMI ||
     s.attrs.id === 'hotmart_launcher_script' ||
     s.conteudo.includes(HOTMART_LAUNCHER)
@@ -53,6 +62,7 @@ export const executa = (s) => TIPOS_CLASSICOS.includes(tipo(s)) || tipo(s) === '
  */
 export function problemasDoMjs(mjs, scripts, fimDoHead = Infinity) {
   const p = [];
+  if ('nomodule' in mjs.attrs) p.push('com nomodule (não executa em navegadores modernos)');
   if (!('defer' in mjs.attrs)) p.push('sem defer');
   if ('async' in mjs.attrs) p.push('com async (a ordem deixa de ser garantida)');
   if (!TIPOS_CLASSICOS.includes(tipo(mjs))) p.push(`com type="${mjs.attrs.type}" (só JavaScript clássico, sem type)`);
@@ -74,6 +84,14 @@ export function checarPaginaTracking(pagina, catalogo, r) {
   }
   for (const n of noscripts) {
     for (const nome of coladoAMao(n)) r.erro(onde, `${nome} colado à mão em <noscript>: tracking só pelo <Tracking> do kit`);
+  }
+
+  for (const elemento of ['img', 'iframe']) {
+    for (const { attrs } of tags(semBlocosInertes(pagina.html), elemento)) {
+      for (const nome of coladoAMao(attrs.src || '')) {
+        r.erro(onde, `${nome} colado à mão em <${elemento}>: tracking só pelo <Tracking> do kit`);
+      }
+    }
   }
 
   const reais = scripts.filter(ehScriptDeTracking);
@@ -121,6 +139,8 @@ export function checarPaginaTracking(pagina, catalogo, r) {
     }
     if (e.src === METRICAAS) {
       for (const p of problemasDoMjs(achado, scripts, fimDoHead)) r.erro(onde, `m.js ${p}: o código do WhatsApp chegaria tarde (regra dura do lead)`);
+    } else if ('nomodule' in achado.attrs) {
+      r.erro(onde, `${e.src} com nomodule: não executa em navegadores modernos`);
     } else if (!TIPOS_CLASSICOS.includes(tipo(achado))) {
       r.erro(onde, `${e.src} com type="${achado.attrs.type}": o navegador não executa como o <Tracking> do kit desenha`);
     }

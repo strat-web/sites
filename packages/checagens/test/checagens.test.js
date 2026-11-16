@@ -1,5 +1,6 @@
 // Cada regra das checagens com um caso que tem de barrar e um que tem de passar (WEB-20).
 import { test } from 'node:test';
+import { spawnSync } from 'node:child_process';
 import assert from 'node:assert/strict';
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -416,7 +417,9 @@ test('Rastro: oscilação (rede caiu, 503) ganha nova tentativa e passa', async 
   const { buscar, chamadas } = rastroEmSequencia([new TypeError('fetch failed'), 503, { known: true }]);
   assert.equal((await lerRastro('stratai', buscar, { esperar: semEspera })).known, true);
   assert.equal(chamadas.length, 3);
-  const r = await checarTracking(ctx([pagina()]), { buscar: rastroEmSequencia([502, { known: true, consentMode: 'off' }]).buscar, esperar: semEspera });
+  const oscilacao = rastroEmSequencia([502, { known: true, consentMode: 'off' }]);
+  const r = await checarTracking(ctx([pagina()]), { buscar: oscilacao.buscar, esperar: semEspera });
+  assert.deepEqual(oscilacao.chamadas, ['stratai', 'stratai']);
   assert.deepEqual(r.erros, []);
 });
 
@@ -470,3 +473,82 @@ test('catalogo e tracking: a 404 fica fora do catálogo e do tracking', async ()
   assert.deepEqual(checarCatalogo(ctx([pagina()])).erros, []);
   assert.deepEqual((await checarTracking(ctx([pagina()]), { semRede: true })).erros, []);
 });
+
+// WEB-92: marcação presente não significa script executado pelo navegador.
+for (const [nome, envolver] of [
+  ['comentário', (s) => `<!-- ${s} -->`],
+  ['noscript', (s) => `<noscript>${s}</noscript>`],
+  ['template', (s) => `<template>${s}</template>`],
+  ['template aninhado', (s) => `<template><template>${s}</template>${s}</template>`],
+]) {
+  test(`tracking: m.js só em ${nome} não satisfaz o catálogo`, async () => {
+    const head = envolver(`<script defer src="${MJS}" data-ws="agencia-strat"></script>`) + RASTRO_SA;
+    assert.match(await erroDoMjs(head), /falta https:\/\/t\.metricaas\.com\.br\/m\.js/);
+  });
+  test(`tracking: script inerte em ${nome} antes do m.js não muda a ordem`, async () => {
+    assert.equal(await erroDoMjs(envolver('<script>window.exemplo=1;</script>') + TRACKING_OK), '');
+  });
+}
+
+test('tracking: nomodule no m.js ou Rastro barra', async () => {
+  assert.match(await erroDoMjs(TRACKING_OK.replace('<script defer', '<script nomodule defer')), /m\.js com nomodule/);
+  assert.match(await erroDoMjs(TRACKING_OK.replace(RASTRO_SA, RASTRO_SA.replace('<script', '<script nomodule'))), /sa\?product=stratai com nomodule/);
+});
+
+test('tracking: fechamento de head em comentário não acusa m.js fora do head', async () => {
+  assert.equal(await erroDoMjs('<!-- </head> -->' + TRACKING_OK), '');
+});
+
+for (const host of ['app.metricaas.com.br/m.js', 'outro.metricaas.com.br/pasta/m.js?v=2']) {
+  test(`tracking: segundo m.js em ${host} barra`, async () => {
+    assert.match(await erroDoMjs(TRACKING_OK + `<script defer src="https://${host}"></script>`), /em dobro/);
+  });
+}
+
+for (const [elemento, src] of [
+  ['img', 'https://www.facebook.com/tr?id=1'],
+  ['iframe', 'https://www.googletagmanager.com/ns.html?id=GTM-X'],
+]) {
+  test(`tracking: pixel solto em ${elemento} barra só pelo src`, async () => {
+    assert.match(await erroDoMjs(TRACKING_OK, `<${elemento} src="${src}"></${elemento}>`), /colado à mão/);
+    assert.equal(await erroDoMjs(TRACKING_OK, `<${elemento} src="/foto.png" title="${src}"></${elemento}>`), '');
+  });
+}
+
+for (const chamada of ["window['fbq']('init','1')", 'window["fbq"]("init","1")', "window.gtag?.('config','G-X')"]) {
+  test(`tracking: chamada alternativa ${chamada} barra`, async () => {
+    assert.match(await erroDoMjs(TRACKING_OK + `<script>${chamada}</script>`), /colado à mão/);
+  });
+}
+
+for (const app of ['apps/com-dist/', './apps/com-dist', '.\\apps\\com-dist\\']) {
+  test(`apps: normaliza ${app} sem pular a checagem`, () => {
+    const contexto = montarContexto({ raiz: raizFalsa(), apps: [app] });
+    assert.deepEqual(contexto.apps.map((a) => a.app), ['apps/com-dist']);
+    assert.deepEqual(checarApps(contexto).erros, []);
+  });
+}
+
+for (const [nome, resposta] of [
+  ['408', 408], ['429', 429],
+  ['tempo esgotado', Object.assign(new Error('demorou'), { name: 'TimeoutError' })],
+  ['200 sem known', {}],
+]) {
+  test(`Rastro: ${nome} ganha nova tentativa e confere de novo`, async () => {
+    const { buscar, chamadas } = rastroEmSequencia([resposta, { known: true, consentMode: 'off' }]);
+    const pausas = [];
+    const r = await checarTracking(ctx([pagina()]), { buscar, esperar: async (ms) => pausas.push(ms) });
+    assert.deepEqual(r.erros, []);
+    assert.deepEqual(chamadas, ['stratai', 'stratai']);
+    assert.deepEqual(pausas, [3000]);
+  });
+}
+
+for (const args of [['--app'], ['--app', '--sem-rede'], ['--app', '']]) {
+  test(`cli: ${JSON.stringify(args)} sem valor sai com 2 e orientação`, () => {
+    const r = spawnSync(process.execPath, [join(RAIZ, 'packages/checagens/src/cli.js'), ...args], { encoding: 'utf8' });
+    assert.equal(r.status, 2);
+    assert.match(r.stderr, /--app precisa de um caminho de app/);
+    assert.doesNotMatch(r.stderr, /TypeError|Error:/);
+  });
+}

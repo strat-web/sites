@@ -30,9 +30,27 @@ export function tags(html, nome) {
   return [...marcacao(html).matchAll(new RegExp(`<${nome}\\b[^>]*>`, 'gi'))].map((m) => ({ tag: m[0], attrs: atributos(m[0]) }));
 }
 
+/** Blocos inertes não executam scripts; os espaços preservam os índices usados para conferir a ordem. */
+export function semBlocosInertes(html) {
+  const tokens = /<!--[\s\S]*?(?:-->|$)|<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>|<\/?(template|noscript)\b[^>]*>/gi;
+  let profundidade = 0;
+  let fim = 0;
+  let saida = '';
+  const apagar = (t) => ' '.repeat(t.length);
+  for (const m of html.matchAll(tokens)) {
+    const intervalo = html.slice(fim, m.index);
+    saida += profundidade ? apagar(intervalo) : intervalo;
+    const antes = profundidade;
+    if (m[2]) profundidade += /^<\//.test(m[0]) ? (profundidade ? -1 : 0) : 1;
+    saida += antes || profundidade || m[0].startsWith('<!--') ? apagar(m[0]) : m[0];
+    fim = m.index + m[0].length;
+  }
+  return saida + (profundidade ? apagar(html.slice(fim)) : html.slice(fim));
+}
+
 /** <script>: atributos, conteúdo e posição no HTML (`inicio`, para a ordem e para saber se está no <head>). */
 export function scripts(html) {
-  return [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)].map((m) => ({
+  return [...semBlocosInertes(html).matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)].map((m) => ({
     attrs: atributos(`<script${m[1]}>`),
     conteudo: m[2],
     inicio: m.index,
@@ -52,6 +70,7 @@ export function textos(html, nome) {
 /** Posição do </head> no HTML (o mesmo índice de `scripts().inicio`), ignorando o que estiver dentro de <script>.
  * Sem </head>, a página inteira conta como <head>. */
 export function fimDoHead(html) {
+  html = semBlocosInertes(html);
   const dentroDeScript = [...html.matchAll(/<script\b[^>]*>[\s\S]*?<\/script>/gi)].map((m) => [m.index, m.index + m[0].length]);
   for (const m of html.matchAll(/<\/head\s*>/gi)) {
     if (!dentroDeScript.some(([a, b]) => m.index > a && m.index < b)) return m.index;
