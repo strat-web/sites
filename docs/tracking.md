@@ -156,7 +156,7 @@ O que cada modo faz (conferido na auditoria de 2026-11, `docs/auditoria/2026-11/
 |---|---|---|---|
 | `off` | StratAI, MetricaaS, LPs de venda da Academy | sem aviso: pixel, GA4, Google Ads e o Rastro (`/tracker`) disparam na abertura | igual (não há escolha) |
 | `soft` | vibecode | pixel, GA4, Google Ads e Rastro disparam na abertura, com o aviso "recusar / ok" | quem recusa deixa de ser medido pelas tags do produto; quem aceita segue medido |
-| `banner` com Rastro (`strict` no produto) | home da Academy (produto `site`) | o pixel não dispara | o pixel liga; o aceite fica no cookie `strat_consent` (o mesmo do horus), então quem já aceitou lá continua aceito. GA4 e Google Ads seguem o produto no Rastro: conferir no teste com e sem aceite |
+| `banner` com Rastro (`strict` no produto) | home da Academy (produto `site`) | o pixel não dispara | o pixel liga; o aceite fica no `localStorage`, chave `strat_consent` (a mesma do horus, conferido no WEB-46), então quem já aceitou lá continua aceito. GA4 e Google Ads seguem o produto no Rastro: conferir no teste com e sem aceite |
 | `banner` sem Rastro | home e bio da Agência | o pixel não dispara (`data-pixel-consent="aguardar"`) | "Aceitar" chama `mtc.consentir()` e o pixel do navegador liga; "Recusar" deixa o pixel desligado. GA4: a Agência não usa (WEB-73) |
 
 MetricaaS em qualquer modo: na página que tem `metricaas_ws`, o `m.js` carrega na hora (regra dura do lead) e o
