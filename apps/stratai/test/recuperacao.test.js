@@ -2,6 +2,7 @@
 // src/html/recuperacao/ e os arquivos do funil em public/recuperacao/ (gerados pelo FunilRecuperacao-StratAI/
 // scripts/para-o-repo.py). Estes testes garantem que nada de tracking entre colado, que tudo o que as páginas citam
 // exista, que cada URL tenha linha no catálogo e que as regras pedidas pelo Jhonathan não voltem atrás.
+import { runInNewContext } from 'node:vm';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
@@ -112,6 +113,14 @@ test('sem data-strat-leadform: o Rastro não pode enviar o formulário por GET c
   for (const f of arquivosDoFunil()) assert.doesNotMatch(ler(f), /data-strat-leadform/, f);
 });
 
+test('fontes pelo próprio site, sem a folha do Google (o LCP no celular oscilava na CI)', () => {
+  const casos = ['src/pages/recuperacao/cases/index.astro', 'src/pages/recuperacao/cases/[slug]/index.astro'].map((c) => join(APP, c));
+  for (const f of [...arquivosDoFunil(), ...casos]) assert.doesNotMatch(ler(f), /fonts\.(googleapis|gstatic)\.com/, f);
+  for (const f of ['space-grotesk-latin.woff2', 'jetbrains-mono-500-latin.woff2', 'OFL-SpaceGrotesk.txt', 'OFL-JetBrainsMono.txt'])
+    assert.ok(existsSync(join(APP, 'public/fontes', f)), `public/fontes/${f}`);
+  assert.match(ler(join(PUB, 'comum/base.css')), /url\("\/fontes\/space-grotesk-latin\.woff2"\)/);
+});
+
 test('sem CNPJ nos arquivos do funil (regra da casa)', () => {
   for (const f of arquivosDoFunil()) assert.doesNotMatch(ler(f), /\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}/, f);
 });
@@ -140,5 +149,19 @@ test('dist: as páginas do funil com o Tracking da linha do catálogo (Rastro st
     ], c);
     assert.doesNotMatch(html, /data-strat-leadform/, c);
     assert.match(html, /<meta name="robots" content="noindex/, `${c}: noindex enquanto é rascunho`);
+  }
+});
+
+test('cases montam sem carregar o motor de perguntas do funil', () => {
+  const app = { innerHTML: '' };
+  const contexto = { window: {}, document: { getElementById: () => app } };
+  runInNewContext(ler(join(PUB, 'comum/cases.js')), contexto);
+  contexto.window.CASES.lista('../');
+  assert.match(app.innerHTML, /Só Churrasco/);
+  for (const slug of CASES) {
+    contexto.window.CASES.pagina(slug, '../../');
+    assert.match(app.innerHTML, /cs-foto/);
+    assert.match(app.innerHTML, /cases\/midia\//);
+    assert.match(app.innerHTML, /v1\//);
   }
 });

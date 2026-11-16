@@ -1,5 +1,20 @@
 /* Base visual da StratAI para as 3 versões do funil (tokens do repo marcas, strat-ai 0.1.0, sha 21a9961).
    Tema escuro é o padrão da marca. Uma ação lima por bloco. Sem caixa alta fora do rótulo mono. Sem itálico. */
+
+/* Fontes pelo próprio site, em /fontes/ (subset latin do Google Fonts, licença OFL ao lado; os mesmos arquivos da
+   /parcerias/). A folha do Google oscilava o LCP no celular na CI (revisão do PR #24, 13/11/2026). A Space Grotesk é
+   variável (400 a 700); a JetBrains Mono só tem o 500, que também serve o 400 do rótulo mono. */
+@font-face {
+  font-family: "Space Grotesk"; font-style: normal; font-weight: 400 700; font-display: swap;
+  src: url("/fontes/space-grotesk-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "JetBrains Mono"; font-style: normal; font-weight: 400 500; font-display: swap;
+  src: url("/fontes/jetbrains-mono-500-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 :root {
   --bg: #191919;
   --card: #242424;

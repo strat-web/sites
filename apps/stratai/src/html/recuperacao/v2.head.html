@@ -3,12 +3,8 @@
 <link rel="icon" type="image/png" sizes="192x192" href="/midia/favicon/favicon-192.png">
 <link rel="apple-touch-icon" href="/midia/favicon/favicon-180.png">
 <meta name="theme-color" content="#191919">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=optional">
-<!-- V2: fonte sem bloquear a pintura e sem troca depois (display=optional): LCP no celular sem deslocar o layout -->
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=optional" rel="stylesheet" media="print" onload="this.media='all'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=optional" rel="stylesheet"></noscript>
+<!-- Fontes pelo próprio site (/fontes/, licença OFL ao lado; @font-face em comum/base.css), sem a folha do Google: ela oscilava o LCP no celular (revisão do PR #24, 13/11/2026). -->
+<link rel="preload" href="/fontes/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/recuperacao/comum/base.css">
 <link rel="stylesheet" href="/recuperacao/comum/laminas.css">
 <style>
