@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- feat(academy): página pós-cadastro comunidade.stratacademy.com.br migrada do strat-lps para lps/academy/comunidade sem mudar texto, layout nem tracking (o registro FUNIS segue ligando o Rastro do funil pelo ?f=, consentimento por-funil, o kit não carrega nada), projeto academy-comunidade no Pages e botão do grupo com o link padrão no lugar do href="#" (WEB-48)
 - feat(academy): LP claude.stratacademy.com.br (principal, /v1/, /v3/ e /v4/) migrada do strat-lps para lps/academy/claude sem mudar texto, layout nem tracking, com o Tracking venda do kit, projeto academy-claude no Pages, variantes noindex no catálogo, link da política no rodapé, fotos das personas em 1080 px; checagem seo conta título e H1 repetidos só entre páginas indexáveis (WEB-48)
 - docs(auditoria): stratacademy.com.br conferido no navegador sem escolha, com aceite e com recusa (Umami e Cloudflare na abertura, pixel e PostHog só com aceite, sem GA4 nem Google Ads, conversões barradas no /tracker pelo CORS, produtos do Rastro das ferramentas); linha do catálogo com os ids do produto site no Rastro e o que difere hoje; tracking.md: o aceite fica no localStorage, não em cookie (WEB-46)
 - feat(stratai): página /parcerias/ do programa de parceria e indicação (prévia aprovada, só a indicação), com o cadastro em 3 etapas enviado ao MetricaaS da StratAI pelo mtc.lead() e linha no catálogo (WEB-74)

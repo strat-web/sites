@@ -1,0 +1,57 @@
+<link rel="icon" type="image/png" href="/images/icon.png">
+<meta name="theme-color" content="#0A0A0A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://tracking.stratacademy.com.br">
+<!-- ⚠️ NÃO existe tag de tracking fixa nesta página, e isso é de propósito.
+     Ela é COMPARTILHADA por vários funis: um snippet fixo carimbaria todo mundo no
+     mesmo produto e sujaria o CPA/ROAS de quem não tem nada a ver com aquele funil.
+     O snippet certo é injetado em runtime, a partir do produto do funil que veio no ?f=.
+     Funil sem produto (ou link sem ?f=) → zero tracking. Ver o bloco FUNIS lá embaixo. -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-main:#0A0A0A; --bg-card-1:#111111;
+  --accent-main:#E07A3A; --accent-glow:#FF8C42; --gold-light:#F0D078;
+  --text-main:#F5F5F5; --text-sec:#CCCCCC; --text-gray:#888888;
+  --border-subtle:rgba(255,255,255,0.06); --border-orange:rgba(224,122,58,0.25);
+  --wa:#25D366; --wa-dark:#1DA851;
+  --r-card:16px; --r-lg:20px; --r-sm:12px; --r-pill:50px;
+  --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg-main);color:var(--text-main);font-family:var(--font);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100svh}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(760px 520px at 50% -10%, rgba(37,211,102,.10), transparent 60%),
+             radial-gradient(700px 480px at 85% 110%, rgba(224,122,58,.08), transparent 60%)}
+main{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:clamp(28px,6vw,56px) 20px 60px;text-align:center}
+img{max-width:100%}
+.logo{height:22px;width:auto;margin:0 auto 34px;display:block}
+.check{width:64px;height:64px;border-radius:50%;background:rgba(37,211,102,.12);border:1px solid rgba(37,211,102,.4);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:30px}
+h1{font-size:clamp(26px,5.4vw,38px);font-weight:900;letter-spacing:-.03em;line-height:1.12;margin:0 0 10px}
+.grad{background:linear-gradient(90deg,var(--accent-glow),var(--gold-light));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--text-sec);font-size:clamp(15px,2.2vw,17px);max-width:44ch;margin:0 auto 30px}
+.sub b{color:var(--text-main)}
+.card{background:var(--bg-card-1);border:1px solid var(--border-subtle);border-radius:var(--r-lg);padding:clamp(22px,4vw,34px);margin-bottom:18px}
+.step{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-main);margin-bottom:16px}
+.btn-wa{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;background:linear-gradient(90deg,var(--wa-dark),var(--wa));color:#fff;font-family:var(--font);font-weight:800;font-size:17px;border:0;border-radius:var(--r-pill);padding:19px 30px;cursor:pointer;text-transform:uppercase;letter-spacing:.02em;text-decoration:none;box-shadow:0 4px 30px rgba(37,211,102,.35);transition:transform .16s,box-shadow .25s}
+.btn-wa:hover{transform:translateY(-2px);box-shadow:0 6px 40px rgba(37,211,102,.5)}
+.btn-wa svg{flex-shrink:0}
+.autonote{font-size:13px;color:var(--text-gray);margin-top:14px}
+.autonote b{color:var(--text-sec)}
+.qr-card .qr{background:#fff;border-radius:var(--r-sm);padding:14px;width:min(230px,60vw);margin:6px auto 14px}
+.qr-card .qr img{display:block;width:100%;height:auto}
+.qr-card p{font-size:13.5px;color:var(--text-gray);max-width:36ch;margin:0 auto}
+.hint{font-size:13px;color:var(--text-gray);margin-top:8px}
+.divider{display:flex;align-items:center;gap:14px;color:var(--text-gray);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin:22px 0}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--border-subtle)}
+.next{margin-top:26px;text-align:left;background:var(--bg-card-1);border:1px solid var(--border-orange);border-radius:var(--r-card);padding:22px 24px}
+.next h2{font-size:15px;font-weight:800;margin:0 0 12px;letter-spacing:.02em}
+.next ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+.next li{display:flex;gap:10px;font-size:14px;color:var(--text-sec)}
+.next li::before{content:"›";color:var(--accent-main);font-weight:800;flex-shrink:0}
+.next li b{color:var(--text-main)}
+footer{position:relative;z-index:1;text-align:center;padding:0 20px 34px;font-size:12px;color:var(--text-gray)}
+@media(max-width:560px){.qr-card{display:none}} /* mobile: o botão/auto-abrir resolve; QR é pra desktop */
+</style>

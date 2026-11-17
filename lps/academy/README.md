@@ -7,3 +7,4 @@ LPs de campanha da Academy, uma por subdomínio e um projeto do Pages por LP: `c
 | LP | Pasta | Projeto do Pages | Origem no `strat-lps` |
 |---|---|---|---|
 | claude. | `claude/` (`@strat/claude`) | `academy-claude` | `lps/quaia` (principal, v1, v3, v4) |
+| comunidade. | `comunidade/` (`@strat/comunidade`) | `academy-comunidade` | `lps/comunidade` (pós-cadastro de todos os funis, `?f=`) |
