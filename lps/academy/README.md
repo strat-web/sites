@@ -8,4 +8,5 @@ LPs de campanha da Academy, uma por subdomínio e um projeto do Pages por LP: `c
 |---|---|---|---|
 | claude. | `claude/` (`@strat/claude`) | `academy-claude` | `lps/quaia` (principal, v1, v3, v4) |
 | mentoria. | `mentoria/` (`@strat/mentoria`) | `academy-mentoria` | `lps/mentoria` (principal e v2, o app React antigo) |
+| vibecode. | `vibecode/` (`@strat/vibecode`) | `academy-vibecode` | `lps/vibecode` (principal e v1, a original arquivada) |
 | comunidade. | `comunidade/` (`@strat/comunidade`) | `academy-comunidade` | `lps/comunidade` (pós-cadastro de todos os funis, `?f=`) |

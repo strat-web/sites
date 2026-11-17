@@ -1,0 +1,67 @@
+<!-- V1 ARQUIVADA — página original do repo helbertparanhos/lp-live, preservada como
+       histórico/rollback. A que está no ar é a V2, na raiz (/). Não recebe tráfego novo:
+       fora do índice e apontando pra V2 como canônica. -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Saira:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#effefb',
+              100: '#c8fff4',
+              200: '#91fee9',
+              300: '#52f5db',
+              400: '#20e0c8',
+              500: '#0ac4af',
+              600: '#059e90',
+              700: '#097e74',
+              800: '#0c645e',
+              900: '#0f524e',
+              950: '#013331',
+            }
+          },
+          fontFamily: {
+            saira: ['Saira', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { font-family: 'Saira', sans-serif; }
+    .input-error { border-color: rgb(239 68 68) !important; box-shadow: 0 0 0 2px rgba(239,68,68,0.2) !important; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .animate-float {
+      animation: float 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    .grain-overlay {
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E");
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.95) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    @media (max-width: 639px) {
+      @keyframes popIn {
+        from { opacity: 0; transform: translateY(100%); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    }
+
+    /* Safe area para iPhone com notch/home indicator */
+    #leadPopup > div {
+      padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+    }
+  </style>

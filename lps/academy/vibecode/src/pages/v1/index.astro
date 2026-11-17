@@ -1,0 +1,20 @@
+---
+// V1 da aula gratuita (a página original, de helbertparanhos/lp-live, Tailwind pelo CDN e fonte Saira), migrada do
+// strat-lps (lps/vibecode/v1) sem mudar texto nem layout (WEB-48). Arquivada no ar (histórico e volta atrás): noindex.
+// Tracking: no ar ela tinha o GTM-N3K4THGD colado à mão; aqui sai o GTM (regra dura 2) e entra o <Tracking> perfil lead
+// (Rastro aula-claude-code), o mesmo caminho da V2 da mentoria. A classe do <body> do original entra por script.
+import Layout from '@strat/kit/Layout.astro';
+import head from '../../html/v1.head.html?raw';
+import corpo from '../../html/v1.corpo.html?raw';
+---
+<Layout
+  marca="academy"
+  perfil="lead"
+  indexar={false}
+  titulo="Masterclass Gratuita de Claude Code | Helbert Paranhos"
+  descricao="Acesse gratuitamente a Masterclass de Claude Code, 15 Skills prontas e Lives Semanais exclusivas."
+  viewport="width=device-width, initial-scale=1.0"
+>
+  <Fragment slot="head" set:html={head} />
+  <Fragment set:html={corpo} />
+</Layout>
