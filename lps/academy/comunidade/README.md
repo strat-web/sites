@@ -36,3 +36,7 @@ Página pós-cadastro ("entre no grupo") de **todos os funis** da Academy, no Cl
 | `robots.txt`, `sitemap.xml` (vazio: a página não indexa) e `llms.txt` gerados pelo kit | padrão do kit (WEB-18) |
 
 Fontes do Google (Inter) seguem como no ar.
+
+## Fontes locais (WEB-48)
+
+As mesmas famílias e pesos da origem são servidos pelo Pages, sem CSS de fonts.googleapis.com na primeira pintura. Na Mentoria V2, o arquivo Material Symbols foi reduzido aos ícones usados, preservando as ligaturas e variações. Esta mudança reduz bloqueio de renderização e trocas de tamanho do texto sem alterar a tipografia.

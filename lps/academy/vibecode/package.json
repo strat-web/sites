@@ -5,12 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "tailwindcss -c tailwind.v1.config.cjs -i src/styles/v1.css -o public/v1/estilos.css --minify && astro build",
     "preview": "astro preview",
     "test": "node --test"
   },
   "dependencies": {
     "astro": "7.4.3",
     "@strat/kit": "workspace:*"
+  },
+  "devDependencies": {
+    "tailwindcss": "3.4.17"
   }
 }

@@ -36,3 +36,13 @@ do produto), o launcher da Hotmart (conta da Academy) e o Umami do host. Consent
 | V1: canonical e og:url com barra no fim; og:image segue a `images/claude-logo.webp` | padrão de URL do repositório |
 | Página 404 da Academy | no ar, caminho que não existe caía na LP da quaia |
 | `robots.txt`, `sitemap.xml` e `llms.txt` gerados pelo kit | os da pasta antiga eram à mão (WEB-18) |
+
+## Fontes locais (WEB-48)
+
+As mesmas famílias e pesos da origem são servidos pelo Pages, sem CSS de fonts.googleapis.com na primeira pintura. Na Mentoria V2, o arquivo Material Symbols foi reduzido aos ícones usados, preservando as ligaturas e variações. Esta mudança reduz bloqueio de renderização e trocas de tamanho do texto sem alterar a tipografia.
+
+## Rotas jurídicas da V2
+
+`/v2/termos/` e `/v2/privacidade/` agora têm entrada estática e linha no catálogo (conteudo, noindex), usando o conteúdo já existente no Router do app. Os links do rodapé apontam para essas rotas; `/termos` e `/privacidade` redirecionam com 301. Os vídeos da seção de depoimentos usam `loading="lazy"` para não disputar rede com o primeiro quadro.
+
+Três ilustrações remotas dos cards já retornam erro na origem. O app preserva a URL original e usa a marca oficial (`/logos/Logo.svg`) como fallback caso o download falhe; nenhum retrato ou depoimento foi substituído.

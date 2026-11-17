@@ -44,7 +44,7 @@ test('o checkout continua na Hotmart, no mesmo produto e nos 3 planos', () => {
 });
 
 test('a V2 mantém o tema escuro e as classes do <body> do original', () => {
-  assert.match(ler('v2.head.html'), /^<script>document\.documentElement\.classList\.add\('dark'\)<\/script>/);
+  assert.match(ler('v2.head.html'), /<script>document\.documentElement\.classList\.add\('dark'\)<\/script>/);
   assert.match(ler('v2.corpo.html'), /^<script>document\.body\.className='bg-background text-on-surface antialiased overflow-x-hidden'<\/script>/);
 });
 

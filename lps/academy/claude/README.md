@@ -40,3 +40,7 @@ herdada (`docs/decisoes.md`, 11/11/2026). O checkout segue no mesmo produto da H
 Critério do Helbert para esta LP (WEB-63, 12/11/2026): LCP abaixo de 2,5 s na mediana de 5 rodadas do PageSpeed no
 celular, medido no preview do Pages, com o atraso do `div.hero-art` isolado e `content-encoding` e `cache-control`
 conferidos. Medições no PR do WEB-48.
+
+## Fontes locais (WEB-48)
+
+As mesmas famílias e pesos da origem são servidos pelo Pages, sem CSS de fonts.googleapis.com na primeira pintura. Na Mentoria V2, o arquivo Material Symbols foi reduzido aos ícones usados, preservando as ligaturas e variações. Esta mudança reduz bloqueio de renderização e trocas de tamanho do texto sem alterar a tipografia.

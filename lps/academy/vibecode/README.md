@@ -37,3 +37,9 @@ Google Ads e PostHog vêm do produto) e o Umami do host, **sem** o launcher da H
 | Página 404 da Academy; `robots.txt`, `sitemap.xml` e `llms.txt` gerados pelo kit | padrão do kit (WEB-75, WEB-18) |
 
 Não vieram `v1/assets/css/style.css` e `v1/assets/js/main.js` (nenhuma página carrega).
+
+## Fontes locais (WEB-48)
+
+As mesmas famílias e pesos da origem são servidos pelo Pages, sem CSS de fonts.googleapis.com na primeira pintura. Na Mentoria V2, o arquivo Material Symbols foi reduzido aos ícones usados, preservando as ligaturas e variações. Esta mudança reduz bloqueio de renderização e trocas de tamanho do texto sem alterar a tipografia.
+
+A V1 usa Tailwind 3.4.17 compilado no build (mesma configuração da versão original), sem compilador remoto no navegador. A política da Academy fica linkada no rodapé nas duas versões.

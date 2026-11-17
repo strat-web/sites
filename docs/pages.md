@@ -107,6 +107,8 @@ Um projeto por LP e por subdomínio, criado no WEB-48 (`lps/academy/<lp>/`), com
 | `academy-mentoria` | https://academy-mentoria.pages.dev | `@strat/mentoria` (`lps/academy/mentoria`) | 17/11/2026, pela API, ligado ao GitHub (WEB-48) | mentoria.stratacademy.com.br, só com o "pode virar" do Helbert |
 | `academy-vibecode` | https://academy-vibecode.pages.dev | `@strat/vibecode` (`lps/academy/vibecode`) | 17/11/2026, pela API, ligado ao GitHub (WEB-48) | vibecode.stratacademy.com.br, só com o "pode virar" do Helbert |
 | `academy-comunidade` | https://academy-comunidade.pages.dev | `@strat/comunidade` (`lps/academy/comunidade`) | 17/11/2026, pela API, ligado ao GitHub (WEB-48) | comunidade.stratacademy.com.br, só com o "pode virar" do Helbert |
+| `academy-skills` | https://academy-skills.pages.dev | `@strat/skills` (`lps/academy/skills`) | 17/11/2026, pela API, ligado ao GitHub (WEB-48) | skills.stratacademy.com.br, só com o "pode virar" do Helbert |
+| `academy-bootcamp` | https://academy-bootcamp.pages.dev | `@strat/bootcamp` (`lps/academy/bootcamp`) | 17/11/2026, pela API, ligado ao GitHub (WEB-48) | bootcamp.stratacademy.com.br, só com o "pode virar" do Helbert |
 
 O nome do projeto leva o prefixo `academy-` porque o endereço `*.pages.dev` vale para todas as contas da Cloudflare (o
 `claude.pages.dev` não estaria livre) e para separar as LPs dos apps na lista da conta.
