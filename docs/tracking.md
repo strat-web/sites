@@ -190,3 +190,5 @@ O produto, consentimento, ids e eventos continuam sendo os do Rastro. O Metricaa
 Uma aba aberta oculta, ou um navegador sem requestAnimationFrame, carrega depois de DOMContentLoaded sem esperar quadros; isso preserva a visita em segundo plano. Uma saída antes do carregamento pode deixar de contar PageView, limite explícito a ser aceito na revisão do Helbert. Não há atraso por interação nem temporizador arbitrário.
 
 A checagem tracking valida a URL do produto, o código inteiro do carregador e o tipo executável do script; atributo sem código ou script inerte barra o PR. Testes cobrem documento pronto/em parse, dois quadros, aba oculta, fallback e instalação única.
+
+Na validação da WEB-48, FCP de texto ainda podia anteceder a imagem do hero. O carregador também aguarda `document.fonts.ready` e decodifica as imagens com preload de alta prioridade (respeitando media) e os `img[fetchpriority=high]`. Depois dá dois quadros para pintar esses recursos. Erros de imagem/fontes não interrompem o carregamento; abas ocultas não esperam esses recursos. O risco de saída/compra antes do Rastro continua explícito e precisa do aceite do Helbert.
