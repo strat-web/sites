@@ -72,6 +72,11 @@ função de revogar (o `m.js` só tem o `consentir`; lido em 17/11/2026), então
 | depois do `m.js` e antes do `mf.js` | `mtc._i.cons = "aguardar"` (o valor que o `mf.js` lê) | o mesmo |
 | com o pixel já ligado | `fbq('consent', 'revoke')` | nenhum evento novo do pixel no navegador |
 
+O próprio clique no "Recusar" também não vai: o pixel mede sozinho o clique em botão (evento automático
+`SubscribedButtonClick`, ouvido no `document`), então o banner revoga num ouvinte de clique na fase de captura do
+`window`, que roda antes dele. Na prévia do PR, antes disso, o clique no "Recusar" saía como `SubscribedButtonClick`; em
+`127.0.0.1` o pixel não manda eventos automáticos, por isso o teste local não pegou.
+
 "Ok" só guarda a escolha. O cadastro do lead e a CAPI do MetricaaS seguem como em `banner`. A checagem `tracking`
 aceita o `fbq` desse script porque compara o texto inteiro com o que o kit gera para a linha (`bannerDoKit`); qualquer
 outro `fbq` inline continua barrando como pixel colado à mão, e a página sem o banner que o catálogo pede também barra.

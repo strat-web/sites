@@ -14,6 +14,7 @@ const PRIVACIDADE = 'https://agenciastrat.com.br/privacidade/';
 function alvo(obj = {}) {
   const ouvintes = {};
   obj.addEventListener = (tipo, fn) => (ouvintes[tipo] ||= []).push(fn);
+  obj.removeEventListener = (tipo, fn) => { ouvintes[tipo] = (ouvintes[tipo] || []).filter((f) => f !== fn); };
   obj.disparar = (tipo, ev = {}) => (ouvintes[tipo] || []).slice().forEach((fn) => fn(ev));
   obj.ouvintes = (tipo) => (ouvintes[tipo] || []).length;
   return obj;
@@ -40,6 +41,7 @@ function pagina({ escolha = null, semStorage = false, modo = 'banner' } = {}) {
       const el = alvo({ attrs: {} });
       el.setAttribute = (k, v) => { el.attrs[k] = v; };
       el.remove = () => { el.pai.filhos.splice(el.pai.filhos.indexOf(el), 1); el.pai = null; };
+      el.contains = (outro) => outro?.dentroDe === el;
       return el;
     },
   });
@@ -93,10 +95,18 @@ function pagina({ escolha = null, semStorage = false, modo = 'banner' } = {}) {
       window.fbq('track', 'PageView');
     },
     banner: () => body.filhos.find((el) => el.className === 'strat-cookies'),
+    // O clique como no navegador: captura no window, o ouvinte do pixel no document (evento automático
+    // SubscribedButtonClick, que leva o estado do consentimento daquele instante) e o ouvinte do banner.
     clicar(valor) {
       const b = this.banner();
-      const botao = { dataset: { c: valor } };
-      b.disparar('click', { target: { closest: (sel) => (sel === '[data-c]' ? botao : null) } });
+      const botao = { dataset: { c: valor }, dentroDe: b };
+      const alvoDoClique = { closest: (sel) => (sel === '[data-c]' || sel === `[data-c="${valor}"]` ? botao : null) };
+      window.disparar('click', { target: alvoDoClique });
+      if (typeof window.fbq === 'function') {
+        const revogado = fbq.some((c) => c[0] === 'consent' && c[1] === 'revoke');
+        if (!revogado) fbq.push(['trackSingle', 'SubscribedButtonClick']);
+      }
+      b.disparar('click', { target: alvoDoClique });
     },
   };
 }
@@ -211,8 +221,30 @@ test('soft sem escolha: o pixel mede na abertura, o aviso mostra Recusar e Ok, e
   p.clicar('sim');
   assert.equal(p.guardado.get('strat_cookies'), 'sim');
   assert.equal(p.banner(), undefined, 'o aviso sai');
-  assert.equal(p.fbq.length, 2, 'o "Ok" não chama o fbq');
+  assert.deepEqual(p.fbq.filter((c) => c[0] === 'consent'), [], 'o "Ok" não revoga');
   assert.deepEqual(p.consentimentos, [], 'soft não precisa do consentir');
+});
+
+test('soft: o clique no "Recusar" não vai para a Meta como SubscribedButtonClick (revoga na captura)', () => {
+  const p = pagina({ modo: 'soft' });
+  p.rodarBanner();
+  p.fimDoParse();
+  p.chegaMjs();
+  p.chegaMf();
+  p.clicar('nao');
+  assert.deepEqual(p.fbq.filter((c) => c[1] === 'SubscribedButtonClick'), []);
+  assert.equal(p.window.ouvintes('click'), 0, 'o ouvinte de captura sai com o aviso');
+});
+
+test('soft: o "Ok" não revoga (o clique segue medido, como o resto da página)', () => {
+  const p = pagina({ modo: 'soft' });
+  p.rodarBanner();
+  p.fimDoParse();
+  p.chegaMjs();
+  p.chegaMf();
+  p.clicar('sim');
+  assert.deepEqual(p.fbq.filter((c) => c[0] === 'consent'), []);
+  assert.equal(p.window.ouvintes('click'), 0);
 });
 
 test('soft: "Recusar" com o pixel já ligado revoga na hora e guarda nao', () => {

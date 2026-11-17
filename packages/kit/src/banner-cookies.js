@@ -21,6 +21,9 @@
 // ele cria o fbq e, com data-pixel-consent="aguardar" (lido do <script> do m.js, guardado em mtc._i.cons), chama
 // fbq('consent', 'revoke') antes do init e do PageView. Então a recusa segura o pixel nas três fases: o m.js ainda não
 // rodou (o atributo no <script>), rodou mas o mf.js ainda não (mtc._i.cons) e o fbq já existe (revoke na hora).
+// O próprio clique no "Recusar" não pode ir para a Meta: o pixel mede sozinho clique em botão (SubscribedButtonClick,
+// evento automático, ouvido no document). Por isso o soft revoga num ouvinte de clique na fase de captura do window,
+// que roda antes de qualquer ouvinte do document (visto na prévia do WEB-84 em 17/11/2026).
 (function (w, d, o) {
   var CHAVE = 'strat_cookies', SOFT = o.modo === 'soft', escolha = null, liberado = false, esperando = false;
   try { escolha = w.localStorage.getItem(CHAVE); } catch (e) {}
@@ -70,10 +73,16 @@
       '<a href="' + o.privacidade + '">Política de privacidade</a></p>' +
       '<div><button type="button" data-c="nao">Recusar</button> <button type="button" data-c="sim">' +
       (SOFT ? 'Ok' : 'Aceitar') + '</button></div>';
+    function antes(e) {
+      var c = e.target && e.target.closest && e.target.closest('[data-c="nao"]');
+      if (c && b.contains(c)) segurar();
+    }
+    if (SOFT) w.addEventListener('click', antes, true);
     b.addEventListener('click', function (e) {
       var c = e.target.closest && e.target.closest('[data-c]');
       if (!c) return;
       try { w.localStorage.setItem(CHAVE, c.dataset.c); } catch (err) {}
+      if (SOFT) w.removeEventListener('click', antes, true);
       b.remove();
       if (c.dataset.c === 'sim' && !SOFT) liberar();
       if (c.dataset.c === 'nao' && SOFT) segurar();
