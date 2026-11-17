@@ -322,12 +322,24 @@ test('peso: exceção do Lighthouse avisa acima do piso e barra abaixo dele (WEB
   assert.equal(julgarMedicao('https://x.com.br/', { performance: 60, lcpMs: 3900, cls: 0 }, exc), 'erro');
   assert.equal(julgarMedicao('https://x.com.br/', { performance: 80, lcpMs: 6000, cls: 0 }, exc), 'erro');
   assert.equal(julgarMedicao('https://y.com.br/', { performance: 80, lcpMs: 3900, cls: 0 }, exc), 'erro');
-  // exceções reais hoje: a home da StratAI (WEB-87) e duas páginas com falso vermelho da CI (WEB-88)
+  // Registro explícito das exceções: qualquer acréscimo exige revisão do piso e da evidência no PR.
   assert.deepEqual(Object.keys(EXCECOES_LIGHTHOUSE), [
     'https://stratai.com.br/',
     'https://stratai.com.br/politica-de-privacidade/',
     'https://stratai.com.br/raio-x/',
+    'https://claude.stratacademy.com.br/',
+    'https://claude.stratacademy.com.br/v1/',
+    'https://claude.stratacademy.com.br/v3/',
+    'https://mentoria.stratacademy.com.br/v2/',
+    'https://comunidade.stratacademy.com.br/',
+    'https://bootcamp.stratacademy.com.br/0808-v1/grupo/',
   ]);
+  // Os pisos herdados não liberam saltos de layout nem ausência de evidência.
+  for (const [url, exc] of Object.entries(EXCECOES_LIGHTHOUSE)) {
+    assert.ok(exc.item && exc.motivo, url);
+    assert.ok(exc.piso.cls <= 0.1, url);
+    assert.equal(julgarMedicao(url, { performance: 100, lcpMs: 1000, cls: 0.2 }), 'erro', url);
+  }
 });
 
 // WEB-76: checagem de tracking sem falso verde.
