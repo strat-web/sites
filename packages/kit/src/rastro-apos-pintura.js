@@ -55,7 +55,9 @@ const CARREGADOR = String.raw`(function carregarRastroAposPintura(w, d) {
       urls.filter(function (u, i) { return urls.indexOf(u) === i; }).forEach(function (url) {
         esperas.push(new Promise(function (ok) {
           var img = new w.Image();
-          img.onload = img.onerror = ok;
+          var decodifica = typeof img.decode === 'function';
+          img.onerror = ok;
+          if (!decodifica) img.onload = ok;
           img.src = url;
           if (typeof img.decode === 'function') img.decode().then(ok, ok);
           else if (img.complete) ok();
