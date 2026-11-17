@@ -3,6 +3,7 @@
 // pede. Ninguém cola pixel, gtag ou GTM à mão. Entra pelo Layout (`perfil="..."`); use direto só fora dele.
 // A regra mora em tracking.js; aqui só se desenha o resultado.
 import catalogo from '../../../catalogo/sites.json';
+import { scriptDoRastroAposPintura } from './rastro-apos-pintura.js';
 import { planoDeTracking, scriptDoBanner, HOTMART_LAUNCHER } from './tracking.js';
 // Banner de cookies do kit: o script mora em banner-cookies.js (texto puro, testado em test/banner-cookies.test.js).
 import bannerCookies from './banner-cookies.js?raw';
@@ -38,7 +39,9 @@ if (plano.banner) {
   banner = scriptDoBanner(bannerCookies, privacidade);
 }
 ---
-{plano.scripts.map((s) => <script is:inline defer src={s.src} {...s.attrs}></script>)}
+{plano.scripts.map((s) => s.aposPintura
+  ? <script is:inline data-strat-rastro-apos-pintura={s.src} set:html={scriptDoRastroAposPintura()}></script>
+  : <script is:inline defer src={s.src} {...s.attrs}></script>)}
 {plano.hotmart && (
   <script is:inline id="hotmart_launcher_script" set:html={launcher}></script>
 )}

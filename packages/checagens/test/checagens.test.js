@@ -10,6 +10,7 @@ import { checarLinks } from '../src/links.js';
 import { bytesDaPagina, julgarMedicao } from '../src/peso.js';
 import { checarSeo } from '../src/seo.js';
 import { checarTracking, diferencasDoRastro, lerRastro, slugConhecido } from '../src/tracking.js';
+import { scriptDoRastroAposPintura } from '../../kit/src/rastro-apos-pintura.js';
 import { EXCECOES_LIGHTHOUSE } from '../src/excecoes-peso.js';
 
 const SITE = 'https://stratai.com.br';
@@ -300,7 +301,7 @@ test('tracking: venda com banner barra, e script da Hotmart em página com banne
   const w = await checarTracking(ctx([pagina({ head: sa, corpo: widget })], { linhas: [conteudo] }), { semRede: true });
   assert.match(msgs(w), /script da Hotmart em página com consentimento "banner": https:\/\/static\.hotmart\.com\/checkout\/widget\.min\.js carrega antes do "aceitar"/);
   // Venda em off com o launcher do kit passa (o Rastro em off não pede aceite).
-  const off = await checarTracking(ctx([pagina({ head: sa + LAUNCHER })], { linhas: [{ ...venda, consentimento: 'off' }] }), { semRede: true });
+  const off = await checarTracking(ctx([pagina({ head: '<script data-strat-rastro-apos-pintura="https://tracking.stratacademy.com.br/sa?product=stratai">' + scriptDoRastroAposPintura() + '</script>' + LAUNCHER })], { linhas: [{ ...venda, consentimento: 'off' }] }), { semRede: true });
   assert.deepEqual(off.erros, []);
 });
 
@@ -469,4 +470,21 @@ test('links: a 404 é conferida a partir da raiz; endereço relativo e link queb
 test('catalogo e tracking: a 404 fica fora do catálogo e do tracking', async () => {
   assert.deepEqual(checarCatalogo(ctx([pagina()])).erros, []);
   assert.deepEqual((await checarTracking(ctx([pagina()]), { semRede: true })).erros, []);
+});
+
+
+test('tracking: carregador de venda após pintura precisa existir e executar; lead continua direto (WEB-104)', async () => {
+  const venda = linha({ perfil: 'venda', metricaas_ws: null, hotmart_conta: 'h' });
+  const launcher = '<script id="hotmart_launcher_script">hot("account","h")</script>';
+  const adiado = (codigo, attrs='') => '<script data-strat-rastro-apos-pintura="https://tracking.stratacademy.com.br/sa?product=stratai" '+attrs+'>'+codigo+'</script>';
+  const conferir = (head, linhas=[venda]) => checarTracking(ctx([pagina({head})],{linhas}),{semRede:true});
+  const ok = await conferir(adiado(scriptDoRastroAposPintura())+launcher);
+  assert.equal(ok.erros.length,0,JSON.stringify(ok.erros));
+  for (const head of [adiado('')+launcher,adiado(scriptDoRastroAposPintura(),'type="text/plain"')+launcher]) {
+    const r = await conferir(head);assert.ok(r.erros.some(e=>/carregador.*inerte/.test(e.msg)));
+  }
+  const direto = await conferir('<script defer src="https://tracking.stratacademy.com.br/sa?product=stratai"></script>'+launcher);
+  assert.ok(direto.erros.some(e=>/primeiro quadro/.test(e.msg)));
+  const lead = await conferir(adiado(scriptDoRastroAposPintura()),[linha({metricaas_ws:null})]);
+  assert.ok(lead.erros.some(e=>/lead e conteudo/.test(e.msg)));
 });
