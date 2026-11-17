@@ -1,0 +1,63 @@
+---
+/**
+ * Player leve de YouTube. Mostra só a miniatura e só carrega o iframe no clique —
+ * assim o YouTube não planta cookie em quem passa pela página sem assistir, o que
+ * importa para o consentimento (LGPD) e para o peso da página.
+ */
+interface Props {
+  id: string;
+  titulo: string;
+  /** Shorts são verticais; depoimento gravado no celular normalmente é 9:16. */
+  vertical?: boolean;
+}
+const { id, titulo, vertical = false } = Astro.props;
+// maxresdefault existe para os três depoimentos e não vem cortado como o hqdefault (4:3).
+const capa = `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`;
+---
+<div class={`video ${vertical ? 'video-vertical' : ''}`} data-video={id}>
+  <button type="button" class="video-botao" aria-label={`Assistir: ${titulo}`}>
+    <img src={capa} alt="" loading="lazy" decoding="async" />
+    <span class="video-play" aria-hidden="true">▶</span>
+  </button>
+  <p class="video-legenda">{titulo}</p>
+</div>
+
+<style>
+  .video { display: grid; gap: var(--s2); }
+  .video-botao {
+    position: relative; display: block; width: 100%; padding: 0; border: 0;
+    background: var(--bg-2); border-radius: var(--raio); overflow: hidden;
+    cursor: pointer; box-shadow: var(--sombra-post);
+    transition: var(--dur) var(--ease);
+    aspect-ratio: 16 / 9;
+  }
+  .video-vertical .video-botao { aspect-ratio: 9 / 16; }
+  .video-botao:hover { transform: translateY(var(--sobe)); box-shadow: var(--sombra-post-hover); }
+  .video-botao img { width: 100%; height: 100%; object-fit: contain; display: block; background: var(--escuro); }
+  .video-play {
+    position: absolute; inset: 0; margin: auto;
+    width: 64px; height: 64px; border-radius: var(--raio-pill);
+    background: var(--acento); color: #fff;
+    display: grid; place-items: center; font-size: 22px; padding-left: 4px;
+    box-shadow: var(--sombra-btn);
+  }
+  .video-legenda { font-size: var(--t-meta); font-weight: var(--w-semi); color: var(--txt-2); }
+  .video iframe { width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: var(--raio); display: block; }
+  .video-vertical iframe { aspect-ratio: 9 / 16; }
+</style>
+
+<script>
+  document.addEventListener('click', (e) => {
+    const botao = (e.target as HTMLElement)?.closest?.('.video-botao');
+    if (!botao) return;
+    const caixa = botao.closest('[data-video]') as HTMLElement | null;
+    const id = caixa?.dataset.video;
+    if (!caixa || !id) return;
+    const frame = document.createElement('iframe');
+    frame.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+    frame.title = botao.getAttribute('aria-label') || 'Vídeo';
+    frame.allow = 'accelerometer; autoplay; encrypted-media; picture-in-picture';
+    frame.allowFullscreen = true;
+    botao.replaceWith(frame);
+  });
+</script>

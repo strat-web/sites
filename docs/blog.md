@@ -83,10 +83,16 @@ Sai com código 1 quando há erro; aviso não barra.
 ```
 Também aceita `posts`, `paginas`, `publico` e `prefixoBlog` (padrões: `src/content/blog`, `src/pages`, `public`,
 `/blog`). Chave com erro de digitação quebra a checagem. A `stratacademy` já traz as rotas que saíram do ar na virada
-do horus. Quando o blog da Academy migrar, as rotas que saem de dados lá (`/curso-*` e os modelos das ferramentas)
-entram em `rotasExtras` junto com as páginas.
+do horus e, desde o WEB-49, as rotas que saem de dados (`/curso-*` em `rotasExtras` e os modelos das ferramentas em
+`prefixosDinamicos`).
 
 ## Post de teste
-`apps/stratai` e `apps/stratacademy` têm `src/content/blog/post-de-teste-do-pacote-conteudo.md`, com `teste: true` e
-`noindex: true`. Ele não tem rota (não há página de blog ainda), por isso não tem linha no catálogo nem entra no
-sitemap. Serve para provar que o schema e a checagem valem nos dois apps; sai no PR do primeiro post de verdade.
+`apps/stratai` tem `src/content/blog/post-de-teste-do-pacote-conteudo.md`, com `teste: true` e `noindex: true`. Ele
+não tem rota (não há página de blog ainda), por isso não tem linha no catálogo nem entra no sitemap. Serve para provar
+que o schema e a checagem valem no app; sai no PR do primeiro post de verdade. O da `stratacademy` saiu no WEB-49, com
+os posts do horus (as listagens de lá filtram com o `naListagem` do pacote).
+
+## Post novo da Academy
+Toda URL tem linha no `catalogo/sites.json` (regra 3), e o `<Tracking>` quebra o build sem ela: post novo leva a linha
+dele no mesmo PR, igual às dos outros posts (`tipo: blog`, `perfil: conteudo`, `rastro_slug: site` ou o da ferramenta
+do post, `consentimento: banner`). O `/blog-publicar` passa a fazer isso no WEB-50.

@@ -1,0 +1,108 @@
+---
+import RubikLayout from '../layouts/RubikLayout.astro';
+import NewsletterRubik from '../components/NewsletterRubik.astro';
+import { SITE } from '../consts';
+import { PLANO, HUB } from '../data/catalogo';
+
+const canais = [
+  { titulo: 'Newsletter', descricao: 'O canal mais direto para receber conteúdo de IA, automação e N8N aplicados a negócios no seu e-mail. Comece por aqui.', cta: 'Entrar na newsletter', href: '/newsletter/', externo: false },
+  { titulo: 'Comunidade', descricao: 'Onde a conversa acontece. Tire dúvidas, troque ideias com outros alunos e acompanhe o que estamos construindo com IA.', cta: 'Entrar na comunidade', href: '/comunidade-euforia/', externo: false },
+  { titulo: 'Área do aluno e suporte', descricao: 'Já é aluno? Acesse suas aulas, materiais e a biblioteca de prompts. É também por aqui que você recebe suporte do seu produto.', cta: 'Acessar o Strat Hub', href: 'https://hub.stratacademy.com.br', externo: true },
+  { titulo: 'Para empresas', descricao: 'Quer automação sob medida ou uma imersão presencial para o seu time? A conversa de diagnóstico é gratuita e sem compromisso.', cta: 'Falar com a Strat Ai', href: '/empresas/', externo: false },
+];
+
+const redes = [
+  { nome: 'Instagram', handle: '@stratacademy.ai', href: 'https://instagram.com/stratacademy.ai' },
+  { nome: 'YouTube', handle: '@strat_ai', href: 'https://www.youtube.com/@strat_ai' },
+  { nome: 'TikTok', handle: '@helbert.paranhos', href: 'https://www.tiktok.com/@helbert.paranhos' },
+  { nome: 'LinkedIn', handle: '/stratacademy', href: 'https://www.linkedin.com/company/stratacademy' },
+];
+
+const faqs = [
+  { q: 'Vocês têm telefone ou e-mail de contato?', a: 'O atendimento acontece pelos canais desta página — newsletter, comunidade e o suporte dentro do Strat Hub. É onde a resposta chega mais rápido e fica registrada.' },
+  { q: 'Sou aluno e preciso de suporte. Por onde?', a: 'Direto no Strat Hub, com a sua conta logada. O suporte do produto fica lá dentro, junto do seu histórico.' },
+  { q: 'Quero contratar automação para minha empresa.', a: 'Esse caminho é a Strat Ai, na página Empresas. A conversa de diagnóstico é gratuita e termina com um número, não com um "vamos ver".' },
+  { q: 'Quero uma parceria ou divulgar algo.', a: 'Mande pelas redes sociais — o Instagram e o LinkedIn são os canais que a gente acompanha de perto para esse tipo de conversa.' },
+];
+---
+<RubikLayout
+  title={`Contato — ${SITE.name}`}
+  description="Fale com a Strat Academy: newsletter, comunidade, suporte do aluno no Strat Hub e o canal comercial da Strat Ai."
+  faq={faqs}
+  breadcrumb={[{ name: 'Início', url: '/' }, { name: 'Contato', url: '/contato/' }]}
+>
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="hero wrap">
+      <p class="kicker rise d1">Contato</p>
+      <h1 class="rise d2">Fale com a gente</h1>
+      <p class="lead rise d3">
+        Cada assunto tem um caminho mais rápido. Escolha o canal certo abaixo e a resposta
+        chega antes.
+      </p>
+    </section>
+  </div>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Canais</p>
+      <h2>Escolha o seu canal</h2>
+    </div>
+    <div class="grade grade-2">
+      {canais.map((c) => (
+        <a
+          href={c.href}
+          target={c.externo ? '_blank' : undefined}
+          rel={c.externo ? 'noopener' : undefined}
+          class="card card-largo"
+        >
+          <h3>{c.titulo}</h3>
+          <p>{c.descricao}</p>
+          <span class="ver">{c.cta} →</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap secao" id="redes">
+    <div class="sec-head">
+      <p class="kicker">Redes</p>
+      <h2>Nos siga por aí</h2>
+    </div>
+    <div class="grade">
+      {redes.map((r) => (
+        <a href={r.href} target="_blank" rel="noopener" class="card">
+          <h3>{r.nome}</h3>
+          <p>{r.handle}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Dúvidas</p>
+      <h2>Antes de falar com a gente</h2>
+    </div>
+    <div class="faq">
+      {faqs.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
+    </div>
+  </section>
+
+  <section class="wrap">
+    <NewsletterRubik
+      origem="contato"
+      redirect="/obrigado"
+      titulo="Não sabe por onde começar? Entre na newsletter."
+      texto="Uma edição por semana com o que dá para aplicar já. Sem spam e você sai quando quiser."
+    />
+  </section>
+
+  <section class="wrap secao">
+    <div class="card card-largo" style="text-align:center; display:grid; justify-items:center; gap: var(--s2)">
+      <h3>Ou comece de graça no Strat Hub</h3>
+      <p>Conta gratuita, sem cartão, com as Masterclasses de N8N e Claude Code completas.</p>
+      <a href={HUB} data-evento="SignUpIntent" data-evento-local="contato" class="btn btn-secundario" style="margin-top: var(--s2)">{PLANO.chamada}</a>
+    </div>
+  </section>
+</RubikLayout>

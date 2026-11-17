@@ -1,0 +1,225 @@
+---
+// A calculadora de custo da API do WhatsApp — UM BLOCO da página.
+//
+// Tudo sai renderizado no build: os campos já preenchidos com o exemplo e o
+// resultado inteiro (tabela, comparação entre épocas). Sem JavaScript, o bloco
+// continua sendo uma conta correta e legível. O script em src/scripts/whatsapp.ts
+// entra por cima e redesenha só a saída, com a MESMA função (lib/whatsapp.ts).
+import { calcularMes, PRECO_LISTA, type Simulacao } from '@strat-ai-horus-os/whatsapp-nucleo';
+import { renderResultado, fmtMoeda, VIGENCIA_TEXTO } from '../lib/whatsapp';
+
+interface Props {
+  simulacao: Simulacao;
+  titulo?: string;
+  intro?: string;
+  /** Onde o evento de uso é registrado. */
+  local?: string;
+}
+
+const {
+  simulacao,
+  titulo = 'Calcule o custo do seu mês',
+  intro = 'Os campos já vêm com um exemplo. Troque pelos volumes da sua operação — a conta é refeita na hora, dentro do seu navegador.',
+  local = 'whatsapp',
+} = Astro.props;
+
+const r = calcularMes(simulacao);
+const p = (c: keyof typeof PRECO_LISTA) => fmtMoeda(PRECO_LISTA[c].BRL, 'BRL', 4);
+
+const VOLUMES = [
+  { chave: 'marketing', rotulo: 'Marketing', nota: `Promoção, cupom, carrinho abandonado, lançamento. ${p('marketing')} cada.` },
+  { chave: 'utilidade', rotulo: 'Utilidade fora da janela', nota: `Aviso de pedido, rastreio, lembrete, boleto. ${p('utilidade')} cada, com desconto acima de 250 mil.` },
+  { chave: 'utilidadeNaJanela', rotulo: 'Utilidade dentro da janela', nota: 'O mesmo tipo de aviso, enviado enquanto o cliente conversa com você. Era grátis até 30/9/2026.' },
+  { chave: 'autenticacao', rotulo: 'Autenticação', nota: `Código de verificação e login. ${p('autenticacao')} cada, com desconto acima de 500 mil.` },
+  { chave: 'servico', rotulo: 'Respostas do atendimento', nota: 'Mensagens livres nas 24 h depois que o cliente escreveu. 1.000 grátis por número por mês.' },
+  { chave: 'pontoDeEntrada', rotulo: 'Na janela grátis de anúncio', nota: 'Mensagens para quem chegou por anúncio de clique para o WhatsApp. Não são cobradas.' },
+] as const;
+
+const AJUSTES = [
+  { chave: 'numeros', rotulo: 'Números de WhatsApp', nota: 'Cada número tem a sua franquia de 1.000 respostas grátis.', passo: '1', min: '1' },
+  { chave: 'agenteMeta', rotulo: 'Respostas do agente de IA da Meta', nota: 'Só se você usa o agente da própria Meta. Cobrado por token, em dólar.', passo: '1', min: '0' },
+  { chave: 'tokensPorResposta', rotulo: 'Tokens por resposta do agente', nota: 'A Meta estima de 20 mil a 25 mil.', passo: '500', min: '0' },
+  { chave: 'bspPorMensagem', rotulo: 'Provedor: taxa por mensagem', nota: 'O que o seu BSP cobra por mensagem enviada, na moeda escolhida.', passo: '0.001', min: '0' },
+  { chave: 'bspMensal', rotulo: 'Provedor: mensalidade', nota: 'Plano fixo do BSP, se houver.', passo: '1', min: '0' },
+  { chave: 'templatesPorConversa', rotulo: 'Mensagens por contato no mesmo dia', nota: 'Só para comparar com a cobrança antiga, por conversa de 24 h.', passo: '0.1', min: '1' },
+  { chave: 'cambio', rotulo: 'Câmbio (R$ por US$)', nota: 'Usado só onde a Meta não publica em reais: a tabela antiga e o agente de IA.', passo: '0.01', min: '0.01' },
+] as const;
+
+const dados = JSON.stringify(simulacao);
+---
+
+<div class="ferramenta wa" data-wa data-local={local}>
+  <div class="ferramenta-head">
+    <h2 id="ferramenta">{titulo}</h2>
+    <p class="lead">{intro}</p>
+    <p class="wa-vigencia">Tabela oficial da Meta para o Brasil, em vigor desde {VIGENCIA_TEXTO}.</p>
+  </div>
+
+  <div class="wa-corpo">
+    <form class="wa-form" data-wa-form>
+      <p class="wa-rotulo">Mensagens enviadas por mês</p>
+      <ul class="wa-campos">
+        {VOLUMES.map((c) => (
+          <li class="wa-campo">
+            <label>
+              <span>{c.rotulo}</span>
+              <input type="number" name={c.chave} value={simulacao[c.chave]} min="0" step="1" inputmode="numeric" />
+            </label>
+            <p class="wa-nota">{c.nota}</p>
+          </li>
+        ))}
+      </ul>
+
+      <details class="wa-ajustes">
+        <summary>Números, provedor, IA e câmbio</summary>
+        <ul class="wa-campos">
+          <li class="wa-campo">
+            <label>
+              <span>Moeda do resultado</span>
+              <select name="moeda">
+                <option value="BRL" selected={simulacao.moeda === 'BRL'}>Real (R$)</option>
+                <option value="USD" selected={simulacao.moeda === 'USD'}>Dólar (US$)</option>
+              </select>
+            </label>
+            <p class="wa-nota">As duas tabelas são oficiais da Meta — o real não é conversão do dólar.</p>
+          </li>
+          {AJUSTES.map((c) => (
+            <li class="wa-campo">
+              <label>
+                <span>{c.rotulo}</span>
+                <input type="number" name={c.chave} value={simulacao[c.chave]} min={c.min} step={c.passo} inputmode="decimal" />
+              </label>
+              <p class="wa-nota">{c.nota}</p>
+            </li>
+          ))}
+        </ul>
+      </details>
+
+      <div class="wa-acoes" data-wa-acoes hidden>
+        <button type="button" class="btn btn-secundario" data-wa-acao="link">Copiar link</button>
+        <button type="button" class="btn btn-secundario" data-wa-acao="csv">Baixar CSV</button>
+        <button type="button" class="btn btn-secundario" data-wa-acao="json">Baixar JSON</button>
+        <button type="button" class="btn btn-secundario" data-wa-acao="importar">Abrir JSON</button>
+        <button type="button" class="btn btn-secundario" data-wa-acao="imprimir">Imprimir</button>
+        <button type="button" class="btn btn-secundario" data-wa-acao="exemplo">Voltar ao exemplo</button>
+        <input type="file" accept="application/json,.json" data-wa-arquivo hidden />
+        <span class="wa-status" data-wa-status role="status" aria-live="polite">Salvo neste navegador</span>
+      </div>
+    </form>
+
+    <div class="wa-saida" data-wa-saida aria-live="polite" set:html={renderResultado(simulacao, r)} />
+  </div>
+
+  <p class="ferramenta-rodape">
+    O cálculo roda no seu navegador: nada do que você digita é enviado para nós. Valores sem
+    impostos e sem o que o provedor cobre além do que você informar. Fonte: tabela de preços da
+    Meta (developers.facebook.com/docs/whatsapp/pricing).
+  </p>
+
+  <script type="application/json" data-wa-dados set:html={dados} />
+</div>
+
+<script>
+  import '../scripts/whatsapp';
+</script>
+
+<!-- `is:global` porque a saída é redesenhada com innerHTML, e elemento criado em
+     runtime não carrega o atributo de escopo do Astro. Todo seletor é prefixado
+     com .wa, então nada vaza. -->
+<style is:global>
+  .wa.ferramenta {
+    background: var(--surf); border-radius: var(--raio-g);
+    box-shadow: var(--sombra-cta); padding: var(--s5);
+  }
+  .wa .ferramenta-head h2 { font-size: var(--t-h2); font-weight: var(--w-semi); letter-spacing: var(--tr-h2); }
+  .wa .ferramenta-head .lead { margin-top: var(--s2); }
+  .wa-vigencia { font-size: var(--t-meta); color: var(--txt-2); margin-top: var(--s2); }
+  .wa-corpo {
+    display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--s5); margin-top: var(--s4); align-items: start;
+  }
+  .wa-rotulo { font-size: var(--t-meta); font-weight: var(--w-semi); color: var(--txt-2); margin-bottom: var(--s2); }
+  .wa-campos { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s3); }
+  .wa-campo label { display: flex; gap: var(--s2); align-items: center; justify-content: space-between; }
+  .wa-campo label span { font-weight: var(--w-semi); font-size: var(--t-peq); }
+  .wa-campo input, .wa-campo select {
+    font: inherit; color: var(--txt); background: var(--bg);
+    border: 1px solid var(--linha); border-radius: var(--raio-p);
+    padding: .55rem .7rem; width: 8.5rem; flex: none;
+    text-align: right; font-variant-numeric: tabular-nums;
+  }
+  .wa-campo select { text-align: left; }
+  .wa-campo input:focus-visible, .wa-campo select:focus-visible { outline: 2px solid var(--acento); outline-offset: 1px; }
+  .wa-nota { display: block; font-size: var(--t-meta); color: var(--txt-2); margin-top: .25rem; font-weight: var(--w-regular); }
+
+  .wa-ajustes { margin-top: var(--s4); padding-top: var(--s3); border-top: 1px solid var(--linha); }
+  .wa-ajustes summary { cursor: pointer; font-weight: var(--w-semi); font-size: var(--t-peq); margin-bottom: var(--s3); }
+
+  .wa-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); margin-top: var(--s4); }
+  .wa-acoes[hidden] { display: none; }
+  .wa-acoes .btn { min-height: 2.4rem; padding-inline: var(--s3); font-size: var(--t-peq); }
+  .wa-status { font-size: var(--t-meta); color: var(--txt-2); display: inline-flex; align-items: center; gap: .35rem; }
+  .wa-status::before { content: ''; width: .4rem; height: .4rem; border-radius: 50%; background: var(--ok, #2f855a); }
+
+  .wa-frase { font-size: var(--t-peq); color: var(--txt); }
+  .wa-leitura {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s3); margin: var(--s3) 0 0;
+  }
+  .wa-leitura dt { font-size: var(--t-meta); color: var(--txt-2); font-weight: var(--w-semi); }
+  .wa-leitura dd { margin: .2rem 0 0; font-size: var(--t-h3); font-weight: var(--w-bold); font-variant-numeric: tabular-nums; }
+  .wa-leitura p { font-size: var(--t-meta); color: var(--txt-2); margin-top: .2rem; }
+  .wa-destaque dd { color: var(--acento); }
+
+  .wa-tabela-rola { overflow-x: auto; margin-top: var(--s4); }
+  .wa-tabela { width: 100%; border-collapse: collapse; font-size: var(--t-peq); }
+  .wa-tabela th, .wa-tabela td { text-align: right; padding: var(--s2); border-bottom: 1px solid var(--linha); vertical-align: top; font-variant-numeric: tabular-nums; }
+  .wa-tabela th:first-child { text-align: left; font-weight: var(--w-semi); min-width: 12rem; }
+  .wa-tabela thead th { font-size: var(--t-meta); color: var(--txt-2); }
+  .wa-tabela td { color: var(--txt-2); white-space: nowrap; }
+  .wa-tabela .wa-custo { color: var(--txt); font-weight: var(--w-semi); }
+  .wa-tabela tfoot th, .wa-tabela tfoot td { border-bottom: 0; color: var(--txt); font-weight: var(--w-bold); }
+
+  .wa-comparacao { margin-top: var(--s4); padding: var(--s4); background: var(--bg-2); border-radius: var(--raio-p); }
+  .wa-comparacao h3 { font-size: var(--t-h4); font-weight: var(--w-semi); }
+  .wa-epocas { list-style: none; margin: var(--s3) 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s3); }
+  .wa-epocas li { display: grid; gap: .2rem; padding: var(--s3); background: var(--surf); border-radius: var(--raio-p); border: 1px solid var(--linha); }
+  .wa-epocas li.wa-hoje { border-color: var(--acento); }
+  .wa-epoca { font-size: var(--t-meta); color: var(--txt-2); font-weight: var(--w-semi); }
+  .wa-epocas b { font-size: var(--t-h4); font-variant-numeric: tabular-nums; }
+  .wa-epocas span:last-child { font-size: var(--t-meta); color: var(--txt-2); }
+  .wa-aviso { font-size: var(--t-meta); color: var(--txt-2); margin-top: var(--s3); }
+
+  .wa .ferramenta-rodape {
+    font-size: var(--t-meta); color: var(--txt-2);
+    margin-top: var(--s4); padding-top: var(--s3); border-top: 1px solid var(--linha);
+  }
+
+  @media (max-width: 900px) {
+    .wa-corpo { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .wa.ferramenta { padding: var(--s4) var(--s3); }
+    .wa-leitura, .wa-epocas { grid-template-columns: minmax(0, 1fr); }
+    .wa-campo input, .wa-campo select { width: 7rem; }
+    /* A tabela cabe na tela: sai o preço médio e a nota de cada linha, que
+       continuam no CSV e no passo a passo da página. */
+    .wa-tabela th:nth-child(4), .wa-tabela td:nth-child(4), .wa-tabela .wa-nota { display: none; }
+    .wa-tabela th:first-child { min-width: 0; }
+  }
+
+  @media print {
+    body > * { display: none !important; }
+    body > main { display: block !important; }
+    main > *:not(.secao-topo) { display: none !important; }
+    .wa-form, .wa-acoes { display: none !important; }
+    .wa-corpo { display: block !important; }
+    .wa.ferramenta { box-shadow: none !important; padding: 0 !important; }
+    .wa .ferramenta-head::before {
+      content: 'Strat Academy · Calculadora de custo da API do WhatsApp';
+      display: block; font-size: 9pt; font-weight: 700; text-transform: uppercase;
+      border-bottom: 1pt solid #000; padding-bottom: 2mm; margin-bottom: 4mm;
+    }
+    .wa-comparacao { background: #fff !important; border: .5pt solid #999; }
+  }
+</style>

@@ -1,0 +1,372 @@
+---
+// Folha da ferramenta — /ferramentas/criador-de-funil-de-vendas. Conversão C1.
+//
+// A ORDEM DOS BLOCOS É O CONTRATO, não preferência de layout:
+//   h1 (tarefa) → uma frase → a ferramenta → passo a passo em texto →
+//   modelos prontos → o que dá para exportar → como foi construída → FAQ → CTA
+//
+// A ferramenta é UM BLOCO. O resto da página é texto renderizado no build:
+// GPTBot, ClaudeBot e PerplexityBot não executam JavaScript, então tudo o que
+// importa para eles precisa estar no HTML do dist — inclusive o funil de
+// exemplo, que sai desenhado em SVG (ver ConstrutorFunil.astro).
+import RubikLayout from '../../../layouts/RubikLayout.astro';
+import ConstrutorFunil from '../../../components/ConstrutorFunil.astro';
+import Selo from '../../../components/Selo.astro';
+import { SITE } from '../../../consts';
+import { absUrl } from '@horus/seo';
+import { PLANO, HUB } from '../../../data/catalogo';
+import {
+  buscarFerramenta,
+  rotaFerramenta,
+  MODELOS_CONSTRUTOR,
+  CATEGORIAS_CONSTRUTOR,
+  PASSOS_CONSTRUTOR,
+  EXPORTACOES_CONSTRUTOR,
+  FAQ_CONSTRUTOR,
+} from '../../../data/ferramentas';
+import { resumirModelo } from '@strat-ai-horus-os/funil-nucleo';
+
+const f = buscarFerramenta('criador-de-funil-de-vendas')!;
+const url = rotaFerramenta(f.slug);
+const calculadora = rotaFerramenta('calculadora-de-funil-de-vendas');
+
+// O funil que sai desenhado no HTML e abre o editor na primeira visita: o mais
+// simples dos três, para quem nunca montou um funil entender a ideia de relance.
+const exemplo = MODELOS_CONSTRUTOR.find((m) => m.slug === 'isca-digital') ?? MODELOS_CONSTRUTOR[0];
+
+// A URL canônica — sem query. O `?modelo=` abre um modelo dentro do editor, e se
+// ele entrasse aqui cada modelo viraria uma entidade diferente no índice.
+const urlCanonica = `${SITE.url}${url}/`;
+
+const softwareLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: f.nome,
+  alternateName: f.termoDeBusca,
+  url: urlCanonica,
+  description: f.resumo,
+  applicationCategory: 'BusinessApplication',
+  applicationSubCategory: 'Editor de funil de vendas',
+  operatingSystem: 'Navegador',
+  browserRequirements: 'Requer JavaScript para editar; o funil de exemplo e o passo a passo funcionam sem.',
+  inLanguage: 'pt-BR',
+  isAccessibleForFree: true,
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'BRL',
+    availability: 'https://schema.org/InStock',
+  },
+  featureList: [
+    'Desenha o funil arrastando etapas: anúncio, página, e-mail, WhatsApp, checkout',
+    '69 tipos de elemento em cinco categorias',
+    'Três modelos prontos: isca digital, lançamento e webinário',
+    'Salva sozinho no navegador, sem conta',
+    'Exporta e importa o funil em arquivo',
+    'Modo apresentação para mostrar o funil em reunião',
+  ],
+  publisher: { '@type': 'Organization', name: SITE.name, url: SITE.url },
+};
+
+const howTo = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name: 'Como desenhar um funil de vendas',
+  description:
+    'Como desenhar o funil de vendas do seu negócio etapa por etapa: por onde começar, como ligar as passagens e o que fazer com quem não comprou.',
+  totalTime: 'PT20M',
+  tool: [{ '@type': 'HowToTool', name: f.tarefa }],
+  step: PASSOS_CONSTRUTOR.map((p) => ({
+    '@type': 'HowToStep',
+    position: p.n,
+    name: p.titulo,
+    text: p.texto,
+    url: `${urlCanonica}#passo-${p.n}`,
+  })),
+};
+---
+
+<RubikLayout
+  perfil="lead"
+  title={`${f.tarefa} — ${SITE.name}`}
+  description={f.resumo}
+  faq={FAQ_CONSTRUTOR}
+  image={absUrl(`/og/ferramenta-${f.slug}.png`)}
+  breadcrumb={[
+    { name: 'Início', url: '/' },
+    { name: 'Ferramentas', url: '/ferramentas' },
+    { name: f.nome, url },
+  ]}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(softwareLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(howTo)} />
+
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="hero wrap">
+      <nav class="migalhas rise d1" aria-label="Você está em">
+        <a href="/">Início</a><span>/</span><a href="/ferramentas">Ferramentas</a><span>/</span>{f.nome}
+      </nav>
+      <p class="kicker rise d1">Ferramenta gratuita · sem cadastro</p>
+
+      <!-- 1. h1 com a tarefa -->
+      <h1 class="rise d2">{f.tarefa}</h1>
+
+      <!-- 2. uma frase do que ela faz e para quem é -->
+      <p class="lead rise d3">{f.resumo}</p>
+    </section>
+  </div>
+
+  <!-- 3. a ferramenta — um bloco da página, não a página -->
+  <section class="wrap secao secao-topo">
+    <ConstrutorFunil
+      documento={exemplo.documento}
+      titulo="Desenhe o seu funil"
+      legenda={`Exemplo: ${exemplo.nome.toLowerCase()} — ${exemplo.documento.nodes.length} etapas, um dos três modelos prontos.`}
+      local="folha-criador"
+    />
+  </section>
+
+  <!-- 4. o passo a passo, em texto. Os mesmos passos que a ferramenta executa. -->
+  <section class="wrap secao" id="como-desenhar">
+    <div class="sec-head">
+      <p class="kicker">Passo a passo</p>
+      <h2>Como desenhar um funil de vendas</h2>
+      <p class="lead">
+        São os mesmos sete passos que a ferramenta acima executa. Estão escritos aqui porque o
+        método importa mais que o editor: entendendo a ordem, você desenha no quadro branco, no
+        papel ou em qualquer lugar — e sabe olhar para o desenho e dizer se ele está errado.
+      </p>
+    </div>
+
+    <ol class="passos-texto">
+      {PASSOS_CONSTRUTOR.map((p) => (
+        <li class="passo-texto" id={`passo-${p.n}`}>
+          <span class="passo-num">{p.n}</span>
+          <div>
+            <h3>{p.titulo}</h3>
+            <p>{p.texto}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+
+    <div class="quadro">
+      <h3>Os elementos que você tem para montar</h3>
+      <p class="lead">
+        São 69 tipos, em cinco categorias. Não use todos: um funil bom tem as etapas que existem de
+        verdade, e nada além disso.
+      </p>
+      <div class="tabela-rola">
+        <table>
+          <thead>
+            <tr><th>Categoria</th><th>O que entra aqui</th><th>Exemplos</th></tr>
+          </thead>
+          <tbody>
+            {CATEGORIAS_CONSTRUTOR.map((c) => (
+              <tr>
+                <th scope="row">{c.nome}</th>
+                <td>{c.desc}</td>
+                <td>{c.exemplo}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="quadro">
+      <h3>Depois de desenhar, meça</h3>
+      <p>
+        O desenho mostra o caminho; ele não diz onde você perde gente. Esse é o trabalho da
+        <a href={calculadora}>calculadora de funil de vendas</a>: você põe quantas pessoas passaram
+        em cada etapa e ela aponta a passagem com a pior taxa — o gargalo — e quanto vale um ponto
+        percentual ali.
+      </p>
+      <p>
+        A ordem que funciona é essa: desenhe primeiro, para combinar o que existe; meça depois, para
+        decidir onde mexer. Desenho sem número vira opinião, e número sem desenho não diz em qual
+        etapa o problema mora.
+      </p>
+    </div>
+  </section>
+
+  <!-- 5. modelos prontos -->
+  <section class="wrap secao" id="modelos">
+    <div class="sec-head">
+      <p class="kicker">Modelos prontos</p>
+      <h2>Modelos prontos de funil de vendas</h2>
+      <p class="lead">
+        Três funis já desenhados, com as etapas na ordem que costuma funcionar, quando cada um é a
+        escolha certa e o número que decide se ele está funcionando. Abra o mais parecido com o seu
+        e troque pelo que acontece no seu negócio.
+      </p>
+    </div>
+    <div class="grade grade-2">
+      {MODELOS_CONSTRUTOR.map((m) => {
+        const r = resumirModelo(m);
+        return (
+          <a href={`${url}/modelos/${m.slug}`} class="card card-largo">
+            <div class="card-topo">
+              <h3>{m.nome}</h3>
+              <span class="pill">{r.etapas} etapas</span>
+            </div>
+            <p>{m.resumo}</p>
+            <span class="ver">Abrir modelo →</span>
+          </a>
+        );
+      })}
+    </div>
+  </section>
+
+  <!-- 6. o que dá para exportar -->
+  <section class="wrap secao" id="exportar">
+    <div class="sec-head">
+      <p class="kicker">Saída</p>
+      <h2>O que dá para fazer com o funil pronto</h2>
+      <p class="lead">
+        Tudo acontece no seu navegador, no momento em que você clica — não há fila, e-mail de
+        entrega nem versão paga do arquivo.
+      </p>
+    </div>
+    <div class="grade grade-2">
+      {EXPORTACOES_CONSTRUTOR.map((e) => (
+        <div class="card card-largo">
+          <div class="card-topo">
+            <h3>{e.titulo}</h3>
+            <span class="pill pill-acento">{e.formato}</span>
+          </div>
+          <p>{e.desc}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- 7. como esta ferramenta foi construída — bloco de conversão, não só texto -->
+  <section class="wrap secao" id="como-foi-construida">
+    <div class="sec-head">
+      <p class="kicker">Por dentro</p>
+      <h2>Como esta ferramenta foi construída</h2>
+    </div>
+
+    <div class="construida">
+      <div class="construida-texto">
+        <p>
+          Ela foi feita com <b>Claude Code</b>, e roda inteira dentro do seu navegador: o funil que
+          você desenha fica salvo aqui na sua máquina e não passa por nenhum servidor nosso.
+          Depois que a página abre, dá para desligar a internet e continuar desenhando.
+        </p>
+        <p>
+          Você não precisa acreditar nisso. Abra o F12, vá na aba <b>Rede</b> e desenhe — nenhuma
+          requisição sai enquanto você trabalha. É uma prova que qualquer pessoa faz sozinha, em
+          dez segundos.
+        </p>
+        <p>
+          E é exatamente essa a técnica que as trilhas do Strat Hub ensinam: pegar um problema
+          pequeno e real do seu negócio e transformar em ferramenta que funciona, sem virar projeto
+          de seis meses. Este editor é um exemplo do tamanho certo.
+        </p>
+
+        <Selo ferramenta={f} variante="compacto" />
+
+        <div class="construida-cta">
+          <a href={HUB} data-evento="SignUpIntent" data-evento-local="construida-criador" class="btn btn-primario">
+            {PLANO.chamada}
+          </a>
+          <span class="construida-nota">
+            Sem cartão · as Masterclasses de N8N e Claude Code já vêm liberadas
+          </span>
+        </div>
+      </div>
+
+      <figure class="construida-figura">
+        <img
+          src="/images/tools/criador-de-funil-de-vendas.png"
+          alt="O editor aberto com o funil de lançamento desenhado: audiência própria e tráfego pago levam à página de inscrição, que leva ao aquecimento por e-mail e aos lembretes no WhatsApp, e daí às três aulas ao vivo, à página de vendas, ao checkout e à área de membros, com carrinho abandonado e fechamento em 72 horas."
+          width="2332"
+          height="1358"
+          loading="lazy"
+          decoding="async"
+        />
+      </figure>
+    </div>
+  </section>
+
+  <!-- 8. FAQ -->
+  <section class="wrap secao" id="duvidas">
+    <div class="sec-head">
+      <p class="kicker">Dúvidas</p>
+      <h2>Perguntas frequentes</h2>
+    </div>
+    <div class="faq">
+      {FAQ_CONSTRUTOR.map((q) => <details><summary>{q.q}</summary><p>{q.a}</p></details>)}
+    </div>
+  </section>
+
+  <!-- 9. CTA de conta grátis -->
+  <section class="wrap secao">
+    <div class="cta">
+      <p class="kicker">Strat Hub</p>
+      <h2>Desenhou o funil. Agora faça ele rodar sozinho.</h2>
+      <p class="lead">
+        Todo funil desenhado vira uma lista de automações: o e-mail que sai depois do cadastro, o
+        lembrete no WhatsApp, a recuperação do carrinho. É isso que as Masterclasses de N8N e Claude
+        Code ensinam, liberadas por inteiro na conta gratuita do Strat Hub. Sem cartão.
+      </p>
+      <a href={HUB} data-evento="SignUpIntent" data-evento-local="folha-criador" class="btn btn-primario">{PLANO.chamada}</a>
+      <p class="nota">{PLANO.nome} · {PLANO.preco}{PLANO.periodo} quando quiser assinar · cancela quando quiser</p>
+    </div>
+  </section>
+</RubikLayout>
+
+<style>
+  .secao-topo { padding-top: var(--s3); }
+
+  .passos-texto { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s4); }
+  .passo-texto { display: flex; gap: var(--s3); align-items: flex-start; scroll-margin-top: 6rem; }
+  .passo-texto h3 { font-size: var(--t-h4); font-weight: var(--w-semi); }
+  .passo-texto p { color: var(--txt-2); margin-top: .4rem; max-width: var(--leitura); }
+
+  .quadro {
+    background: var(--surf); border-radius: var(--raio-g);
+    box-shadow: var(--sombra-card); padding: var(--s5);
+    margin-top: var(--s5);
+  }
+  .quadro h3 { font-size: var(--t-h3); font-weight: var(--w-semi); }
+  .quadro .lead { margin-top: var(--s2); font-size: var(--t-peq); }
+  .quadro p + p { margin-top: var(--s3); }
+  .quadro > p { color: var(--txt-2); max-width: var(--leitura); }
+  .quadro > p b { color: var(--txt); }
+
+  .quadro table { width: 100%; border-collapse: collapse; margin-top: var(--s3); font-size: var(--t-peq); }
+  .quadro th, .quadro td { text-align: left; padding: var(--s2); border-bottom: 1px solid var(--linha); vertical-align: top; }
+  .quadro thead th { font-size: var(--t-meta); color: var(--txt-2); font-weight: var(--w-semi); }
+  .quadro tbody th { font-weight: var(--w-semi); white-space: nowrap; }
+  .quadro td { color: var(--txt-2); }
+
+  .construida {
+    display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: var(--s5); align-items: center;
+  }
+  .construida p { color: var(--txt-2); max-width: var(--leitura); }
+  .construida p + p { margin-top: var(--s3); }
+  .construida-texto :global(.selo-strat) { margin-top: var(--s4); }
+
+  .construida-cta {
+    display: flex; flex-wrap: wrap; align-items: center;
+    gap: var(--s3); margin-top: var(--s4);
+  }
+  .construida-nota { font-size: var(--t-meta); color: var(--txt-2); }
+
+  .construida-figura { margin: 0; }
+  .construida-figura img {
+    width: 100%; height: auto; display: block;
+    border-radius: var(--raio-g); box-shadow: var(--sombra-card);
+  }
+
+  @media (max-width: 780px) {
+    .construida { grid-template-columns: minmax(0, 1fr); }
+    .construida-figura { order: -1; }
+    .quadro { padding: var(--s4) var(--s3); }
+  }
+</style>

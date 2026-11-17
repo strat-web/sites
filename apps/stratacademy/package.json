@@ -8,11 +8,29 @@
     "build": "astro build",
     "preview": "astro preview",
     "checar:posts": "checar-posts",
-    "test": "checar-posts"
+    "test": "checar-posts",
+    "post:novo": "node scripts/novo-post.mjs",
+    "post:capas": "node scripts/gerar-capas.mjs",
+    "redirects:checar": "node scripts/checar-redirects.mjs"
   },
   "dependencies": {
-    "astro": "7.4.3",
+    "@astrojs/rss": "4.0.19",
+    "@fontsource-variable/rubik": "5.3.0",
+    "@strat-ai-horus-os/funil-nucleo": "^0.1.0",
+    "@strat-ai-horus-os/funil-react": "^0.1.1",
+    "@strat-ai-horus-os/whatsapp-nucleo": "^0.2.0",
     "@strat/conteudo": "workspace:*",
-    "@strat/kit": "workspace:*"
+    "@strat/kit": "workspace:*",
+    "@tailwindcss/vite": "4.3.5",
+    "astro": "7.4.3",
+    "astro-og-canvas": "0.13.3",
+    "canvaskit-wasm": "0.42.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "tailwindcss": "4.3.5"
+  },
+  "devDependencies": {
+    "simple-icons": "16.28.0",
+    "turndown": "7.2.4"
   }
 }

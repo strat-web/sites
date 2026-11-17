@@ -1,0 +1,76 @@
+---
+import RubikLayout from '../../../layouts/RubikLayout.astro';
+import PostCardRubik from '../../../components/PostCardRubik.astro';
+import { getCollection } from 'astro:content';
+import { SITE, AUTHORS } from '../../../consts';
+import { slugifyTag } from '../../../lib/tags';
+import { absUrl } from '@horus/seo';
+import { naListagem } from '@strat/conteudo';
+
+export async function getStaticPaths() {
+  const posts = (await getCollection('blog', ({ data }) => naListagem(data))).sort(
+    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+  );
+  const bySlug = new Map<string, { name: string; posts: typeof posts }>();
+  for (const p of posts) {
+    const slug = slugifyTag(p.data.author);
+    if (!bySlug.has(slug)) bySlug.set(slug, { name: p.data.author, posts: [] });
+    bySlug.get(slug)!.posts.push(p);
+  }
+  return [...bySlug.entries()].map(([slug, { name, posts }]) => ({
+    params: { author: slug },
+    props: { name, posts },
+  }));
+}
+
+const { name, posts } = Astro.props;
+const info = AUTHORS[name];
+const description = info?.bio ?? `Artigos de ${name} em ${SITE.name}.`;
+
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  mainEntity: {
+    '@type': 'Person',
+    name,
+    description: info?.bio,
+    jobTitle: info?.role,
+    sameAs: info?.sameAs ?? [],
+    url: absUrl(`/blog/autor/${slugifyTag(name)}/`),
+  },
+};
+---
+<RubikLayout
+  title={`${name} — artigos — ${SITE.name}`}
+  description={description}
+  breadcrumb={[
+    { name: 'Início', url: '/' },
+    { name: 'Blog', url: '/blog/' },
+    { name, url: `/blog/autor/${slugifyTag(name)}/` },
+  ]}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(personLd)} />
+
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="hero wrap blog-hero">
+      <nav class="migalhas"><a href="/">Início</a><span>/</span><a href="/blog/">Blog</a><span>/</span>{name}</nav>
+      <p class="kicker">Autor</p>
+      <h1>{name}</h1>
+      {info?.role && <p class="pill" style="display:inline-flex; margin-top: var(--s2)">{info.role}</p>}
+      <p class="lead" style="margin-top: var(--s3)">{description}</p>
+      <p class="hero-nota">{posts.length} {posts.length === 1 ? 'artigo publicado' : 'artigos publicados'}</p>
+    </section>
+  </div>
+
+  <section class="wrap" style="padding-block: var(--s5) var(--s6)">
+    <div class="grade grade-3">
+      {posts.map((p) => <PostCardRubik post={p} />)}
+    </div>
+  </section>
+</RubikLayout>
+
+<style>
+  .blog-hero { padding-block: var(--s6) var(--s5); }
+  .blog-hero h1 { font-size: clamp(2rem, 4.6vw, 3.2rem); }
+</style>

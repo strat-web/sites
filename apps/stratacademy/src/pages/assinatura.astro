@@ -1,0 +1,266 @@
+---
+import RubikLayout from '../layouts/RubikLayout.astro';
+import BrandLogo from '../components/BrandLogo.astro';
+import { SITE } from '../consts';
+import { PLANO, HUB, HUB_INCLUI, CURSOS, MASTERCLASSES } from '../data/catalogo';
+import { DETALHES } from '../data/cursos-detalhe';
+import { MARCAS_REAIS } from '../data/marcas';
+
+const publicados = new Set(Object.keys(DETALHES));
+const destaque = CURSOS.filter((c) => MARCAS_REAIS[c.mark]).slice(0, 6);
+const builder = CURSOS.filter((c) => c.grupo === 'builder');
+const midia = CURSOS.filter((c) => c.grupo === 'midia');
+
+const stats = [
+  { num: '11', label: 'cursos por ferramenta' },
+  { num: '3', label: 'masterclasses' },
+  { num: '2', label: 'delas liberadas de graça' },
+  { num: 'R$ 67', label: 'por mês quando assinar' },
+];
+
+const paraQuem = [
+  { title: 'Quer começar hoje', desc: 'Cria a conta agora e já assiste às masterclasses de N8N e Claude Code sem pagar nada.' },
+  { title: 'Constrói coisas', desc: 'Quer levar ideia a produto usando Claude Code, Cursor, Lovable, N8N e o resto da stack.' },
+  { title: 'Produz conteúdo', desc: 'Precisa de imagem e vídeo por IA com consistência — Nano Banana, Kling, HeyGen, Higgsfield.' },
+  { title: 'Vende serviço de IA', desc: 'Freelancer, agência ou consultor que precisa entregar projeto, não só entender a teoria.' },
+];
+
+const naoEh = [
+  'Quem procura curso com data de início, turma fechada e prazo para terminar — aqui você entra e assiste quando quiser.',
+  'Quem quer um atalho para não aprender. As ferramentas encurtam o caminho, mas o projeto ainda é você que constrói.',
+  'Quem precisa de acompanhamento individual no próprio projeto — isso é mentoria, e fica em outro lugar.',
+];
+
+const comoFunciona = [
+  { n: '01', title: 'Crie a conta de graça', desc: 'Sem cartão. Você entra no Hub e o conteúdo gratuito já está liberado.' },
+  { n: '02', title: 'Comece pelas masterclasses', desc: 'N8N e Claude Code, completas, sem pagar. Dá para tirar valor real antes de decidir qualquer coisa.' },
+  { n: '03', title: 'Assine quando fizer sentido', desc: `${PLANO.preco}${PLANO.periodo} destrava os 11 cursos, o Tutor IA, os materiais e os benefícios.` },
+  { n: '04', title: 'Cancele quando quiser', desc: 'É assinatura mensal, não contrato. Você controla no próprio Hub.' },
+];
+
+const comparativo = [
+  { o: 'Masterclass N8N', gratis: true, assina: true },
+  { o: 'Masterclass Claude Code', gratis: true, assina: true },
+  { o: '11 cursos por ferramenta', gratis: false, assina: true },
+  { o: 'Skills, templates e materiais', gratis: false, assina: true },
+  { o: 'Tutor IA', gratis: false, assina: true },
+  { o: 'Benefícios em ferramentas', gratis: false, assina: true },
+  { o: 'Certificados', gratis: false, assina: true },
+];
+
+const faq = [
+  { q: 'Preciso pagar para criar a conta?', a: 'Não. O cadastro no Strat Hub é gratuito e não pede cartão. Ao entrar você já tem acesso às Masterclasses de N8N e de Claude Code completas.' },
+  { q: 'O que a assinatura destrava?', a: `Por ${PLANO.preco}${PLANO.periodo} você libera os 11 cursos por ferramenta, os materiais e workflows de cada aula, as Skills & Templates, o Tutor IA dentro da plataforma, os benefícios em ferramentas parceiras e os certificados.` },
+  { q: 'Preciso saber programar?', a: 'Não para começar. As trilhas partem do zero e boa parte da stack — N8N, Lovable, as ferramentas de mídia — é visual ou conversacional. Quem já programa aproveita as trilhas de Claude Code, Cursor e GitHub para acelerar o que já faz.' },
+  { q: 'Posso cancelar quando quiser?', a: 'Pode. É assinatura mensal, sem fidelidade, e o cancelamento é feito por você dentro do próprio Hub.' },
+  { q: 'Entram cursos novos?', a: 'Sim. O catálogo acompanha as ferramentas que a gente usa na operação real — quando entra ferramenta nova no fluxo, entra trilha nova no Hub. Quem assina pega tudo que já está lá e o que vier depois.' },
+  { q: 'Qual a diferença para a mentoria?', a: 'A assinatura é a plataforma: você aprende no seu ritmo, sozinho, com o Tutor IA e os materiais. A mentoria é individual, ao vivo, olhando para o seu projeto — outro nível de acompanhamento e outro investimento.' },
+];
+---
+<RubikLayout
+  title={`${PLANO.nome} — assinatura de IA na prática — ${SITE.name}`}
+  description={`Crie sua conta grátis no Strat Hub e comece pelas masterclasses de N8N e Claude Code. Assine ${PLANO.nome} por ${PLANO.preco}${PLANO.periodo} e destrave 11 cursos por ferramenta, Tutor IA, materiais e benefícios.`}
+  faq={faq}
+  breadcrumb={[{ name: 'Início', url: '/' }, { name: PLANO.nome, url: '/assinatura/' }]}
+>
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="hero hero-duplo wrap" data-gatilho>
+      <div>
+        <p class="kicker rise d1">{PLANO.nome}</p>
+        <h1 class="rise d2">Aprenda as ferramentas de IA que a gente usa de verdade</h1>
+        <p class="lead rise d3">
+          Onze trilhas, uma por ferramenta, feitas por quem usa essas ferramentas na operação
+          todo dia. Você cria a conta de graça, começa pelas masterclasses liberadas e assina
+          só se quiser o resto.
+        </p>
+        <div class="cta-row rise d4">
+          <a href={HUB} data-evento="SignUpIntent" data-evento-local="assinatura" class="btn btn-primario">{PLANO.chamada}</a>
+          <a href="#o-que-tem" class="btn btn-secundario">Ver o que tem dentro</a>
+        </div>
+        <p class="hero-nota rise d4">
+          Conta grátis · sem cartão · {PLANO.preco}{PLANO.periodo} só quando você quiser assinar
+        </p>
+      </div>
+      <div class="constelacao rise d4" aria-hidden="true">
+        {destaque.map((c) => (
+          <span class="astro-chip"><BrandLogo mark={c.mark} size={30} /><b>{c.nome}</b></span>
+        ))}
+      </div>
+    </section>
+  </div>
+
+  <section class="wrap">
+    <div class="numeros">
+      {stats.map((s) => <div><b>{s.num}</b><span>{s.label}</span></div>)}
+    </div>
+  </section>
+
+  <section class="wrap esteira-secao">
+    <p class="esteira-rotulo">As ferramentas incluídas na assinatura</p>
+    <div class="esteira">
+      <div class="esteira-trilho">
+        {[...CURSOS, ...CURSOS].map((c) => (
+          <span class="esteira-item"><BrandLogo mark={c.mark} size={22} />{c.nome}</span>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Para quem é</p>
+      <h2>Feito para quem quer colocar coisa no ar</h2>
+    </div>
+    <div class="grade">
+      {paraQuem.map((p) => (
+        <div class="card"><h3>{p.title}</h3><p>{p.desc}</p></div>
+      ))}
+    </div>
+    <div class="card card-largo" style="margin-top: var(--s3)">
+      <h3>Não é para você se…</h3>
+      <ul class="card-lista">{naoEh.map((n) => <li>{n}</li>)}</ul>
+    </div>
+  </section>
+
+  <section class="wrap secao" id="o-que-tem">
+    <div class="sec-head">
+      <p class="kicker">O que você recebe</p>
+      <h2>A plataforma inteira, não só videoaula</h2>
+      <p class="lead">O Hub não é uma pasta de vídeos. É onde a aula, o material, o template e o tutor ficam no mesmo lugar.</p>
+    </div>
+    <div class="grade">
+      {HUB_INCLUI.map((i) => (
+        <div class="card"><h3>{i.title}</h3><p>{i.desc}</p></div>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Comece por aqui</p>
+      <h2>Duas masterclasses completas, liberadas no cadastro</h2>
+      <p class="lead">Não é aula de degustação nem isca com cinco minutos. São as trilhas inteiras, abertas para quem cria a conta.</p>
+    </div>
+    <div class="grade grade-3">
+      {MASTERCLASSES.map((m) => (
+        <div class="card">
+          <div class="card-topo">
+            <span class="chip-logo"><BrandLogo mark={m.mark} size={26} /></span>
+            <span class={m.acesso === 'Gratuito' ? 'pill pill-acento' : 'pill'}>{m.acesso.toLowerCase()}</span>
+          </div>
+          <h3>{m.nome}</h3>
+          <p>{m.desc}</p>
+          {m.aulas && <span class="pill" style="align-self:start">{m.aulas} aulas</span>}
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">11 cursos</p>
+      <h2>Uma trilha por ferramenta</h2>
+      <p class="lead">Cada trilha vai do primeiro clique até uma entrega de verdade. Você escolhe a ferramenta pelo problema que precisa resolver.</p>
+    </div>
+    <div class="grade">
+      {[...builder, ...midia].map((c) => {
+        const href = publicados.has(c.slug) ? `/curso-${c.slug}/` : null;
+        const Tag = href ? 'a' : 'div';
+        return (
+          <Tag href={href ?? undefined} class="card">
+            <div class="card-topo">
+              <span class="chip-logo"><BrandLogo mark={c.mark} size={26} /></span>
+              <span class={c.acesso === 'gratuito' ? 'pill pill-acento' : 'pill'}>
+                {c.acesso === 'gratuito' ? 'grátis' : 'assinatura'}
+              </span>
+            </div>
+            <h3>{c.nome}</h3>
+            <p>{c.tagline}</p>
+            {href && <span class="ver">Ver o curso →</span>}
+          </Tag>
+        );
+      })}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Como funciona</p>
+      <h2>Do cadastro à assinatura, em quatro passos</h2>
+    </div>
+    <div class="passos">
+      {comoFunciona.map((p) => (
+        <div class="passo">
+          <span class="passo-num">{p.n}</span>
+          <div><h3>{p.title}</h3><p>{p.desc}</p></div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Bloco de preço: a única cor sólida laranja da página (§3) -->
+  <section class="wrap secao" id="plano">
+    <div class="sec-head">
+      <p class="kicker">Investimento</p>
+      <h2>Um plano. Sem pegadinha.</h2>
+    </div>
+    <div class="grade grade-2">
+      <div class="preco">
+        <p class="rotulo">{PLANO.nome}</p>
+        <p class="valor">{PLANO.preco}<small>{PLANO.periodo}</small></p>
+        <p>
+          Acesso a tudo enquanto a assinatura estiver ativa, incluindo o que entrar depois.
+          Sem fidelidade e sem taxa de cancelamento.
+        </p>
+        <a href={HUB} data-evento="SignUpIntent" data-evento-local="assinatura" class="btn btn-branco">{PLANO.chamada}</a>
+      </div>
+
+      <div class="card card-largo">
+        <h3>Grátis x assinante</h3>
+        <div class="tabela-rola">
+          <table>
+            <thead><tr><th>O que</th><th>Conta grátis</th><th>Assinante</th></tr></thead>
+            <tbody>
+              {comparativo.map((l) => (
+                <tr>
+                  <td>{l.o}</td>
+                  <td class={l.gratis ? 'sim' : 'nao'}>{l.gratis ? 'sim' : '—'}</td>
+                  <td class="sim">sim</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Dúvidas</p>
+      <h2>Perguntas frequentes</h2>
+    </div>
+    <div class="faq">
+      {faq.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="cta">
+      <p class="kicker">Strat Hub</p>
+      <h2>Cria a conta e vê por dentro.</h2>
+      <p class="lead">
+        É de graça, não pede cartão e as duas masterclasses já estão te esperando lá dentro.
+        Se não gostar, você não perdeu nada.
+      </p>
+      <a href={HUB} data-evento="SignUpIntent" data-evento-local="assinatura" class="btn btn-primario">{PLANO.chamada}</a>
+      <p class="nota">{PLANO.nome} · {PLANO.preco}{PLANO.periodo} quando quiser assinar · cancela quando quiser</p>
+    </div>
+  </section>
+
+  <div class="barra-fixa">
+    <div class="info"><b>{PLANO.nome}</b><span>Grátis · {PLANO.preco}{PLANO.periodo} para assinar</span></div>
+    <a href={HUB} data-evento="SignUpIntent" data-evento-local="assinatura" class="btn btn-primario">{PLANO.chamada}</a>
+  </div>
+</RubikLayout>

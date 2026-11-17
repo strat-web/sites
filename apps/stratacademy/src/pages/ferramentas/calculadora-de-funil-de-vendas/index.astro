@@ -1,0 +1,406 @@
+---
+// Folha da ferramenta — /ferramentas/calculadora-de-funil-de-vendas. Conversão C1.
+//
+// A ORDEM DOS BLOCOS É O CONTRATO, não preferência de layout:
+//   h1 (tarefa) → uma frase → a ferramenta → passo a passo em texto →
+//   modelos prontos → o que dá para exportar → como foi construída → FAQ → CTA
+//
+// A ferramenta é UM BLOCO. O resto da página é texto renderizado no build:
+// GPTBot, ClaudeBot e PerplexityBot não executam JavaScript, então tudo o que
+// importa para eles precisa estar no HTML do dist — inclusive o passo a passo.
+import RubikLayout from '../../../layouts/RubikLayout.astro';
+import FunilTool from '../../../components/FunilTool.astro';
+import Selo from '../../../components/Selo.astro';
+import { SITE } from '../../../consts';
+import { absUrl } from '@horus/seo';
+import { PLANO, HUB } from '../../../data/catalogo';
+import {
+  buscarFerramenta,
+  rotaFerramenta,
+  ETAPAS_FUNIL,
+  PASSOS_FUNIL,
+  MODELOS_FUNIL,
+  EXPORTACOES,
+  FAQ_FUNIL,
+} from '../../../data/ferramentas';
+import { fmtNum, fmtTaxa, calcularFunil } from '../../../lib/funil';
+
+const f = buscarFerramenta('calculadora-de-funil-de-vendas')!;
+const url = rotaFerramenta(f.slug);
+const criador = rotaFerramenta('criador-de-funil-de-vendas');
+
+// Exemplo inicial da ferramenta: números redondos, para a conta ser conferível de cabeça.
+const exemplo = [
+  { nome: 'Visitantes', valor: 10000, nota: ETAPAS_FUNIL[0].comoMedir },
+  { nome: 'Leads', valor: 1200, nota: ETAPAS_FUNIL[1].comoMedir },
+  { nome: 'Qualificados', valor: 420, nota: ETAPAS_FUNIL[2].comoMedir },
+  { nome: 'Oportunidades', valor: 180, nota: ETAPAS_FUNIL[3].comoMedir },
+  { nome: 'Clientes', valor: 54, nota: ETAPAS_FUNIL[4].comoMedir },
+];
+const ticket = 1200;
+const demo = calcularFunil(exemplo, ticket);
+
+// A URL canônica — sem query. O estado do funil vive em ?etapas=..., e se ele
+// entrasse aqui cada funil compartilhado viraria uma entidade diferente no índice.
+const urlCanonica = `${SITE.url}${url}/`;
+
+// SoftwareApplication: é assim que a ferramenta vira uma *coisa* no grafo de
+// conhecimento, e não só uma página com texto. O que faz diferença aqui é
+// isAccessibleForFree + offers a zero: é o que permite a um assistente responder
+// "existe uma gratuita?" com a nossa.
+const softwareLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: f.nome,
+  alternateName: f.termoDeBusca,
+  url: urlCanonica,
+  description: f.resumo,
+  applicationCategory: 'BusinessApplication',
+  applicationSubCategory: 'Calculadora de marketing e vendas',
+  operatingSystem: 'Navegador',
+  browserRequirements: 'Requer JavaScript para recalcular; o conteúdo e o exemplo funcionam sem.',
+  inLanguage: 'pt-BR',
+  isAccessibleForFree: true,
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'BRL',
+    availability: 'https://schema.org/InStock',
+  },
+  featureList: [
+    'Calcula a taxa de conversão de cada passagem do funil',
+    'Aponta o gargalo — a passagem com a pior taxa',
+    'Estima quanto vale um ponto percentual a mais no gargalo',
+    'Exporta o funil em imagem, CSV e JSON',
+    'Gera link compartilhável sem cadastro',
+  ],
+  publisher: {
+    '@type': 'Organization',
+    name: SITE.name,
+    url: SITE.url,
+  },
+};
+
+// HowTo no HTML: é o passo a passo em dado estruturado, para quem lê a página por máquina.
+const howTo = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name: 'Como montar um funil de vendas',
+  description:
+    'Como montar o funil de vendas do seu negócio, calcular a taxa de conversão de cada etapa e achar o gargalo.',
+  totalTime: 'PT15M',
+  tool: [{ '@type': 'HowToTool', name: f.tarefa }],
+  step: PASSOS_FUNIL.map((p) => ({
+    '@type': 'HowToStep',
+    position: p.n,
+    name: p.titulo,
+    text: p.texto,
+    url: `${urlCanonica}#passo-${p.n}`,
+  })),
+};
+---
+
+<RubikLayout
+  perfil="lead"
+  title={`${f.tarefa} — ${SITE.name}`}
+  description={f.resumo}
+  faq={FAQ_FUNIL}
+  image={absUrl(`/og/ferramenta-${f.slug}.png`)}
+  breadcrumb={[
+    { name: 'Início', url: '/' },
+    { name: 'Ferramentas', url: '/ferramentas' },
+    { name: f.nome, url },
+  ]}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(softwareLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(howTo)} />
+
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="hero wrap">
+      <nav class="migalhas rise d1" aria-label="Você está em">
+        <a href="/">Início</a><span>/</span><a href="/ferramentas">Ferramentas</a><span>/</span>{f.nome}
+      </nav>
+      <p class="kicker rise d1">Ferramenta gratuita · sem cadastro</p>
+
+      <!-- 1. h1 com a tarefa -->
+      <h1 class="rise d2">{f.tarefa}</h1>
+
+      <!-- 2. uma frase do que ela faz e para quem é -->
+      <p class="lead rise d3">{f.resumo}</p>
+    </section>
+  </div>
+
+  <!-- 3. a ferramenta — um bloco da página, não a página -->
+  <section class="wrap secao secao-topo">
+    <FunilTool
+      etapas={exemplo}
+      ticket={ticket}
+      titulo="Monte o seu funil"
+      local="folha-funil"
+    />
+  </section>
+
+  <!-- 4. o passo a passo, em texto. Os mesmos passos que a ferramenta executa. -->
+  <section class="wrap secao" id="como-montar">
+    <div class="sec-head">
+      <p class="kicker">Passo a passo</p>
+      <h2>Como montar um funil de vendas</h2>
+      <p class="lead">
+        São os mesmos sete passos que a ferramenta acima executa. Estão escritos aqui porque a conta
+        importa mais que a calculadora: entendendo o método, você faz no papel, na planilha ou em
+        qualquer lugar — e sabe conferir se o número que saiu faz sentido.
+      </p>
+    </div>
+
+    <ol class="passos-texto">
+      {PASSOS_FUNIL.map((p) => (
+        <li class="passo-texto" id={`passo-${p.n}`}>
+          <span class="passo-num">{p.n}</span>
+          <div>
+            <h3>{p.titulo}</h3>
+            <p>{p.texto}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+
+    <div class="quadro">
+      <h3>As cinco etapas padrão, e o que contar em cada uma</h3>
+      <p class="lead">
+        Se você não souber por onde começar, use estas. Elas cobrem a maioria dos negócios e são o
+        estado inicial da ferramenta.
+      </p>
+      <div class="tabela-rola">
+        <table>
+          <thead>
+            <tr><th>Etapa</th><th>Quem está aqui</th><th>Como medir</th></tr>
+          </thead>
+          <tbody>
+            {ETAPAS_FUNIL.map((e) => (
+              <tr>
+                <th scope="row">{e.nome}</th>
+                <td>{e.descricao}</td>
+                <td>{e.comoMedir}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="quadro">
+      <h3>Um exemplo com números, do começo ao fim</h3>
+      <p class="lead">
+        O mesmo funil que abre a ferramenta, resolvido em texto — para conferir se a sua conta está
+        batendo com a nossa.
+      </p>
+      <p>
+        Um negócio recebeu <b>{fmtNum(exemplo[0].valor)} visitantes</b> no mês. Destes,
+        <b>{fmtNum(exemplo[1].valor)} viraram leads</b>, o que dá {fmtTaxa(demo.etapas[1].taxaPassagem ?? 0)} de
+        conversão nessa passagem. Dos leads, <b>{fmtNum(exemplo[2].valor)} foram qualificados</b>
+        ({fmtTaxa(demo.etapas[2].taxaPassagem ?? 0)}), <b>{fmtNum(exemplo[3].valor)} viraram
+        oportunidades</b> ({fmtTaxa(demo.etapas[3].taxaPassagem ?? 0)}) e
+        <b>{fmtNum(exemplo[4].valor)} fecharam</b> ({fmtTaxa(demo.etapas[4].taxaPassagem ?? 0)}).
+        A conversão do topo até a venda é de {fmtTaxa(demo.taxaGeral)}.
+      </p>
+      <p>
+        O gargalo é a passagem de <b>{demo.gargalo?.nome}</b>, com {fmtTaxa(demo.gargalo?.taxaPassagem ?? 0)} —
+        a pior taxa do funil. É nela que vale mexer primeiro, e não na etapa que já converte melhor:
+        um ponto percentual ali vale mais do que dez pontos numa passagem que já vai bem.
+      </p>
+    </div>
+
+    <div class="quadro">
+      <h3>Não sabe quais são as suas etapas?</h3>
+      <p>
+        A conta acima começa depois que você já sabe o caminho que o cliente faz. Se o seu funil
+        ainda mora em pedaços — o anúncio num lugar, a sequência de e-mail em outro, o WhatsApp no
+        celular de quem vende —, desenhe primeiro no
+        <a href={criador}>criador de funil de vendas</a>: você arrasta as etapas, vê o caminho
+        inteiro numa tela só e descobre a etapa que ninguém liga a lugar nenhum.
+      </p>
+      <p>
+        Depois volte aqui com os números de cada etapa. Desenho sem número é opinião; número sem
+        desenho não diz em qual etapa o problema mora.
+      </p>
+    </div>
+  </section>
+
+  <!-- 5. modelos prontos -->
+  <section class="wrap secao" id="modelos">
+    <div class="sec-head">
+      <p class="kicker">Modelos prontos</p>
+      <h2>Modelos prontos de funil de vendas</h2>
+      <p class="lead">
+        Quatro funis já montados, com etapas e números plausíveis do tipo de negócio, o gargalo que
+        costuma aparecer em cada um e o que fazer a respeito. Abra o mais parecido com o seu e troque
+        pelos seus números.
+      </p>
+    </div>
+    <div class="grade grade-2">
+      {MODELOS_FUNIL.map((m) => (
+        <a href={`${url}/modelos/${m.slug}`} class="card card-largo">
+          <div class="card-topo">
+            <h3>{m.nome}</h3>
+            <span class="pill">{m.etapas.length} etapas</span>
+          </div>
+          <p>{m.resumo}</p>
+          <span class="ver">Abrir modelo →</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- 6. o que dá para exportar -->
+  <section class="wrap secao" id="exportar">
+    <div class="sec-head">
+      <p class="kicker">Saída</p>
+      <h2>O que dá para exportar</h2>
+      <p class="lead">
+        O funil não fica preso aqui dentro. Tudo é gerado no seu navegador, no momento em que você
+        clica — não há fila, e-mail de entrega nem versão paga do arquivo.
+      </p>
+    </div>
+    <div class="grade grade-2">
+      {EXPORTACOES.map((e) => (
+        <div class="card card-largo">
+          <div class="card-topo">
+            <h3>{e.titulo}</h3>
+            <span class="pill pill-acento">{e.formato}</span>
+          </div>
+          <p>{e.desc}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- 7. como esta ferramenta foi construída — bloco de conversão, não só texto -->
+  <section class="wrap secao" id="como-foi-construida">
+    <div class="sec-head">
+      <p class="kicker">Por dentro</p>
+      <h2>Como esta ferramenta foi construída</h2>
+    </div>
+
+    <div class="construida">
+      <div class="construida-texto">
+        <p>
+          Ela foi feita com <b>Claude Code</b>, do zero, numa sessão. A matemática do funil roda
+          inteira dentro do seu navegador: não há back-end no meio do cálculo e nada é gravado
+          enquanto você usa.
+        </p>
+        <p>
+          Você não precisa acreditar nisso. Abra o F12, vá na aba <b>Rede</b> e digite um número —
+          nenhuma requisição sai. É uma prova que qualquer pessoa faz sozinha, em dez segundos.
+          A única requisição que existe é a do diagnóstico por e-mail, e ela só parte quando você
+          preenche o formulário e envia.
+        </p>
+        <p>
+          E é exatamente essa a técnica que as trilhas do Strat Hub ensinam: pegar um problema
+          pequeno e real do seu negócio e transformar em ferramenta que funciona, sem virar
+          projeto de seis meses. Esta calculadora é um exemplo do tamanho certo.
+        </p>
+
+        <Selo ferramenta={f} variante="compacto" />
+
+        <div class="construida-cta">
+          <a href={HUB} data-evento="SignUpIntent" data-evento-local="construida-funil" class="btn btn-primario">
+            {PLANO.chamada}
+          </a>
+          <span class="construida-nota">
+            Sem cartão · as Masterclasses de N8N e Claude Code já vêm liberadas
+          </span>
+        </div>
+      </div>
+
+      <figure class="construida-figura">
+        <img
+          src="/images/tools/monte-seu-funil.jpeg"
+          alt="Resultado da calculadora: um funil de 10.000 visitantes a 54 clientes, com o gargalo marcado na passagem de Leads, que converte 12% e perde 8.800 pessoas. Abaixo, a leitura em números: 0,5% de conversão geral, R$ 64.800 de receita e R$ 5.400 por ponto percentual ganho no gargalo."
+          width="714"
+          height="869"
+          loading="lazy"
+          decoding="async"
+        />
+      </figure>
+    </div>
+  </section>
+
+  <!-- 8. FAQ -->
+  <section class="wrap secao" id="duvidas">
+    <div class="sec-head">
+      <p class="kicker">Dúvidas</p>
+      <h2>Perguntas frequentes</h2>
+    </div>
+    <div class="faq">
+      {FAQ_FUNIL.map((q) => <details><summary>{q.q}</summary><p>{q.a}</p></details>)}
+    </div>
+  </section>
+
+  <!-- 9. CTA de conta grátis -->
+  <section class="wrap secao">
+    <div class="cta">
+      <p class="kicker">Strat Hub</p>
+      <h2>Achou o gargalo. Agora automatize o que sobrou.</h2>
+      <p class="lead">
+        Saber onde o funil vaza é metade. A outra metade é montar a automação que resolve — e é isso
+        que as Masterclasses de N8N e Claude Code ensinam, liberadas por inteiro na conta gratuita do
+        Strat Hub. Sem cartão.
+      </p>
+      <a href={HUB} data-evento="SignUpIntent" data-evento-local="folha-funil" class="btn btn-primario">{PLANO.chamada}</a>
+      <p class="nota">{PLANO.nome} · {PLANO.preco}{PLANO.periodo} quando quiser assinar · cancela quando quiser</p>
+    </div>
+  </section>
+</RubikLayout>
+
+<style>
+  .secao-topo { padding-top: var(--s3); }
+
+  .passos-texto { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s4); }
+  .passo-texto { display: flex; gap: var(--s3); align-items: flex-start; scroll-margin-top: 6rem; }
+  .passo-texto h3 { font-size: var(--t-h4); font-weight: var(--w-semi); }
+  .passo-texto p { color: var(--txt-2); margin-top: .4rem; max-width: var(--leitura); }
+
+  .quadro {
+    background: var(--surf); border-radius: var(--raio-g);
+    box-shadow: var(--sombra-card); padding: var(--s5);
+    margin-top: var(--s5);
+  }
+  .quadro h3 { font-size: var(--t-h3); font-weight: var(--w-semi); }
+  .quadro .lead { margin-top: var(--s2); font-size: var(--t-peq); }
+  .quadro p + p { margin-top: var(--s3); }
+  .quadro > p { color: var(--txt-2); max-width: var(--leitura); }
+  .quadro > p b { color: var(--txt); }
+
+  .quadro table { width: 100%; border-collapse: collapse; margin-top: var(--s3); font-size: var(--t-peq); }
+  .quadro th, .quadro td { text-align: left; padding: var(--s2); border-bottom: 1px solid var(--linha); vertical-align: top; }
+  .quadro thead th { font-size: var(--t-meta); color: var(--txt-2); font-weight: var(--w-semi); }
+  .quadro tbody th { font-weight: var(--w-semi); white-space: nowrap; }
+  .quadro td { color: var(--txt-2); }
+
+  .construida {
+    display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: var(--s5); align-items: center;
+  }
+  .construida p { color: var(--txt-2); max-width: var(--leitura); }
+  .construida p + p { margin-top: var(--s3); }
+  .construida-texto :global(.selo-strat) { margin-top: var(--s4); }
+
+  .construida-cta {
+    display: flex; flex-wrap: wrap; align-items: center;
+    gap: var(--s3); margin-top: var(--s4);
+  }
+  .construida-nota { font-size: var(--t-meta); color: var(--txt-2); }
+
+  .construida-figura { margin: 0; }
+  .construida-figura img {
+    width: 100%; height: auto; display: block;
+    border-radius: var(--raio-g); box-shadow: var(--sombra-card);
+  }
+
+  @media (max-width: 780px) {
+    .construida { grid-template-columns: minmax(0, 1fr); }
+    .construida-figura { order: -1; }
+    .quadro { padding: var(--s4) var(--s3); }
+  }
+</style>

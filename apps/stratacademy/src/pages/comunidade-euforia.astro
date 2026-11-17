@@ -1,0 +1,139 @@
+---
+import RubikLayout from '../layouts/RubikLayout.astro';
+import { SITE, CANAIS } from '../consts';
+import { PLANO, HUB } from '../data/catalogo';
+
+const COMUNIDADE_URL = CANAIS.discord;
+
+const beneficios = [
+  { titulo: 'Workflows de N8N prontos', texto: 'Troca de fluxos de automação entre membros — modelos que você adapta ao seu negócio em vez de começar do zero.' },
+  { titulo: 'Tira-dúvidas com pares', texto: 'Travou num nó, numa integração ou num prompt? Pergunte para quem já passou pelo mesmo problema e recebe retorno prático.' },
+  { titulo: 'Encontros ao vivo', texto: 'Momentos para acompanhar novos casos, revisar automações e evoluir junto com quem está construindo.' },
+  { titulo: 'IA em primeira mão', texto: 'Novidades de ferramentas, modelos e recursos chegam até você antes de virarem tendência no mercado.' },
+  { titulo: 'Networking real', texto: 'Conexão com profissionais, donos de agência e empreendedores que aplicam IA e automação no dia a dia.' },
+  { titulo: 'Continuidade', texto: 'Um ambiente que acompanha sua jornada depois da trilha — porque implementar IA é processo, não evento.' },
+];
+
+const paraQuem = [
+  'Quem está nas trilhas e quer sair da teoria e implementar com apoio de pares.',
+  'Profissionais e donos de agência que usam automação e IA no trabalho.',
+  'Quem está começando com N8N e precisa de um lugar para tirar dúvidas.',
+  'Empreendedores que querem se manter atualizados sobre ferramentas de IA.',
+];
+
+const comoFunciona = [
+  { n: '01', titulo: 'Crie sua conta gratuita', texto: 'O cadastro no Strat Hub é grátis e não pede cartão. É a porta de entrada.' },
+  { n: '02', titulo: 'Entre nos grupos', texto: 'Discord para conversa organizada por assunto, WhatsApp para o dia a dia. Escolha um ou os dois.' },
+  { n: '03', titulo: 'Traga o seu caso', texto: 'A comunidade rende quando você mostra o que está construindo — e não só observa.' },
+];
+
+const faq = [
+  { q: 'Preciso pagar para entrar?', a: 'Não. Discord e grupo do WhatsApp são gratuitos e abertos. Criar a conta no Strat Hub também é grátis e libera as Masterclasses de N8N e de Claude Code completas.' },
+  { q: 'Onde a comunidade acontece?', a: 'Em dois canais: o Discord, com canais por assunto e histórico pesquisável, e o grupo Euforia no WhatsApp, para o dia a dia. Os dois são gratuitos e o link está nesta página.' },
+  { q: 'Preciso já saber automação?', a: 'Não. Tem gente começando e gente com anos de operação. O que faz a comunidade funcionar é você trazer o problema real, não o nível técnico.' },
+  { q: 'Tem regra de convivência?', a: 'Tem: sem spam, sem venda disfarçada e sem pedir resposta pronta sem ter tentado. O resto é conversa de quem constrói.' },
+];
+---
+<RubikLayout
+  title={`Comunidade — ${SITE.name}`}
+  description="A comunidade da Strat Academy: troca de workflows, tira-dúvidas com pares e networking com quem aplica IA e automação no dia a dia."
+  faq={faq}
+  breadcrumb={[{ name: 'Início', url: '/' }, { name: 'Comunidade', url: '/comunidade-euforia/' }]}
+>
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="hero wrap">
+      <p class="kicker rise d1">Comunidade</p>
+      <h1 class="rise d2">Onde a automação deixa de ser solitária</h1>
+      <p class="lead rise d3">
+        Construir sozinho é lento. A comunidade é onde o fluxo que travou vira pergunta,
+        e a pergunta vira solução em algumas horas em vez de algumas semanas.
+      </p>
+      <div class="cta-row rise d4">
+        <a href={CANAIS.discord} target="_blank" rel="noopener" data-evento="JoinCommunity" data-evento-local="discord" class="btn btn-primario">Entrar no Discord</a>
+        <a href={CANAIS.whatsappComunidade} target="_blank" rel="noopener" data-evento="JoinCommunity" data-evento-local="whatsapp" class="btn btn-secundario">Grupo do WhatsApp</a>
+      </div>
+      <p class="hero-nota rise d4">Entrada gratuita · sem cartão · escolha o canal que você usa mais</p>
+    </section>
+  </div>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Por dentro</p>
+      <h2>Benefícios de estar dentro</h2>
+    </div>
+    <div class="grade grade-3">
+      {beneficios.map((b) => <div class="card"><h3>{b.titulo}</h3><p>{b.texto}</p></div>)}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Para quem é</p>
+      <h2>A comunidade é para você se…</h2>
+    </div>
+    <div class="card card-largo" style="max-width: var(--max-texto)">
+      <ul class="card-lista">{paraQuem.map((p) => <li>{p}</li>)}</ul>
+    </div>
+  </section>
+
+  <section class="wrap secao" id="canais">
+    <div class="sec-head">
+      <p class="kicker">Onde a gente conversa</p>
+      <h2>Dois canais, a mesma comunidade</h2>
+      <p class="lead">Entre no que fizer mais sentido para a sua rotina — ou nos dois.</p>
+    </div>
+    <div class="grade grade-2">
+      <a href={CANAIS.discord} target="_blank" rel="noopener" data-evento="JoinCommunity" data-evento-local="discord" class="card card-largo">
+        <span class="pill" style="align-self:start">Discord</span>
+        <h3>Para conversa que fica organizada</h3>
+        <p>Canais por assunto, histórico pesquisável e thread para cada dúvida. É onde o conteúdo técnico se acumula e continua útil semanas depois.</p>
+        <span class="ver">Entrar no Discord →</span>
+      </a>
+      <a href={CANAIS.whatsappComunidade} target="_blank" rel="noopener" data-evento="JoinCommunity" data-evento-local="whatsapp" class="card card-largo">
+        <span class="pill" style="align-self:start">WhatsApp</span>
+        <h3>Para o dia a dia, no celular</h3>
+        <p>O grupo Euforia, onde as novidades e as trocas rápidas acontecem sem você precisar abrir outro app.</p>
+        <span class="ver">Entrar no grupo →</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="wrap secao" id="como">
+    <div class="sec-head">
+      <p class="kicker">Como funciona</p>
+      <h2>Do acesso à implementação</h2>
+    </div>
+    <div class="passos">
+      {comoFunciona.map((c) => (
+        <div class="passo">
+          <span class="passo-num">{c.n}</span>
+          <div><h3>{c.titulo}</h3><p>{c.texto}</p></div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Dúvidas</p>
+      <h2>Ainda com dúvidas?</h2>
+    </div>
+    <div class="faq">
+      {faq.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="cta">
+      <p class="kicker">Strat Hub</p>
+      <h2>Entre e traga o seu caso.</h2>
+      <p class="lead">
+        A comunidade rende quando você mostra o que está construindo. E a conta no Strat Hub,
+        que é gratuita, já libera as Masterclasses de N8N e Claude Code completas.
+      </p>
+      <a href={HUB} data-evento="SignUpIntent" data-evento-local="comunidade" class="btn btn-primario">{PLANO.chamada}</a>
+      <p class="nota">{PLANO.nome} · {PLANO.preco}{PLANO.periodo} quando quiser assinar</p>
+    </div>
+  </section>
+</RubikLayout>

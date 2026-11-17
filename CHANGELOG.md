@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- feat(stratacademy): site e blog da Academy trazidos do horus com as URLs idênticas (D8): 88 URLs com linha no catálogo, tracking pelo <Tracking> do kit (aviso de cookies do Rastro, banner em todas), @horus/seo copiado para o app, /api/lead na raiz, pacotes das ferramentas pelo GitHub Packages (NPM_TOKEN), links internos com barra no fim, 301 do sitemap-index.xml e do sitemap-0.xml, home fora dos esqueletos das checagens e post de teste da stratacademy removido (WEB-49)
 - docs(auditoria): stratacademy.com.br conferido no navegador sem escolha, com aceite e com recusa (Umami e Cloudflare na abertura, pixel e PostHog só com aceite, sem GA4 nem Google Ads, conversões barradas no /tracker pelo CORS, produtos do Rastro das ferramentas); linha do catálogo com os ids do produto site no Rastro e o que difere hoje; tracking.md: o aceite fica no localStorage, não em cookie (WEB-46)
 - feat(stratai): página /parcerias/ do programa de parceria e indicação (prévia aprovada, só a indicação), com o cadastro em 3 etapas enviado ao MetricaaS da StratAI pelo mtc.lead() e linha no catálogo (WEB-74)
 - feat(kit): lastmod também em rota dinâmica (com a data que a página declara no `atualizado`), logo do JSON-LD com o logotipo de cada marca no public/ do app, href do Breadcrumb com a barra no fim (slug com ponto também), llms.txt só com as marcas no ar (campo `no_ar` no catálogo) e página de teste agenciastrat.com.br/kit/gpt-4.1/ (noindex, sai com as outras /kit/ antes da virada, WEB-23) (WEB-77)

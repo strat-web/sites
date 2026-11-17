@@ -1,0 +1,79 @@
+---
+// Selo "Construído com Claude Code" — a assinatura das ferramentas gratuitas.
+//
+// O código das ferramentas não é publicado, então o selo nunca linka repositório.
+// O que ele afirma continua verdade e é verificável: foi construído com Claude
+// Code, e o cálculo roda no navegador de quem usa (prova na aba Rede do F12).
+// O único link que pode sair daqui é o do post do blog, quando existir.
+import { buscarFerramenta, type Ferramenta } from '../data/ferramentas';
+
+interface Props {
+  /** A ferramenta. Aceita o slug por conveniência das páginas de modelo. */
+  ferramenta?: Ferramenta;
+  slug?: string;
+  /** `compacto` no rodapé de página; `bloco` quando é a seção "como foi construída". */
+  variante?: 'compacto' | 'bloco';
+  /** Sobrescreve o texto do bloco. */
+  texto?: string;
+}
+
+const { ferramenta, slug, variante = 'compacto', texto } = Astro.props;
+const f = ferramenta ?? (slug ? buscarFerramenta(slug) : undefined);
+
+const temPost = !!f?.postDoBlog;
+---
+
+<div class:list={['selo-strat', `selo-${variante}`]}>
+  <p class="selo-marca">
+    <span aria-hidden="true">◆</span> Construído com Claude Code
+  </p>
+
+  {variante === 'bloco' && (
+    <p class="selo-texto">
+      {texto ??
+        'Feita do zero numa sessão, com a mesma forma de trabalho que as trilhas do Strat Hub ensinam. O cálculo roda no seu navegador, sem back-end no meio.'}
+    </p>
+  )}
+
+  {temPost && (
+    <p class="selo-links">
+      <a href={`/blog/${f!.postDoBlog}/`}>Ler como foi feita →</a>
+    </p>
+  )}
+
+  {!temPost && variante === 'bloco' && (
+    <p class="selo-nota">
+      O cálculo acontece no seu navegador: enquanto você usa, nenhuma requisição sai.
+      Dá para conferir na aba Rede do F12.
+    </p>
+  )}
+</div>
+
+<style is:global>
+  /* Global e não escopado: o selo aparece dentro de blocos que o JS re-renderiza
+     em algumas páginas, e estilo escopado do Astro não sobrevive a innerHTML. */
+  .selo-strat { display: grid; gap: var(--s2); justify-items: start; }
+
+  .selo-marca {
+    display: inline-flex; align-items: center; gap: .45rem;
+    background: var(--bg-2); border: 1px solid var(--linha);
+    border-radius: var(--raio-pill); padding: .35rem .8rem;
+    font-size: var(--t-meta); font-weight: var(--w-semi); color: var(--txt);
+  }
+  .selo-marca span { color: var(--acento); }
+
+  .selo-texto { color: var(--txt-2); max-width: var(--leitura); font-size: var(--t-peq); }
+  .selo-nota { color: var(--txt-2); font-size: var(--t-meta); max-width: var(--leitura); }
+
+  .selo-links { display: flex; flex-wrap: wrap; gap: var(--s3); }
+  .selo-links a {
+    font-size: var(--t-meta); font-weight: var(--w-semi);
+    color: var(--acento); text-decoration: none;
+  }
+  .selo-links a:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+  .selo-compacto {
+    margin-top: var(--s5); padding-top: var(--s3);
+    border-top: 1px solid var(--linha);
+  }
+</style>

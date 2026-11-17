@@ -1,0 +1,18 @@
+---
+import RubikLayout from '../layouts/RubikLayout.astro';
+import { SITE } from '../consts';
+---
+<RubikLayout noindex title={`Inscrição confirmada — ${SITE.name}`} description="Obrigado por se inscrever na newsletter.">
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="wrap aviso">
+      <p class="simbolo" aria-hidden="true">✓</p>
+      <h1>Inscrição confirmada!</h1>
+      <p class="lead">Você entrou na nossa lista. Em breve chegam os conteúdos sobre automação e IA no seu e-mail.</p>
+      <div class="cta-row" style="justify-content:center">
+        <a href="/blog/" class="btn btn-primario">Ler artigos</a>
+        <a href="/" class="btn btn-secundario">Voltar à home</a>
+      </div>
+    </section>
+  </div>
+</RubikLayout>
