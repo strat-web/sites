@@ -2,6 +2,15 @@
 
 Uma entrada por decisão, com data e quem decidiu. A mais nova em cima.
 
+## 2026-11-17 · LPs da Academy: variantes noindex e nome do projeto do Pages (Jhonathan, WEB-48; espera o Helbert no PR)
+- **Título e H1 repetidos só barram entre páginas indexáveis.** As variantes de teste A/B das LPs (claude /v1, /v3,
+  /v4; skills /b; mentoria /v2; vibecode /v1; lotes do bootcamp) repetem a principal de propósito e saem com noindex,
+  como já ficavam fora do sitemap no `strat-lps`. A checagem `seo` deixa de comparar página com noindex; a principal
+  continua única no site. Alternativa descartada: mudar o título e o H1 visíveis das variantes, o que mexeria num
+  teste A/B no ar.
+- **Projeto do Pages de cada LP com o prefixo `academy-`** (`academy-claude`): o endereço `*.pages.dev` é de todas as
+  contas da Cloudflare (`claude.pages.dev` não estaria livre) e o prefixo separa as LPs dos apps na lista da conta.
+
 ## 2026-11-13 · Sem limite de PRs abertos (Helbert e Jhonathan, conversa pessoal; trazida pelo Jhonathan)
 Cai a regra de "no máximo 6 PRs abertos" de 12/11: item pronto vira PR na hora, sem esperar vaga numa branch. As
 outras regras de fluxo de 12/11 continuam (pilha de 2 níveis, janelas de revisão, D11, rebase que muda código e lead
