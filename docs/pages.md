@@ -100,3 +100,10 @@ mudou a Function, os quatro buildam (como `packages/*` e `catalogo/*`).
 Um projeto por LP e por subdomínio, criado no WEB-48 (`lps/academy/<lp>/`), com o mesmo desenho: comando
 `pnpm --filter @strat/<lp> build`, saída `lps/academy/<lp>/dist`, observando `lps/academy/<lp>/*`, `packages/*`, `catalogo/*`,
 `functions/*`, `pnpm-lock.yaml` e os quatro arquivos da raiz (`package.json`, `pnpm-workspace.yaml`, `.npmrc`, `.nvmrc`), e excluindo `docs/*`.
+
+| Projeto | Endereço `.pages.dev` | Pacote | Criado | Domínio |
+|---|---|---|---|---|
+| `academy-claude` | https://academy-claude.pages.dev | `@strat/claude` (`lps/academy/claude`) | 17/11/2026, pela API, ligado ao GitHub (WEB-48) | claude.stratacademy.com.br, só com o "pode virar" do Helbert |
+
+O nome do projeto leva o prefixo `academy-` porque o endereço `*.pages.dev` vale para todas as contas da Cloudflare (o
+`claude.pages.dev` não estaria livre) e para separar as LPs dos apps na lista da conta.

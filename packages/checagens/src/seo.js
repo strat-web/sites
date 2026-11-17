@@ -1,4 +1,4 @@
-// Checagem "seo" (docs/padroes.md): título ou H1 repetido, sem canonical, href="#", JSON-LD inválido e página
+// Checagem "seo" (docs/padroes.md): título ou H1 repetido entre páginas indexáveis, sem canonical, href="#", JSON-LD inválido e página
 // indexável fora do sitemap. Também confere que o sitemap não lista página com noindex ou que não existe.
 // A página de erro (404.html) não tem canonical próprio nem linha no catálogo: dela só se exige noindex, um <title>,
 // um <h1> e ficar fora do sitemap (WEB-75). App sem 404.html barra: sem ela, o Cloudflare Pages responde 200 com a
@@ -68,6 +68,10 @@ export function checarSeo(ctx) {
       }
       existentes.add(pagina.url);
       const { titulo, h1, noindex } = checarPaginaSeo(pagina, r);
+      // Repetição só conta entre páginas indexáveis (WEB-48, decisão do Jhonathan em 17/11/2026): a variante de teste
+      // A/B (noindex) repete a principal de propósito e não disputa a busca com ela.
+      if (noindex) continue;
+      indexaveis.add(pagina.url);
       if (titulo) {
         if (titulos.has(titulo)) r.erro(pagina.url, `título repetido com ${titulos.get(titulo)}: "${titulo}"`);
         else titulos.set(titulo, pagina.url);
@@ -76,7 +80,6 @@ export function checarSeo(ctx) {
         if (h1s.has(h1)) r.erro(pagina.url, `H1 repetido com ${h1s.get(h1)}: "${h1}"`);
         else h1s.set(h1, pagina.url);
       }
-      if (!noindex) indexaveis.add(pagina.url);
     }
 
     if (!app.paginas.some((p) => p.caminho === '/404.html')) {

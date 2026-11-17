@@ -56,6 +56,15 @@ importers:
         specifier: 7.4.3
         version: 7.4.3(@types/node@26.6.6)(yaml@2.9.1)
 
+  lps/academy/claude:
+    dependencies:
+      '@strat/kit':
+        specifier: workspace:*
+        version: link:../../../packages/kit
+      astro:
+        specifier: 7.4.3
+        version: 7.4.3(@types/node@26.6.6)(yaml@2.9.1)
+
   packages/checagens:
     dependencies:
       '@strat/kit':
