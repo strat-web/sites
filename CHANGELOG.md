@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- ci(checagens): a checagem catalogo barra duas linhas do mesmo produto do Rastro com pixel, GA4, tag do Google ou consentimento diferentes (o /sa é um só por produto); a linha academy, alinhada no WEB-46, conferida contra o /sa?product=site de 17/11 e com a checagem tracking verde com a home usando o <Tracking> (WEB-83)
 - docs(auditoria): stratacademy.com.br conferido no navegador sem escolha, com aceite e com recusa (Umami e Cloudflare na abertura, pixel e PostHog só com aceite, sem GA4 nem Google Ads, conversões barradas no /tracker pelo CORS, produtos do Rastro das ferramentas); linha do catálogo com os ids do produto site no Rastro e o que difere hoje; tracking.md: o aceite fica no localStorage, não em cookie (WEB-46)
 - feat(stratai): página /parcerias/ do programa de parceria e indicação (prévia aprovada, só a indicação), com o cadastro em 3 etapas enviado ao MetricaaS da StratAI pelo mtc.lead() e linha no catálogo (WEB-74)
 - feat(kit): lastmod também em rota dinâmica (com a data que a página declara no `atualizado`), logo do JSON-LD com o logotipo de cada marca no public/ do app, href do Breadcrumb com a barra no fim (slug com ponto também), llms.txt só com as marcas no ar (campo `no_ar` no catálogo) e página de teste agenciastrat.com.br/kit/gpt-4.1/ (noindex, sai com as outras /kit/ antes da virada, WEB-23) (WEB-77)
