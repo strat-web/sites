@@ -42,7 +42,7 @@ export const EXCECOES_LIGHTHOUSE = {
   },
   'https://mentoria.stratacademy.com.br/v2/': {
     item: 'WEB-48', motivo: 'variante React herdada, noindex: origem 77 e LCP 4,36 s em 17/11; CI depois da migração 82 e 3,8 s. Piso de não regressão, sujeito à revisão do Helbert; reavaliar após compressão do WEB-88',
-    piso: { performance: 80, lcpMs: 4500, cls: 0.1 },
+    piso: { performance: 80, lcpMs: 4300, cls: 0.1 },
   },
   // As confirmações navegam automaticamente para o WhatsApp. O Lighthouse termina na página externa;
   // não atribuir esse resultado à renderização da confirmação. Preservamos o fluxo antigo, com piso e evidência.
