@@ -43,3 +43,13 @@ A comunidade sem funil/desconhecido conserva só Umami; `?f=vibecode` escolhe au
 - Autorização de domínios no MetricaaS e recepção/deduplicação nos painéis da Meta/Google são validações humanas; não foram declaradas concluídas por leitura estática ou mock.
 - Formulários mantêm o Lead manual original; adicionar `data-strat-leadform` indiscriminadamente faria o Rastro disparar Lead de novo. Os marcadores de CTA foram acrescentados onde faltavam em Skills; nenhuma inscrição ou compra real foi realizada.
 - Publicação no domínio e validações de produção só depois da aprovação e do “pode virar” do Helbert.
+
+## Resultado final do critério da Claude (17/11, 19h40–19h41)
+
+Preview imutável: https://3a9eac29.academy-claude.pages.dev/ (commit eaf87e0). Cinco respostas com fetchTime diferentes, sem escolher só as melhores: **3,195 / 2,101 / 2,674 / 2,113 / 2,110 s**. **Mediana 2,113 s**, abaixo de 2,5 s. CLS **0 nas cinco**; notas 89, 98, 96, 97 e 94. Dados resumidos em [web-48-pagespeed.json](web-48-pagespeed.json). O PageSpeed acessa a página com utm_source=teste/utm_medium=verificacao e o tracking real.
+
+A rede do `/sa` começou depois do LCP observado em 5/5: margens de 6, 380, 7, 39 e 6 ms. Seu download terminou entre 560 e 2487 ms após a navegação. Nas rodadas 1 e 3 ainda houve atraso de render antes da requisição ao Rastro; os dados não atribuem a causa restante às fontes ou a outro SDK sem trace adicional. O aceite exige mediana, e foi cumprido; não se declara que toda rodada isolada fica abaixo de 2,5 s.
+
+A janela até xcod continua material: antes de o Rastro executar, uma compra pode sair sem atribuição. Em QA local de rede/CPU emulados, o href recebeu xcod aos 1,83 s; servidor local sem compressão e SDKs externos simulados. Esse número não é uma medição do Pages. O limite e o atraso proposto precisam do aceite do Helbert antes do merge. Recepção/deduplicação nos painéis continua validação humana, não foi inferida do mock.
+
+A cobertura visual foi ampliada para **35 rotas antigas × origem/migração × 390/1440 px = 140 capturas**. Não houve imagem quebrada nem recurso local ausente no destino; as rotas jurídicas novas foram conferidas separadamente. O Font Awesome da Skills B e dos lotes V3 do Bootcamp também foi servido localmente, só com os glifos usados, para retirar a dependência de CSS remoto na abertura.

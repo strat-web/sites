@@ -45,3 +45,5 @@ Os lotes V4/V5/combo mantêm a Gobold Regular da origem, agora em `/fonts/gobold
 O vídeo de fundo do hero (V4/V5/combo) conserva o original de 1280×720 no desktop; no celular usa uma cópia de 540 px/15 fps, H.264 CRF 34, sem áudio, para não disputar banda com o primeiro quadro. O conteúdo e a duração são os mesmos.
 
 O player de vídeo abaixo da primeira dobra (V5 e combo) conserva o endereço, permissões e conteúdo, mas só recebe `src` quando entra na tela, via IntersectionObserver. Em navegador sem essa API carrega diretamente. Isso impede o player de competir com o vídeo de fundo e as fontes durante a abertura.
+
+Font Awesome 6.5.1 mantém os mesmos ícones da origem, agora com CSS e fontes locais reduzidos às classes usadas (`public/fonts/fontawesome`, licença incluída), sem download no build nem consulta ao CDN durante a abertura.

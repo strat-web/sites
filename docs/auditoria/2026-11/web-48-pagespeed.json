@@ -1,0 +1,66 @@
+{
+  "data": "2026-11-17",
+  "preview": "https://3a9eac29.academy-claude.pages.dev/",
+  "commit_preview": "eaf87e061bece296ba5a89e35b9e2f661baf9f76",
+  "estrategia": "mobile",
+  "rodadas": [
+    {
+      "rodada": 1,
+      "fetchTime": "2026-11-17T22:40:50.393Z",
+      "lcp_ms": 3194.6346857195267,
+      "performance": 89,
+      "cls": 0,
+      "tbt_ms": 58,
+      "lcp_observado_ms": 2332,
+      "rastro_inicio_ms": 2338.8219999969006,
+      "rastro_fim_ms": 2486.6050000190735
+    },
+    {
+      "rodada": 2,
+      "fetchTime": "2026-11-17T22:41:03.946Z",
+      "lcp_ms": 2101.0273891244105,
+      "performance": 98,
+      "cls": 0,
+      "tbt_ms": 124,
+      "lcp_observado_ms": 322,
+      "rastro_inicio_ms": 704.319000005722,
+      "rastro_fim_ms": 800.0089999437332
+    },
+    {
+      "rodada": 3,
+      "fetchTime": "2026-11-17T22:41:18.326Z",
+      "lcp_ms": 2673.57958333486,
+      "performance": 96,
+      "cls": 0,
+      "tbt_ms": 90,
+      "lcp_observado_ms": 1358,
+      "rastro_inicio_ms": 1365.5370000600815,
+      "rastro_fim_ms": 1605.013000011444
+    },
+    {
+      "rodada": 4,
+      "fetchTime": "2026-11-17T22:41:31.790Z",
+      "lcp_ms": 2113.055329761364,
+      "performance": 97,
+      "cls": 0,
+      "tbt_ms": 158,
+      "lcp_observado_ms": 300,
+      "rastro_inicio_ms": 340.09099996089935,
+      "rastro_fim_ms": 675.0449999570847
+    },
+    {
+      "rodada": 5,
+      "fetchTime": "2026-11-17T22:41:45.538Z",
+      "lcp_ms": 2109.5355940487043,
+      "performance": 94,
+      "cls": 0,
+      "tbt_ms": 250.5,
+      "lcp_observado_ms": 234,
+      "rastro_inicio_ms": 244.1029999256134,
+      "rastro_fim_ms": 560.0399999022484
+    }
+  ],
+  "mediana_lcp_ms": 2113.055329761364,
+  "criterio": "mediana de cinco rodadas < 2500 ms",
+  "passou": true
+}

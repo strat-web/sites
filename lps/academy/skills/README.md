@@ -14,3 +14,5 @@ O rodapé da principal conserva os popups de política e termos; os links vazios
 Desenvolvimento: `pnpm --filter @strat/skills dev`; build: `pnpm --filter @strat/skills build`; testes: `pnpm --filter @strat/skills test`.
 
 DNS ainda na origem. Só virar com o “pode virar” do Helbert no Plane.
+
+Font Awesome 6.5.1 mantém os mesmos ícones da origem, agora com CSS e fontes locais reduzidos às classes usadas (`public/fonts/fontawesome`, licença incluída), sem download no build nem consulta ao CDN durante a abertura.
