@@ -24,12 +24,19 @@ const CARREGADOR = String.raw`(function carregarRastroAposPintura(w, d) {
     var paints = w.performance && w.performance.getEntriesByType ? w.performance.getEntriesByType('paint') : [];
     if (paints.some(function (p) { return p.name === 'first-contentful-paint'; })) { carregar(); return; }
     if (typeof w.PerformanceObserver === 'function' && w.PerformanceObserver.supportedEntryTypes && w.PerformanceObserver.supportedEntryTypes.indexOf('paint') !== -1) {
-      observador = new w.PerformanceObserver(function (lista) {
+      try {
+        observador = new w.PerformanceObserver(function (lista) {
         if (lista.getEntries().some(function (p) { return p.name === 'first-contentful-paint'; })) carregar();
       });
       observador.observe({ type: 'paint', buffered: true });
-      d.addEventListener('visibilitychange', function () { if (d.visibilityState === 'hidden') carregar(); }, { once: true });
-    } else if (typeof w.requestAnimationFrame === 'function') {
+        d.addEventListener('visibilitychange', function () { if (d.visibilityState === 'hidden') carregar(); }, { once: true });
+        return;
+      } catch (e) {
+        if (observador) observador.disconnect();
+        observador = null;
+      }
+    }
+    if (typeof w.requestAnimationFrame === 'function') {
       w.requestAnimationFrame(function () { w.requestAnimationFrame(carregar); });
     } else carregar();
   }

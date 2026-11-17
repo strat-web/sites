@@ -50,3 +50,14 @@ test('Paint Timing: FCP já registrado inicia sem esperar outro quadro',()=>{
   const d={readyState:'complete',visibilityState:'visible',currentScript:{getAttribute:()=>'/sa?product=quaia'},createElement:()=>({}),head:{appendChild:s=>scripts.push(s)}};
   runInNewContext(scriptDoRastroAposPintura(),{window:w,document:d});assert.equal(scripts.length,1);
 });
+
+
+test('Paint Timing anunciado mas incompatível cai nos quadros, sem perder o Rastro',()=>{
+  const scripts=[],quadros=[];
+  function Observer(){this.observe=()=>{throw new TypeError('buffered indisponível');};this.disconnect=()=>{};}
+  Observer.supportedEntryTypes=['paint'];
+  const w={PerformanceObserver:Observer,performance:{getEntriesByType:()=>[]},requestAnimationFrame:cb=>quadros.push(cb)};
+  const d={readyState:'complete',visibilityState:'visible',currentScript:{getAttribute:()=>'/sa?product=quaia'},createElement:()=>({}),head:{appendChild:s=>scripts.push(s)},addEventListener:()=>{}};
+  runInNewContext(scriptDoRastroAposPintura(),{window:w,document:d});assert.equal(scripts.length,0);
+  quadros.shift()();quadros.shift()();assert.equal(scripts.length,1);
+});
