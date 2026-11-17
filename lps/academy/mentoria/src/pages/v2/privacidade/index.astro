@@ -1,10 +1,10 @@
 ---
 // Rota jurídica já existente no Router da V2; agora também tem entrada estática no Pages (WEB-48).
 import Layout from '@strat/kit/Layout.astro';
-import head from '../../../html/v2.head.html?raw';
+import head from '../../../html/legal.head.html?raw';
+import corpo from '../../../html/legal-privacidade.corpo.html?raw';
 ---
 <Layout marca="academy" perfil="conteudo" indexar={false} titulo="Pol\u00edtica de Privacidade | Strat Academy" descricao="Política de Privacidade da Mentoria Strat Academy, preservados do aplicativo original.">
   <Fragment slot="head" set:html={head} />
-  <script is:inline>document.body.className='bg-background text-on-surface antialiased overflow-x-hidden'</script>
-  <div id="root"><h1>Política de Privacidade</h1></div>
+  <Fragment set:html={corpo} />
 </Layout>

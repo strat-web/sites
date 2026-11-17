@@ -2,7 +2,7 @@
 
 <!-- ============ 1. HERO ============ -->
 <section class="hero-sec" style="position:relative;min-height:100vh;display:flex;flex-direction:column;overflow:hidden;background:#000;">
-  <video class="hero-video" src="/images/v4/hero.mp4" poster="/images/v4/hero-poster.jpg" autoplay muted loop playsinline preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></video>
+  <video class="hero-video" poster="/images/v4/hero-poster.webp" autoplay muted loop playsinline preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"><source src="/images/v4/hero-mobile.mp4" type="video/mp4" media="(max-width:767px)"><source src="/images/v4/hero.mp4" type="video/mp4"></video>
   <div class="hero-overlay" style="position:absolute;inset:0;background:linear-gradient(90deg, rgba(0,0,0,.9) 0%, rgba(0,0,0,.6) 42%, rgba(0,0,0,.1) 75%), linear-gradient(0deg, rgba(0,0,0,.85) 0%, rgba(0,0,0,0) 35%);"></div>
   <!-- nav -->
   <nav class="hero-nav" style="display:flex;align-items:center;justify-content:space-between;padding:28px 56px;position:relative;z-index:5;">
@@ -61,7 +61,7 @@
     </div>
     <div class="moldura">
       <iframe
-        src="https://iframe.mediadelivery.net/embed/717246/5b38b185-8f27-4584-adf8-3559875ec0ce?autoplay=true&amp;muted=true&amp;preload=true&amp;responsive=true"
+        data-strat-video-src="https://iframe.mediadelivery.net/embed/717246/5b38b185-8f27-4584-adf8-3559875ec0ce?autoplay=true&amp;muted=true&amp;preload=true&amp;responsive=true"
         loading="lazy"
         title="Bootcamp Construtor de IA"
         allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;"
@@ -403,3 +403,14 @@
 
 
 <!-- Metricaas Tag — pageview, sessão, UTM/fbclid/gclid e eventos data-mtc-event. -->
+
+<!-- O player abaixo da primeira dobra só inicia quando chega à tela; o vídeo de fundo continua automático. -->
+<script>
+(function(){
+  var frames=document.querySelectorAll('iframe[data-strat-video-src]');
+  function carregar(frame){frame.src=frame.getAttribute('data-strat-video-src');frame.removeAttribute('data-strat-video-src');}
+  if(!('IntersectionObserver' in window)){frames.forEach(carregar);return;}
+  var observer=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){carregar(entry.target);observer.unobserve(entry.target);}});});
+  frames.forEach(function(frame){observer.observe(frame);});
+})();
+</script>

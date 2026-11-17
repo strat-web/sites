@@ -46,3 +46,7 @@ As mesmas famílias e pesos da origem são servidos pelo Pages, sem CSS de fonts
 `/v2/termos/` e `/v2/privacidade/` agora têm entrada estática e linha no catálogo (conteudo, noindex), usando o conteúdo já existente no Router do app. Os links do rodapé apontam para essas rotas; `/termos` e `/privacidade` redirecionam com 301. Os vídeos da seção de depoimentos usam `loading="lazy"` para não disputar rede com o primeiro quadro.
 
 Três ilustrações remotas dos cards já retornam erro na origem. O app preserva a URL original e usa a marca oficial (`/logos/Logo.svg`) como fallback caso o download falhe; nenhum retrato ou depoimento foi substituído.
+
+O bloco do título da V2 inicia sua animação em opacidade 0,01 (antes 0), com a mesma duração, posição e estado final. Isso permite contar a primeira pintura do texto sem esperar o fade completo.
+
+As duas páginas jurídicas foram renderizadas do app original e guardadas como HTML estático (`legal-*.corpo.html`), com o mesmo CSS e as mesmas fontes. Assim, termos e privacidade não precisam baixar nem executar o aplicativo React para serem lidos. O texto não foi reescrito.

@@ -15,7 +15,7 @@
 
       <div class="player">
         <iframe
-          src="https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_ID?autoplay=false&loop=false&muted=false&preload=true&responsive=true"
+          data-strat-video-src="https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_ID?autoplay=false&loop=false&muted=false&preload=true&responsive=true"
           loading="eager"
           allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
           allowfullscreen></iframe>
@@ -60,6 +60,17 @@
   <footer>
     <p>Copyright © Strat Academy — 2026. Todos os direitos reservados.</p>
     <p>Este site não é afiliado ao Facebook, ao Instagram ou à Meta Inc.</p>
-  
+
   <div style="text-align:center;padding:12px"><a href="https://stratacademy.com.br/politica-de-privacidade/" style="text-decoration:underline;font-size:14px">Política de Privacidade</a></div>
 </footer>
+
+<!-- O player abaixo da primeira dobra só inicia quando chega à tela; o vídeo de fundo continua automático. -->
+<script>
+(function(){
+  var frames=document.querySelectorAll('iframe[data-strat-video-src]');
+  function carregar(frame){frame.src=frame.getAttribute('data-strat-video-src');frame.removeAttribute('data-strat-video-src');}
+  if(!('IntersectionObserver' in window)){frames.forEach(carregar);return;}
+  var observer=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){carregar(entry.target);observer.unobserve(entry.target);}});});
+  frames.forEach(function(frame){observer.observe(frame);});
+})();
+</script>

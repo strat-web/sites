@@ -44,3 +44,7 @@ conferidos. Medições no PR do WEB-48.
 ## Fontes locais (WEB-48)
 
 As mesmas famílias e pesos da origem são servidos pelo Pages, sem CSS de fonts.googleapis.com na primeira pintura. Na Mentoria V2, o arquivo Material Symbols foi reduzido aos ícones usados, preservando as ligaturas e variações. Esta mudança reduz bloqueio de renderização e trocas de tamanho do texto sem alterar a tipografia.
+
+## Fontes e variantes no celular
+
+Clash Grotesk Semibold/Bold e Geist mantêm os desenhos e métricas da origem, com subconjuntos Latin locais e preload das três fontes usadas na primeira dobra. Isso evita a troca de tamanho do título e o deslocamento do hero. As variantes V1 e V3 também recebem cópia de 720 px do hero no celular; o recurso original continua no desktop. Fonte do critério de LCP: comentário do Helbert na WEB-48 em 12/11/2026.
