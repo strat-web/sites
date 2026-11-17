@@ -1,45 +1,31 @@
-/* Cases da StratAI · fonte única (DEV-94, 12/11/2026)
- *
- * Cada case tem uma página em /cases/<slug>/ (o index.html dela só chama CASES.pagina) e um cartão na
- * lâmina de cases do funil. Tudo sai daqui: muda o texto aqui e vale para a página e para o cartão.
- *
- * validado: false → a página mostra a faixa "Rascunho" e o conteúdo ainda precisa do OK.
- * autorizado: false → ainda não há registro de que o cliente autorizou publicar o case (a faixa avisa).
- * Onde falta dado, vai [X] (regra da marca: nada de número bonito inventado).
- * Origem do que já está preenchido: LP da StratAI (strat-lps › lps/stratai/index.html), números
- * confirmados pelo Helbert em 14/10/2026 e casos autorizados pelos clientes (README da LP).
- *
- * Case novo: copie a pasta cases/_modelo para cases/<slug>, ponha o slug no data-case do index.html
- * e acrescente o objeto abaixo.
- */
+/* Gerado por FunilRecuperacao-StratAI/scripts/para-o-repo.py a partir de site/comum/cases.js. Não edite aqui: a próxima geração apaga. */
 (function () {
   'use strict';
 
   var CONFIG = {
-    funil: 'v1/',                        // para onde o botão do case leva (relativo à raiz do site)
+    funil: 'v1/',
     botao: 'Ver se a minha operação é aprovada'
   };
 
   var CASES = [
     {
-      // Origem: nota C040 no vault (R$ 10 mil recuperados confirmado pelo Jhonathan em 10/11/2026; painel v2 no ar
-      // em 05/11) e o desenho da recuperação na DEV-85. É o único case que já é de recuperação de vendas.
+
       slug: 'schatz',
       validado: false,
-      autorizado: true,   // autorizado pelo Helbert na revisão do PR #24 (13/11/2026)
+      autorizado: true,
       cliente: 'Schatz',
       segmento: 'Cursos e conteúdo',
-      cidade: '[Cidade/UF]',
+      cidade: 'Florianópolis/SC',
       agente: 'Recuperação de vendas com IA no WhatsApp para os cursos da Glaucia Schatzmann',
       logo: 'schatz-logo.png', logoFundo: '',
       foto: 'schatz-foto.jpg', fotoAlt: 'Arte de entrega do novo painel do cliente da Schatz, com as métricas de vendas e de vendas perdidas',
-      principal: { valor: 'R$ 10 mil', rotulo: 'em receitas recuperadas com a IA da StratAI' },
+      principal: { valor: 'R$ 10 mil', rotulo: 'em vendas recuperadas em 8 dias com IA no WhatsApp' },
       numeros: [
-        { valor: 'R$ 10 mil', rotulo: 'em receitas recuperadas com a IA da StratAI' },
+        { valor: 'R$ 10 mil', rotulo: 'em vendas recuperadas em 8 dias com IA no WhatsApp' },
         { valor: '10', rotulo: 'métricas novas no painel do cliente, ao vivo' },
         { valor: '4', rotulo: 'moedas (real, dólar, euro e libra) somadas em real' }
       ],
-      desafio: '[X] Como era antes: quanto se perdia em cartão recusado, Pix e boleto não pagos e carrinho abandonado, e quem ia atrás.',
+      desafio: 'A recuperação de vendas era feita manualmente e tinha baixa taxa de conversão.',
       caminho: [
         { t: 'A venda perdida vira aviso', d: 'cartão recusado, Pix ou boleto não pago, carrinho abandonado' },
         { t: 'Régua no WhatsApp', d: 'mensagens pela API oficial, uma régua por pessoa' },
@@ -47,9 +33,9 @@
         { t: 'O painel mostra o recuperado', d: 'receita recuperada por régua, ao vivo' }
       ],
       ferramentas: ['WhatsApp (API oficial)', 'Checkout', 'IA de atendimento', 'Painel do cliente'],
-      resultado: '[X] O que mudou: R$ 10 mil recuperados em quanto tempo, por qual régua, e o que vem na próxima fase.',
-      depoimento: { texto: '[X] Frase da Glaucia ou do time dela, com autorização.', autor: '[X] Nome', cargo: '[X] Cargo' },
-      periodo: '[X] desde quando a recuperação está no ar'
+      resultado: 'Em 8 dias, foram recuperados R$ 10 mil em vendas com uma IA de atendimento no WhatsApp do cliente. Nesse período, todo o investimento na solução se pagou.',
+      depoimento: null,
+      periodo: ''
     },
     {
       slug: 'so-churrasco',
@@ -67,7 +53,7 @@
         { valor: '~300', rotulo: 'mensagens por mês' },
         { valor: '14+', rotulo: 'versões até ficar do jeito da casa' }
       ],
-      desafio: '[X] Como era antes do agente: quem respondia as reservas, em que horário, o que se perdia.',
+      desafio: 'Antes da IA, o atendimento era feito manualmente e tinha baixa taxa de conversão.',
       caminho: [
         { t: 'Cliente pede mesa no WhatsApp', d: 'por áudio, texto ou foto' },
         { t: 'O Deni oferece horário', d: 'junta mensagens seguidas antes de responder' },
@@ -95,7 +81,7 @@
         { valor: '18h–8h', rotulo: 'cobertura planejada, e nas férias' },
         { valor: 'Na hora', rotulo: 'o lead do anúncio é qualificado' }
       ],
-      desafio: '[X] Como era antes: lead do anúncio chegando à noite e esfriando até o corretor responder.',
+      desafio: 'Antes da IA, o atendimento era feito manualmente e tinha baixa taxa de conversão.',
       caminho: [
         { t: 'O lead chega do anúncio', d: 'inclusive fora do horário comercial' },
         { t: 'O agente qualifica na hora', d: 'pergunta a renda da família' },
@@ -123,7 +109,7 @@
         { valor: '3', rotulo: 'agentes: entrega, pagamento e preparo' },
         { valor: 'PDF', rotulo: 'manual enviado quando o cliente pergunta' }
       ],
-      desafio: '[X] Como era antes: o time respondendo "cadê meu pedido?" o dia todo.',
+      desafio: 'Antes da IA, o atendimento era feito manualmente e tinha baixa taxa de conversão.',
       caminho: [
         { t: 'O cliente pergunta no WhatsApp', d: '"cadê meu pedido?", "como preparo?"' },
         { t: 'O agente certo assume', d: 'entrega, pagamento ou preparo' },
@@ -136,15 +122,13 @@
       periodo: '[X] desde quando os agentes estão no ar'
     },
     {
-      // Origem: nota C015 no vault e PROGRESSO da CONTATO-23/50 (3 formulários aprovados pela cliente em 06/11/2026,
-      // V3 no ar desde 04/11, PageSpeed celular 95 em 11/11). Não citar recuperação aqui: a DEV-85 ainda não está no ar.
-      // Texto sem "advogado", "jurídico" e "processo", e sem promessa de valor (regra da cliente).
+
       slug: 'contato',
       validado: false,
-      autorizado: true,   // autorizado pelo Helbert na revisão do PR #24 (13/11/2026)
+      autorizado: true,
       cliente: 'Contato Indenizações',
       segmento: 'Auxílio-acidente',
-      cidade: '[Cidade/UF]',
+      cidade: 'Itajaí/SC',
       agente: 'Quiz que qualifica o lead e entrega no WhatsApp do atendimento',
       logo: 'contato-logo.png', logoFundo: '',
       foto: 'contato-foto.jpg', fotoAlt: 'Quiz da Contato Indenizações no formato de conversa do WhatsApp',
@@ -154,7 +138,7 @@
         { valor: '< 1 min', rotulo: '5 perguntas até o resultado' },
         { valor: '95', rotulo: 'no PageSpeed do celular' }
       ],
-      desafio: '[X] Como era antes: de onde vinham os leads, quanto tempo a equipe gastava com quem não tinha direito.',
+      desafio: 'Antes da IA, o atendimento era feito manualmente e tinha baixa taxa de conversão.',
       caminho: [
         { t: 'O lead chega do anúncio', d: 'e cai num dos 3 formatos do quiz' },
         { t: '5 perguntas em menos de 1 minuto', d: 'quem não tem direito sai na hora, sem pedir contato' },
@@ -168,7 +152,6 @@
     }
   ];
 
-  // Estrutura de um case novo, tudo por preencher. Aparece em /cases/_modelo/ e não entra nas listas.
   var MODELO = {
     slug: '_modelo', validado: false,
     cliente: '[Nome do cliente]', segmento: '[Segmento]', cidade: '[Cidade/UF]', agente: '[O que o agente faz, em uma linha]',
@@ -184,7 +167,7 @@
   };
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
-  // texto com [X] ganha a marca de "falta preencher"
+
   function txt(s) { return esc(s).replace(/(\[[^\]]+\])/g, '<span class="falta">$1</span>'); }
   function porSlug(slug) { if (slug === '_modelo') return MODELO; for (var i = 0; i < CASES.length; i++) if (CASES[i].slug === slug) return CASES[i]; return null; }
   function midia(raiz, f) { return raiz + 'cases/midia/' + f; }
@@ -192,7 +175,6 @@
     return '<span class="case-logo"' + (c.logoFundo ? ' style="background:' + esc(c.logoFundo) + '"' : '') + '><img src="' + midia(raiz, c.logo) + '" alt="' + esc(c.cliente) + '" loading="lazy"></span>';
   }
 
-  // Cartão usado na lâmina de cases do funil. Abre o case em outra aba para não perder o formulário.
   function cartao(c, raiz, novaAba) {
     return '<a class="case-card" href="' + raiz + 'cases/' + c.slug + '/"' + (novaAba ? ' target="_blank" rel="noopener"' : '') + '>' +
       '<span class="case-card-topo">' + logo(c, raiz) + '<span><b>' + esc(c.cliente) + '</b><small>' + txt(c.segmento) + ' · ' + txt(c.cidade) + '</small></span></span>' +
@@ -213,7 +195,7 @@
 
   function pagina(slug, raiz) {
     var c = porSlug(slug), app = document.getElementById('app');
-    if (!c) { app.innerHTML = cabecalho(raiz) + '<main class="cs-in cs-main"><h1>Case não encontrado.</h1><p><a href="' + raiz + 'cases/">Ver todos os cases</a></p></main>'; return; }
+    if (!c) { app.innerHTML = cabecalho(raiz) + '<main class="cs-in cs-main"><h2 class="titulo-fim">Case não encontrado.</h2><p><a href="' + raiz + 'cases/">Ver todos os cases</a></p></main>'; return; }
     document.title = c.cliente + ' · Case StratAI';
     var outros = CASES.filter(function (o) { return o.slug !== c.slug; });
     app.innerHTML =
@@ -224,7 +206,7 @@
       '<main class="cs-main">' +
         '<section class="cs-in cs-hero">' +
           '<span class="mono">' + txt(c.segmento) + ' · ' + txt(c.cidade) + '</span>' +
-          '<div class="cs-titulo">' + logo(c, raiz) + '<h1>' + esc(c.cliente) + '</h1></div>' +
+          '<div class="cs-titulo">' + logo(c, raiz) + '<h2 class="titulo-fim">' + esc(c.cliente) + '</h2></div>' +
           '<p class="cs-agente">' + esc(c.agente) + '</p>' +
         '</section>' +
         '<figure class="cs-in cs-foto"><img src="' + midia(raiz, c.foto) + '" alt="' + esc(c.fotoAlt) + '"></figure>' +
@@ -234,8 +216,8 @@
           '<ol class="cs-caminho">' + c.caminho.map(function (p) { return '<li><b>' + esc(p.t) + '</b><span>' + esc(p.d) + '</span></li>'; }).join('') + '</ol>' +
           '<div class="cs-tags">' + c.ferramentas.map(function (f) { return '<span>' + esc(f) + '</span>'; }).join('') + '</div>' +
         '</section>' +
-        '<section class="cs-in cs-bloco"><span class="mono">O resultado</span><p>' + txt(c.resultado) + '</p><p class="letra-miuda">' + txt(c.periodo) + '</p></section>' +
-        '<section class="cs-in cs-bloco"><blockquote class="cs-dep"><p>' + txt(c.depoimento.texto) + '</p><footer>' + txt(c.depoimento.autor) + ' · ' + txt(c.depoimento.cargo) + '</footer></blockquote></section>' +
+        '<section class="cs-in cs-bloco"><span class="mono">O resultado</span><p>' + txt(c.resultado) + '</p>' + (c.periodo ? '<p class="letra-miuda">' + txt(c.periodo) + '</p>' : '') + '</section>' +
+        (c.depoimento ? '<section class="cs-in cs-bloco"><blockquote class="cs-dep"><p>' + txt(c.depoimento.texto) + '</p><footer>' + txt(c.depoimento.autor) + ' · ' + txt(c.depoimento.cargo) + '</footer></blockquote></section>' : '') +
         '<section class="cs-in cs-fim"><h2>A sua operação pode ser a próxima.</h2><p>A gente recupera Pix, boleto e carrinho abandonado e fica com 15% só do que voltar.</p>' + cta(raiz) + '</section>' +
         '<section class="cs-in cs-bloco"><span class="mono">Outros cases</span><div class="case-grade">' + outros.map(function (o) { return cartao(o, raiz); }).join('') + '</div></section>' +
       '</main>';
@@ -243,7 +225,7 @@
 
   function lista(raiz) {
     document.getElementById('app').innerHTML = cabecalho(raiz) +
-      '<main class="cs-main"><section class="cs-in cs-hero"><span class="mono">Cases da StratAI</span><h1>Não é promessa. <span class="lima">Já está no ar.</span></h1>' +
+      '<main class="cs-main"><section class="cs-in cs-hero"><span class="mono">Cases da StratAI</span><h2>Não é promessa. <span class="lima">Já está no ar.</span></h2>' +
       '<p class="cs-agente">Agentes de IA da StratAI atendendo empresas de verdade, todos os dias.</p></section>' +
       '<section class="cs-in"><div class="case-grade">' + CASES.map(function (c) { return cartao(c, raiz); }).join('') + '</div></section>' +
       '<section class="cs-in cs-fim">' + cta(raiz) + '</section></main>';

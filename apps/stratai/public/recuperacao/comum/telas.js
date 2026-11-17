@@ -1,16 +1,9 @@
-/* Motor de telas (V1 e V4). Uma pergunta por tela → 2 lâminas → formulário → fim.
- *   TELAS.iniciar({ versao: 'v1' })                    fim = "seu perfil entrou em análise"
- *   TELAS.iniciar({ versao: 'v4', fimComAgenda: true }) fim = análise + compra rápida + agenda com o Helbert
- * Texto e regras: funil.js. Desenho das lâminas: laminas.js.
- */
+/* Gerado por FunilRecuperacao-StratAI/scripts/para-o-repo.py a partir de site/comum/telas.js. Não edite aqui: a próxima geração apaga. */
 (function () {
   'use strict';
   var SETA_A = '<svg class="seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
   function escA(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 
-  // HTML da abertura, sem depender da página: o gerador do repositório (scripts/para-o-repo.py) escreve este mesmo
-  // HTML no build (data-pre="abertura"), para a primeira tela pintar antes do JS (LCP). O título é <h2>: a V1 e a V4
-  // têm a mesma abertura, e o <h1> único de cada página fica no HTML da página.
   function aberturaHTML(F) {
     var A = F.ABERTURA;
     return '<div class="abertura tela">' +
@@ -29,7 +22,7 @@
     var app = document.getElementById('app'), barra = document.getElementById('barra'), contador = document.getElementById('contador'), btnRe = document.getElementById('reiniciar');
     var SETA = '<svg class="seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
     var N = F.PERGUNTAS.length, LETRAS = 'ABCDE';
-    var TOTAL = N + 3; // perguntas + 2 lâminas + formulário
+    var TOTAL = N + 3;
     function novo() { return { tela: 'abertura', i: 0, r: {}, contato: {} }; }
     var st = F.carregar(VERSAO) || novo();
     if (st.tela === 'analise' || st.tela === 'saida') st = novo();
@@ -56,7 +49,7 @@
 
     function abertura() {
       if (app.getAttribute('data-pre') === 'abertura') {
-        // a abertura já veio pronta no HTML: não redesenha (a primeira pintura conta para o LCP), só liga o botão
+
         app.removeAttribute('data-pre'); progresso();
       } else {
         montar(aberturaHTML(F));
@@ -131,7 +124,7 @@
       );
       var form = document.getElementById('form');
       form.whatsapp.addEventListener('input', function () { form.whatsapp.value = F.mascaraTelefone(form.whatsapp.value); });
-      form.addEventListener('input', function (e) { st.contato[e.target.name] = e.target.value; guardar(); });
+      form.addEventListener('input', function (e) { st.contato[e.target.name] = e.target.value; });
       document.getElementById('voltar').addEventListener('click', function () { ir('lamina2'); });
       form.addEventListener('submit', function (e) {
         e.preventDefault();
@@ -150,7 +143,7 @@
         F.enviarLead(VERSAO, st.r, st.contato).then(function (res) {
           st.protocolo = res.codigo; st.tela = 'analise'; render(); F.apagar(VERSAO);
         }, function () {
-          // Falhou: as respostas ficam (nada é apagado), o aviso aparece acima do botão e ele vira "Tentar de novo".
+
           b.insertAdjacentHTML('beforebegin', F.erroEnvioHTML().replace('<div ', '<div id="erro-envio" '));
           b.disabled = false; b.innerHTML = esc(F.ERRO_ENVIO.botao) + SETA;
         });
@@ -162,7 +155,7 @@
       var html =
         '<div class="fim tela">' +
           '<span class="mono status"><span class="ponto"></span>' + esc(A.rotulo) + '</span>' +
-          '<h1>' + esc(A.titulo) + '</h1>' +
+          '<h2 class="titulo-fim">' + esc(A.titulo) + '</h2>' +
           '<p style="font-size:18px;color:var(--ink-2)">' + esc(A.texto(nome)) + '</p>' +
           '<p class="garantia">' + esc(A.prazo(st.contato.whatsapp)) + '</p>';
       if (OPC.fimComAgenda) {
@@ -181,7 +174,7 @@
       var S = F.SAIDAS[st.saida];
       montar(
         '<div class="fim tela">' +
-          '<span class="mono">Resultado</span><h1>' + esc(S.titulo) + '</h1>' +
+          '<span class="mono">Resultado</span><h2 class="titulo-fim">' + esc(S.titulo) + '</h2>' +
           '<p style="font-size:18px;color:var(--ink-2)">' + esc(S.texto) + '</p>' +
           '<div class="acao"><a class="btn btn-fantasma" href="' + esc(S.cta.url) + '">' + esc(S.cta.texto) + SETA + '</a></div>' +
         '</div>'

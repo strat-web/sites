@@ -165,3 +165,102 @@ test('cases montam sem carregar o motor de perguntas do funil', () => {
     assert.match(app.innerHTML, /v1\//);
   }
 });
+
+// Regras com teste (revisão do Helbert no PR #24, itens "para depois"): classificação, estimativa, validação e o que
+// fica guardado no navegador. O funil.js roda num contexto isolado, com um localStorage de mentira.
+const R = {
+  A: { canal: 'plataforma', faturamento: '100a500', conversao: 'menos5', hoje: 'nada', volume: '200a1000', ticket: '500a2000', acordo: 'sim' },
+  C: { canal: 'whatsapp', faturamento: 'ate20', conversao: '8mais', hoje: 'ferramenta', volume: 'ate50', ticket: 'ate100', acordo: 'entender' },
+  B: { canal: 'loja', faturamento: '20a100', conversao: 'naosei', hoje: 'time', volume: 'naosei', ticket: '100a500', acordo: 'sim' }
+};
+function carregarFunil() {
+  const loja = {};
+  const ctx = {
+    location: { hostname: 'teste', search: '' },
+    localStorage: { getItem: (k) => (k in loja ? loja[k] : null), setItem: (k, v) => { loja[k] = String(v); }, removeItem: (k) => { delete loja[k]; } }
+  };
+  ctx.window = ctx;
+  runInNewContext(ler(join(PUB, 'comum/funil.js')), ctx);
+  return { F: ctx.window.FUNIL, loja };
+}
+
+test('classificar: A, B e C pelos pontos, e operação pequena é sempre C', () => {
+  const { F } = carregarFunil();
+  assert.equal(F.classificar(R.A).classe, 'A');
+  assert.equal(F.classificar(R.B).classe, 'B');
+  assert.equal(F.classificar(R.C).classe, 'C');
+  assert.equal(F.classificar(R.A).pontos, F.classificar(R.A).maximo, 'o caminho A soma o máximo');
+  assert.equal(F.classificar({ ...R.A, faturamento: 'ate20' }).classe, 'C', 'faturamento até 20 mil');
+  assert.equal(F.classificar({ ...R.A, volume: 'ate50', ticket: 'ate100' }).classe, 'C', 'pouco volume e ticket baixo');
+  assert.equal(F.classificar({}).classe, 'C', 'sem resposta');
+});
+
+test('estimar: vendas paradas × ticket médio × 8% a 15%, e nada de número quando falta faixa', () => {
+  const { F } = carregarFunil();
+  assert.equal(F.CONFIG.recuperacaoMin, 0.08, 'a página promete 8%');
+  assert.equal(F.CONFIG.recuperacaoMax, 0.15, 'a página promete 15%');
+  const e = F.estimar(R.A);
+  assert.equal(e.parado, e.vendas * e.ticket);
+  assert.equal(e.min, e.parado * 0.08);
+  assert.equal(e.max, e.parado * 0.15);
+  const semVolume = F.estimar(R.B); // "não sei dizer" no volume
+  assert.equal(semVolume.parado, null);
+  assert.equal(semVolume.min, null);
+  assert.equal(F.dinheiro(null), '[X]', 'sem número, a tela mostra [X]');
+});
+
+test('validar: nome, WhatsApp com DDD, e-mail e site ou @ da empresa', () => {
+  const { F } = carregarFunil();
+  assert.equal(F.validar('nome', 'Ana Souza'), '');
+  assert.notEqual(F.validar('nome', 'A'), '');
+  assert.notEqual(F.validar('nome', 'Ana 2'), '', 'nome com número');
+  assert.equal(F.validar('whatsapp', '(47) 99999-8888'), '');
+  assert.equal(F.validar('whatsapp', '+55 47 3333-4444'), '', 'fixo com o 55 na frente');
+  assert.notEqual(F.validar('whatsapp', '4799'), '');
+  assert.equal(F.validar('email', 'ana@empresa.com.br'), '');
+  assert.equal(F.validar('email', 'ana@gmail.con'), '', 'o erro comum de domínio é corrigido antes');
+  assert.equal(F.corrigirEmail(' Ana@Gmail.con '), 'ana@gmail.com');
+  assert.notEqual(F.validar('email', 'ana@empresa'), '');
+  assert.equal(F.validar('empresa', '@lojaana'), '');
+  assert.notEqual(F.validar('empresa', 'ab'), '');
+  assert.equal(F.mascaraTelefone('47999998888'), '(47) 99999-8888');
+});
+
+test('o navegador guarda só as respostas: nome, WhatsApp, e-mail e empresa nunca vão para o localStorage', () => {
+  const { F, loja } = carregarFunil();
+  F.salvar('v1', { tela: 'contato', r: R.A, contato: { nome: 'Ana Souza', whatsapp: '(47) 99999-8888', email: 'ana@empresa.com.br', empresa: '@lojaana' } });
+  F.salvar('v3', { fase: 'campo', r: R.A, contato: { nome: 'Ana Souza' }, hist: [{ de: 'eu', html: 'Loja virtual' }, { de: 'eu', html: 'Ana Souza', p: 1 }] });
+  const tudo = JSON.stringify(loja);
+  for (const dado of ['Ana Souza', '99999-8888', 'ana@empresa', '@lojaana']) assert.ok(!tudo.includes(dado), `vazou: ${dado}`);
+  assert.match(tudo, /Loja virtual/, 'a conversa antes do contato continua guardada');
+  const v1 = F.carregar('v1');
+  // JSON: o objeto vem de outro contexto (vm), e o deepEqual estrito compara o protótipo
+  assert.equal(JSON.stringify(v1.r), JSON.stringify(R.A), 'as respostas voltam');
+  assert.equal(JSON.stringify(v1.contato), '{}', 'o contato volta vazio');
+  // a V3 marca as mensagens da fase de contato (e do fim, que cita o nome) para não irem ao navegador
+  const conversa = ler(join(PUB, 'comum/conversa.js'));
+  assert.match(conversa, /FASES_CONTATO = \{ contato: 1, campo: 1, confirmar: 1, enviando: 1, fim: 1 \}/);
+  for (const f of ['telas.js', 'raiox.js']) assert.doesNotMatch(ler(join(PUB, 'comum', f)), /st\.contato\[e\.target\.name\] = e\.target\.value; guardar\(\)/, `${f}: não salva a cada tecla`);
+});
+
+test('títulos montados por JS são <h2>: o <h1> único de cada página fica no HTML', () => {
+  for (const f of comum) assert.doesNotMatch(ler(join(PUB, 'comum', f)), /<h1[\s>]/, f);
+});
+
+test('o carrossel só anima enquanto está na tela', () => {
+  const laminas = ler(join(PUB, 'comum/laminas.js'));
+  assert.match(laminas, /new IntersectionObserver\(/);
+  assert.doesNotMatch(laminas, /requestAnimationFrame\(orbitar\)/, 'o laço antigo, que rodava para sempre');
+});
+
+test('arquivos gerados: cabeçalho "Gerado por" e nenhum comentário interno servido ao navegador', () => {
+  const comuns = readdirSync(join(PUB, 'comum')).filter((f) => /\.(js|css)$/.test(f));
+  for (const f of comuns) {
+    const txt = ler(join(PUB, 'comum', f));
+    assert.match(txt.split('\n')[0], /^\/\* Gerado por FunilRecuperacao-StratAI\/scripts\/para-o-repo\.py/, `${f}: cabeçalho`);
+    assert.doesNotMatch(txt.slice(txt.indexOf('*/') + 2), /\/\*|(^|[^:'"])\/\/(?![\w.-]+\.\w)/m, `${f}: comentário depois do cabeçalho`);
+  }
+  for (const f of arquivosDoFunil()) {
+    assert.doesNotMatch(ler(f), /vault|C0\d\d\b|CONTATO-\d|plaquinha|DEV-\d|TRACK-\d|pedido do Jhonathan/i, `${f}: referência interna`);
+  }
+});

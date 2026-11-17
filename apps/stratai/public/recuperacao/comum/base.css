@@ -1,9 +1,4 @@
-/* Base visual da StratAI para as 3 versões do funil (tokens do repo marcas, strat-ai 0.1.0, sha 21a9961).
-   Tema escuro é o padrão da marca. Uma ação lima por bloco. Sem caixa alta fora do rótulo mono. Sem itálico. */
-
-/* Fontes pelo próprio site, em /fontes/ (subset latin do Google Fonts, licença OFL ao lado; os mesmos arquivos da
-   /parcerias/). A folha do Google oscilava o LCP no celular na CI (revisão do PR #24, 13/11/2026). A Space Grotesk é
-   variável (400 a 700); a JetBrains Mono só tem o 500, que também serve o 400 do rótulo mono. */
+/* Gerado por FunilRecuperacao-StratAI/scripts/para-o-repo.py a partir de site/comum/base.css. Não edite aqui: a próxima geração apaga. */
 @font-face {
   font-family: "Space Grotesk"; font-style: normal; font-weight: 400 700; font-display: swap;
   src: url("/fontes/space-grotesk-latin.woff2") format("woff2");
@@ -43,7 +38,7 @@ body {
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
-/* grade fina da "sala de controle" (no body direto: o Layout do kit não deixa pôr classe nele) */
+
 body {
   background-image:
     linear-gradient(rgba(255,255,255,.028) 1px, transparent 1px),
@@ -57,6 +52,8 @@ button, input { font: inherit; color: inherit; }
 button { cursor: pointer; }
 a { color: var(--lime); }
 :focus-visible { outline: none; box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--lime); }
+
+.titulo-fim { font-size: 2em; }
 h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus { box-shadow: none; outline: none; }
 [hidden] { display: none !important; }
 
@@ -92,14 +89,14 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus { box-shadow: none; outline: no
 .campo input:focus { outline: none; border-color: var(--lime); box-shadow: 0 0 0 3px rgba(198,255,52,.16); }
 .campo input[aria-invalid="true"] { border-color: var(--err); }
 .campo .erro { color: var(--err); font-size: 14px; min-height: 0; }
-/* aviso que não pode passar batido (contato do funil) */
+
 .aviso-forte { display: grid; grid-template-columns: 26px 1fr; gap: 12px; align-items: start; margin: 0;
   padding: 16px 18px; border: 1.5px solid var(--vermelho); border-left-width: 5px; border-radius: var(--r-med);
   background: rgba(255,75,62,.10); color: var(--vermelho); font-weight: 700; font-size: 17px; line-height: 1.45; }
 .aviso-forte strong { font-weight: 700; }
 .aviso-forte svg { width: 26px; height: 26px; }
 .letra-miuda { font-size: 13px; color: var(--ink-2); line-height: 1.5; }
-/* o envio do lead falhou: as respostas ficam e dá para tentar de novo (revisão do PR #24, 13/11/2026) */
+
 .erro-envio { margin: 4px 0 14px; padding: 14px 16px; border: 1px solid var(--err); border-radius: var(--r-med);
   background: rgba(255,107,94,.08); color: var(--ink); font-size: 15px; line-height: 1.5; }
 .erro-envio strong, .msg.erro-envio b { color: var(--err); }

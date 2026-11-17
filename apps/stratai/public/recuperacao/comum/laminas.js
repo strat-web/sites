@@ -1,10 +1,4 @@
-/* Desenho das lâminas do funil (DEV-94). O TEXTO mora em funil.js (LAMINAS, AGENDA, PRODUTO_LOW) e os
- * cases em cases.js; aqui só vira HTML. Cada versão põe o botão de seguir do seu jeito.
- *   LAMINAS_UI.beneficios({ compacto })     lâmina 1: o que a gente banca
- *   LAMINAS_UI.cases({ raiz, compacto })    lâmina 2: cases (cartões abrem em outra aba)
- *   LAMINAS_UI.compraRapida()               V4: cartão do produto low ticket
- *   LAMINAS_UI.agenda({ protocolo })        V4: call com o Helbert
- */
+/* Gerado por FunilRecuperacao-StratAI/scripts/para-o-repo.py a partir de site/comum/laminas.js. Não edite aqui: a próxima geração apaga. */
 (function () {
   'use strict';
   var F = window.FUNIL;
@@ -29,11 +23,6 @@
     '</div>';
   }
 
-  // Lâmina 2: carrossel de cards em pé (9:16) em loop, que passa sozinho na tela. As métricas do cliente são o
-  // destaque. NADA é clicável aqui (pedido do Jhonathan, 12/11): o lead vê os números e segue até o formulário,
-  // sem sair da página. Para o loop não ter emenda, a lista vai duas vezes (a cópia fica escondida do leitor de
-  // tela). Passar o mouse NÃO pausa (pedido do Jhonathan); o foco do teclado e o toque pausam (WCAG 2.2.2, nível A,
-  // revisão do Helbert no PR #24, 13/11/2026). Ver "pausa do carrossel" no fim do arquivo.
   function slide(c, raiz, dup) {
     var outros = (c.numeros || []).slice(1, 3);
     return '<div class="case-slide"' + (dup ? ' aria-hidden="true"' : '') + '>' +
@@ -110,28 +99,50 @@
     '</section>';
   }
 
-  // Órbita (pedido do Jhonathan, 12/11): enquanto o trilho anda, cada card se posiciona numa curva. O do centro
-  // fica no alto e reto; os das pontas descem, giram para fora, diminuem e apagam um pouco. Não pausa com o mouse.
   var reduzido = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function orbitar() {
-    var cs = document.querySelectorAll('.carrossel');
-    for (var i = 0; i < cs.length; i++) {
-      var box = cs[i].getBoundingClientRect(), meio = box.left + box.width / 2, raio = Math.max(box.width / 2, 520); // tela estreita: curva mais suave
-      var queda = parseFloat(getComputedStyle(cs[i]).getPropertyValue('--orbita-queda')) || 96;
-      var slides = cs[i].querySelectorAll('.case-slide');
-      for (var k = 0; k < slides.length; k++) {
-        var r = slides[k].getBoundingClientRect();
-        var d = Math.max(-1.6, Math.min(1.6, (r.left + r.width / 2 - meio) / raio)); // -1 borda esquerda · 0 centro · 1 borda direita
-        var y = queda * d * d * 0.75, giro = d * 9, escala = 1 - 0.09 * Math.min(1, d * d), luz = 1 - 0.38 * Math.min(1, Math.abs(d));
-        slides[k].style.transform = 'translateY(' + y.toFixed(1) + 'px) rotate(' + giro.toFixed(2) + 'deg) scale(' + escala.toFixed(3) + ')';
-        slides[k].style.opacity = luz.toFixed(3);
-      }
+  function orbitarUm(c) {
+    var box = c.getBoundingClientRect(), meio = box.left + box.width / 2, raio = Math.max(box.width / 2, 520);
+    var queda = parseFloat(getComputedStyle(c).getPropertyValue('--orbita-queda')) || 96;
+    var slides = c.querySelectorAll('.case-slide');
+    for (var k = 0; k < slides.length; k++) {
+      var r = slides[k].getBoundingClientRect();
+      var d = Math.max(-1.6, Math.min(1.6, (r.left + r.width / 2 - meio) / raio));
+      var y = queda * d * d * 0.75, giro = d * 9, escala = 1 - 0.09 * Math.min(1, d * d), luz = 1 - 0.38 * Math.min(1, Math.abs(d));
+      slides[k].style.transform = 'translateY(' + y.toFixed(1) + 'px) rotate(' + giro.toFixed(2) + 'deg) scale(' + escala.toFixed(3) + ')';
+      slides[k].style.opacity = luz.toFixed(3);
     }
-    requestAnimationFrame(orbitar);
   }
-  if (!reduzido) requestAnimationFrame(orbitar);
 
-  // cliques de compra e agenda viram evento (sem dado pessoal) e o botão "Copiar" funciona em qualquer página
+  var naTela = [], rodando = false;
+  function passo() {
+    naTela = naTela.filter(function (c) { return c.isConnected; });
+    if (!naTela.length) { rodando = false; return; }
+    for (var i = 0; i < naTela.length; i++) orbitarUm(naTela[i]);
+    requestAnimationFrame(passo);
+  }
+  function ligar() { if (!rodando && naTela.length) { rodando = true; requestAnimationFrame(passo); } }
+  if (!reduzido && typeof document !== 'undefined') {
+    if ('IntersectionObserver' in window && 'MutationObserver' in window) {
+      var io = new IntersectionObserver(function (es) {
+        es.forEach(function (e) {
+          var i = naTela.indexOf(e.target);
+          if (!e.target.isConnected) io.unobserve(e.target);
+          if (e.isIntersecting) { if (i < 0) naTela.push(e.target); } else if (i >= 0) naTela.splice(i, 1);
+        });
+        ligar();
+      });
+      var observar = function () {
+        var cs = document.querySelectorAll('.carrossel:not([data-orbita])');
+        for (var i = 0; i < cs.length; i++) { cs[i].setAttribute('data-orbita', ''); io.observe(cs[i]); }
+      };
+      new MutationObserver(observar).observe(document.documentElement, { childList: true, subtree: true });
+      observar();
+    } else {
+
+      (function sempre() { var cs = document.querySelectorAll('.carrossel'); for (var i = 0; i < cs.length; i++) orbitarUm(cs[i]); requestAnimationFrame(sempre); })();
+    }
+  }
+
   document.addEventListener('click', function (e) {
     var a = e.target.closest && e.target.closest('[data-cta]');
     if (a) F.track('cta_click', { tipo: a.getAttribute('data-cta') });
@@ -139,9 +150,6 @@
     if (c) { try { navigator.clipboard.writeText(c.getAttribute('data-copiar')); c.textContent = 'Copiado'; } catch (err) {} }
   });
 
-  // pausa do carrossel (WCAG 2.2.2): para enquanto tem o foco do teclado; um toque pausa e outro toque solta.
-  // O último pointerdown diz quem foi: rolar a página não dispara click, e clicar ou passar o mouse não pausa.
-  // O foco só pausa quando veio do teclado (uma tecla zera o tipo do ponteiro).
   function carrosselDe(el) { return el && el.closest ? el.closest('.carrossel') : null; }
   var ultimoPonteiro = '';
   document.addEventListener('pointerdown', function (e) { ultimoPonteiro = e.pointerType || 'mouse'; }, true);

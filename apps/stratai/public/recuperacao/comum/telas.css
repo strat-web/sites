@@ -1,4 +1,4 @@
-/* Motor de telas (V1 e V4): uma pergunta por tela. */
+/* Gerado por FunilRecuperacao-StratAI/scripts/para-o-repo.py a partir de site/comum/telas.css. Não edite aqui: a próxima geração apaga. */
 .topo { position: sticky; top: 0; z-index: 5; background: rgba(25,25,25,.88); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
 .topo-in { max-width: 760px; margin: 0 auto; padding: 14px 20px; display: flex; align-items: center; gap: 14px; }
 .topo .mono.tag { display: none; }
@@ -46,7 +46,7 @@ main { max-width: 760px; margin: 0 auto; padding: 40px 20px 72px; }
 .contato .btn, .tela > .acao .btn.cheio { justify-self: stretch; }
 @media (min-width: 640px) { .contato .btn { justify-self: start; } }
 
-.fim h1 { font-size: clamp(2rem, 6vw, 3.2rem); }
+.fim .titulo-fim { font-size: clamp(2rem, 6vw, 3.2rem); }
 .status { display: inline-flex; align-items: center; gap: 10px; }
 .cartao { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-gde); padding: 20px; display: grid; gap: 14px; }
 .passos { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; counter-reset: p; }

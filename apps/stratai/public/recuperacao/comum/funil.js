@@ -1,14 +1,4 @@
-/* Funil de recuperação da StratAI · fonte única das 3 versões (DEV-94, 12/11/2026)
- *
- * Perguntas, saídas, lâminas, regras de classificação, estimativa e envio do lead moram AQUI.
- * As páginas v1/ (telas), v2/ (raio-x ao vivo), v3/ (conversa) e v4/ (telas + agenda + compra rápida)
- * só mudam a forma. Mudou texto ou regra? Muda aqui e vale para todas.
- * Cases: comum/cases.js. Desenho das lâminas: comum/laminas.js.
- *
- * Lead: MetricaaS, mtc.lead({ nome, telefone, email, campos, resultado, motivo }).
- * A tag (m.js do workspace agencia-strat, Rastro stratai) quem põe é o <Tracking> do kit do strat-web/sites, pela
- * linha da página no catálogo. Aqui só se espera por ela, e o lead só sai em *.stratai.com.br (prévia não manda nada).
- */
+/* Gerado por FunilRecuperacao-StratAI/scripts/para-o-repo.py a partir de site/comum/funil.js. Não edite aqui: a próxima geração apaga. */
 (function () {
   'use strict';
 
@@ -18,7 +8,7 @@
     prazoResposta: '1 dia útil',
     dominioPublicado: /(^|\.)stratai\.com\.br$/,
     urlStratai: 'https://stratai.com.br/',
-    // hipótese usada na estimativa (não é promessa; aparece com a fórmula na tela)
+
     recuperacaoMin: 0.08,
     recuperacaoMax: 0.15,
     guardarHoras: 24
@@ -40,7 +30,6 @@
     tempo: '7 perguntas · 2 minutos. No fim, o seu perfil entra em análise e a gente responde no seu WhatsApp em até ' + CONFIG.prazoResposta + '.'
   };
 
-  // pts: peso na classificação · saida: encerra na hora, sem pedir contato
   var PERGUNTAS = [
     {
       id: 'canal', rotulo: 'Onde você vende',
@@ -138,7 +127,7 @@
 
   var CONTATO = {
     titulo: 'Última parte: para onde a gente manda a resposta?',
-    // Aviso em vermelho e negrito, bem destacado (pedido do Jhonathan, 12/11/2026)
+
     aviso: 'O preenchimento deste formulário não garante o avanço para a implementação. Será feita uma análise da sua operação pelo time da Strat.',
     campos: [
       { id: 'nome', curto: 'Nome', rotulo: 'Seu nome', tipo: 'text', auto: 'name', placeholder: 'Nome e sobrenome', pergunta: 'Pra começar: qual o seu nome?' },
@@ -148,10 +137,9 @@
     ],
     botao: 'Enviar para análise',
     privacidade: 'Seus dados vão só para o time da StratAI, para responder esta análise. Nada de lista de e-mail.',
-    politica: 'https://stratai.com.br/politica-de-privacidade/'   // o formulário coleta dado pessoal (checklist A5)
+    politica: 'https://stratai.com.br/politica-de-privacidade/'
   };
 
-  // As duas lâminas que aparecem depois das perguntas e antes do formulário (todas as versões).
   var LAMINAS = {
     beneficios: {
       rotulo: 'O que você recebe',
@@ -176,19 +164,18 @@
     }
   };
 
-  // V4: agenda com o Helbert e compra rápida no fim. Campo vazio ou [X] = falta preencher.
   var AGENDA = {
     nome: 'Helbert Paranhos',
     cargo: 'Sócio e CTO da StratAI',
     iniciais: 'HP',
-    foto: '',                         // caminho da foto (a decidir); vazio = iniciais
-    url: 'https://calendar.app.google/fTLUDRk5TeRrkY9TA', // página de agendamento do Google (ficha do time, strat-context)
-    duracao: '30 min',                // a confirmar com o Helbert (a página do Google é que manda)
+    foto: '',
+    url: 'https://calendar.app.google/fTLUDRk5TeRrkY9TA',
+    duracao: '30 min',
     formato: 'Google Meet',
     titulo: 'Quer adiantar? Fale direto com o Helbert.',
     texto: 'Uma call para olhar a sua operação com você, antes da resposta da análise.',
     pauta: ['Quanto está parado hoje e de onde vem', 'Como a recuperação liga no seu checkout', 'O que acontece se a sua operação for aprovada'],
-    pedeCodigo: false,                // true se a página do Google tiver a pergunta "Código"
+    pedeCodigo: false,
     botao: 'Escolher meu horário'
   };
 
@@ -197,14 +184,14 @@
     selo: 'Compra rápida',
     nome: '[Nome do produto]',
     descricao: '[Uma frase do que a pessoa recebe e para que serve.]',
-    imagem: '',                       // caminho da capa; vazio = área reservada
+    imagem: '',
     preco: '[R$ X]',
-    precoDe: '',                      // preço riscado, se houver
+    precoDe: '',
     parcelas: '[ou X× de R$ X]',
     itens: ['[O que vem no produto 1]', '[O que vem no produto 2]', '[O que vem no produto 3]'],
     garantia: '[X dias de garantia]',
     pagamento: 'Pix ou cartão',
-    checkoutUrl: '',                  // link do checkout (Hotmart, Kiwify…); vazio = botão desligado
+    checkoutUrl: '',
     botao: 'Comprar agora'
   };
 
@@ -226,7 +213,6 @@
     ]
   };
 
-  // ---------- regras ----------
   function opcao(pid, v) {
     for (var i = 0; i < PERGUNTAS.length; i++) {
       if (PERGUNTAS[i].id !== pid) continue;
@@ -237,18 +223,16 @@
 
   var MAXIMO = PERGUNTAS.reduce(function (t, p) { return t + Math.max.apply(null, p.opcoes.map(function (o) { return o.pts || 0; })); }, 0);
 
-  // A (prioridade) · B (analisar) · C (provável recusa). A pessoa sempre vê "em análise"; a letra vai só para o time.
   function classificar(r) {
     var pts = 0;
     PERGUNTAS.forEach(function (p) { var o = opcao(p.id, r[p.id]); if (o && o.pts) pts += o.pts; });
-    // a pergunta do acesso ao checkout saiu em 12/11 (máximo 30 → 27); cortes na mesma proporção
+
     var classe = pts >= 22 ? 'A' : pts >= 13 ? 'B' : 'C';
     var pequeno = r.faturamento === 'ate20' || (r.volume === 'ate50' && (r.ticket === 'ate100' || r.ticket === '100a500'));
     if (pequeno) classe = 'C';
     return { classe: classe, pontos: pts, maximo: MAXIMO };
   }
 
-  // Estimativa ilustrativa: vendas paradas × ticket médio × 8% a 15% (hipótese). null quando falta número.
   function estimar(r) {
     var vol = opcao('volume', r.volume), tic = opcao('ticket', r.ticket);
     var e = { vendas: vol ? vol.n : undefined, ticket: tic ? tic.n : undefined, parado: null, min: null, max: null };
@@ -270,7 +254,6 @@
   var FORMULA = 'Estimativa ilustrativa, não promessa: vendas paradas por mês × ticket médio × 8% a 15% ' +
     '(hipótese de recuperação). Valores do meio de cada faixa que você marcou.';
 
-  // ---------- validação ----------
   var DOMINIOS_ERRADOS = { 'gmail.con': 'gmail.com', 'gmial.com': 'gmail.com', 'gmai.com': 'gmail.com', 'hotmail.con': 'hotmail.com', 'hotmal.com': 'hotmail.com', 'outlook.con': 'outlook.com', 'yahoo.con': 'yahoo.com' };
   function digitos(v) { return String(v || '').replace(/\D/g, ''); }
   function telefoneLocal(v) { var d = digitos(v); if (d.length > 11 && d.indexOf('55') === 0) d = d.slice(2); return d.slice(0, 11); }
@@ -303,25 +286,30 @@
   }
   function primeiroNome(n) { return String(n || '').trim().split(/\s+/)[0] || ''; }
 
-  // ---------- estado salvo (quem volta continua de onde parou) ----------
   function chave(versao) { return 'strat_recuperacao_' + versao; }
   function carregar(versao) {
     try {
       var s = JSON.parse(localStorage.getItem(chave(versao)) || 'null');
-      if (s && Date.now() - s.salvoEm < CONFIG.guardarHoras * 3600 * 1000) return s;
-      // passou de 24 h: apaga de vez (a política de privacidade promete que some do navegador)
+      if (s && Date.now() - s.salvoEm < CONFIG.guardarHoras * 3600 * 1000) { s.contato = {}; return s; }
+
       if (s) localStorage.removeItem(chave(versao));
     } catch (e) {}
     return null;
   }
+
   function salvar(versao, estado) {
-    try { estado.salvoEm = Date.now(); localStorage.setItem(chave(versao), JSON.stringify(estado)); } catch (e) {}
+    try {
+      var copia = {};
+      for (var k in estado) if (k !== 'contato' && k !== 'hist') copia[k] = estado[k];
+      if (estado.hist) copia.hist = estado.hist.filter(function (m) { return !m.p; });
+      copia.salvoEm = Date.now();
+      localStorage.setItem(chave(versao), JSON.stringify(copia));
+    } catch (e) {}
   }
   function apagar(versao) { try { localStorage.removeItem(chave(versao)); } catch (e) {} }
 
-  // ---------- medição ----------
   function publicado() { return CONFIG.dominioPublicado.test(location.hostname); }
-  // Só o nome do evento e o passo. Nenhuma resposta e nenhum dado pessoal vai em evento.
+
   function track(evento, dados) {
     dados = dados || {};
     try { (window.dataLayer = window.dataLayer || []).push(Object.assign({ event: evento }, dados)); } catch (e) {}
@@ -344,19 +332,13 @@
     return s;
   }
 
-  // Até quando esperar o MetricaaS: a tag tem 8 s para carregar e o mtc.lead() (que espera o mf.js) mais 15 s para
-  // responder. Passou disso, conta como falha (revisão do Helbert no PR #24, 13/11/2026; o mesmo da /parcerias/).
   var ESPERA_TAG = 8000, ESPERA_LEAD = 15000;
   function comPrazo(promessa, ms) {
     return Promise.race([promessa, new Promise(function (ok, falha) { setTimeout(function () { falha({ erro: 'sem-resposta' }); }, ms); })]);
   }
-  // Prévia (fora de *.stratai.com.br): ?simular=erro faz o envio falhar, para conferir a tela de erro.
+
   function simularErro() { return !publicado() && /[?&]simular=erro\b/.test(location.search || ''); }
 
-  // Uma chamada só, no fim, com tudo. A (prioridade) e B viram "qualificado"; C vai como "desqualificado"
-  // (o lead é criado no MetricaaS, mas não vira evento na Meta e não ensina o anúncio a trazer perfil fraco).
-  // Resolve com { codigo } só quando o MetricaaS confirma. Se a tag não carrega, o envio falha ou demora demais, a
-  // promessa é rejeitada: quem chama mostra o erro, deixa tentar de novo e NÃO apaga as respostas.
   function enviarLead(versao, respostas, contato) {
     var cl = classificar(respostas), est = estimar(respostas);
     var tel = telefoneLocal(contato.whatsapp);
@@ -379,7 +361,7 @@
     };
     if (simularErro()) return falhou({ erro: 'simulado' });
     if (!publicado()) {
-      // Nada de dado pessoal no console: só a classe e a versão.
+
       console.info('[funil] prévia: lead não enviado (só em *.stratai.com.br).', { classe: cl.classe, versao: versao });
       track('funil_lead', { versao: versao, classe: cl.classe });
       return Promise.resolve({ codigo: protocoloLocal(), previa: true });
@@ -392,7 +374,6 @@
       }, falhou);
   }
 
-  // Mensagem de erro do envio, igual nas 4 versões. O contato de reserva é o mesmo da /parcerias/.
   var ERRO_ENVIO = {
     titulo: 'Não conseguimos enviar agora.',
     texto: 'As suas respostas continuam aqui. Confira a conexão e tente de novo.',

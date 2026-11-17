@@ -1,9 +1,8 @@
-/* Motor da V2 (raio-x ao vivo) do funil de recuperação (DEV-94 / WEB-91). Texto e regras em funil.js; desenho das lâminas em
- * laminas.js. Fica fora do HTML para a página ter um <h1> só (a checagem de SEO do strat-web/sites lê o HTML cru). */
+/* Gerado por FunilRecuperacao-StratAI/scripts/para-o-repo.py a partir de site/comum/raiox.js. Não edite aqui: a próxima geração apaga. */
 (function () {
   'use strict';
   var F = window.FUNIL, VERSAO = 'v2', N = F.PERGUNTAS.length;
-  // no build (Node, scripts/para-o-repo.py) não há página: só as funções puras de HTML ficam disponíveis (window.RAIOX)
+
   var noNavegador = typeof document !== 'undefined' && !!document.getElementById('app');
   var app = noNavegador ? document.getElementById('app') : null, lado = noNavegador ? document.getElementById('lado') : null,
     mini = noNavegador ? document.getElementById('mini') : null, btnRe = noNavegador ? document.getElementById('reiniciar') : null;
@@ -14,7 +13,8 @@
   var ocupado = false;
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
-  function hora(seg) { var d = new Date(); return [d.getHours(), d.getMinutes()].concat(seg ? [d.getSeconds()] : []).map(function (n) { return String(n).padStart(2, '0'); }).join(':'); }
+
+  function hora(seg) { if (!noNavegador) return '09:20'; var d = new Date(); return [d.getHours(), d.getMinutes()].concat(seg ? [d.getSeconds()] : []).map(function (n) { return String(n).padStart(2, '0'); }).join(':'); }
   function guardar() { F.salvar(VERSAO, st); }
   function resp(id) { var o = F.opcao(id, st.r[id]); return o ? o.t : null; }
 
@@ -62,8 +62,6 @@
     return '<div class="passo"><span class="mono">' + String(st.i + 1).padStart(2, '0') + ' / ' + String(N).padStart(2, '0') + '</span><div class="trilho" aria-hidden="true">' + s + '</div></div>';
   }
 
-  // HTML da abertura: o gerador do repositório escreve o mesmo no build (data-pre="abertura"), para a primeira tela
-  // pintar antes do JS (LCP no celular); aqui o JS só liga o botão.
   function aberturaHTML() {
     var A = F.ABERTURA;
     return (
@@ -152,7 +150,6 @@
   function lamina1() { lamina(window.LAMINAS_UI.beneficios(), 'lamina2', 'resumo', F.LAMINAS.beneficios.botao); }
   function lamina2() { lamina(window.LAMINAS_UI.cases({ raiz: '../' }), 'contato', 'lamina1', F.LAMINAS.cases.botao); }
 
-  // falhou = true quando volta do envio com erro: mostra o aviso e o botão vira "Tentar de novo".
   function contato(falhou) {
     var C = F.CONTATO;
     falhou = falhou === true;
@@ -168,7 +165,7 @@
     );
     var form = document.getElementById('form');
     form.whatsapp.addEventListener('input', function () { form.whatsapp.value = F.mascaraTelefone(form.whatsapp.value); });
-    form.addEventListener('input', function (e) { st.contato[e.target.name] = e.target.value; guardar(); });
+    form.addEventListener('input', function (e) { st.contato[e.target.name] = e.target.value; });
     document.getElementById('voltar').addEventListener('click', function () { st.tela = 'lamina2'; guardar(); render(); });
     form.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -182,13 +179,11 @@
       C.campos.forEach(function (c) { st.contato[c.id] = form[c.id].value.trim(); });
       var b = document.getElementById('enviar'); b.disabled = true; b.textContent = 'Enviando…';
       var envio = F.enviarLead(VERSAO, st.r, st.contato);
-      envio.catch(function () {}); // a falha é tratada no fim do terminal; isto só evita o aviso de promessa sem tratamento
+      envio.catch(function () {});
       analise(envio);
     });
   }
 
-  // terminal "conferindo" e depois o status. O envio corre em paralelo; o status só aparece com ele confirmado.
-  // Se o envio falha, volta ao contato com o aviso de erro e as respostas guardadas (só se apaga depois do OK).
   function analise(envio) {
     st.tela = 'analise';
     montar('<span class="mono"><span class="ponto"></span>&nbsp; Enviando para o time de análise</span><div class="terminal" id="term" aria-live="polite"></div>');
@@ -207,7 +202,7 @@
   function final() {
     var A = F.ANALISE, nome = F.primeiroNome(st.contato.nome);
     montar(
-      '<span class="mono"><span class="ponto"></span>&nbsp; ' + esc(A.rotulo) + '</span><h1>' + esc(A.titulo) + '</h1>' +
+      '<span class="mono"><span class="ponto"></span>&nbsp; ' + esc(A.rotulo) + '</span><h2 class="titulo-fim">' + esc(A.titulo) + '</h2>' +
       '<p class="apoio" style="font-size:18px">' + esc(A.texto(nome)) + '</p><p class="garantia">' + esc(A.prazo(st.contato.whatsapp)) + '</p>' +
       '<div class="cartao"><span class="mono">Se for aprovado</span><ol class="passos">' + A.passos.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('') + '</ol></div>' +
       '<div class="so-celular">' + painelHTML() + '</div>' +
@@ -216,7 +211,7 @@
   }
   function saida() {
     var S = F.SAIDAS[st.saida];
-    montar('<span class="mono">Resultado</span><h1>' + esc(S.titulo) + '</h1><p class="apoio" style="font-size:18px">' + esc(S.texto) + '</p>' +
+    montar('<span class="mono">Resultado</span><h2 class="titulo-fim">' + esc(S.titulo) + '</h2><p class="apoio" style="font-size:18px">' + esc(S.texto) + '</p>' +
       '<div class="acao"><a class="btn btn-fantasma" href="' + esc(S.cta.url) + '">' + esc(S.cta.texto) + SETA + '</a></div>');
   }
 

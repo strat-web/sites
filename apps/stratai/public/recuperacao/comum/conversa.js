@@ -1,5 +1,4 @@
-/* Motor da V3 (conversa em tela cheia) do funil de recuperação (DEV-94 / WEB-91). Texto e regras em funil.js; desenho das lâminas em
- * laminas.js. Fica fora do HTML para a página ter um <h1> só (a checagem de SEO do strat-web/sites lê o HTML cru). */
+/* Gerado por FunilRecuperacao-StratAI/scripts/para-o-repo.py a partir de site/comum/conversa.js. Não edite aqui: a próxima geração apaga. */
 (function () {
   'use strict';
   var F = window.FUNIL, VERSAO = 'v3', N = F.PERGUNTAS.length, CAMPOS = F.CONTATO.campos;
@@ -11,12 +10,13 @@
   function novo() { return { fase: 'abertura', i: 0, k: 0, r: {}, contato: {}, hist: [], perguntado: false }; }
   var st = F.carregar(VERSAO) || novo();
   if (st.fase === 'fim' || st.fase === 'saida') st = novo();
-  // fechou a página no meio do envio: volta para a confirmação, com tudo o que já respondeu
-  if (st.fase === 'enviando') { st.fase = 'confirmar'; st.perguntado = false; }
+
+  if (st.fase === 'campo' || st.fase === 'confirmar' || st.fase === 'enviando') { st.fase = 'contato'; st.k = 0; st.perguntado = false; }
+  var FASES_CONTATO = { contato: 1, campo: 1, confirmar: 1, enviando: 1, fim: 1 };
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function hora() { var d = new Date(); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
-  // etapa do topo: 0 início · 1 operação (perguntas 1–4) · 2 números (5–6) · 3 combinado (7–8 e resumo) · 4 contato · 5 fim
+
   function etapa() {
     var f = st.fase, n = f === 'abertura' ? 0 : f === 'pergunta' ? (st.i < 4 ? 1 : st.i < 6 ? 2 : 3) : f === 'resumo' ? 3 : f === 'fim' ? 5 : 4;
     etapas.forEach(function (li, k) { li.className = k < n ? 'feito' : k === n ? 'agora' : ''; });
@@ -30,10 +30,13 @@
     d.innerHTML = (de === 'eles' ? AVATAR : '') + '<div class="msg ' + de + (extra ? ' ' + extra : '') + '">' + html + '</div>';
     conv.appendChild(d); rolar();
   }
-  function registrar(de, html, extra) { var h = hora(); st.hist.push({ de: de, html: html, h: h, x: extra || '' }); bolha(de, html, h, extra); guardar(); }
+  function registrar(de, html, extra) {
+    var h = hora(), m = { de: de, html: html, h: h, x: extra || '' };
+    if (FASES_CONTATO[st.fase]) m.p = 1;
+    st.hist.push(m); bolha(de, html, h, extra); guardar();
+  }
 
-  // a StratAI "digita" cada mensagem; o tempo cresce com o tamanho do texto
-  var geracao = 0; // muda no "recomeçar": digitação antiga para de escrever
+  var geracao = 0;
   function falar(lista, depois) {
     limparRespostas();
     var k = 0, g = geracao;
@@ -74,7 +77,6 @@
     setTimeout(function () { entrada.focus({ preventScroll: true }); }, 50);
   }
 
-  // ---------- etapas ----------
   function abertura() {
     st.fase = 'abertura';
     var A = F.ABERTURA;
@@ -125,7 +127,6 @@
     falar(falas, function () { st.fase = 'lamina1'; st.perguntado = false; guardar(); lamina1(); });
   }
 
-  // As lâminas entram como mensagens largas da StratAI; a pessoa segue tocando no botão.
   function laminaChat(html, botao, depois) {
     var mostrar = function () {
       st.perguntado = true; guardar();
@@ -183,7 +184,7 @@
   function enviar() {
     st.fase = 'enviando'; guardar();
     var envio = F.enviarLead(VERSAO, st.r, st.contato);
-    envio.catch(function () {}); // a falha é tratada depois da mensagem; isto só evita o aviso de promessa sem tratamento
+    envio.catch(function () {});
     falar(['Só um instante, estou entregando o seu perfil para o time de análise…'], function () {
       envio.then(function (res) {
         var A = F.ANALISE, nome = F.primeiroNome(st.contato.nome);
@@ -196,7 +197,7 @@
           'Protocolo: <b class="l">' + esc(res.codigo) + '</b>'
         ], function () { limparRespostas(); });
       }, function () {
-        // Falhou: nada é apagado. A StratAI avisa na conversa e oferece tentar de novo (ou corrigir os dados).
+
         var E = F.ERRO_ENVIO;
         st.fase = 'confirmar'; st.perguntado = true; guardar();
         falar([{ html: '<b>' + esc(E.titulo) + '</b> ' + esc(E.texto) + ' ' + esc(E.reserva) + ' <a href="mailto:' + E.email + '">' + E.email + '</a>.', extra: 'erro-envio' }], function () {
