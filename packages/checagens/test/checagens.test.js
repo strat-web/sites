@@ -9,7 +9,7 @@ import { RAIZ, checarApps, montarContexto } from '../src/contexto.js';
 import { checarLinks } from '../src/links.js';
 import { bytesDaPagina, julgarMedicao } from '../src/peso.js';
 import { checarSeo } from '../src/seo.js';
-import { checarTracking, diferencasDoRastro, lerRastro, slugConhecido } from '../src/tracking.js';
+import { checarTracking, diferencasDoRastro, launcherAposAceite, lerRastro, slugConhecido } from '../src/tracking.js';
 import { EXCECOES_LIGHTHOUSE } from '../src/excecoes-peso.js';
 
 const SITE = 'https://stratai.com.br';
@@ -287,21 +287,33 @@ test('tracking: página com Rastro e banner barra quando o /sa não manda consen
   assert.match(msgs(r), /produto "stratai" no Rastro × catálogo, consentimento: o Rastro não mandou consentMode/);
 });
 
-test('tracking: venda com banner barra, e script da Hotmart em página com banner barra (WEB-81, até o WEB-85)', async () => {
+test('tracking: venda com banner passa só com o launcher do kit que espera o aceite; outro script da Hotmart barra (WEB-85)', async () => {
   const LAUNCHER = `<script id="hotmart_launcher_script">(function(l,a,u,n,c){})(window,document,'script','//launcher.hotmart.com/launcher.js','hot');hot('account','h');</script>`;
   const venda = linha({ perfil: 'venda', metricaas_ws: null, rastro_slug: 'stratai', hotmart_conta: 'h', consentimento: 'banner' });
   const sa = '<script defer src="https://tracking.stratacademy.com.br/sa?product=stratai"></script>';
+  // O launcher do kit com a espera do aceite (o texto exato para a linha) passa.
+  const doKit = launcherAposAceite({ urls: [venda] }, venda);
+  assert.match(doKit, /strat_consent/);
+  const ok = await checarTracking(ctx([pagina({ head: `${sa}<script id="hotmart_launcher_script">${doKit}</script>` })], { linhas: [venda] }), { semRede: true });
+  assert.deepEqual(ok.erros, []);
+  // O launcher que carrega na abertura barra, mesmo com o id do kit.
   const r = await checarTracking(ctx([pagina({ head: sa + LAUNCHER })], { linhas: [venda] }), { semRede: true });
-  assert.match(msgs(r), /perfil venda com consentimento "banner" e Rastro/);
   assert.match(msgs(r), /script da Hotmart em página com consentimento "banner": <script id="hotmart_launcher_script"> inline/);
+  // O texto do kit mexido também barra.
+  const mexido = doKit.replace("==='granted'", "!=='denied'");
+  assert.notEqual(mexido, doKit);
+  const m = await checarTracking(ctx([pagina({ head: `${sa}<script id="hotmart_launcher_script">${mexido}</script>` })], { linhas: [venda] }), { semRede: true });
+  assert.match(msgs(m), /script da Hotmart em página com consentimento "banner"/);
   // Widget de checkout colado à mão numa página de conteúdo com banner: também carrega antes do aceite.
   const widget = '<script src="https://static.hotmart.com/checkout/widget.min.js"></script>';
   const conteudo = linha({ perfil: 'conteudo', metricaas_ws: null, meta_pixel: null, consentimento: 'banner' });
+  assert.equal(launcherAposAceite({ urls: [conteudo] }, conteudo), null);
   const w = await checarTracking(ctx([pagina({ head: sa, corpo: widget })], { linhas: [conteudo] }), { semRede: true });
   assert.match(msgs(w), /script da Hotmart em página com consentimento "banner": https:\/\/static\.hotmart\.com\/checkout\/widget\.min\.js carrega antes do "aceitar"/);
-  // Venda em off com o launcher do kit passa (o Rastro em off não pede aceite).
+  // Venda em off com o launcher que carrega na abertura passa (o Rastro em off não pede aceite).
   const off = await checarTracking(ctx([pagina({ head: sa + LAUNCHER })], { linhas: [{ ...venda, consentimento: 'off' }] }), { semRede: true });
   assert.deepEqual(off.erros, []);
+  assert.equal(launcherAposAceite({ urls: [{ ...venda, consentimento: 'off' }] }, { ...venda, consentimento: 'off' }), null);
 });
 
 test('peso: exceção do Lighthouse avisa acima do piso e barra abaixo dele (WEB-32)', () => {

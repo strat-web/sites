@@ -35,9 +35,11 @@ export function linhaDoCatalogo(catalogo, url) {
   return linha;
 }
 
-// O que a página carrega. Devolve { linha, scripts, hotmart, banner, consentMode, avisos }:
+// O que a página carrega. Devolve { linha, scripts, hotmart, hotmartAposAceite, banner, consentMode, avisos }:
 // - scripts: lista de { src, attrs } na ordem do <head>, todos `defer` (o m.js nunca atrasado: regra dura do lead);
 // - hotmart: id da conta para o launcher (só no perfil venda), ou null;
+// - hotmartAposAceite: true quando o launcher só pode carregar depois do "aceitar" do Rastro (venda com `banner`, o
+//   produto em strict; WEB-85). O texto do launcher sai de scriptDoLauncher;
 // - banner: true quando a página mostra o banner de cookies do kit (sem Rastro, pixel pelo m.js, consentimento
 //   `banner`). Com Rastro é sempre false: quem pede o aceite é o aviso do próprio Rastro (strict);
 // - consentMode: o que o produto no Rastro tem de ter (strict, soft ou off), ou null sem Rastro;
@@ -50,7 +52,7 @@ export function planoDeTracking({ catalogo, url, perfil }) {
     throw erro(onde, `a página declara perfil "${perfil}", mas o catálogo diz "${linha.perfil}". Acerte um dos dois no mesmo PR`);
   }
 
-  const plano = { linha, scripts: [], hotmart: null, banner: false, consentMode: null, avisos: [] };
+  const plano = { linha, scripts: [], hotmart: null, hotmartAposAceite: false, banner: false, consentMode: null, avisos: [] };
   // por-funil: a própria página liga o Rastro do funil pelo ?f= (registro FUNIS); o kit não carrega nada por ela
   // até a migração dessas páginas (WEB-48).
   if (linha.consentimento === 'sem-tracking' || linha.consentimento === 'por-funil') return plano;
@@ -80,18 +82,10 @@ export function planoDeTracking({ catalogo, url, perfil }) {
           `Use ${Object.entries(CONSENT_MODE_DO_RASTRO).map(([c, m]) => `"${c}" (${m})`).join(', ')}`,
       );
     }
-    // Venda com banner ainda não fecha: o launcher da Hotmart sai escrito no HTML (Tracking.astro) e carrega na
-    // abertura, antes do "aceitar". O Rastro em strict só carrega a Hotmart depois do aceite e pula o launcher dele
-    // quando já existe window.hot, então nada segura o nosso. Até o WEB-85 levar o launcher para depois do aceite,
-    // a combinação quebra o build (a checagem tracking da CI barra o mesmo, porque chama esta função).
-    if (perfil === 'venda' && linha.consentimento === 'banner') {
-      throw erro(
-        onde,
-        'perfil venda com consentimento "banner" e Rastro: o launcher da Hotmart sai no HTML e carrega antes do ' +
-          '"aceitar" (o Rastro em strict não segura o launcher da página). Ainda sem regra (WEB-85): use "soft" ou ' +
-          '"off" no catálogo, igual ao consentMode do produto',
-      );
-    }
+    // Venda com banner (WEB-85): o launcher da Hotmart continua escrito no HTML (o "verificar instalação" da Hotmart
+    // lê o HTML estático), mas só carrega com o aceite do Rastro: strat_consent = granted já guardado, ou o "aceitar"
+    // do aviso do Rastro (scriptDoLauncher). Em soft e off o Rastro não segura nada, e o launcher carrega na abertura.
+    if (perfil === 'venda' && linha.consentimento === 'banner') plano.hotmartAposAceite = true;
   }
 
   // Sem Rastro, quem liga o pixel é o m.js (data-pixel). GA4 e tag do Google sem Rastro ainda não têm regra
@@ -136,4 +130,37 @@ export function scriptDoBanner(fonte, privacidade) {
   const codigo = fonte.replace(/^[ \t]*\/\/.*\r?\n/gm, '').trim();
   const opcoes = JSON.stringify({ privacidade, mjs: METRICAAS }).replace(/</g, '\\u003c');
   return `${codigo}(window, document, ${opcoes});`;
+}
+
+// Texto do <script id="hotmart_launcher_script"> do perfil venda: o snippet padrão da Hotmart com a conta do catálogo.
+// Com `aposAceite` (venda + banner, WEB-85), o mesmo snippet fica dentro de uma função que só roda com o aceite do
+// Rastro em strict, que guarda a escolha no localStorage, chave strat_consent:
+// - aceite guardado (granted): carrega na hora, no parse do <head>, antes do Rastro (que então não duplica: ele pula o
+//   launcher dele quando já existe window.hot);
+// - sem aceite: embrulha o window.stratConsent.grant do Rastro (o "aceitar" do aviso chama window.stratConsent.grant()
+//   no clique) para carregar o launcher antes de o Rastro rodar o loadMarketing. O Rastro é defer: o
+//   window.stratConsent já existe no DOMContentLoaded; o load do <script> do Rastro é a garantia.
+// Sem aceite, nada da Hotmart carrega. O teste (test/launcher-hotmart.test.js) roda este texto num DOM simulado.
+export function scriptDoLauncher(conta, { aposAceite = false } = {}) {
+  const snippet =
+    `(function(l,a,u,n,c,h,e,r){l['HotmartLauncherObject']=c;l[c]=l[c]||function(){\n` +
+    `(l[c].q=l[c].q||[]).push(arguments)},l[c].l=1*new Date();h=a.createElement(u),\n` +
+    `e=a.getElementsByTagName(u)[0];h.async=1;h.src=n;e.parentNode.insertBefore(h,e)\n` +
+    `})(window,document,'script','${HOTMART_LAUNCHER}','hot');\n` +
+    `hot('account',${JSON.stringify(conta).replace(/"/g, "'").replace(/</g, '\\u003c')});`;
+  if (!aposAceite) return `\n${snippet}\n`;
+  return `
+(function(w,d){
+var feito=false;
+function carregar(){if(feito||w.hot)return;feito=true;
+${snippet}
+}
+var aceito=false;try{aceito=w.localStorage.getItem('strat_consent')==='granted'}catch(e){}
+if(aceito)return carregar();
+function ligar(){var c=w.stratConsent;if(!c||c.__hotmart||typeof c.grant!=='function')return;var g=c.grant;
+c.grant=function(){carregar();return g.apply(this,arguments)};c.__hotmart=true}
+d.addEventListener('DOMContentLoaded',ligar);
+var s=d.querySelector('script[src^="${RASTRO}"]');if(s)s.addEventListener('load',ligar);
+})(window,document);
+`;
 }
