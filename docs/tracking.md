@@ -162,6 +162,13 @@ O que cada modo faz (conferido na auditoria de 2026-11, `docs/auditoria/2026-11/
 MetricaaS em qualquer modo: na página que tem `metricaas_ws`, o `m.js` carrega na hora (regra dura do lead) e o
 cadastro do lead no MetricaaS não depende do aceite.
 
+## Evento da página no pixel do kit (WEB-24)
+Página sem Rastro que liga o pixel pelo `m.js` (`data-pixel`, hoje só a Agência) pode contar um passo dela com
+`fbq('track', ...)` ou `fbq('trackCustom', ...)` num `<script>` da própria página, como o `ViewContent` da capa e o
+`FirstInteraction` do /advogados. Nunca `Lead` nem o evento da etapa do funil: esses saem da tag do MetricaaS com o
+mesmo `event_id` da CAPI, e repetir daria evento em dobro. `fbq('init')`, o `fbevents.js` e `fbq` em página com Rastro
+continuam barrando na checagem `tracking`.
+
 ## Marcação na página
 - Todo botão: `data-strat-cta="<seção>-<destino>"` (ex.: `hero-diagnostico`, `rodape-whatsapp`). Vira `CTAClick`.
 - Todo formulário de lead: `data-strat-leadform`. Vira `Lead`, com CAPI e o webhook do funil.

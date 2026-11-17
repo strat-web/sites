@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- feat(agenciastrat): /advogados (v1) e /advogados/v2/ migradas do strat-lps sem mudar texto, telas nem tracking (tag do MetricaaS com o pixel pelo <Tracking>, consentimento off como no ar; linha nova da v2 noindex no catálogo), com a capa desenhada no HTML (H1 para a busca) e as fontes servidas pelo app; a checagem seo deixa de contar <h1> dentro de <script> e a tracking aceita fbq('track'/'trackCustom') no pixel do m.js do kit (WEB-24)
 - docs(auditoria): stratacademy.com.br conferido no navegador sem escolha, com aceite e com recusa (Umami e Cloudflare na abertura, pixel e PostHog só com aceite, sem GA4 nem Google Ads, conversões barradas no /tracker pelo CORS, produtos do Rastro das ferramentas); linha do catálogo com os ids do produto site no Rastro e o que difere hoje; tracking.md: o aceite fica no localStorage, não em cookie (WEB-46)
 - feat(stratai): página /parcerias/ do programa de parceria e indicação (prévia aprovada, só a indicação), com o cadastro em 3 etapas enviado ao MetricaaS da StratAI pelo mtc.lead() e linha no catálogo (WEB-74)
 - feat(kit): lastmod também em rota dinâmica (com a data que a página declara no `atualizado`), logo do JSON-LD com o logotipo de cada marca no public/ do app, href do Breadcrumb com a barra no fim (slug com ponto também), llms.txt só com as marcas no ar (campo `no_ar` no catálogo) e página de teste agenciastrat.com.br/kit/gpt-4.1/ (noindex, sai com as outras /kit/ antes da virada, WEB-23) (WEB-77)

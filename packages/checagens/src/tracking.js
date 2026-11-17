@@ -40,6 +40,12 @@ const descrever = (s) => (s.attrs.src ? s.attrs.src : `<script id="${s.attrs.id 
 
 const coladoAMao = (texto) => COLADO_A_MAO.filter(([re]) => re.test(texto)).map(([, nome]) => nome);
 
+// Evento no pixel que o próprio <Tracking> liga (m.js com data-pixel): fbq('track' | 'trackCustom', ...) não é pixel
+// colado, é a página contando um passo dela (ViewContent da capa, FirstInteraction do /advogados; WEB-24). Só vale
+// em <script> inline da página que tem esse pixel; fbq('init'), o fbevents.js e o resto continuam barrando.
+const EVENTO_NO_PIXEL = /\bfbq\s*\(\s*(['"])(?:track|trackCustom)\1/g;
+const pixelDoKit = (scripts) => scripts.some((s) => s.attrs.src === METRICAAS && s.attrs['data-pixel']);
+
 // type que o navegador executa como JavaScript clássico. "module" também executa, mas muda a ordem e pede CORS; um
 // type qualquer (text/plain de gerenciador de consentimento, por exemplo) não executa: script presente e morto.
 const TIPOS_CLASSICOS = ['', 'text/javascript', 'application/javascript', 'text/ecmascript', 'application/ecmascript'];
@@ -67,8 +73,10 @@ export function checarPaginaTracking(pagina, catalogo, r) {
   const onde = pagina.url;
   const { scripts, noindex, noscripts, fimDoHead } = lerPagina(pagina.html);
 
+  const comPixelDoKit = pixelDoKit(scripts);
   for (const s of scripts) {
-    for (const nome of coladoAMao(`${s.attrs.src || ''}\n${s.conteudo}`)) {
+    const conteudo = comPixelDoKit && !s.attrs.src ? s.conteudo.replace(EVENTO_NO_PIXEL, '') : s.conteudo;
+    for (const nome of coladoAMao(`${s.attrs.src || ''}\n${conteudo}`)) {
       r.erro(onde, `${nome} colado à mão em ${descrever(s)}: tracking só pelo <Tracking> do kit`);
     }
   }
