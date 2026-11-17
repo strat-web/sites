@@ -6,9 +6,11 @@ const CARREGADOR = String.raw`(function carregarRastroAposPintura(w, d) {
   var origem = d.currentScript;
   var src = origem.getAttribute('data-strat-rastro-apos-pintura');
   var carregado = false;
+  var observador;
   function carregar() {
     if (carregado) return;
     carregado = true;
+    if (observador) observador.disconnect();
     var script = d.createElement('script');
     script.src = src;
     script.defer = true;
@@ -16,10 +18,27 @@ const CARREGADOR = String.raw`(function carregarRastroAposPintura(w, d) {
     d.head.appendChild(script);
   }
   function agendar() {
-    // Uma aba aberta em segundo plano não recebe rAF. Preservar a visita nesse caso; quando visível,
-    // dois callbacks garantem uma oportunidade de pintar antes de iniciar a cadeia de terceiros.
-    if (d.visibilityState === 'hidden' || typeof w.requestAnimationFrame !== 'function') carregar();
-    else w.requestAnimationFrame(function () { w.requestAnimationFrame(carregar); });
+    // rAF sinaliza a chance de pintar, mas pode vir antes do FCP se as fontes ainda estiverem chegando.
+    // Quando a API existe, esperar a pintura observada, em vez de supor que dois quadros já a produziram.
+    if (d.visibilityState === 'hidden') { carregar(); return; }
+    var paints = w.performance && w.performance.getEntriesByType ? w.performance.getEntriesByType('paint') : [];
+    if (paints.some(function (p) { return p.name === 'first-contentful-paint'; })) { carregar(); return; }
+    if (typeof w.PerformanceObserver === 'function' && w.PerformanceObserver.supportedEntryTypes && w.PerformanceObserver.supportedEntryTypes.indexOf('paint') !== -1) {
+      try {
+        observador = new w.PerformanceObserver(function (lista) {
+        if (lista.getEntries().some(function (p) { return p.name === 'first-contentful-paint'; })) carregar();
+      });
+      observador.observe({ type: 'paint', buffered: true });
+        d.addEventListener('visibilitychange', function () { if (d.visibilityState === 'hidden') carregar(); }, { once: true });
+        return;
+      } catch (e) {
+        if (observador) observador.disconnect();
+        observador = null;
+      }
+    }
+    if (typeof w.requestAnimationFrame === 'function') {
+      w.requestAnimationFrame(function () { w.requestAnimationFrame(carregar); });
+    } else carregar();
   }
   if (d.readyState === 'loading') d.addEventListener('DOMContentLoaded', agendar, { once: true });
   else agendar();

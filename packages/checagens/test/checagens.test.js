@@ -490,7 +490,7 @@ test('tracking: carregador de venda após pintura precisa existir e executar; le
   const conferir = (head, linhas=[venda]) => checarTracking(ctx([pagina({head})],{linhas}),{semRede:true});
   const ok = await conferir(adiado(scriptDoRastroAposPintura())+launcher);
   assert.equal(ok.erros.length,0,JSON.stringify(ok.erros));
-  for (const head of [adiado('')+launcher,adiado(scriptDoRastroAposPintura(),'type="text/plain"')+launcher]) {
+  for (const head of [adiado('')+launcher,adiado(scriptDoRastroAposPintura(),'type="text/plain"')+launcher,adiado(scriptDoRastroAposPintura(),'src=""')+launcher,adiado(scriptDoRastroAposPintura(),'nomodule')+launcher]) {
     const r = await conferir(head);assert.ok(r.erros.some(e=>/carregador.*inerte/.test(e.msg)));
   }
   const direto = await conferir('<script defer src="https://tracking.stratacademy.com.br/sa?product=stratai"></script>'+launcher);

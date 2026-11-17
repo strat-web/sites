@@ -116,7 +116,7 @@ export function checarPaginaTracking(pagina, catalogo, r) {
     const [achado] = sobra.splice(i, 1);
     const adiado = achado.attrs[ATR_RASTRO_APOS_PINTURA] !== undefined;
     if (e.aposPintura !== adiado) r.erro(onde, `${e.src}: o Rastro de venda precisa esperar o primeiro quadro; lead e conteudo continuam diretos (WEB-104)`);
-    if (adiado && (achado.attrs.src || !TIPOS_CLASSICOS.includes(tipo(achado)) || achado.conteudo.trim() !== scriptDoRastroAposPintura())) {
+    if (adiado && ('src' in achado.attrs || 'nomodule' in achado.attrs || !TIPOS_CLASSICOS.includes(tipo(achado)) || achado.conteudo.trim() !== scriptDoRastroAposPintura())) {
       r.erro(onde, `${e.src}: carregador após pintura ausente, alterado ou inerte (WEB-104)`);
     }
     for (const a of ATRIBUTOS) {

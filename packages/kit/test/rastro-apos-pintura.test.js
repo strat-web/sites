@@ -31,3 +31,33 @@ test('callbacks repetidos não instalam dois Rastros',()=>{
   const c=cenario();c.eventos.DOMContentLoaded();c.eventos.DOMContentLoaded();
   while(c.quadros.length)c.quadros.shift()();assert.equal(c.scripts.length,1);
 });
+
+
+test('Paint Timing: dois rAF não bastam; inicia só depois do FCP observado',()=>{
+  const scripts=[],eventos={};let callback,desconectou=false,opcoes;
+  function Observer(cb){callback=cb;this.observe=opts=>{opcoes=opts;};this.disconnect=()=>{desconectou=true;};}
+  Observer.supportedEntryTypes=['paint'];
+  const w={performance:{getEntriesByType:()=>[]},PerformanceObserver:Observer,requestAnimationFrame:()=>{throw new Error('não deve usar rAF quando Paint Timing existe');}};
+  const d={readyState:'complete',visibilityState:'visible',currentScript:{getAttribute:()=>'/sa?product=quaia'},createElement:()=>({}),head:{appendChild:s=>scripts.push(s)},addEventListener:(n,cb)=>{eventos[n]=cb;}};
+  runInNewContext(scriptDoRastroAposPintura(),{window:w,document:d});
+  assert.equal(scripts.length,0);assert.equal(opcoes.type,'paint');assert.equal(opcoes.buffered,true);
+  callback({getEntries:()=>[{name:'first-paint'}]});assert.equal(scripts.length,0);
+  callback({getEntries:()=>[{name:'first-contentful-paint'}]});assert.equal(scripts.length,1);assert.equal(desconectou,true);
+  callback({getEntries:()=>[{name:'first-contentful-paint'}]});assert.equal(scripts.length,1);
+});
+test('Paint Timing: FCP já registrado inicia sem esperar outro quadro',()=>{
+  const scripts=[];const w={performance:{getEntriesByType:()=>[{name:'first-contentful-paint'}]}};
+  const d={readyState:'complete',visibilityState:'visible',currentScript:{getAttribute:()=>'/sa?product=quaia'},createElement:()=>({}),head:{appendChild:s=>scripts.push(s)}};
+  runInNewContext(scriptDoRastroAposPintura(),{window:w,document:d});assert.equal(scripts.length,1);
+});
+
+
+test('Paint Timing anunciado mas incompatível cai nos quadros, sem perder o Rastro',()=>{
+  const scripts=[],quadros=[];
+  function Observer(){this.observe=()=>{throw new TypeError('buffered indisponível');};this.disconnect=()=>{};}
+  Observer.supportedEntryTypes=['paint'];
+  const w={PerformanceObserver:Observer,performance:{getEntriesByType:()=>[]},requestAnimationFrame:cb=>quadros.push(cb)};
+  const d={readyState:'complete',visibilityState:'visible',currentScript:{getAttribute:()=>'/sa?product=quaia'},createElement:()=>({}),head:{appendChild:s=>scripts.push(s)},addEventListener:()=>{}};
+  runInNewContext(scriptDoRastroAposPintura(),{window:w,document:d});assert.equal(scripts.length,0);
+  quadros.shift()();quadros.shift()();assert.equal(scripts.length,1);
+});

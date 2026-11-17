@@ -183,7 +183,7 @@ Referência completa do Rastro: `strat-web/rastro` (hoje `Strat-Ai-Horus-OS/rast
 
 ## Rastro depois do primeiro quadro nas páginas de venda (WEB-104)
 
-No perfil `venda`, o kit escreve um carregador inline com `data-strat-rastro-apos-pintura` em vez de iniciar o `/sa` durante o parse. Depois de DOMContentLoaded, ele aguarda dois requestAnimationFrame antes de criar o script externo. Isso dá ao navegador uma oportunidade de pintar o primeiro quadro sem a cadeia do Rastro (pixel, GA4 e PostHog), que segurava o desenho do hero da LP Claude.
+No perfil `venda`, o kit escreve um carregador inline com `data-strat-rastro-apos-pintura` em vez de iniciar o `/sa` durante o parse. Depois de DOMContentLoaded, ele aguarda o FCP observado por PerformanceObserver antes de criar o script externo. Sem Paint Timing, usa dois requestAnimationFrame como fallback. Só dois callbacks não garantiam pintura: no teste com fontes carregando, o /sa iniciava aos 191 ms e o FCP vinha aos 252 ms. Isso dá ao navegador uma oportunidade de pintar o primeiro quadro sem a cadeia do Rastro (pixel, GA4 e PostHog), que segurava o desenho do hero da LP Claude.
 
 O produto, consentimento, ids e eventos continuam sendo os do Rastro. O MetricaaS permanece no head, com defer e antes de todo script; o launcher da Hotmart e o Umami mantêm seu comportamento. Os perfis lead e conteudo continuam carregando o Rastro diretamente.
 
