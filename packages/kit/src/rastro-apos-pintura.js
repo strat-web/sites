@@ -40,8 +40,37 @@ const CARREGADOR = String.raw`(function carregarRastroAposPintura(w, d) {
       w.requestAnimationFrame(function () { w.requestAnimationFrame(carregar); });
     } else carregar();
   }
-  if (d.readyState === 'loading') d.addEventListener('DOMContentLoaded', agendar, { once: true });
-  else agendar();
+  function prepararPrimeiraDobra() {
+    if (d.visibilityState === 'hidden') { carregar(); return; }
+    var esperas = [];
+    // Uma primeira pintura de texto ainda pode anteceder o hero. As imagens de alta prioridade e as fontes
+    // declaradas pela própria página precisam estar prontas antes de iniciar a cadeia de terceiros.
+    if (d.fonts && d.fonts.ready) esperas.push(d.fonts.ready.catch(function () {}));
+    if (d.querySelectorAll && typeof w.Image === 'function') {
+      var urls = [];
+      d.querySelectorAll('link[rel="preload"][as="image"]').forEach(function (link) {
+        if (!link.media || !w.matchMedia || w.matchMedia(link.media).matches) urls.push(link.href);
+      });
+      d.querySelectorAll('img[fetchpriority="high"]').forEach(function (img) { if (img.currentSrc || img.src) urls.push(img.currentSrc || img.src); });
+      urls.filter(function (u, i) { return urls.indexOf(u) === i; }).forEach(function (url) {
+        esperas.push(new Promise(function (ok) {
+          var img = new w.Image();
+          img.onload = img.onerror = ok;
+          img.src = url;
+          if (typeof img.decode === 'function') img.decode().then(ok, ok);
+          else if (img.complete) ok();
+        }));
+      });
+    }
+    if (!esperas.length) { agendar(); return; }
+    Promise.all(esperas).then(function () {
+      if (d.visibilityState === 'hidden') carregar();
+      else if (typeof w.requestAnimationFrame === 'function') w.requestAnimationFrame(function () { w.requestAnimationFrame(agendar); });
+      else agendar();
+    });
+  }
+  if (d.readyState === 'loading') d.addEventListener('DOMContentLoaded', prepararPrimeiraDobra, { once: true });
+  else prepararPrimeiraDobra();
 })(window, document);`;
 
 // A checagem compara o carregador completo, para que um atributo com script vazio não dê falso verde.

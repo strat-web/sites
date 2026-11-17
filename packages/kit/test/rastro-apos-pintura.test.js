@@ -61,3 +61,16 @@ test('Paint Timing anunciado mas incompatível cai nos quadros, sem perder o Ras
   runInNewContext(scriptDoRastroAposPintura(),{window:w,document:d});assert.equal(scripts.length,0);
   quadros.shift()();quadros.shift()();assert.equal(scripts.length,1);
 });
+
+
+test('a primeira dobra espera fontes e a imagem de preload da mídia ativa antes dos quadros',async()=>{
+  const scripts=[],quadros=[],urls=[];let resolverFonte,resolverImagem;
+  const fonte=new Promise(ok=>{resolverFonte=ok;});const imagem=new Promise(ok=>{resolverImagem=ok;});
+  function Img(){Object.defineProperty(this,'src',{set:u=>urls.push(u)});this.decode=()=>imagem;}
+  const w={Image:Img,matchMedia:q=>({matches:q==='mobile'}),requestAnimationFrame:cb=>quadros.push(cb),performance:{getEntriesByType:()=>[{name:'first-contentful-paint'}]}};
+  const d={readyState:'complete',visibilityState:'visible',fonts:{ready:fonte},querySelectorAll:q=>q.startsWith('link')?[{media:'mobile',href:'/hero-mobile.webp'},{media:'desktop',href:'/hero.webp'}]:[],currentScript:{getAttribute:()=>'/sa?product=quaia'},createElement:()=>({}),head:{appendChild:s=>scripts.push(s)}};
+  runInNewContext(scriptDoRastroAposPintura(),{window:w,document:d});assert.deepEqual(urls,['/hero-mobile.webp']);assert.equal(scripts.length,0);
+  resolverFonte();await new Promise(ok=>setImmediate(ok));assert.equal(quadros.length,0);
+  resolverImagem();await new Promise(ok=>setImmediate(ok));assert.equal(quadros.length,1);
+  quadros.shift()();assert.equal(scripts.length,0);quadros.shift()();assert.equal(scripts.length,1);
+});
