@@ -21,12 +21,16 @@ function alvo(obj = {}) {
 
 // Página no meio do parse do <head>: o <script defer> do m.js já está no DOM, mas ainda não rodou (é o que acontece
 // quando o script inline do banner roda). `escolha` é o que está guardado em strat_cookies.
-function pagina({ escolha = null, semStorage = false } = {}) {
+function pagina({ escolha = null, semStorage = false, modo = 'banner' } = {}) {
   let agora = 0;
   const timers = [];
   const guardado = new Map(escolha ? [['strat_cookies', escolha]] : []);
   const consentimentos = [];
-  const mjs = alvo({ src: METRICAAS });
+  // O <script> do m.js: o m.js lê o data-pixel-consent dele quando roda (mtc._i.cons).
+  const mjs = alvo({ src: METRICAAS, attrs: {} });
+  mjs.setAttribute = (k, v) => { mjs.attrs[k] = v; };
+  // Chamadas ao fbq do mf.js, em ordem (["consent", "revoke"], ["init", id], ["track", "PageView"]).
+  const fbq = [];
   const body = { filhos: [], appendChild(el) { this.filhos.push(el); el.pai = this; } };
   const document = alvo({
     readyState: 'loading',
@@ -54,8 +58,8 @@ function pagina({ escolha = null, semStorage = false } = {}) {
   const ctx = vm.createContext(window);
 
   return {
-    window, document, guardado, consentimentos, timers,
-    rodarBanner() { vm.runInContext(scriptDoBanner(fonte, PRIVACIDADE), ctx); },
+    window, document, guardado, consentimentos, timers, mjs, fbq,
+    rodarBanner() { vm.runInContext(scriptDoBanner(fonte, PRIVACIDADE, modo), ctx); },
     // Passa o tempo do relógio de mentira, rodando os timers que vencerem (é como o código antigo esperava 8 s).
     avancar(ms) {
       const fim = agora + ms;
@@ -72,10 +76,21 @@ function pagina({ escolha = null, semStorage = false } = {}) {
     fimDoParse() { document.body = body; document.readyState = 'interactive'; document.disparar('DOMContentLoaded'); },
     // O m.js roda (troca o window.mtc inteiro, como o de verdade) e o <script> dispara "load"; depois, o load da página.
     chegaMjs() {
-      window.mtc = { consentir: () => consentimentos.push(agora), track() {}, lead() {} };
+      window.mtc = {
+        consentir: () => consentimentos.push(agora), track() {}, lead() {},
+        _i: { cons: mjs.attrs['data-pixel-consent'] ?? null },
+      };
       mjs.disparar('load');
       document.readyState = 'complete';
       window.disparar('load');
+    },
+    // O mf.js roda (o m.js o carrega quando há data-pixel): cria o fbq e, com cons "aguardar", revoga antes do init e
+    // do PageView, como o de verdade (t.metricaas.com.br/mf.js, lido em 17/11/2026).
+    chegaMf() {
+      window.fbq = (...args) => fbq.push(args);
+      if (window.mtc._i.cons === 'aguardar') window.fbq('consent', 'revoke');
+      window.fbq('init', '1815630929780241');
+      window.fbq('track', 'PageView');
     },
     banner: () => body.filhos.find((el) => el.className === 'strat-cookies'),
     clicar(valor) {
@@ -89,7 +104,9 @@ function pagina({ escolha = null, semStorage = false } = {}) {
 test('o script inline é a expressão do arquivo chamada com window, document e as opções, sem comentário de linha', () => {
   const s = scriptDoBanner(fonte, 'https://x.com.br/<privacidade>/');
   assert.match(s, /^\(function \(w, d, o\) \{/);
-  assert.match(s, /\}\)\(window, document, \{"privacidade":"https:\/\/x\.com\.br\/\\u003cprivacidade>\/","mjs":"https:\/\/t\.metricaas\.com\.br\/m\.js"\}\);$/);
+  assert.match(s, /\}\)\(window, document, \{"privacidade":"https:\/\/x\.com\.br\/\\u003cprivacidade>\/","mjs":"https:\/\/t\.metricaas\.com\.br\/m\.js","modo":"banner"\}\);$/);
+  assert.match(scriptDoBanner(fonte, 'https://x.com.br/', 'soft'), /"modo":"soft"\}\);$/);
+  assert.throws(() => scriptDoBanner(fonte, 'https://x.com.br/', 'off'), /modo "off" não existe/);
   assert.doesNotMatch(s, /^\s*\/\//m);
   assert.doesNotMatch(s, /setTimeout|setInterval/);
 });
@@ -175,4 +192,105 @@ test('m.js bloqueado (nunca chega): nada liga e nada fica rodando', () => {
   p.window.disparar('load');
   assert.deepEqual(p.consentimentos, []);
   assert.equal(p.timers.length, 0);
+});
+
+// Modo soft (WEB-84): página sem Rastro em que o pixel mede desde a abertura e o "Recusar" corta.
+const REVOKE = ['consent', 'revoke'];
+
+test('soft sem escolha: o pixel mede na abertura, o aviso mostra Recusar e Ok, e o "Ok" não muda nada', () => {
+  const p = pagina({ modo: 'soft' });
+  p.rodarBanner();
+  p.fimDoParse();
+  assert.ok(p.banner(), 'aviso na tela');
+  assert.match(p.banner().innerHTML, /Se preferir, recuse/);
+  assert.match(p.banner().innerHTML, /data-c="nao">Recusar<.*data-c="sim">Ok</);
+  assert.match(p.banner().innerHTML, /href="https:\/\/agenciastrat\.com\.br\/privacidade\/"/);
+  p.chegaMjs();
+  p.chegaMf();
+  assert.deepEqual(p.fbq, [['init', '1815630929780241'], ['track', 'PageView']], 'PageView sem revoke');
+  p.clicar('sim');
+  assert.equal(p.guardado.get('strat_cookies'), 'sim');
+  assert.equal(p.banner(), undefined, 'o aviso sai');
+  assert.equal(p.fbq.length, 2, 'o "Ok" não chama o fbq');
+  assert.deepEqual(p.consentimentos, [], 'soft não precisa do consentir');
+});
+
+test('soft: "Recusar" com o pixel já ligado revoga na hora e guarda nao', () => {
+  const p = pagina({ modo: 'soft' });
+  p.rodarBanner();
+  p.fimDoParse();
+  p.chegaMjs();
+  p.chegaMf();
+  p.clicar('nao');
+  assert.equal(p.guardado.get('strat_cookies'), 'nao');
+  assert.deepEqual(p.fbq.at(-1), REVOKE);
+  assert.equal(p.banner(), undefined);
+});
+
+test('soft: "Recusar" antes de o m.js rodar segura o pixel antes do init e do PageView', () => {
+  const p = pagina({ modo: 'soft' });
+  p.rodarBanner();
+  p.fimDoParse();
+  p.clicar('nao');
+  assert.equal(p.mjs.attrs['data-pixel-consent'], 'aguardar', 'o m.js lê o atributo quando roda');
+  p.chegaMjs();
+  p.chegaMf();
+  assert.deepEqual(p.fbq[0], REVOKE, 'revoke antes do init');
+});
+
+test('soft: "Recusar" depois do m.js e antes do mf.js também segura (mtc._i.cons)', () => {
+  const p = pagina({ modo: 'soft' });
+  p.rodarBanner();
+  p.fimDoParse();
+  p.chegaMjs();
+  p.clicar('nao');
+  assert.equal(p.window.mtc._i.cons, 'aguardar');
+  p.chegaMf();
+  assert.deepEqual(p.fbq[0], REVOKE, 'revoke antes do init');
+});
+
+test('soft com recusa guardada: sem aviso, e o pixel nasce revogado nas próximas visitas', () => {
+  const p = pagina({ modo: 'soft', escolha: 'nao' });
+  p.rodarBanner();
+  assert.equal(p.mjs.attrs['data-pixel-consent'], 'aguardar', 'antes de o m.js rodar');
+  p.fimDoParse();
+  assert.equal(p.banner(), undefined);
+  p.chegaMjs();
+  p.chegaMf();
+  assert.deepEqual(p.fbq[0], REVOKE);
+  assert.deepEqual(p.consentimentos, []);
+});
+
+test('soft com "Ok" guardado (ou aceite no banner de outra página da marca): sem aviso, pixel ligado', () => {
+  const p = pagina({ modo: 'soft', escolha: 'sim' });
+  p.rodarBanner();
+  p.fimDoParse();
+  p.chegaMjs();
+  p.chegaMf();
+  assert.equal(p.banner(), undefined);
+  assert.equal(p.mjs.attrs['data-pixel-consent'], undefined);
+  assert.deepEqual(p.fbq, [['init', '1815630929780241'], ['track', 'PageView']]);
+});
+
+test('soft sem localStorage: o aviso aparece e o "Recusar" ainda corta o pixel da visita', () => {
+  const p = pagina({ modo: 'soft', semStorage: true });
+  p.rodarBanner();
+  p.fimDoParse();
+  p.chegaMjs();
+  p.chegaMf();
+  p.clicar('nao');
+  assert.deepEqual(p.fbq.at(-1), REVOKE);
+});
+
+test('banner: o "Recusar" não chama o fbq (o pixel nunca ligou)', () => {
+  const p = pagina();
+  p.rodarBanner();
+  p.fimDoParse();
+  p.clicar('nao');
+  assert.equal(p.mjs.attrs['data-pixel-consent'], undefined, 'no banner o atributo vem do HTML, não do script');
+  p.chegaMjs();
+  p.window.mtc._i.cons = 'aguardar'; // o HTML do banner já traz o atributo
+  p.chegaMf();
+  assert.deepEqual(p.fbq[0], REVOKE);
+  assert.equal(p.fbq.filter((c) => c[0] === 'consent').length, 1, 'só o revoke do próprio mf.js');
 });

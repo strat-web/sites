@@ -2,7 +2,9 @@
 // gtag colado à mão (no HTML, em <noscript> ou num .js do build), m.js fora do lugar (ordem, defer e type) e slug que
 // o Rastro não conhece. O esperado de cada página sai da mesma regra do componente (planoDeTracking do kit), lida da
 // linha do catálogo; a checagem compara com o HTML gerado.
-import { HOTMART_LAUNCHER, METRICAAS, RASTRO, UMAMI, consentModeEsperado, planoDeTracking } from '@strat/kit';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { HOTMART_LAUNCHER, METRICAAS, RASTRO, UMAMI, consentModeEsperado, marca, planoDeTracking, scriptDoBanner } from '@strat/kit';
 import { ehPaginaDeErro } from './contexto.js';
 import { lerPagina } from './html.js';
 import { ESQUELETOS } from './esqueletos.js';
@@ -23,6 +25,30 @@ const COLADO_A_MAO = [
 const DE_VENDA = /hotmart\.com/i;
 
 const ATRIBUTOS = ['data-ws', 'data-pixel', 'data-pixel-consent', 'data-website-id'];
+
+// Fonte do banner de cookies do kit: o <Tracking> põe este texto inline (scriptDoBanner). No modo soft ele chama
+// fbq('consent', 'revoke') no "Recusar" (WEB-84), então só o texto exato que o kit gera para a linha passa pela regra do
+// "colado à mão"; qualquer outro fbq inline segue barrando.
+const FONTE_DO_BANNER = readFileSync(fileURLToPath(import.meta.resolve('@strat/kit/banner-cookies.js')), 'utf8');
+
+/** Texto do banner de cookies que o <Tracking> põe na página da linha, ou null quando a linha não tem banner. */
+export function bannerDoKit(catalogo, linha) {
+  if (!linha) return null;
+  let plano;
+  try {
+    plano = planoDeTracking({ catalogo, url: linha.url, perfil: linha.perfil });
+  } catch {
+    return null; // o erro do plano é acusado mais abaixo
+  }
+  if (!plano.aviso) return null;
+  let privacidade;
+  try {
+    privacidade = marca(linha.marca).privacidade;
+  } catch {
+    return null; // marca fora do kit: o build já quebra no <Tracking>
+  }
+  return privacidade ? scriptDoBanner(FONTE_DO_BANNER, privacidade, plano.aviso) : null;
+}
 
 /** Script que é do componente <Tracking> (Rastro, MetricaaS, Umami ou launcher da Hotmart). */
 export function ehScriptDeTracking(s) {
@@ -66,8 +92,12 @@ export function problemasDoMjs(mjs, scripts, fimDoHead = Infinity) {
 export function checarPaginaTracking(pagina, catalogo, r) {
   const onde = pagina.url;
   const { scripts, noindex, noscripts, fimDoHead } = lerPagina(pagina.html);
+  const linhaDaPagina = (catalogo.urls || []).find((l) => l.url === onde);
+  const banner = ESQUELETOS[onde] ? null : bannerDoKit(catalogo, linhaDaPagina);
+  const ehBanner = (s) => banner !== null && !s.attrs.src && s.conteudo.trim() === banner;
 
   for (const s of scripts) {
+    if (ehBanner(s)) continue;
     for (const nome of coladoAMao(`${s.attrs.src || ''}\n${s.conteudo}`)) {
       r.erro(onde, `${nome} colado à mão em ${descrever(s)}: tracking só pelo <Tracking> do kit`);
     }
@@ -85,7 +115,7 @@ export function checarPaginaTracking(pagina, catalogo, r) {
     return [];
   }
 
-  const linha = (catalogo.urls || []).find((l) => l.url === onde);
+  const linha = linhaDaPagina;
   if (!linha) return []; // a checagem catalogo acusa
   // Com banner nada de venda carrega antes do "aceitar" (WEB-81): o kit já recusa venda + banner (até o WEB-85), e
   // aqui barra também o script da Hotmart que entrou por outro caminho (colado à mão, widget de checkout, build velho).
@@ -131,6 +161,9 @@ export function checarPaginaTracking(pagina, catalogo, r) {
     else sobra.splice(i, 1);
   }
   for (const s of sobra) r.erro(onde, `script de tracking que o catálogo não pede (colado à mão ou em dobro): ${descrever(s)}`);
+  if (banner !== null && !scripts.some(ehBanner)) {
+    r.erro(onde, `falta o banner de cookies do kit (modo "${plano.aviso}"): consentimento "${linha.consentimento}" sem Rastro pede o aviso do <Tracking>`);
+  }
 
   if (esperados.length && !linha.umami_website_id) {
     r.aviso(onde, 'sem umami_website_id no catálogo: a página não mede no Umami (o id vem do Strat Tracking)');
