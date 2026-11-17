@@ -11,6 +11,24 @@ ligados a este repositório e só com o endereço `.pages.dev` (ver `pages.md`).
 - Todas as zonas na conta da Cloudflare "Strat Academy" (`6258e000cf06b29a9f3fa797f8592171`), menos `strat.tec.br`,
   que está noutra conta até o WEB-56.
 
+## Assets (R2)
+Um bucket por marca, servido no subdomínio `assets.` da própria marca (domínio personalizado do R2, TLS mínimo 1.2,
+`r2.dev` desligado). O `Cache-Control` imutável vai gravado em cada arquivo no upload, não numa regra da zona
+(mesmo padrão do bucket da Academy). Subir: `scripts/subir-asset.mjs` (`padroes.md`). Nada se apaga nem se
+sobrescreve: chave nova para conteúdo novo.
+
+| Domínio | Bucket | Desde | Item |
+|---|---|---|---|
+| assets.agenciastrat.com.br | `assets-agenciastrat` | 2026-11-17 | WEB-44 |
+| assets.stratai.com.br | `assets-stratai` | 2026-11-17 | WEB-44 |
+| assets.metricaas.com.br | `assets-metricaas` | 2026-11-17 | WEB-44 |
+| assets.stratacademy.com.br | `strat-web-media` (nome antigo, de antes da padronização; CORS de `PUT` para o painel do Horus) | 2026-07-14 | — |
+
+Imagem de teste em cada um: `teste/web-44.png` (o logo da marca), conferida em 2026-11-17 com 200 e
+`Cache-Control: public, max-age=31536000, immutable`. A borda responde `cf-cache-status: DYNAMIC` nos quatro (o
+da Academy também): o navegador guarda por um ano, a borda não. As regras de cache das zonas não são legíveis com o
+token `pages-strat-web`; investigação no item de Triagem aberto pelo WEB-44.
+
 ## Zonas
 
 | Zona | Conta | Situação | O Jhonathan mexe com o token? |
