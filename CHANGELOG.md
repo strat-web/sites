@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- feat(academy): migra a LP da comunidade (pós-cadastro de todos os funis, ?f=) do strat-lps para o projeto academy-comunidade do Pages; por-funil conserva o Umami do host e o Rastro segue pelo FUNIS da página (WEB-48)
 - ci(checagens): servidor do Lighthouse negocia gzip para recursos de texto e workflow permite disparar as seis checagens manualmente numa branch sem PR (WEB-88)
 - docs(auditoria): stratacademy.com.br conferido no navegador sem escolha, com aceite e com recusa (Umami e Cloudflare na abertura, pixel e PostHog só com aceite, sem GA4 nem Google Ads, conversões barradas no /tracker pelo CORS, produtos do Rastro das ferramentas); linha do catálogo com os ids do produto site no Rastro e o que difere hoje; tracking.md: o aceite fica no localStorage, não em cookie (WEB-46)
 - feat(stratai): página /parcerias/ do programa de parceria e indicação (prévia aprovada, só a indicação), com o cadastro em 3 etapas enviado ao MetricaaS da StratAI pelo mtc.lead() e linha no catálogo (WEB-74)

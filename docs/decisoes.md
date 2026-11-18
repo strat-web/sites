@@ -2,6 +2,11 @@
 
 Uma entrada por decisão, com data e quem decidiu. A mais nova em cima.
 
+## 2026-11-17 · Projeto do Pages de cada LP da Academy com o prefixo `academy-` (Jhonathan, WEB-48)
+O endereço `*.pages.dev` é de todas as contas da Cloudflare (`claude.pages.dev` não estaria livre), e o prefixo separa
+as LPs dos apps na lista da conta: `academy-claude`, `academy-skills`, `academy-mentoria`, `academy-bootcamp`,
+`academy-vibecode` e `academy-comunidade`.
+
 ## 2026-11-13 · Sem limite de PRs abertos (Helbert e Jhonathan, conversa pessoal; trazida pelo Jhonathan)
 Cai a regra de "no máximo 6 PRs abertos" de 12/11: item pronto vira PR na hora, sem esperar vaga numa branch. As
 outras regras de fluxo de 12/11 continuam (pilha de 2 níveis, janelas de revisão, D11, rebase que muda código e lead

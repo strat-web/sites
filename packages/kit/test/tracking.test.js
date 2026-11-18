@@ -124,8 +124,11 @@ test('consentimento × consentMode do Rastro: banner = strict, soft = soft, off 
   assert.equal(plano('https://agenciastrat.com.br/kit/lead/', 'lead').consentMode, null);
 });
 
-test('sem-tracking e por-funil não carregam nada; Umami entra pelo proxy /u/ quando o id existe', () => {
-  assert.deepEqual(plano('https://comunidade.stratacademy.com.br/', 'conteudo').scripts, []);
+test('por-funil preserva só o Umami do host; sem-tracking continua sem scripts', () => {
+  const comunidade = plano('https://comunidade.stratacademy.com.br/', 'conteudo');
+  assert.deepEqual(comunidade.scripts, [{ src: '/u/script.js', attrs: { 'data-website-id': '292545fe-45fd-481b-832f-99ab2c972d04' } }]);
+  assert.equal(comunidade.hotmart, null);
+  assert.equal(comunidade.banner, false);
   assert.deepEqual(falso({ metricaas_ws: 'w', consentimento: 'sem-tracking' }).scripts, []);
   const u = falso({ metricaas_ws: 'w', umami_website_id: 'abc-123' });
   assert.deepEqual(u.scripts.at(-1), { src: '/u/script.js', attrs: { 'data-website-id': 'abc-123' } });
