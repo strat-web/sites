@@ -1,0 +1,10 @@
+---
+// Rota jurídica já existente no Router da V2; agora também tem entrada estática no Pages (WEB-48).
+import Layout from '@strat/kit/Layout.astro';
+import head from '../../../html/legal.head.html?raw';
+import corpo from '../../../html/legal-termos.corpo.html?raw';
+---
+<Layout marca="academy" perfil="conteudo" indexar={false} titulo="Termos de Uso | Strat Academy" descricao="Termos de Uso da Mentoria Strat Academy, preservados do aplicativo original.">
+  <Fragment slot="head" set:html={head} />
+  <Fragment set:html={corpo} />
+</Layout>

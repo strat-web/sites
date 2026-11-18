@@ -316,6 +316,7 @@ test('peso: exceção do Lighthouse avisa acima do piso e barra abaixo dele (WEB
     'https://stratai.com.br/',
     'https://stratai.com.br/politica-de-privacidade/',
     'https://stratai.com.br/raio-x/',
+    'https://mentoria.stratacademy.com.br/v2/',
   ]);
 });
 
