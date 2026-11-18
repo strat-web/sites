@@ -3,7 +3,7 @@
 export { grupo, marcas, marca } from './marcas.js';
 export { urlCanonica, caminhoCanonico, ehArquivo, dataDoDia, schemaMarca, schemaBreadcrumb, schemaFaq, jsonSeguro } from './schema.js';
 export {
-  PERFIS, planoDeTracking, linhaDoCatalogo, scriptDoBanner, RASTRO, METRICAAS, UMAMI, HOTMART_LAUNCHER, CONSENT_MODE_DO_RASTRO,
+  PERFIS, planoDeTracking, linhaDoCatalogo, scriptDoBanner, scriptDoPorFunil, funisDaLinha, ID_POR_FUNIL, RASTRO, METRICAAS, UMAMI, HOTMART_LAUNCHER, CONSENT_MODE_DO_RASTRO,
   consentModeEsperado,
 } from './tracking.js';
 // Integração do Astro que grava sitemap.xml, robots.txt e llms.txt no fim do build (WEB-18).

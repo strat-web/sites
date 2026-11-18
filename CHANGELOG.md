@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- feat(kit): por-funil pelo <Tracking>: o registro funis da linha do catálogo (chave do ?f= → produto do Rastro, com consentimento e ids) e o script rastro-por-funil.js, que liga o /sa do funil e dispara o CompleteRegistration uma vez por sessão; a comunidade da Academy deixa de montar o Rastro no próprio script, e a checagem tracking passa a barrar Rastro montado pela página e a conferir cada produto do registro no Rastro (WEB-106)
 - feat(academy): migra a LP da comunidade (pós-cadastro de todos os funis, ?f=) do strat-lps para o projeto academy-comunidade do Pages; por-funil conserva o Umami do host e o Rastro segue pelo FUNIS da página (WEB-48)
 - ci(checagens): o Lighthouse do peso mede a página sem o destino quando ela sai sozinha para outro domínio (navegação respondida com 204 e registrada no log), em vez de medir o WhatsApp (WEB-48)
 - ci(checagens): servidor do Lighthouse negocia gzip para recursos de texto e workflow permite disparar as seis checagens manualmente numa branch sem PR (WEB-88)
