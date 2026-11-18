@@ -8,6 +8,11 @@
 // - "soft" (WEB-84): o pixel mede desde a abertura (o m.js vai sem data-pixel-consent) e o aviso mostra "Recusar" e
 //   "Ok". "Recusar" corta o pixel na hora (fbq consent revoke) e nas próximas visitas (recusa guardada).
 //
+// Valores guardados em strat_cookies: "sim" (Aceitar do banner), "nao" (Recusar, nos dois modos) e "ok" (Ok do soft).
+// O "Ok" do soft não é aceite: só tira o aviso das páginas soft. Numa página em banner, "ok" conta como sem escolha e
+// o banner aparece de novo (revisão do Helbert no #37, 18/11/2026). A recusa vale nos dois modos, e o "sim" do banner
+// também tira o aviso do soft (quem aceitou o pixel não precisa ser avisado de que ele mede).
+//
 // Este arquivo vai inteiro, como texto, para dentro do <script is:inline> do <Tracking> (import com ?raw): escreva em
 // ES5, sem import nem export. É uma expressão de função; o componente a chama com (window, document, { privacidade,
 // mjs, modo }), onde mjs é o src do <script> do m.js. O teste (test/banner-cookies.test.js) roda este mesmo texto num
@@ -56,7 +61,7 @@
 
   if (SOFT) {
     if (escolha === 'nao') return segurar();
-    if (escolha === 'sim') return;
+    if (escolha === 'sim' || escolha === 'ok') return;
   } else {
     if (escolha === 'sim') return liberar();
     if (escolha === 'nao') return;
@@ -71,7 +76,8 @@
       ? '<p>Usamos cookies e o Pixel da Meta para medir os nossos anúncios. Se preferir, recuse. '
       : '<p>Usamos cookies e o Pixel da Meta para medir os nossos anúncios. Você pode aceitar ou recusar. ') +
       '<a href="' + o.privacidade + '">Política de privacidade</a></p>' +
-      '<div><button type="button" data-c="nao">Recusar</button> <button type="button" data-c="sim">' +
+      '<div><button type="button" data-c="nao">Recusar</button> <button type="button" data-c="' +
+      (SOFT ? 'ok' : 'sim') + '">' +
       (SOFT ? 'Ok' : 'Aceitar') + '</button></div>';
     function antes(e) {
       var c = e.target && e.target.closest && e.target.closest('[data-c="nao"]');

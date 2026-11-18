@@ -213,13 +213,13 @@ test('soft sem escolha: o pixel mede na abertura, o aviso mostra Recusar e Ok, e
   p.fimDoParse();
   assert.ok(p.banner(), 'aviso na tela');
   assert.match(p.banner().innerHTML, /Se preferir, recuse/);
-  assert.match(p.banner().innerHTML, /data-c="nao">Recusar<.*data-c="sim">Ok</);
+  assert.match(p.banner().innerHTML, /data-c="nao">Recusar<.*data-c="ok">Ok</);
   assert.match(p.banner().innerHTML, /href="https:\/\/agenciastrat\.com\.br\/privacidade\/"/);
   p.chegaMjs();
   p.chegaMf();
   assert.deepEqual(p.fbq, [['init', '1815630929780241'], ['track', 'PageView']], 'PageView sem revoke');
-  p.clicar('sim');
-  assert.equal(p.guardado.get('strat_cookies'), 'sim');
+  p.clicar('ok');
+  assert.equal(p.guardado.get('strat_cookies'), 'ok', 'o "Ok" do soft não grava o "sim" do Aceitar');
   assert.equal(p.banner(), undefined, 'o aviso sai');
   assert.deepEqual(p.fbq.filter((c) => c[0] === 'consent'), [], 'o "Ok" não revoga');
   assert.deepEqual(p.consentimentos, [], 'soft não precisa do consentir');
@@ -242,7 +242,7 @@ test('soft: o "Ok" não revoga (o clique segue medido, como o resto da página)'
   p.fimDoParse();
   p.chegaMjs();
   p.chegaMf();
-  p.clicar('sim');
+  p.clicar('ok');
   assert.deepEqual(p.fbq.filter((c) => c[0] === 'consent'), []);
   assert.equal(p.window.ouvintes('click'), 0);
 });
@@ -293,15 +293,30 @@ test('soft com recusa guardada: sem aviso, e o pixel nasce revogado nas próxima
   assert.deepEqual(p.consentimentos, []);
 });
 
-test('soft com "Ok" guardado (ou aceite no banner de outra página da marca): sem aviso, pixel ligado', () => {
-  const p = pagina({ modo: 'soft', escolha: 'sim' });
+for (const escolha of ['ok', 'sim']) {
+  test(`soft com "${escolha}" guardado (${escolha === 'ok' ? 'Ok de outra página soft' : 'Aceitar do banner de outra página da marca'}): sem aviso, pixel ligado`, () => {
+    const p = pagina({ modo: 'soft', escolha });
+    p.rodarBanner();
+    p.fimDoParse();
+    p.chegaMjs();
+    p.chegaMf();
+    assert.equal(p.banner(), undefined);
+    assert.equal(p.mjs.attrs['data-pixel-consent'], undefined);
+    assert.deepEqual(p.fbq, [['init', '1815630929780241'], ['track', 'PageView']]);
+  });
+}
+
+test('banner com o "Ok" do soft guardado: não conta como aceite, o banner aparece e o pixel só liga no "Aceitar"', () => {
+  const p = pagina({ escolha: 'ok' });
   p.rodarBanner();
   p.fimDoParse();
   p.chegaMjs();
-  p.chegaMf();
-  assert.equal(p.banner(), undefined);
-  assert.equal(p.mjs.attrs['data-pixel-consent'], undefined);
-  assert.deepEqual(p.fbq, [['init', '1815630929780241'], ['track', 'PageView']]);
+  assert.ok(p.banner(), 'banner na tela, como sem escolha');
+  assert.match(p.banner().innerHTML, /data-c="sim">Aceitar</);
+  assert.deepEqual(p.consentimentos, [], 'o "ok" do soft não chama o consentir');
+  p.clicar('sim');
+  assert.equal(p.guardado.get('strat_cookies'), 'sim');
+  assert.equal(p.consentimentos.length, 1);
 });
 
 test('soft sem localStorage: o aviso aparece e o "Recusar" ainda corta o pixel da visita', () => {

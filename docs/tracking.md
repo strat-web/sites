@@ -52,8 +52,10 @@ compara os dois (o que ela já confere hoje está na seção "Consentimento", ab
 checagem `catalogo`. O texto é o mesmo da descrição do campo em `catalogo/sites.json`.
 
 **Banner do kit** (só sem Rastro, com o pixel pelo `m.js`, em `banner` ou `soft`): o texto e a chave `strat_cookies`
-são os da Agência (laudo de 31/10/2026); a escolha vale nos dois modos. Em `banner`, "Aceitar" chama `mtc.consentir()`
-e o pixel liga; "Recusar" não manda nada à Meta. O cadastro do lead e a
+são os da Agência (laudo de 31/10/2026). Valores: `sim` (Aceitar do banner), `nao` (Recusar, nos dois modos) e `ok`
+(Ok do soft). O "Ok" do soft **não é aceite**: numa página em `banner` ele conta como sem escolha e o banner aparece de
+novo; a recusa vale nos dois modos, e o `sim` também tira o aviso do soft (revisão do Helbert no #37, 18/11/2026).
+Em `banner`, "Aceitar" chama `mtc.consentir()` e o pixel liga; "Recusar" não manda nada à Meta. O cadastro do lead e a
 CAPI do MetricaaS não dependem do banner. O link da política vem de `privacidade` em `packages/kit/src/marcas.js`.
 O aceite não tem prazo (WEB-80): o `m.js` não tem fila nem evento próprio e troca o `window.mtc` inteiro quando roda,
 então, se ele ainda não rodou (rede lenta, celular), o aceite (o clique ou o `sim` guardado) espera o `load` do próprio
@@ -181,7 +183,7 @@ O que cada modo faz (conferido na auditoria de 2026-11, `docs/auditoria/2026-11/
 |---|---|---|---|
 | `off` | StratAI, MetricaaS, LPs de venda da Academy | sem aviso: pixel, GA4, Google Ads e o Rastro (`/tracker`) disparam na abertura | igual (não há escolha) |
 | `soft` | vibecode | pixel, GA4, Google Ads e Rastro disparam na abertura, com o aviso "recusar / ok" | quem recusa deixa de ser medido pelas tags do produto; quem aceita segue medido |
-| `soft` sem Rastro | `agenciastrat/kit/soft/` (teste) | o pixel dispara na abertura (`m.js` sem `data-pixel-consent`), com o aviso do kit "Recusar / Ok" | "Recusar" corta o pixel do navegador na hora e nas próximas visitas (`strat_cookies=nao`); "Ok" segue medido (WEB-84) |
+| `soft` sem Rastro | `agenciastrat/kit/soft/` (teste) | o pixel dispara na abertura (`m.js` sem `data-pixel-consent`), com o aviso do kit "Recusar / Ok" | "Recusar" corta o pixel do navegador na hora e nas próximas visitas (`strat_cookies=nao`); "Ok" segue medido e grava `strat_cookies=ok`, que não vale como "Aceitar" nas páginas em `banner` (WEB-84) |
 | `banner` com Rastro (`strict` no produto) | home da Academy (produto `site`) | o pixel não dispara | o pixel liga; o aceite fica no `localStorage`, chave `strat_consent` (a mesma do horus, conferido no WEB-46), então quem já aceitou lá continua aceito. GA4 e Google Ads seguem o produto no Rastro: conferir no teste com e sem aceite |
 | `banner` sem Rastro | home e bio da Agência | o pixel não dispara (`data-pixel-consent="aguardar"`) | "Aceitar" chama `mtc.consentir()` e o pixel do navegador liga; "Recusar" deixa o pixel desligado. GA4: a Agência não usa (WEB-73) |
 
