@@ -206,7 +206,7 @@ A mesma integração `arquivosDoSite` grava o `_headers` do Cloudflare Pages em 
   comercial antes e o lead apagado do MetricaaS no fim.
 
 ## Checagens da CI (WEB-20)
-Rodam em todo PR (`.github/workflows/checagens.yml`), cada uma num job com o próprio nome, e são as que o ruleset
+Rodam em todo PR, em push na `main` e por disparo manual (`.github/workflows/checagens.yml`), cada uma num job com o próprio nome, e são as que o ruleset
 da `main` exige. A regra mora em `packages/checagens/` e lê o `dist/` de cada app depois do build.
 
 | Checagem | Barra quando |
@@ -218,6 +218,11 @@ da `main` exige. A regra mora em `packages/checagens/` e lê o `dist/` de cada a
 | links | link interno quebrado (caminho, relativo ou URL do próprio domínio sem arquivo no build); âncora `#id` sem o id na página; endereço relativo na 404 (ela é servida em qualquer caminho) |
 | peso | página acima de 1,5 MB (HTML + CSS, JS, imagem e fonte do build); no Lighthouse em celular, performance abaixo de 90, LCP acima de 2,5 s ou CLS acima de 0,1 |
 | catalogo | página do build sem linha em `catalogo/sites.json` ou com `app` diferente; linha sem campo obrigatório, com valor fora da lista, URL sem barra, id ou URL repetidos |
+
+Para rodar numa branch sem PR: GitHub → Actions → checagens → Run workflow → escolha a branch → Run workflow,
+ou `gh workflow run checagens.yml --ref <branch>`. O disparo manual fica disponível depois que o workflow com
+`workflow_dispatch` chegar à `main`; a branch escolhida também precisa conter esse gatilho. Roda o mesmo build
+e as cinco checagens, com os mesmos nomes e limites. Confira a execução em Actions ou com `gh run view <id>`.
 
 Na máquina: `pnpm checar` roda tudo (o Lighthouse precisa do Chrome instalado, ~1 min); `pnpm checar:rapido` pula
 o Lighthouse. Uma checagem ou um app: `node packages/checagens/src/cli.js seo links --app apps/stratai`.
@@ -244,7 +249,10 @@ Exceções escritas no código, com o item que as tira:
   no item que acertar o desempenho da página;
 - `/u/` não é conferido como link: o proxy do Umami é do Strat Tracking, fora do build.
 
-O peso é medido no `dist/` servido na própria máquina da CI. No Lighthouse, os scripts do `<Tracking>` (Rastro,
+O peso é medido no `dist/` servido na própria máquina da CI. O servidor negocia gzip por `Accept-Encoding`
+para HTML, CSS, JavaScript, JSON, SVG, texto e XML; imagens, fontes e vídeos seguem intactos. Isso aproxima
+a transferência do Pages, sem reproduzir CDN, latência e cache de produção. O teto de 1,5 MB continua contando
+os arquivos originais, sem compressão. No Lighthouse, os scripts do `<Tracking>` (Rastro,
 MetricaaS, launcher da Hotmart, Umami) ficam bloqueados: são obrigatórios, não mudam por PR e variam a cada medição
 (a página de venda oscilou entre 89 e 93 só por eles). Qualquer outro script de terceiro continua medido. Se a
 primeira medição não passa, ele mede de novo antes de barrar. O número que vale para o site no ar
