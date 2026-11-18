@@ -2,6 +2,14 @@
 
 Uma entrada por decisão, com data e quem decidiu. A mais nova em cima.
 
+## 2026-11-18 · Lighthouse da CI mede a página, não o destino para onde ela sai (Jhonathan, WEB-48; espera o Helbert no PR)
+A confirmação da comunidade e o grupo do bootcamp (`/0808-v1/grupo/`) abrem o WhatsApp sozinhos depois de 1,8 s, como
+no `strat-lps`. O Lighthouse seguia a navegação e media o `chat.whatsapp.com`: 79 e LCP 4,3 s, com a página do
+WhatsApp como final. A checagem `peso` passa a responder 204 à navegação da aba principal para outra origem; o
+navegador fica na página, e o log diz para onde ela tentou sair. Medidas assim, as duas deram 100 e LCP de 1,4 a 1,7 s
+(18/11). Substitui as exceções com piso 65 / 7,0 s que o #47 propunha para essas páginas. Separada do PR das LPs, como
+a regra do `seo`, porque vale para todos os apps.
+
 ## 2026-11-13 · Sem limite de PRs abertos (Helbert e Jhonathan, conversa pessoal; trazida pelo Jhonathan)
 Cai a regra de "no máximo 6 PRs abertos" de 12/11: item pronto vira PR na hora, sem esperar vaga numa branch. As
 outras regras de fluxo de 12/11 continuam (pilha de 2 níveis, janelas de revisão, D11, rebase que muda código e lead
