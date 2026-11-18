@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- perf(metricaas): home, política e termos no orçamento do Lighthouse sem exceção: Inter do próprio app no lugar do Google Fonts (home e legal.css), com preload; home 99 / LCP 2,0 s, política 100 / 1,7 s e CLS 0 (era 0,099); saem de excecoes-peso.js (WEB-107)
 - feat(metricaas): home, /politica-de-privacidade/ e /termos-de-uso/ migradas do strat-lps sem mudar texto, layout nem tracking (Rastro metricaas e Umami pelo kit), 301 da casa antiga no _redirects (política e termos sem barra, /images/*, /legal.css), linhas da política e dos termos no catálogo, metricaas.com.br fora dos esqueletos e a home e a política na exceção do Lighthouse com o piso medido no ar, até o WEB-107 (desempenho do MetricaaS) (WEB-36)
 - ci(checagens): servidor do Lighthouse negocia gzip para recursos de texto e workflow permite disparar as seis checagens manualmente numa branch sem PR (WEB-88)
 - docs(auditoria): stratacademy.com.br conferido no navegador sem escolha, com aceite e com recusa (Umami e Cloudflare na abertura, pixel e PostHog só com aceite, sem GA4 nem Google Ads, conversões barradas no /tracker pelo CORS, produtos do Rastro das ferramentas); linha do catálogo com os ids do produto site no Rastro e o que difere hoje; tracking.md: o aceite fica no localStorage, não em cookie (WEB-46)

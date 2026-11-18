@@ -44,7 +44,21 @@ não mudou: a regra é não mexer no texto na migração, e esse endereço conti
 Todos 301, com a query junto.
 
 ## Desempenho
-A home e a política medem abaixo do orçamento do Lighthouse já no ar (17/11/2026, 3 medições no Lighthouse da CI:
-home com performance 75 a 90 e LCP 3,0 a 4,6 s; política com 88 a 89 e LCP 2,8 a 2,9 s). Como a migração não muda a
-página, as duas estão em `packages/checagens/src/excecoes-peso.js`, com o pior número do ar como piso. No build, a
-home mediu 91 e 2,9 s, a política 96 e 1,7 s e os termos 99 e 1,7 s.
+As três páginas passam no orçamento do Lighthouse sem exceção desde o WEB-107 (18/11/2026). Medição no build servido
+com gzip, Lighthouse em celular, 3 vezes cada, tracking bloqueado como na CI:
+
+| | Antes (fonte do Google) | Depois |
+|---|---|---|
+| Home | 88 a 92, LCP 2,7 a 3,8 s | 99, LCP 2,0 s, CLS 0 |
+| Política | 90, LCP 2,6 s, CLS 0,099 | 100, LCP 1,7 s, CLS 0 |
+| Termos | 93 a 99, LCP 1,6 a 2,6 s | 100, LCP 1,7 s, CLS 0 |
+
+O que mudou, sem mudar texto, layout nem tracking:
+- **Inter do próprio app.** A folha do Google Fonts saiu da home e o `@import` dela saiu do `css/legal.css` (nas páginas
+  legais ela só era descoberta depois do CSS). A Inter vem de `public/fontes/inter-latin.woff2`, o mesmo arquivo
+  variável, subset latin, que o Google servia (um arquivo cobre os pesos 400 a 900), com `font-display: swap`, preload
+  nas três páginas e a licença OFL ao lado. O CLS de 0,099 da política (índice `nav.toc`) era a troca tardia da fonte.
+- **Fundo do topo (`.hero-bg`) segue pelo CSS.** Ele é o LCP da home, mas o CSS está no próprio HTML, então a imagem já
+  é descoberta cedo. Preload por largura (`hero-mobile.webp` até 720 px, `hero-people.webp` acima) foi medido: com
+  `fetchpriority="high"` o LCP piorou para 3,5 s (a imagem de 279 KB disputa a banda com a fonte); sem ele ficou igual
+  (2,0 s). Por isso não entrou.
