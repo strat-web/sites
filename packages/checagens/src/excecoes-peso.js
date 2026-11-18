@@ -25,7 +25,7 @@ export const EXCECOES_LIGHTHOUSE = {
     piso: { performance: 85, lcpMs: 3300, cls: 0.1 },
   },
   'https://metricaas.com.br/': {
-    item: 'WEB-36',
+    item: 'WEB-107',
     motivo:
       'home migrada sem mudança (WEB-36); no ar em 17/11/2026 mediu performance 75 a 90 e LCP 3,0 a 4,6 s (3 medições ' +
       'no Lighthouse da CI). A fonte do Google bloqueia a renderização e o fundo do topo (hero-people.webp, 215 KB, ' +
@@ -33,10 +33,11 @@ export const EXCECOES_LIGHTHOUSE = {
     piso: { performance: 75, lcpMs: 4700, cls: 0.1 },
   },
   'https://metricaas.com.br/politica-de-privacidade/': {
-    item: 'WEB-36',
+    item: 'WEB-107',
     motivo:
       'página migrada sem mudança (WEB-36); no ar em 17/11/2026 mediu performance 88 a 89, LCP 2,8 a 2,9 s e CLS até ' +
-      '0,099 (3 medições no Lighthouse da CI). O servidor local das checagens não comprime (WEB-88)',
+      '0,099 (3 medições no Lighthouse da CI). Com o gzip da main (WEB-88), em 18/11/2026 mediu 90 a 97, LCP 1,6 a ' +
+      '2,6 s e CLS 0,099 (3 medições locais): ainda sem folga para sair da lista',
     piso: { performance: 88, lcpMs: 3000, cls: 0.1 },
   },
 };
