@@ -141,6 +141,17 @@ export function scriptDoBanner(fonte, privacidade) {
 //   no clique) para carregar o launcher antes de o Rastro rodar o loadMarketing. O Rastro é defer: o
 //   window.stratConsent já existe no DOMContentLoaded; o load do <script> do Rastro é a garantia.
 // Sem aceite, nada da Hotmart carrega. O teste (test/launcher-hotmart.test.js) roda este texto num DOM simulado.
+//
+// CONTRATO COM O RASTRO (revisão do Helbert no #38, 18/11/2026). O window.stratConsent é interno do Rastro
+// (tracking.stratacademy.com.br/sa), não é API publicada, e o modo aposAceite depende de quatro coisas dele:
+// 1. window.stratConsent é um objeto comum com grant() (dá para trocar a propriedade grant);
+// 2. o "aceitar" do aviso busca window.stratConsent.grant na hora do clique (yes.onclick=function(){window.
+//    stratConsent.grant()}), então chama o grant embrulhado aqui;
+// 3. o grant grava strat_consent=granted no localStorage (é o que a próxima visita lê para carregar na hora);
+// 4. o loadHotmart do Rastro não carrega um segundo launcher quando já existe window.hot.
+// Se o Rastro mudar qualquer um deles, o launcher falha fechado: nada da Hotmart carrega em venda + banner (não vaza
+// antes do aceite, mas a página perde o launcher). O teste test/rastro-contrato.test.js roda os trechos do Rastro
+// copiados em 18/11/2026 e compara com o script no ar: se ele mudar, o teste fica vermelho. Mexeu no Rastro, rode-o.
 export function scriptDoLauncher(conta, { aposAceite = false } = {}) {
   const snippet =
     `(function(l,a,u,n,c,h,e,r){l['HotmartLauncherObject']=c;l[c]=l[c]||function(){\n` +

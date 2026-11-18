@@ -79,6 +79,13 @@ Hotmart lê o HTML estático), mas dentro de uma função que só roda com o ace
 | "recusar" ou `denied` guardado | nunca carrega |
 | Rastro bloqueado | sem aviso, sem aceite e sem Hotmart |
 
+**Contrato com o Rastro** (revisão do Helbert no #38, 18/11/2026): o `window.stratConsent` é interno do Rastro, não é
+API publicada. O launcher depende de quatro pontos dele: (1) `window.stratConsent` é um objeto comum com `grant`; (2) o
+"aceitar" busca `window.stratConsent.grant` na hora do clique; (3) o `grant` grava `strat_consent=granted`; (4) o
+`loadHotmart` do Rastro pula quando `window.hot` existe. Se um deles mudar, o launcher falha fechado (nada da Hotmart
+em venda + banner). `packages/kit/test/rastro-contrato.test.js` roda os trechos do Rastro copiados em 18/11/2026 e
+compara com o script no ar (`/sa?product=site`): mudou no Rastro, o teste fica vermelho (sem rede, ele é pulado).
+
 O Rastro, sozinho, carregaria a Hotmart dele só depois do aceite, mas com a conta do produto no Rastro e só quando o
 produto é página de venda (`salesPage`); o kit garante a conta do catálogo. A checagem `tracking` aceita numa página com
 `banner` só o launcher do kit com essa espera, com o texto exato que o kit gera para a linha (`launcherAposAceite`);
