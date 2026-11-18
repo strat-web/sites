@@ -198,23 +198,18 @@ A mesma integração `arquivosDoSite` grava o `_headers` do Cloudflare Pages em 
   comercial antes e o lead apagado do MetricaaS no fim.
 
 ## Checagens da CI (WEB-20)
-Rodam em todo PR, em push na `main` e por disparo manual (`.github/workflows/checagens.yml`), cada uma num job com o próprio nome, e são as que o ruleset
+Rodam em todo PR (`.github/workflows/checagens.yml`), cada uma num job com o próprio nome, e são as que o ruleset
 da `main` exige. A regra mora em `packages/checagens/` e lê o `dist/` de cada app depois do build.
 
 | Checagem | Barra quando |
 |---|---|
 | build | algum app não compila ou algum teste dos pacotes falha (`pnpm build` e `pnpm test`) |
 | (todas) | app (pasta com `package.json` em `apps/` ou `lps/academy/`) sem `dist/`: cada checagem barra antes de começar, em vez de pular o app em silêncio |
-| seo | `<title>` ou `<h1>` faltando, repetido na página ou repetido no site; sem canonical ou canonical diferente da URL; `<a href="#">` (ou vazio, ou `javascript:`); JSON-LD que não é JSON ou sem `@context`/`@type`; página indexável fora do `sitemap.xml`; sitemap com página que tem noindex ou não existe; app sem `sitemap.xml`, `robots.txt` ou `404.html`; 404 sem noindex, sem um `<title>` e um `<h1>`, ou no sitemap |
+| seo | `<title>` ou `<h1>` faltando, repetido na página ou repetido entre as páginas indexáveis do site (variante de teste com noindex pode repetir a principal, WEB-48); sem canonical ou canonical diferente da URL; `<a href="#">` (ou vazio, ou `javascript:`); JSON-LD que não é JSON ou sem `@context`/`@type`; página indexável fora do `sitemap.xml`; sitemap com página que tem noindex ou não existe; app sem `sitemap.xml`, `robots.txt` ou `404.html`; 404 sem noindex, sem um `<title>` e um `<h1>`, ou no sitemap |
 | tracking | script do `<Tracking>` faltando ou diferente do que a linha do catálogo pede (`data-ws`, `data-pixel`, `data-website-id`); `m.js` sem `defer`, com `async`, com `type` (só JavaScript clássico), fora do `<head>` ou depois de outro script que executa (JSON-LD não conta); script do `<Tracking>` com `type` que o navegador não executa; script de tracking a mais ou em dobro; pixel da Meta, gtag, GTM ou pixel do TikTok colado à mão, no HTML, em `<noscript>` (inclusive a imagem `facebook.com/tr`) ou dentro de um `.js` do build; slug que o Rastro não conhece (`/sa?product=<slug>` com `known: false`); produto do Rastro que injeta pixel, GA4 ou tag do Google diferente da linha do catálogo, ou com `consentMode` fora do par do `consentimento` (`banner` = `strict`, `soft` = `soft`, `off` = `off`) ou sem `consentMode` no `/sa`; perfil `venda` com `banner` e script da Hotmart em página com `banner` (carregaria antes do aceite, até o WEB-85) |
 | links | link interno quebrado (caminho, relativo ou URL do próprio domínio sem arquivo no build); âncora `#id` sem o id na página; endereço relativo na 404 (ela é servida em qualquer caminho) |
 | peso | página acima de 1,5 MB (HTML + CSS, JS, imagem e fonte do build); no Lighthouse em celular, performance abaixo de 90, LCP acima de 2,5 s ou CLS acima de 0,1 |
 | catalogo | página do build sem linha em `catalogo/sites.json` ou com `app` diferente; linha sem campo obrigatório, com valor fora da lista, URL sem barra, id ou URL repetidos |
-
-Para rodar numa branch sem PR: GitHub → Actions → checagens → Run workflow → escolha a branch → Run workflow,
-ou `gh workflow run checagens.yml --ref <branch>`. O disparo manual fica disponível depois que o workflow com
-`workflow_dispatch` chegar à `main`; a branch escolhida também precisa conter esse gatilho. Roda o mesmo build
-e as cinco checagens, com os mesmos nomes e limites. Confira a execução em Actions ou com `gh run view <id>`.
 
 Na máquina: `pnpm checar` roda tudo (o Lighthouse precisa do Chrome instalado, ~1 min); `pnpm checar:rapido` pula
 o Lighthouse. Uma checagem ou um app: `node packages/checagens/src/cli.js seo links --app apps/stratai`.
@@ -241,10 +236,7 @@ Exceções escritas no código, com o item que as tira:
   no item que acertar o desempenho da página;
 - `/u/` não é conferido como link: o proxy do Umami é do Strat Tracking, fora do build.
 
-O peso é medido no `dist/` servido na própria máquina da CI. O servidor negocia gzip por `Accept-Encoding`
-para HTML, CSS, JavaScript, JSON, SVG, texto e XML; imagens, fontes e vídeos seguem intactos. Isso aproxima
-a transferência do Pages, sem reproduzir CDN, latência e cache de produção. O teto de 1,5 MB continua contando
-os arquivos originais, sem compressão. No Lighthouse, os scripts do `<Tracking>` (Rastro,
+O peso é medido no `dist/` servido na própria máquina da CI. No Lighthouse, os scripts do `<Tracking>` (Rastro,
 MetricaaS, launcher da Hotmart, Umami) ficam bloqueados: são obrigatórios, não mudam por PR e variam a cada medição
 (a página de venda oscilou entre 89 e 93 só por eles). Qualquer outro script de terceiro continua medido. Se a
 primeira medição não passa, ele mede de novo antes de barrar. O número que vale para o site no ar
