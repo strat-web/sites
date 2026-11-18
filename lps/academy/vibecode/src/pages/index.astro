@@ -1,0 +1,21 @@
+---
+// LP da aula gratuita de Claude Code (V2, a principal), migrada do strat-lps (lps/vibecode/index.html) sem mudar texto,
+// layout nem tracking (WEB-48). Captação de lead, sem checkout: perfil "lead" com o Rastro do produto aula-claude-code
+// (consentimento soft), sem o launcher da Hotmart, como no ar. O popup (WhatsApp verificado no ZAP Gateway → nome e
+// e-mail → stratTrack('Lead') + POST ao n8n → comunidade?f=vibecode) segue no script do corpo. Ver o README.
+import Layout from '@strat/kit/Layout.astro';
+import head from '../html/home.head.html?raw';
+import corpo from '../html/home.corpo.html?raw';
+---
+<Layout
+  marca="academy"
+  perfil="lead"
+  titulo="Aula gratuita de Claude Code + 15 skills prontas | Strat Academy"
+  descricao="Aula gratuita: como usar o Claude Code pra construir, automatizar e escalar qualquer processo. Você recebe 15 skills prontas de marketing, tráfego pago, copy e desenvolvimento de apps — direto no seu WhatsApp."
+  tituloSocial="Aula gratuita de Claude Code + 15 skills prontas"
+  descricaoSocial={'Uma aula gratuita pra sair do "conversar com IA" pro "construir com IA" — e 15 skills prontas de marketing, tráfego, copy e apps no seu WhatsApp.'}
+  viewport="width=device-width, initial-scale=1.0"
+>
+  <Fragment slot="head" set:html={head} />
+  <Fragment set:html={corpo} />
+</Layout>
