@@ -8,6 +8,8 @@
 // que a página puser continua medido. O custo do tracking e o número de manchete ficam com o PageSpeed em produção.
 import { createReadStream, existsSync, readFileSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
+import { pipeline } from 'node:stream';
+import { createGzip } from 'node:zlib';
 import { extname, join, normalize } from 'node:path';
 import { ehPaginaDeErro } from './contexto.js';
 import { enderecos } from './html.js';
@@ -81,7 +83,18 @@ const TIPOS = {
   '.webm': 'video/webm',
 };
 
-/** Servidor estático do dist/ (como o Pages: pasta → index.html). */
+const COMPRESSIVEIS = new Set(['.html', '.css', '.js', '.mjs', '.json', '.svg', '.txt', '.xml']);
+
+function aceitaGzip(cabecalho = '') {
+  const codificacoes = cabecalho.toLowerCase().split(',').map((parte) => {
+    const [nome, ...parametros] = parte.trim().split(';');
+    const q = parametros.find((p) => p.trim().startsWith('q='));
+    return { nome, qualidade: q ? Number(q.trim().slice(2)) : 1 };
+  });
+  return (codificacoes.find((c) => c.nome === 'gzip') ?? codificacoes.find((c) => c.nome === '*'))?.qualidade > 0;
+}
+
+/** Servidor estático do dist/ com gzip negociado, aproximando a transferência do Pages. */
 export function servirDist(dist) {
   const servidor = createServer((req, res) => {
     let p = decodeURIComponent(new URL(req.url, 'http://x').pathname);
@@ -91,8 +104,20 @@ export function servirDist(dist) {
       res.writeHead(404).end();
       return;
     }
-    res.writeHead(200, { 'content-type': TIPOS[extname(f).toLowerCase()] || 'application/octet-stream' });
-    createReadStream(f).pipe(res);
+    const extensao = extname(f).toLowerCase();
+    const compressivel = COMPRESSIVEIS.has(extensao);
+    const comprimir = compressivel && aceitaGzip(req.headers['accept-encoding']);
+    const cabecalhos = { 'content-type': TIPOS[extensao] || 'application/octet-stream' };
+    if (compressivel) cabecalhos.vary = 'Accept-Encoding';
+    if (comprimir) cabecalhos['content-encoding'] = 'gzip';
+    res.writeHead(200, cabecalhos);
+    if (req.method === 'HEAD') {
+      res.end();
+      return;
+    }
+    // Imagens, fontes e vídeos já comprimidos seguem intactos; o orçamento de bytes continua sem compressão.
+    const fluxos = [createReadStream(f), ...(comprimir ? [createGzip()] : []), res];
+    pipeline(...fluxos, (erro) => { if (erro) res.destroy(erro); });
   });
   return new Promise((ok) => servidor.listen(0, '127.0.0.1', () => ok({ servidor, porta: servidor.address().port })));
 }
