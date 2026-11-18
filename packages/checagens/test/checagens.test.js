@@ -74,9 +74,19 @@ test('seo: href="#" barra; o mesmo link com destino passa', () => {
 });
 
 test('seo: título e H1 repetidos, canonical e JSON-LD', () => {
-  const dupla = checarSeo(ctx([pagina(), pagina({ caminho: '/outra/' })], { linhas: [linha(), linha({ id: 'o', url: `${SITE}/outra/` })] }));
+  const idx = { robots: 'index, follow' };
+  const dupla = checarSeo(ctx([pagina(idx), pagina({ ...idx, caminho: '/outra/' })], {
+    linhas: [linha(), linha({ id: 'o', url: `${SITE}/outra/` })],
+    sitemap: [`${SITE}/teste/`, `${SITE}/outra/`],
+  }));
   assert.match(msgs(dupla), /título repetido/);
   assert.match(msgs(dupla), /H1 repetido/);
+  // Variante de teste A/B (noindex) repete a principal de propósito: não barra (WEB-48).
+  const variante = checarSeo(ctx([pagina(idx), pagina({ caminho: '/v3/' })], {
+    linhas: [linha(), linha({ id: 'v3', url: `${SITE}/v3/` })],
+    sitemap: [`${SITE}/teste/`],
+  }));
+  assert.deepEqual(variante.erros, []);
   const semCanonical = pagina();
   semCanonical.html = semCanonical.html.replace(/<link rel="canonical"[^>]*>/, '');
   assert.match(msgs(checarSeo(ctx([semCanonical]))), /sem <link rel="canonical">/);
