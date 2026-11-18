@@ -164,10 +164,16 @@ cadastro do lead no MetricaaS não depende do aceite.
 
 ## Evento da página no pixel do kit (WEB-24)
 Página sem Rastro que liga o pixel pelo `m.js` (`data-pixel`, hoje só a Agência) pode contar um passo dela com
-`fbq('track', ...)` ou `fbq('trackCustom', ...)` num `<script>` da própria página, como o `ViewContent` da capa e o
-`FirstInteraction` do /advogados. Nunca `Lead` nem o evento da etapa do funil: esses saem da tag do MetricaaS com o
-mesmo `event_id` da CAPI, e repetir daria evento em dobro. `fbq('init')`, o `fbevents.js` e `fbq` em página com Rastro
-continuam barrando na checagem `tracking`.
+`fbq('track', ...)` ou `fbq('trackCustom', ...)` num `<script>` da própria página. A lista é fechada, a dos dois
+eventos que o /advogados original usa: `ViewContent` (capa) e `FirstInteraction` (primeira resposta). Nunca `Lead` nem
+`LeadQualificado`: esses saem da tag do MetricaaS com o mesmo `event_id` da CAPI, e repetir daria evento em dobro.
+
+A checagem `tracking` garante isso no código (`EVENTOS_DA_PAGINA` e `EVENTOS_DA_TAG` em
+`packages/checagens/src/tracking.js`, com teste):
+- evento escrito no `fbq` fora da lista (`Lead`, `LeadQualificado` ou qualquer outro) barra;
+- evento por variável (`fbq('track', metaEvent)`, como o `track()` do /advogados) só passa se o script não tiver a
+  string `'Lead'` nem `'LeadQualificado'` em lugar nenhum;
+- `fbq('init')`, o `fbevents.js` e `fbq` em página com Rastro continuam barrando.
 
 ## Marcação na página
 - Todo botão: `data-strat-cta="<seção>-<destino>"` (ex.: `hero-diagnostico`, `rodape-whatsapp`). Vira `CTAClick`.
