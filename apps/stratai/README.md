@@ -9,7 +9,27 @@ Site da StratAI no Cloudflare Pages (projeto `stratai`, prévia em https://strat
 | `/` | `src/pages/index.astro` + `src/html/home.*.html` | `stratai` | Rastro `stratai` e MetricaaS `agencia-strat` |
 | `/raio-x/` | `src/pages/raio-x/index.astro` + `src/html/raio-x.*.html` | `stratai-raio-x` | Rastro `raio-x-ia` e MetricaaS `agencia-strat` |
 | `/politica-de-privacidade/` | `src/pages/politica-de-privacidade/index.astro` + `src/html/politica-de-privacidade.*.html` | `stratai-politica-de-privacidade` | nenhum (como no ar) |
+| `/recuperacao/v1/` a `/v4/` | `src/pages/recuperacao/v*/index.astro` + `src/html/recuperacao/v*.*.html` | `stratai-recuperacao-v*` | Rastro `stratai-recuperacao` (soft) e MetricaaS `agencia-strat` |
+| `/recuperacao/cases/` e `/recuperacao/cases/<cliente>/` | `src/pages/recuperacao/cases/` (conteúdo em `public/recuperacao/comum/cases.js`) | `stratai-recuperacao-case*` | Rastro `stratai-recuperacao` (soft) e MetricaaS `agencia-strat` |
 | `/parcerias/` | `src/pages/parcerias/index.astro`, `src/layouts/Parcerias.astro`, `src/components/parcerias/`, textos em `src/data/parcerias.json` | `stratai-parcerias` | Rastro `stratai-parcerias` (soft) e MetricaaS `agencia-strat`; o cadastro vai pelo `mtc.lead()` (WEB-74) |
+
+## Funil de recuperação de vendas (`/recuperacao/`, WEB-91)
+Formulário de qualificação do produto de recuperação comissionada (15% só do que for recuperado), construído na
+DEV-94 para o tráfego pago. **Rascunho e `noindex`** até os cases terem o conteúdo validado e o produto low ticket da V4 ser validado com o Helbert (os `[X]` marcam o que falta). Os cinco cases já foram autorizados pelo Helbert em 13/11; isso não substitui a validação do conteúdo.
+- A fonte é o projeto `FunilRecuperacao-StratAI` (dev_ops do Jhonathan); `scripts/para-o-repo.py` gera
+  `public/recuperacao/` e `src/html/recuperacao/`. Mudança de texto ou regra: em `FunilRecuperacao-StratAI/site/comum/funil.js`
+  (perguntas, saídas, lâminas, agenda, produto, classificação, envio) e `site/comum/cases.js` (cases); depois regenerar. Não editar somente a cópia em `public/`.
+- 4 versões com as mesmas 7 perguntas, as 2 lâminas antes do formulário (o que a gente banca e o carrossel de cases,
+  não clicável) e o mesmo fim ("seu perfil entrou em análise"). V4: compra rápida e agenda com o Helbert no fim.
+- Lead: `mtc.lead()` uma vez no fim (o m.js vem do `<Tracking>`), só em `stratai.com.br` (o `.pages.dev` não envia).
+  A e B vão como `qualificado`, C como `desqualificado`. Eventos `funil_*` e `cta_click`, sem resposta nem dado pessoal.
+  O envio tem prazo (tag 8 s + `mtc.lead()` 15 s); na falha, a página avisa, oferece "Tentar de novo" e o contato
+  `contato@strat.tec.br` e não apaga nada (`funil_lead_erro`). Na prévia, `?simular=erro` mostra essa tela.
+- Consentimento `soft` com o produto `stratai-recuperacao` no Rastro (regra do WEB-72, decisão do Helbert no #24).
+  A política de privacidade tem a seção do funil (dados, nota A/B/C que decide o evento na Meta, base legal e prazo).
+- Agenda: usa o link oficial existente do Helbert, https://calendar.app.google/fTLUDRk5TeRrkY9TA (ficha `03-time/helbert.md` e `04-areas/comercial.md` do contexto da Strat). Low ticket/checkout da V4 depende de validação com ele.
+- Fontes Space Grotesk e JetBrains Mono servidas pelo próprio site (`public/fontes/`, com licenças OFL), sem Google Fonts. As páginas de case não carregam o motor de perguntas do funil.
+- V1, V2 e V4 trazem a abertura pronta no HTML (`data-pre="abertura"`), para a primeira tela pintar antes do JS (LCP).
 
 ## Como as páginas migradas são montadas
 - O HTML de cada página está em `src/html/<página>.head.html` (favicon, cor do tema, fontes, `<style>`) e
