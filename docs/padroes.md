@@ -23,6 +23,14 @@ docs/                o manual
   e em `packages/`, para só buildar o que mudou.
 - URL sempre com barra no fim (`/agencia-de-ia-joinville/`). Canonical, sitemap e link interno na mesma forma.
 - Imagem de blog e de LP vai para o R2 da marca (`assets.<domínio>`), nunca para o repositório quando passar de 200 KB.
+  Sobe com `scripts/subir-asset.mjs` (WEB-44), que grava `Cache-Control: public, max-age=31536000, immutable` e
+  **recusa chave que já existe**: com o cache imutável, trocar o conteúdo de uma chave não chega a quem já viu.
+  Mudou a imagem, mude o nome (`capa-v2.webp`). Buckets e domínios em `dominios.md`, "Assets (R2)".
+
+  ```bash
+  MSYS_NO_PATHCONV=1 infisical run --projectId=baffbac0-3e1a-47fb-b381-63326d430e39 --env=dev --path=/cloudflare -- \
+    node scripts/subir-asset.mjs stratai capa.webp blog/agente-whatsapp/capa.webp   # --testar só confere
+  ```
 
 ## Página com o kit (WEB-16)
 Toda página começa pelo `Layout`. Ele põe no `<head>` o título, a descrição, o canonical (domínio do `site` do
