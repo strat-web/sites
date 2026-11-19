@@ -8,7 +8,7 @@
 <style>
 :root{
   --bg:#191919; --bg-2:#1f1f1f; --card:#242424; --card-2:#2b2b2b; --line:#353535; --line-2:#444;
-  --ink:#f3f3ee; --ink-2:#b9b9b1; --mute:#85857d;
+  --ink:#f3f3ee; --ink-2:#b9b9b1; --mute:#929289;
   --lime:#c6ff34; --lime-dim:rgba(198,255,52,.12); --lime-ink:#141414;
   --red:#ff1f1f; --blue:#57a1ea; --purple:#bb44f2;
   --wa:#1f2c24; --wa-me:#2c4a2f;
@@ -976,7 +976,7 @@ button.fev:hover,button.fev:focus-visible{border-color:var(--lime);color:var(--i
 @media (max-width:560px){.hub5 .hub-in .tool{width:calc(25% - 6px)}.hub5 .hub-out .tool{width:calc(33.33% - 6px)}.tool .app{width:50px;height:50px;border-radius:14px}.core5{width:132px;height:132px}}
 
 /* ---------- 7 · método: degraus que crescem, um alimenta o outro ---------- */
-.st5 .stair{cursor:pointer;opacity:.5;transform:translateY(28px);transition:opacity .6s,transform .6s cubic-bezier(.2,.7,.2,1),border-color .4s,background-color .5s,box-shadow .4s}
+.st5 .stair{cursor:pointer;transform:translateY(28px);transition:opacity .6s,transform .6s cubic-bezier(.2,.7,.2,1),border-color .4s,background-color .5s,box-shadow .4s}
 .st5 .stair.lit{opacity:1;transform:none}
 .st5 .stair:nth-child(2){transition-delay:.14s,.14s,0s,0s,0s}.st5 .stair:nth-child(3){transition-delay:.28s,.28s,0s,0s,0s}.st5 .stair:nth-child(4){transition-delay:.42s,.42s,0s,0s,0s}
 .st5 .stair:focus-visible{outline:2px solid var(--lime);outline-offset:3px}
@@ -1419,4 +1419,7 @@ section[id]{overflow-x:clip}
 /* rede de segurança: depois de 2s, o topo aparece mesmo que a animação não rode */
 body.ready .hero .rise,body.ready .phone-wrap{animation:none;opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}.rv-in,.hero .rise,.phone-wrap{opacity:1;transform:none}}
+/* WEB-97 · contraste AA (4,5:1) nos textos pequenos da escada: o número do degrau roxo fica 20% mais claro (só o texto; bordas e ícones seguem com o roxo da marca) e o rótulo do que o degrau entrega sobe um tom sobre o fundo tingido */
+.stair.c-purple .k b{color:#c969f5}
+.gets small{color:#9c9c93}
 </style>
