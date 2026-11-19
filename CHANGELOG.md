@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- fix(stratai): contraste AA na home: o cinza `--mute` sobe de #85857d para #929289 (passa de 4,5:1 em todos os fundos), os degraus da escada não esmaecem o texto antes de acender (o efeito fica nas bordas, ícones e barras), o número do degrau roxo e o rótulo "Você sai com" ganham um tom mais claro; Lighthouse color-contrast sem reprovação em 390 e 1440 px (WEB-97)
 - docs(tracking): `Contact` no clique do WhatsApp só em página com Rastro; sem Rastro (Agência, pixel pelo m.js) o clique é `wa_click` no MetricaaS e não dispara `Contact` no navegador (docs/tracking.md e C4 do checklist; WEB-86)
 - docs(search-console): propriedades importadas no Bing Webmaster com os sitemaps enviados, sitemaps de cada propriedade do Search Console conferidos (todos Processado) e o que muda em cada virada (WEB-38)
 - docs(auditoria): diagnóstico de LP do lab (rápido e completo) em stratai.com.br, Nota Strat 83/82, com o destino de cada achado: motor nos WEB-93 a WEB-95, site nos WEB-96 a WEB-99 e o que já tinha item (WEB-87, WEB-33, WEB-21/WEB-32) (WEB-41)
