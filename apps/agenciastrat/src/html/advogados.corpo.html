@@ -1,0 +1,452 @@
+<div class="progress" id="progress" hidden><i id="bar"></i></div>
+<main id="app" aria-live="polite" data-capa-no-html><section class="screen cover"><h1><span aria-hidden="true">⚖️</span> <strong>Advogados:</strong> anúncios que trazem contatos qualificados ao escritório</h1><ul><li><span aria-hidden="true">📈</span><span>Contato acompanhado <strong>até o contrato</strong></span></li><li><span aria-hidden="true">📲</span><span>Contatos direto no <strong>seu WhatsApp</strong></span></li><li><span aria-hidden="true">✅</span><span>Revisão pelo <strong>Provimento 205</strong> da OAB</span></li><li><span aria-hidden="true">🔎</span><span><strong>Filtro</strong> antes de chegar a você</span></li></ul><p class="note">→ Exclusivo para advogados e escritórios dispostos a investir a partir de R$2.000/mês em anúncios.</p></section></main>
+<footer id="foot" hidden></footer>
+
+<script>
+(function(){
+  "use strict";
+  var C = window.FORM_CONFIG;
+
+  var $ = function(s){ return document.querySelector(s); };
+  var app = $('#app'), bar = $('#bar'), prog = $('#progress'), foot = $('#foot');
+  var esc = function(s){ return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); };
+  var clean = function(s){ return String(s).replace(/^[^\p{L}\p{N}]+/u,'').trim(); };
+  var ICON = {
+    check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+    chev:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>',
+    ext:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>'
+  };
+
+  var STEPS = [
+    {id:'nome', type:'text', q:'Qual seu nome e sobrenome?', ph:'Digite sua resposta...', ac:'name'},
+    {id:'whatsapp', type:'tel', q:'Qual seu número de WhatsApp?', ph:'(00) 00000-0000', ac:'tel-national'},
+    {id:'instagram', type:'text', q:C.texts.instagramQ, sub:'Caso não tenha, pode ser o pessoal.', ph:'@seuperfil', ac:'off'},
+    // E-mail saiu daqui (curso: pedir só na agenda; a página do Google Agenda pede)
+    {id:'faturamento', type:'choice', q:C.texts.revenueQ, sub:'Usamos essa faixa só para saber se o nosso serviço faz sentido para o seu escritório. Ela não muda o nosso preço.',
+      options:['Acima de 100k','De 50k a 100k','De 30k a 50k','Até 30k'], pass:[0,1,2]},
+    {id:'investimento', type:'choice', q:'Está disposto a investir pelo menos <strong>R$2.000/mês</strong> em anúncios, desconsiderando o valor da nossa mão de obra?',
+      options:[C.texts.investYes, C.texts.investNo], pass:[0]},
+    {id:'agendamento', type:'schedule', q:'98% concluído...', sub:'Agora é só escolher o horário da conversa.'}
+  ];
+  var DQ_REASON = {
+    faturamento:'Faturamento abaixo de R$30 mil/mês',
+    investimento:'Não aceita investir R$2.000/mês em anúncios'
+  };
+
+  var st = { screen:'cover', answers:{}, choice:{}, sent:{}, timer:null, onKey:null, envio:null, codigo:null };
+
+  // Eventos de página sem par na CAPI. O Lead e o evento da etapa Qualificado quem dispara é a tag,
+  // com o mesmo event_id do servidor (deduplicados). Não dispare Lead aqui: contaria duas vezes.
+  function track(metaEvent, customEvent, dlEvent){
+    function px(){ try{
+      if (metaEvent) fbq('track', metaEvent, {content_name:C.formName});
+      if (customEvent) fbq('trackCustom', customEvent, {content_name:C.formName});
+    }catch(e){} }
+    // A tag cria o fbq depois do primeiro desenho (m.js com defer, mf.js assíncrono): sem esperar, o ViewContent
+    // da capa nunca saía. Espera o fbq até 8 s; com o banner ligado, o evento fica na fila do consentimento.
+    if (metaEvent || customEvent){
+      if (window.fbq) px();
+      else if (C.metaPixelId){
+        var t0 = Date.now(), iv = setInterval(function(){
+          if (window.fbq){ clearInterval(iv); px(); } else if (Date.now() - t0 > 8000) clearInterval(iv);
+        }, 100);
+      }
+    }
+    try{ (window.dataLayer = window.dataLayer || []).push({event:dlEvent, form_nicho:C.niche}); }catch(e){}
+  }
+
+  // Uma chamada só, no fim dos filtros, com o resultado (docs/lp/INTEGRATION.md do MetricaaS, seção 4).
+  // UTMs, fbclid, _fbc/_fbp, sessão e URL a tag junta sozinha. Desqualificado não vira evento na Meta.
+  function waitMtc(ms){
+    return new Promise(function(ok, falha){
+      var t0 = Date.now();
+      (function tenta(){
+        if (window.mtc && window.mtc.lead) return ok(window.mtc);
+        if (Date.now() - t0 > ms) return falha({erro:'tag-nao-carregou'});
+        setTimeout(tenta, 150);
+      })();
+    });
+  }
+  function send(resultado, motivo){
+    if (st.envio) return st.envio;
+    var a = st.answers;
+    var pedido = {
+      nome:a.nome || '', telefone:a.whatsapp ? '55' + a.whatsapp.replace(/\D/g,'') : '',
+      campos:{instagram:a.instagram || '', faturamento:a.faturamento || '', investe_2k:a.investimento || ''},
+      resultado:resultado
+    };
+    if (motivo) pedido.motivo = motivo;
+    st.envio = waitMtc(8000)
+      .then(function(m){ return m.lead(pedido); })
+      .then(function(r){ st.codigo = (r && r.codigo) || null; return r; })
+      .catch(function(err){ console.warn('[formulário] cadastro recusado:', err && err.erro); return null; });
+    return st.envio;
+  }
+
+  function maskPhone(v){
+    var d = v.replace(/\D/g,'');
+    if (d.length > 11 && d.indexOf('55') === 0) d = d.slice(2);
+    d = d.slice(0,11);
+    if (d.length <= 2) return d ? '(' + d : '';
+    if (d.length <= 6) return '(' + d.slice(0,2) + ') ' + d.slice(2);
+    if (d.length <= 10) return '(' + d.slice(0,2) + ') ' + d.slice(2,6) + '-' + d.slice(6);
+    return '(' + d.slice(0,2) + ') ' + d.slice(2,7) + '-' + d.slice(7);
+  }
+  function normIg(v){
+    v = v.trim();
+    var m = v.match(/instagram\.com\/([A-Za-z0-9._]+)/i);
+    if (m) v = m[1];
+    v = v.replace(/^@+/,'').replace(/\s/g,'');
+    return v ? '@' + v : '';
+  }
+  function validate(step, v){
+    v = (v || '').trim();
+    if (step.id === 'nome' && v.split(/\s+/).filter(function(w){return w.length >= 2;}).length < 2) return 'Digite seu nome e sobrenome.';
+    if (step.id === 'whatsapp'){ var d = v.replace(/\D/g,''); if (d.length < 10 || d.length > 11) return 'Digite um WhatsApp válido com DDD.'; }
+    if (step.id === 'instagram' && normIg(v).length < 3) return 'Digite o @ do Instagram.';
+    if (step.id === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) return 'Digite um email válido, como nome@empresa.com.';
+    return '';
+  }
+
+  function go(n){
+    if (n === 1 && !st.sent.first){ st.sent.first = true; track(null, 'FirstInteraction', 'form_primeira_interacao'); }
+    st.screen = n;
+    var step = STEPS[n];
+    if (step && step.type === 'schedule'){ send('qualificado'); track(null, null, 'form_qualificado'); }
+    render();
+  }
+  function back(){ st.screen = (st.screen === 0) ? 'cover' : st.screen - 1; render(); }
+  function disqualify(reason){
+    send('desqualificado', DQ_REASON[reason]);
+    // Desqualificado não vai à Meta (decisão de 29/10/2026): nem evento personalizado, só a etiqueta no CRM
+    track(null, null, 'form_desqualificado');
+    st.screen = 'dq'; render();
+  }
+
+  function setFooter(label, onClick, opts){
+    opts = opts || {};
+    foot.innerHTML = '';
+    if (!label){ foot.hidden = true; return; }
+    foot.hidden = false;
+    var el = document.createElement(opts.href ? 'a' : 'button');
+    el.className = 'cta';
+    el.innerHTML = '<span>' + esc(label) + '</span>' + (opts.icon || '');
+    if (opts.href){ el.href = opts.href; el.target = '_blank'; el.rel = 'noopener'; }
+    else { el.type = 'button'; el.addEventListener('click', onClick); }
+    foot.appendChild(el);
+    if (opts.hint){ var h = document.createElement('p'); h.className = 'hint'; h.textContent = opts.hint; foot.appendChild(h); }
+  }
+
+  function head(i, step){
+    return '<div class="top"><span class="badge">' + (i + 1) + '</span><span class="req" aria-hidden="true">*</span>' +
+      '<button class="back" type="button" data-back>‹ Voltar</button></div>' +
+      '<h1 class="q" id="q">' + step.q + '</h1>' +
+      (step.sub ? '<p class="sub">' + esc(step.sub) + '</p>' : '');
+  }
+  function bindBack(){ var b = app.querySelector('[data-back]'); if (b) b.addEventListener('click', back); }
+
+  function renderCover(){
+    var c = C.cover;
+    if (!st.sent.view){ st.sent.view = true; track('ViewContent', null, 'form_view'); }
+    var capa = '<section class="screen cover">' +
+      '<h1><span aria-hidden="true">' + c.icon + '</span> ' + c.headline + '</h1>' +
+      '<ul>' + c.bullets.map(function(b){ return '<li><span aria-hidden="true">' + b.e + '</span><span>' + b.t + '</span></li>'; }).join('') + '</ul>' +
+      '<p class="note">' + c.note + '</p></section>';
+    // WEB-24: na abertura a capa já vem no HTML (o H1 para a busca e a primeira pintura sem esperar o JS), igual a esta;
+    // só é redesenhada quando a pessoa volta para ela.
+    if (!app.hasAttribute('data-capa-no-html')) app.innerHTML = capa;
+    app.removeAttribute('data-capa-no-html');
+    setFooter(c.cta, function(){ go(0); }, {icon:ICON.chev});
+    st.onKey = function(e){ if (e.key === 'Enter') go(0); };
+  }
+
+  function renderInput(i, step){
+    var type = step.type === 'email' ? 'email' : step.type === 'tel' ? 'tel' : 'text';
+    app.innerHTML = '<section class="screen">' + head(i, step) +
+      '<div class="field"><input id="inp" type="' + type + '" inputmode="' + type + '" autocomplete="' + step.ac + '"' +
+      ' placeholder="' + esc(step.ph) + '" aria-labelledby="q" aria-describedby="err" spellcheck="false">' +
+      '<div class="err" id="err" role="alert"></div></div>' +
+      // O consentimento fica onde a pessoa dá o WhatsApp: é ele que libera a primeira mensagem (ADR 0064, D1)
+      (step.id === 'whatsapp' && C.privacidadeUrl
+        ? '<p class="legal">Ao continuar, você concorda em receber contato da Strat por WhatsApp sobre a sua solicitação, conforme a ' +
+          '<a href="' + esc(C.privacidadeUrl) + '" target="_blank" rel="noopener">política de privacidade</a>.</p>'
+        : '') +
+      '</section>';
+    bindBack();
+    var inp = $('#inp'), err = $('#err');
+    inp.value = st.answers[step.id] || '';
+    inp.addEventListener('input', function(){
+      if (step.type === 'tel') inp.value = maskPhone(inp.value);
+      err.textContent = '';
+    });
+    function submit(){
+      var v = inp.value, e = validate(step, v);
+      if (e){ err.textContent = e; inp.focus(); return; }
+      if (step.id === 'instagram') v = normIg(v);
+      if (step.id === 'email') v = v.trim().toLowerCase();
+      st.answers[step.id] = v.trim();
+      go(i + 1);
+    }
+    inp.addEventListener('keydown', function(e){ if (e.key === 'Enter'){ e.preventDefault(); submit(); } });
+    setFooter('Continuar', submit, {icon:ICON.check, hint:'ou pressione Enter ↵'});
+    st.onKey = null;
+    setTimeout(function(){ inp.focus({preventScroll:true}); }, 60);
+  }
+
+  function renderChoice(i, step){
+    var letters = 'ABCDE';
+    app.innerHTML = '<section class="screen">' + head(i, step) +
+      '<div class="opts" role="radiogroup" aria-labelledby="q">' +
+      step.options.map(function(o, k){
+        return '<button type="button" class="opt" role="radio" aria-checked="' + (st.choice[step.id] === k) + '" data-k="' + k + '">' +
+          '<span class="key">' + letters[k] + '</span><span>' + esc(o) + '</span></button>';
+      }).join('') + '</div><div class="err" id="err" role="alert"></div></section>';
+    bindBack();
+    function advance(){
+      clearTimeout(st.timer);
+      var k = st.choice[step.id];
+      if (k == null){ $('#err').textContent = 'Escolha uma opção para continuar.'; return; }
+      if (step.pass.indexOf(k) === -1) return disqualify(step.id);
+      go(i + 1);
+    }
+    function pick(k){
+      st.choice[step.id] = k;
+      st.answers[step.id] = clean(step.options[k]);
+      $('#err').textContent = '';
+      app.querySelectorAll('.opt').forEach(function(b){ b.setAttribute('aria-checked', String(+b.dataset.k === k)); });
+      clearTimeout(st.timer);
+      st.timer = setTimeout(advance, 380);
+    }
+    app.querySelectorAll('.opt').forEach(function(b){ b.addEventListener('click', function(){ pick(+b.dataset.k); }); });
+    setFooter('Continuar', advance, {icon:ICON.check, hint:'Pressione ' + letters.slice(0, step.options.length).split('').join(', ') + ' para escolher'});
+    st.onKey = function(e){
+      var idx = letters.indexOf(e.key.toUpperCase());
+      if (idx > -1 && idx < step.options.length) pick(idx);
+      else if (e.key === 'Enter') advance();
+    };
+  }
+
+  /* Agenda: página de agendamento do Google Agenda de quem atende (o Cal.com saiu em 29/10/2026).
+     A página não aceita dado pré-preenchido: o que liga a reunião ao lead é o CÓDIGO deste envio,
+     que a pessoa cola na pergunta "Código" da página. Sem código (tag fora do ar), o MetricaaS ainda
+     casa pelo e-mail ou pelo telefone. Confirmação e lembretes saem pelo WhatsApp, do MetricaaS. */
+  function renderScheduleGoogle(i, step, nota){
+    app.innerHTML = '<section class="screen">' + head(i, step) +
+      (nota ? '<p class="ag-aviso">' + esc(nota) + '</p>' : '') +
+      '<div id="code-box"><p class="empty">Gerando o seu código…</p></div>' +
+      (nota ? '<p class="ag-alt">Se preferir, <a href="' + esc(waAgenda()) + '" target="_blank" rel="noopener">marque pelo WhatsApp</a>.</p>' : '') +
+      '</section>';
+    bindBack();
+    st.onKey = null;
+    setFooter(null);
+    send('qualificado').then(function(){
+      var box = $('#code-box');
+      if (!box || st.screen !== i) return;
+      var passos = '<li>Toque em <strong>Escolher horário</strong> e marque a conversa.</li>' +
+        (st.codigo
+          ? '<li>Na página da agenda, cole o código acima no campo <strong>Código</strong>.</li>'
+          : '<li>Na página da agenda, use o mesmo WhatsApp que você informou aqui e, no campo <strong>Código</strong>, escreva esse número.</li>') +
+        '<li>A confirmação chega no seu WhatsApp.</li>';
+      box.innerHTML = (st.codigo
+        ? '<div class="code"><b>' + esc(st.codigo) + '</b><button type="button" id="copy">Copiar</button></div>' +
+          '<p class="sub" style="margin:0">Este é o seu código de agendamento.</p>'
+        : '') + '<ol class="steps">' + passos + '</ol>';
+      if (st.codigo){
+        $('#copy').addEventListener('click', function(){
+          var b = this;
+          try{ navigator.clipboard.writeText(st.codigo).then(function(){ b.textContent = 'Copiado ✓'; }); }catch(e){}
+        });
+      }
+      if (!C.agendaUrl){ console.warn('[formulário] agendaUrl vazio: preencher com a página de agendamento do Google Agenda'); return; }
+      setFooter('Escolher horário', null, {icon:ICON.ext, href:C.agendaUrl});
+      foot.querySelector('a').addEventListener('click', function(){
+        if (st.codigo){ try{ navigator.clipboard.writeText(st.codigo); }catch(e){} }
+        track(null, null, 'form_abriu_agenda');
+      });
+    });
+  }
+
+  /* Agenda NA PÁGINA (02/11/2026, ADR 0065 do MetricaaS): os horários livres da agenda de quem atende e a reserva
+     com um clique. O MetricaaS confere o envio (o código), consulta a agenda, cria a reunião com Meet e convite,
+     move o lead para "Reunião Marcada" (o evento da etapa vai à Meta pela CAPI e, pela tag, no pixel com o mesmo
+     event_id) e o fluxo do WhatsApp manda a confirmação. Qualquer falha cai no link do Google (reserva temporária)
+     ou no WhatsApp. */
+  var SEMANA = ['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
+  function diaDaSemana(dia){ return SEMANA[new Date(dia + 'T12:00:00-03:00').getUTCDay()]; }
+  function dataLonga(dia){ return diaDaSemana(dia) + ', ' + dia.slice(8,10) + '/' + dia.slice(5,7); }
+  function waAgenda(){
+    var nome = (st.answers.nome || '').trim() || 'um advogado';
+    var msg = C.whatsappAgendaMessage.replace('{nome}', nome).replace('{codigo}', st.codigo || 'sem código');
+    return 'https://wa.me/' + C.whatsappAgenda + '?text=' + encodeURIComponent(msg);
+  }
+  function pedidoDaAgenda(){
+    var a = st.answers;
+    return { nome:a.nome || '', telefone:a.whatsapp ? '55' + a.whatsapp.replace(/\D/g,'') : '',
+      campos:{instagram:a.instagram || '', faturamento:a.faturamento || '', investe_2k:a.investimento || ''} };
+  }
+  function renderSchedule(i, step){
+    if (!C.agendaNaPagina) return renderScheduleGoogle(i, step);
+    app.innerHTML = '<section class="screen">' + head(i, step) + '<div id="ag"><p class="empty">Buscando os horários livres…</p></div></section>';
+    bindBack();
+    st.onKey = null;
+    setFooter(null);
+    send('qualificado').then(function(){
+      if (st.screen !== i) return;
+      // O mf.js da tag já carregou (foi ele que devolveu o código): sem mtc.agenda aqui, a tag é a antiga.
+      if (!st.codigo || !(window.mtc && window.mtc.agenda)) return falhaAgenda(i, step, 'sem-agenda-na-tag');
+      carregarHorarios(i, step);
+    });
+  }
+  function carregarHorarios(i, step, aviso){
+    var box = $('#ag'); if (!box) return;
+    box.innerHTML = '<p class="empty">Buscando os horários livres…</p>';
+    setFooter(null);
+    window.mtc.agenda.horarios({codigo:st.codigo}).then(function(r){
+      if (st.screen !== i) return;
+      st.horarios = r.horarios || [];
+      desenharHorarios(i, step, aviso);
+    }).catch(function(e){ if (st.screen === i) falhaAgenda(i, step, e && e.erro); });
+  }
+  function desenharHorarios(i, step, aviso){
+    var box = $('#ag'); if (!box) return;
+    var porDia = {}, ordem = [];
+    st.horarios.forEach(function(h){ if (!porDia[h.dia]){ porDia[h.dia] = []; ordem.push(h.dia); } porDia[h.dia].push(h); });
+    if (!ordem.length){
+      box.innerHTML = '<p class="ag-aviso">Não há horários livres nos próximos dias.</p>' +
+        '<p class="ag-alt">Fale com a gente no WhatsApp e marcamos por lá.</p>';
+      setFooter('Marcar pelo WhatsApp', null, {icon:ICON.ext, href:waAgenda()});
+      return;
+    }
+    // O primeiro dia com horário já vem escolhido: se a semana está cheia, é o da semana seguinte.
+    if (!st.dia || !porDia[st.dia]) st.dia = ordem[0];
+    box.innerHTML = (aviso ? '<p class="ag-aviso" role="alert">' + esc(aviso) + '</p>' : '') +
+      '<div class="cal"><p class="cal-h">Escolha o dia</p><div class="days">' +
+      ordem.map(function(d){
+        return '<button type="button" class="day" data-dia="' + d + '" aria-pressed="' + (d === st.dia) + '" aria-label="' + esc(dataLonga(d)) + '">' +
+          '<span class="wd">' + diaDaSemana(d).slice(0,3) + '</span><span class="dn">' + d.slice(8,10) + '</span><span class="mo">/' + d.slice(5,7) + '</span></button>';
+      }).join('') + '</div>' +
+      '<p class="cal-h">Horários de ' + esc(dataLonga(st.dia)) + ' (Brasília)</p><div class="slots">' +
+      porDia[st.dia].map(function(h, k){ return '<button type="button" class="slot" data-k="' + k + '">' + esc(h.hora) + '</button>'; }).join('') +
+      '</div><p class="picked">Conversa de 1 hora por Google Meet com o nosso especialista.</p></div>';
+    box.querySelectorAll('.day').forEach(function(b){ b.addEventListener('click', function(){ st.dia = b.dataset.dia; desenharHorarios(i, step); }); });
+    box.querySelectorAll('.slot').forEach(function(b){ b.addEventListener('click', function(){ confirmar(i, step, porDia[st.dia][+b.dataset.k]); }); });
+    setFooter(null);
+  }
+  function confirmar(i, step, h){
+    var box = $('#ag'); if (!box) return;
+    box.innerHTML = '<div class="ag-confirm"><p class="cal-h">Confirmar este horário?</p>' +
+      '<p class="quando">' + esc(dataLonga(h.dia)) + ' às ' + esc(h.hora) + '</p><p class="sub" style="margin:0">Horário de Brasília · 1 hora · Google Meet</p>' +
+      '<div class="field"><input id="ag-email" type="email" inputmode="email" autocomplete="email" placeholder="Seu e-mail, para o convite" aria-label="Seu e-mail, para o convite" spellcheck="false">' +
+      '<div class="err" id="err" role="alert"></div></div>' +
+      '<button type="button" class="ag-link" id="ag-trocar">‹ Trocar horário</button></div>';
+    var inp = $('#ag-email'), err = $('#err');
+    inp.value = st.answers.email || '';
+    $('#ag-trocar').addEventListener('click', function(){ desenharHorarios(i, step); });
+    inp.addEventListener('input', function(){ err.textContent = ''; });
+    var enviando = false;
+    function submit(){
+      if (enviando) return;
+      var e = validate({id:'email'}, inp.value);
+      if (e){ err.textContent = e; inp.focus(); return; }
+      st.answers.email = inp.value.trim().toLowerCase();
+      enviando = true;
+      var b = foot.querySelector('.cta'); if (b){ b.disabled = true; b.querySelector('span').textContent = 'Marcando…'; }
+      var p = pedidoDaAgenda();
+      p.codigo = st.codigo; p.inicio = h.inicio; p.email = st.answers.email;
+      window.mtc.agenda.agendar(p).then(function(r){
+        st.agendado = r;
+        track(null, null, 'form_agendou');
+        st.screen = 'agendado'; render();
+      }).catch(function(e){
+        enviando = false;
+        if (st.screen !== i) return;
+        if (e && e.status === 409) return carregarHorarios(i, step, 'Esse horário acabou de ser ocupado. Escolha outro, por favor.');
+        falhaAgenda(i, step, e && e.erro);
+      });
+    }
+    inp.addEventListener('keydown', function(e){ if (e.key === 'Enter'){ e.preventDefault(); submit(); } });
+    setFooter('Confirmar horário', submit, {icon:ICON.check});
+    setTimeout(function(){ inp.focus({preventScroll:true}); }, 60);
+  }
+  function falhaAgenda(i, step, motivo){
+    console.warn('[formulário] agenda da página indisponível:', motivo || 'erro');
+    track(null, null, 'form_agenda_falhou');
+    if (C.agendaGoogleReserva && C.agendaUrl && st.codigo)
+      return renderScheduleGoogle(i, step, 'A agenda desta página não carregou agora. Use a agenda do Google abaixo, com o seu código.');
+    var box = $('#ag'); if (!box) return;
+    box.innerHTML = '<p class="ag-aviso">Não conseguimos carregar a agenda agora.</p>' +
+      '<p class="ag-alt">Fale com a gente no WhatsApp: a mensagem já vai com o seu nome' + (st.codigo ? ' e o código <strong>' + esc(st.codigo) + '</strong>' : '') + '.</p>';
+    setFooter('Marcar pelo WhatsApp', null, {icon:ICON.ext, href:waAgenda()});
+  }
+  function renderAgendado(){
+    var r = st.agendado || {};
+    var quando = r.dia ? dataLonga(r.dia) + ' às ' + r.hora : '';
+    app.innerHTML = '<section class="screen final"><h1>Reunião marcada! ✅</h1>' +
+      (quando ? '<p><strong>' + esc(quando) + '</strong> (horário de Brasília), por Google Meet.</p>' : '') +
+      '<p>O convite com o link da reunião foi para <strong>' + esc(st.answers.email || 'o seu e-mail') + '</strong>. A confirmação e o lembrete chegam no seu WhatsApp.</p>' +
+      (r.meet_url ? '<p>Link da reunião: <a href="' + esc(r.meet_url) + '" target="_blank" rel="noopener">' + esc(r.meet_url.replace('https://','')) + '</a></p>' : '') +
+      '</section>';
+    setFooter(null);
+    st.onKey = null;
+  }
+
+  function renderDq(){
+    var first = (st.answers.nome || '').split(' ')[0];
+    var msg = C.whatsappMessage.replace('{nome}', first ? ', sou ' + first : '');
+    var href = 'https://wa.me/' + (C.whatsappNumber || '') + '?text=' + encodeURIComponent(msg);
+    app.innerHTML = '<section class="screen final"><h1>FORMULÁRIO ENVIADO!</h1>' +
+      // Honesta: o desqualificado não entra no contato ativo, só fica no CRM (laudo de 31/10/2026, item 8)
+      '<p>Pelas suas respostas, hoje o nosso serviço pode não ser o melhor encaixe para o seu escritório. Guardamos o seu contato e, se fizer sentido para o seu momento, falamos com você pelo WhatsApp.</p>' +
+      '<p>Se preferir, pode nos acionar diretamente clicando no botão abaixo 👇</p></section>';
+    setFooter('Entrar em contato', null, {icon:ICON.ext, href:href});
+    st.onKey = null;
+  }
+
+  function render(){
+    clearTimeout(st.timer);
+    var s = st.screen;
+    prog.hidden = (s === 'cover');
+    bar.style.width = (typeof s === 'number' ? ((s + 1) / (STEPS.length + 1)) * 100 : 100) + '%';
+    window.scrollTo(0, 0);
+    if (s === 'cover') return renderCover();
+    if (s === 'dq') return renderDq();
+    if (s === 'agendado') return renderAgendado();
+    var step = STEPS[s];
+    if (step.type === 'choice') return renderChoice(s, step);
+    if (step.type === 'schedule') return renderSchedule(s, step);
+    return renderInput(s, step);
+  }
+
+  document.addEventListener('keydown', function(e){
+    if (!st.onKey || e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key === 'Enter' && e.target.closest && e.target.closest('input,textarea,button,a')) return;
+    st.onKey(e);
+  });
+
+  // Banner de cookies. A escolha fica no navegador (localStorage, com try: modo anônimo pode recusar).
+  function consentimento(){
+    if (!C.metaPixelId || !C.consentimentoPixel) return;
+    var CHAVE = 'strat_cookies', escolha = null;
+    try{ escolha = localStorage.getItem(CHAVE); }catch(e){}
+    function liberar(){ waitMtc(8000).then(function(m){ if (m.consentir) m.consentir(); }).catch(function(){}); }
+    if (escolha === 'sim') return liberar();
+    if (escolha === 'nao') return;
+    var b = document.createElement('div');
+    b.className = 'cookies'; b.setAttribute('role', 'dialog'); b.setAttribute('aria-label', 'Cookies');
+    b.innerHTML = 'Usamos cookies e o Pixel da Meta para medir os nossos anúncios. Você pode aceitar ou recusar. ' +
+      (C.privacidadeUrl ? '<a href="' + esc(C.privacidadeUrl) + '" target="_blank" rel="noopener">Política de privacidade</a>' : '') +
+      '<div class="acoes"><button type="button" data-c="nao">Recusar</button><button type="button" class="sim" data-c="sim">Aceitar</button></div>';
+    b.addEventListener('click', function(e){
+      var c = e.target.getAttribute && e.target.getAttribute('data-c');
+      if (!c) return;
+      try{ localStorage.setItem(CHAVE, c); }catch(err){}
+      b.remove();
+      if (c === 'sim') liberar();
+    });
+    document.body.appendChild(b);
+  }
+
+  consentimento();
+  render();
+})();
+</script>

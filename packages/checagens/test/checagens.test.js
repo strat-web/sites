@@ -1,5 +1,6 @@
 // Cada regra das checagens com um caso que tem de barrar e um que tem de passar (WEB-20).
 import { test } from 'node:test';
+import { spawnSync } from 'node:child_process';
 import assert from 'node:assert/strict';
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -7,9 +8,9 @@ import { dirname, join } from 'node:path';
 import { checarCatalogo } from '../src/catalogo.js';
 import { RAIZ, checarApps, montarContexto } from '../src/contexto.js';
 import { checarLinks } from '../src/links.js';
-import { bytesDaPagina, julgarMedicao } from '../src/peso.js';
+import { bytesDaPagina, julgarMedicao, ehSaidaExterna } from '../src/peso.js';
 import { checarSeo } from '../src/seo.js';
-import { checarTracking, diferencasDoRastro, lerRastro, slugConhecido } from '../src/tracking.js';
+import { bannerDoKit, checarTracking, diferencasDoRastro, lerRastro, slugConhecido } from '../src/tracking.js';
 import { scriptDoRastroAposPintura } from '../../kit/src/rastro-apos-pintura.js';
 import { EXCECOES_LIGHTHOUSE } from '../src/excecoes-peso.js';
 
@@ -75,9 +76,19 @@ test('seo: href="#" barra; o mesmo link com destino passa', () => {
 });
 
 test('seo: título e H1 repetidos, canonical e JSON-LD', () => {
-  const dupla = checarSeo(ctx([pagina(), pagina({ caminho: '/outra/' })], { linhas: [linha(), linha({ id: 'o', url: `${SITE}/outra/` })] }));
+  const idx = { robots: 'index, follow' };
+  const dupla = checarSeo(ctx([pagina(idx), pagina({ ...idx, caminho: '/outra/' })], {
+    linhas: [linha(), linha({ id: 'o', url: `${SITE}/outra/` })],
+    sitemap: [`${SITE}/teste/`, `${SITE}/outra/`],
+  }));
   assert.match(msgs(dupla), /título repetido/);
   assert.match(msgs(dupla), /H1 repetido/);
+  // Variante de teste A/B (noindex) repete a principal de propósito: não barra (WEB-48).
+  const variante = checarSeo(ctx([pagina(idx), pagina({ caminho: '/v3/' })], {
+    linhas: [linha(), linha({ id: 'v3', url: `${SITE}/v3/` })],
+    sitemap: [`${SITE}/teste/`],
+  }));
+  assert.deepEqual(variante.erros, []);
   const semCanonical = pagina();
   semCanonical.html = semCanonical.html.replace(/<link rel="canonical"[^>]*>/, '');
   assert.match(msgs(checarSeo(ctx([semCanonical]))), /sem <link rel="canonical">/);
@@ -89,6 +100,45 @@ test('seo: página indexável fora do sitemap barra; dentro passa', () => {
   const p = pagina({ robots: 'index, follow' });
   assert.match(msgs(checarSeo(ctx([p], { sitemap: [] }))), /fora do sitemap/);
   assert.deepEqual(checarSeo(ctx([p], { sitemap: [p.url] })).erros, []);
+});
+
+test('seo: <h1> montado numa string do <script> não conta como H1 da página (WEB-24)', () => {
+  const tela = `<script>app.innerHTML = '<h1 class="q">' + step.q + '</h1>';</script>`;
+  assert.deepEqual(checarSeo(ctx([pagina({ corpo: tela })])).erros, []);
+  assert.match(msgs(checarSeo(ctx([pagina({ h1: '', corpo: tela })]))), /exatamente um <h1> com texto/);
+});
+
+test('tracking: fbq de evento passa no pixel do m.js do kit; init e fbq sem esse pixel barram (WEB-24)', async () => {
+  // Agência: MetricaaS com o pixel no m.js (data-pixel), sem Rastro.
+  const semRastro = linha({ rastro_slug: null, metricaas_ws: 'strat-marketing', meta_pixel: '1815630929780241' });
+  const mjs = '<script defer src="https://t.metricaas.com.br/m.js" data-ws="strat-marketing" data-pixel="1815630929780241"></script>';
+  const evento = "<script>if (window.fbq) { fbq('track', 'ViewContent', {}); fbq( \"trackCustom\", 'FirstInteraction'); }</script>";
+  const r = await checarTracking(ctx([pagina({ head: mjs, corpo: evento })], { linhas: [semRastro] }), { semRede: true });
+  assert.deepEqual(r.erros, []);
+  const init = `<script>fbq('track', 'ViewContent'); fbq('init', '1');</script>`;
+  assert.match(msgs(await checarTracking(ctx([pagina({ head: mjs, corpo: init })], { linhas: [semRastro] }), { semRede: true })), /fbq\) colado à mão/);
+  // Com Rastro o m.js vai sem data-pixel: o evento escrito à mão continua barrando.
+  assert.match(msgs(await checarTracking(ctx([pagina({ corpo: evento })]), { semRede: true })), /fbq\) colado à mão/);
+});
+
+test('tracking: evento do pixel só da lista fechada; Lead e LeadQualificado barram (WEB-24)', async () => {
+  const semRastro = linha({ rastro_slug: null, metricaas_ws: 'strat-marketing', meta_pixel: '1815630929780241' });
+  const mjs = '<script defer src="https://t.metricaas.com.br/m.js" data-ws="strat-marketing" data-pixel="1815630929780241"></script>';
+  const checar = (corpo) => checarTracking(ctx([pagina({ head: mjs, corpo })], { linhas: [semRastro] }), { semRede: true });
+  for (const ev of ['Lead', 'LeadQualificado', 'Purchase']) {
+    for (const modo of ['track', 'trackCustom']) {
+      const r = await checar(`<script>fbq('${modo}', '${ev}');</script>`);
+      assert.match(msgs(r), new RegExp(`evento "${ev}" fora da lista da página`));
+      assert.doesNotMatch(msgs(r), /colado à mão/);
+    }
+  }
+  // Por variável (como o track() do /advogados): passa, a não ser que o script traga Lead ou LeadQualificado.
+  const porVariavel = (chamada) => `<script>function track(m){ if (m) fbq('track', m, {}); } ${chamada}</script>`;
+  assert.deepEqual((await checar(porVariavel("track('ViewContent');"))).erros, []);
+  assert.match(msgs(await checar(porVariavel("track('Lead');"))), /evento por variável num script que tem "Lead"/);
+  assert.match(msgs(await checar(porVariavel('track("LeadQualificado");'))), /evento por variável num script que tem "LeadQualificado"/);
+  // A palavra Lead em comentário ou dentro de outra string não conta.
+  assert.deepEqual((await checar(porVariavel("// Não dispare Lead aqui\ntrack('ViewContent', 'form_lead');"))).erros, []);
 });
 
 test('seo: href dentro de <script> não conta como link', () => {
@@ -115,6 +165,32 @@ test('tracking: pixel colado à mão e script em dobro barram', async () => {
   assert.match(msgs(await checarTracking(ctx([pagina({ head: dobro })]), { semRede: true })), /em dobro/);
 });
 
+test('tracking: o banner do kit (que chama o fbq no soft) passa; faltando ou mexido, barra (WEB-84)', async () => {
+  // Página da Agência sem Rastro: o m.js liga o pixel, e o aviso do kit vem inline logo depois.
+  const agencia = (consentimento) => linha({
+    marca: 'agencia', rastro_slug: null, metricaas_ws: 'strat-marketing', meta_pixel: '1815630929780241', consentimento,
+  });
+  const mjs = (extra = '') =>
+    `<script defer src="https://t.metricaas.com.br/m.js" data-ws="strat-marketing" data-pixel="1815630929780241"${extra}></script>`;
+  for (const [consentimento, attrs] of [['soft', ''], ['banner', ' data-pixel-consent="aguardar"']]) {
+    const l = agencia(consentimento);
+    const banner = bannerDoKit({ urls: [l] }, l);
+    assert.match(banner, new RegExp(`"modo":"${consentimento}"`));
+    const ok = await checarTracking(ctx([pagina({ head: `${mjs(attrs)}<script>${banner}</script>` })], { linhas: [l] }), { semRede: true });
+    assert.deepEqual(ok.erros, [], consentimento);
+    const sem = await checarTracking(ctx([pagina({ head: mjs(attrs) })], { linhas: [l] }), { semRede: true });
+    assert.match(msgs(sem), new RegExp(`falta o banner de cookies do kit \\(modo "${consentimento}"\\)`));
+    // O mesmo texto com um fbq a mais já não é o do kit: volta a ser pixel colado à mão (e o banner do kit falta).
+    const mexido = banner.replace("w.fbq('consent', 'revoke');", "w.fbq('consent', 'revoke'); w.fbq('track', 'Lead');");
+    assert.notEqual(mexido, banner);
+    const r = await checarTracking(ctx([pagina({ head: `${mjs(attrs)}<script>${mexido}</script>` })], { linhas: [l] }), { semRede: true });
+    assert.match(msgs(r), /pixel da Meta \(fbq\) colado à mão/);
+  }
+  // off e página com Rastro não têm banner do kit.
+  assert.equal(bannerDoKit({ urls: [agencia('off')] }, agencia('off')), null);
+  assert.equal(bannerDoKit({ urls: [linha({ consentimento: 'soft' })] }, linha({ consentimento: 'soft' })), null);
+});
+
 test('tracking: slug que o Rastro não conhece barra', async () => {
   const r = await checarTracking(ctx([pagina()]), { buscar: rastroConhece([]) });
   assert.match(msgs(r), /não conhece o produto "stratai"/);
@@ -131,10 +207,11 @@ test('tracking: Umami com id no catálogo exige o script; sem id é só aviso', 
 });
 
 test('tracking: esqueleto passa sem tracking e barra quando ganha tracking', async () => {
-  // metricaas.com.br/ segue esqueleto até o WEB-36 (packages/checagens/src/esqueletos.js).
-  const MET = 'https://metricaas.com.br/';
+  // stratacademy.com.br/ segue esqueleto até o WEB-49 (packages/checagens/src/esqueletos.js); o metricaas.com.br/
+  // saiu da lista no WEB-36.
+  const MET = 'https://stratacademy.com.br/';
   const comUrl = (p) => ({ ...p, url: MET });
-  const linhas = [linha({ id: 'metricaas', url: MET })];
+  const linhas = [linha({ id: 'academy', url: MET })];
   const esqueleto = comUrl(pagina({ caminho: '/', head: '' }));
   assert.deepEqual((await checarTracking(ctx([esqueleto], { linhas }), { semRede: true })).erros, []);
   const migrada = comUrl(pagina({ caminho: '/' }));
@@ -174,6 +251,27 @@ test('catalogo: slug com ponto precisa da barra, arquivo não; linha tipo site s
   assert.deepEqual(checarCatalogo(ctx([], { linhas: [site({ no_ar: false })] })).erros, []);
   // Fora de tipo site o campo é opcional.
   assert.deepEqual(checarCatalogo(ctx([], { linhas: [linha()] })).erros, []);
+});
+
+test('catalogo: linhas do mesmo produto do Rastro com pixel, GA4, tag do Google ou consentimento diferentes barram (WEB-83)', () => {
+  const academy = (extra) =>
+    linha({ rastro_slug: 'site', meta_pixel: '860500981882285', ga4: 'G-R84BNVV2HX', google_tag: 'AW-17263684860', consentimento: 'banner', ...extra });
+  const kit = academy({ id: 'academy-kit-conteudo', url: `${SITE}/kit/conteudo/` });
+  // O caso do WEB-83: a home sem GA4 e Ads, a página de teste com, as duas no produto site.
+  const home = academy({ id: 'academy', url: `${SITE}/`, ga4: null, google_tag: null });
+  const r = checarCatalogo(ctx([], { linhas: [kit, home] }));
+  assert.ok(r.erros.every((e) => e.onde === 'catalogo/sites.json, linha academy'));
+  const m = msgs(r);
+  assert.match(m, /ga4 "", mas a linha academy-kit-conteudo, do mesmo produto "site" no Rastro, tem "G-R84BNVV2HX"/);
+  assert.match(m, /google_tag "", mas a linha academy-kit-conteudo/);
+  assert.match(msgs(checarCatalogo(ctx([], { linhas: [kit, academy({ id: 'b', url: `${SITE}/b/`, consentimento: 'off' })] }))), /consentimento "off"/);
+  assert.match(msgs(checarCatalogo(ctx([], { linhas: [kit, academy({ id: 'b', url: `${SITE}/b/`, meta_pixel: '1' })] }))), /meta_pixel "1"/);
+  // Iguais passam; por-funil e sem-tracking não carregam o Rastro pelo kit e não entram na conta; null e ausente são iguais.
+  assert.deepEqual(checarCatalogo(ctx([], { linhas: [kit, academy({ id: 'academy', url: `${SITE}/` })] })).erros, []);
+  const funil = academy({ id: 'c', url: `${SITE}/c/`, consentimento: 'por-funil', ga4: null });
+  assert.deepEqual(checarCatalogo(ctx([], { linhas: [kit, funil] })).erros, []);
+  const semGa4 = linha({ id: 'd', url: `${SITE}/d/` });
+  assert.deepEqual(checarCatalogo(ctx([], { linhas: [linha(), { ...semGa4, ga4: null }] })).erros, []);
 });
 
 function distFalso() {
@@ -312,12 +410,9 @@ test('peso: exceção do Lighthouse avisa acima do piso e barra abaixo dele (WEB
   assert.equal(julgarMedicao('https://x.com.br/', { performance: 60, lcpMs: 3900, cls: 0 }, exc), 'erro');
   assert.equal(julgarMedicao('https://x.com.br/', { performance: 80, lcpMs: 6000, cls: 0 }, exc), 'erro');
   assert.equal(julgarMedicao('https://y.com.br/', { performance: 80, lcpMs: 3900, cls: 0 }, exc), 'erro');
-  // exceções reais hoje: a home da StratAI (WEB-87) e duas páginas com falso vermelho da CI (WEB-88)
-  assert.deepEqual(Object.keys(EXCECOES_LIGHTHOUSE), [
-    'https://stratai.com.br/',
-    'https://stratai.com.br/politica-de-privacidade/',
-    'https://stratai.com.br/raio-x/',
-  ]);
+  // exceções reais hoje: só a /v2/ da mentoria (WEB-48); a home, o /raio-x/ e a política da StratAI saíram no
+  // WEB-87, e a home e a política do Metricaas no WEB-107
+  assert.deepEqual(Object.keys(EXCECOES_LIGHTHOUSE), ['https://mentoria.stratacademy.com.br/v2/']);
 });
 
 // WEB-76: checagem de tracking sem falso verde.
@@ -417,7 +512,9 @@ test('Rastro: oscilação (rede caiu, 503) ganha nova tentativa e passa', async 
   const { buscar, chamadas } = rastroEmSequencia([new TypeError('fetch failed'), 503, { known: true }]);
   assert.equal((await lerRastro('stratai', buscar, { esperar: semEspera })).known, true);
   assert.equal(chamadas.length, 3);
-  const r = await checarTracking(ctx([pagina()]), { buscar: rastroEmSequencia([502, { known: true, consentMode: 'off' }]).buscar, esperar: semEspera });
+  const oscilacao = rastroEmSequencia([502, { known: true, consentMode: 'off' }]);
+  const r = await checarTracking(ctx([pagina()]), { buscar: oscilacao.buscar, esperar: semEspera });
+  assert.deepEqual(oscilacao.chamadas, ['stratai', 'stratai']);
   assert.deepEqual(r.erros, []);
 });
 
@@ -487,4 +584,98 @@ test('tracking: carregador de venda após pintura precisa existir e executar; le
   assert.ok(direto.erros.some(e=>/primeiro quadro/.test(e.msg)));
   const lead = await conferir(adiado(scriptDoRastroAposPintura()),[linha({metricaas_ws:null})]);
   assert.ok(lead.erros.some(e=>/lead e conteudo/.test(e.msg)));
+});
+
+// WEB-92: marcação presente não significa script executado pelo navegador.
+for (const [nome, envolver] of [
+  ['comentário', (s) => `<!-- ${s} -->`],
+  ['noscript', (s) => `<noscript>${s}</noscript>`],
+  ['template', (s) => `<template>${s}</template>`],
+  ['template aninhado', (s) => `<template><template>${s}</template>${s}</template>`],
+]) {
+  test(`tracking: m.js só em ${nome} não satisfaz o catálogo`, async () => {
+    const head = envolver(`<script defer src="${MJS}" data-ws="agencia-strat"></script>`) + RASTRO_SA;
+    assert.match(await erroDoMjs(head), /falta https:\/\/t\.metricaas\.com\.br\/m\.js/);
+  });
+  test(`tracking: script inerte em ${nome} antes do m.js não muda a ordem`, async () => {
+    assert.equal(await erroDoMjs(envolver('<script>window.exemplo=1;</script>') + TRACKING_OK), '');
+  });
+  test(`tracking: pixel colado à mão em ${nome} continua barrando`, async () => {
+    // Um JS da página pode clonar o <template>, e o script clonado roda (revisão do #36, 19/11).
+    const pixel = '<script src="https://connect.facebook.net/en_US/fbevents.js"></script>';
+    assert.match(await erroDoMjs(TRACKING_OK + envolver(pixel)), /colado à mão/);
+  });
+}
+
+test('tracking: nomodule no m.js ou Rastro barra', async () => {
+  assert.match(await erroDoMjs(TRACKING_OK.replace('<script defer', '<script nomodule defer')), /m\.js com nomodule/);
+  assert.match(await erroDoMjs(TRACKING_OK.replace(RASTRO_SA, RASTRO_SA.replace('<script', '<script nomodule'))), /sa\?product=stratai com nomodule/);
+});
+
+test('tracking: fechamento de head em comentário não acusa m.js fora do head', async () => {
+  assert.equal(await erroDoMjs('<!-- </head> -->' + TRACKING_OK), '');
+});
+
+for (const host of ['app.metricaas.com.br/m.js', 'outro.metricaas.com.br/pasta/m.js?v=2']) {
+  test(`tracking: segundo m.js em ${host} barra`, async () => {
+    assert.match(await erroDoMjs(TRACKING_OK + `<script defer src="https://${host}"></script>`), /em dobro/);
+  });
+}
+
+for (const [elemento, src] of [
+  ['img', 'https://www.facebook.com/tr?id=1'],
+  ['iframe', 'https://www.googletagmanager.com/ns.html?id=GTM-X'],
+]) {
+  test(`tracking: pixel solto em ${elemento} barra só pelo src`, async () => {
+    assert.match(await erroDoMjs(TRACKING_OK, `<${elemento} src="${src}"></${elemento}>`), /colado à mão/);
+    assert.equal(await erroDoMjs(TRACKING_OK, `<${elemento} src="/foto.png" title="${src}"></${elemento}>`), '');
+  });
+}
+
+for (const chamada of ["window['fbq']('init','1')", 'window["fbq"]("init","1")', "window.gtag?.('config','G-X')"]) {
+  test(`tracking: chamada alternativa ${chamada} barra`, async () => {
+    assert.match(await erroDoMjs(TRACKING_OK + `<script>${chamada}</script>`), /colado à mão/);
+  });
+}
+
+for (const app of ['apps/com-dist/', './apps/com-dist', '.\\apps\\com-dist\\']) {
+  test(`apps: normaliza ${app} sem pular a checagem`, () => {
+    const contexto = montarContexto({ raiz: raizFalsa(), apps: [app] });
+    assert.deepEqual(contexto.apps.map((a) => a.app), ['apps/com-dist']);
+    assert.deepEqual(checarApps(contexto).erros, []);
+  });
+}
+
+for (const [nome, resposta] of [
+  ['408', 408], ['429', 429],
+  ['tempo esgotado', Object.assign(new Error('demorou'), { name: 'TimeoutError' })],
+  ['200 sem known', {}],
+]) {
+  test(`Rastro: ${nome} ganha nova tentativa e confere de novo`, async () => {
+    const { buscar, chamadas } = rastroEmSequencia([resposta, { known: true, consentMode: 'off' }]);
+    const pausas = [];
+    const r = await checarTracking(ctx([pagina()]), { buscar, esperar: async (ms) => pausas.push(ms) });
+    assert.deepEqual(r.erros, []);
+    assert.deepEqual(chamadas, ['stratai', 'stratai']);
+    assert.deepEqual(pausas, [3000]);
+  });
+}
+
+for (const args of [['--app'], ['--app', '--sem-rede'], ['--app', '']]) {
+  test(`cli: ${JSON.stringify(args)} sem valor sai com 2 e orientação`, () => {
+    const r = spawnSync(process.execPath, [join(RAIZ, 'packages/checagens/src/cli.js'), ...args], { encoding: 'utf8' });
+    assert.equal(r.status, 2);
+    assert.match(r.stderr, /--app precisa de um caminho de app/);
+    assert.doesNotMatch(r.stderr, /TypeError|Error:/);
+  });
+}
+
+// WEB-48: a página que sai sozinha para outro domínio (confirmação que abre o WhatsApp) é medida sem o destino.
+test('peso: só a navegação principal para outra origem é saída externa', () => {
+  const pag = 'http://127.0.0.1:4321/';
+  assert.equal(ehSaidaExterna(pag, 'https://chat.whatsapp.com/abc', true), true);
+  assert.equal(ehSaidaExterna(pag, 'http://127.0.0.1:4321/obrigado/', true), false);
+  assert.equal(ehSaidaExterna(pag, 'https://chat.whatsapp.com/abc', false), false);
+  assert.equal(ehSaidaExterna(pag, 'https://fonts.example.com/x.woff2', false), false);
+  assert.equal(ehSaidaExterna(pag, 'nao é url', true), false);
 });

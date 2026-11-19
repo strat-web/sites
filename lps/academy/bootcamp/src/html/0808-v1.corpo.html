@@ -1,0 +1,162 @@
+<div class="topbar">
+  <div class="container topbar-in">
+    <img src="/images/strat-black.png" alt="Strat" width="295" height="91">
+    <span class="date">pré-venda · <b>sábado, 08/08 · 13h às 18h</b></span>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <span class="eyebrow">pré-venda aberta · lote promocional</span>
+      <h1>Uma tarde pra construir uma <span class="hl">solução completa com IA</span> — do zero ao ar.</h1>
+      <p class="lead">Bootcamp Construtor de IA, <b>100% online e ao vivo com Helbert Paranhos</b>. Você não assiste: constrói junto, sem escrever código, e termina o dia com a solução rodando.</p>
+      <div class="chips">
+        <span class="chip hl2"><i></i> sábado · 08/08</span>
+        <span class="chip"><i></i> 13h às 18h</span>
+        <span class="chip"><i></i> 100% online e ao vivo</span>
+        <span class="chip"><i></i> sem pré-requisito</span>
+      </div>
+      <div class="powered">
+        <img src="/images/claude-logo.webp" alt="Claude" width="88" height="88">
+        <span class="t">o motor do bootcamp<b>Claude Code</b></span>
+      </div>
+      <div class="count" id="count" aria-hidden="true">
+        <span class="lbl">começa em</span>
+        <div class="cbox"><b id="cd">00</b><span>dias</span></div>
+        <div class="cbox"><b id="ch">00</b><span>horas</span></div>
+        <div class="cbox"><b id="cm">00</b><span>min</span></div>
+        <div class="cbox"><b id="cs">00</b><span>seg</span></div>
+      </div>
+    </div>
+
+    <div class="form-card" id="form">
+      <h3>Entre na pré-venda</h3>
+      <p class="sub">A <b>condição especial do lote promocional</b> sai primeiro — e só — pra quem está na lista.</p>
+      <form id="leadform" novalidate>
+        <div class="field">
+          <label for="f-nome">nome</label>
+          <input id="f-nome" name="nome" type="text" autocomplete="name" placeholder="Seu nome" required>
+        </div>
+        <div class="field">
+          <label for="f-tel">whatsapp</label>
+          <input id="f-tel" name="telefone" type="tel" autocomplete="tel" inputmode="tel" placeholder="(47) 99999-9999" required>
+        </div>
+        <div class="field">
+          <label for="f-email">e-mail</label>
+          <input id="f-email" name="email" type="email" autocomplete="email" placeholder="seu@email.com" required>
+        </div>
+        <p class="form-msg" id="fmsg">confere os campos destacados — precisamos deles pra te avisar.</p>
+        <button class="btn btn-primary btn-lg btn-block" type="submit" id="fbtn">Quero minha vaga no lote</button>
+      </form>
+      <div class="spots"><i></i> pré-venda aberta — vagas do lote limitadas</div>
+      <p class="form-note">🔒 seus dados ficam seguros. sem spam — só o essencial do bootcamp.</p>
+    </div>
+  </div>
+</header>
+
+<section class="strip">
+  <div class="container">
+    <div class="vgrid">
+      <div class="vcard" data-rv><span class="n">01</span><h3>Sem escrever código</h3><p>O Claude Code é o motor. Você aprende a pilotar do zero — mesmo sem nunca ter programado.</p></div>
+      <div class="vcard" data-rv><span class="n">02</span><h3>Solução completa</h3><p>Interface, banco de dados e automação conectados numa solução única, construída por você.</p></div>
+      <div class="vcard" data-rv><span class="n">03</span><h3>No ar no mesmo dia</h3><p>Nada de exercício de mentira: o que você constrói é publicado, funcionando, pronto pra usar.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="mentor" data-rv>
+      <div class="photo"><img src="/images/helbert.webp" alt="Helbert Paranhos" width="880" height="880" loading="lazy" decoding="async"></div>
+      <div>
+        <h3>Helbert Paranhos</h3>
+        <div class="role">seu mentor · fundador strat academy &amp; strat ai</div>
+        <ul>
+          <li>Especialista em automação e arquitetura de sistemas com IA</li>
+          <li>Entrega soluções de IA para grandes empresas e infoprodutores</li>
+          <li>Fatura múltiplos 5 dígitos/mês com agentes e SaaS assistidos por IA</li>
+          <li>Constrói ao vivo, do seu lado, em turma reduzida de propósito</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="final">
+  <div class="container">
+    <span class="tag" data-rv>🔥 lote promocional · só na pré-venda</span>
+    <h2 data-rv>A melhor condição desta turma <span class="hl">não volta</span>.</h2>
+    <p data-rv>Sábado, 08/08, das 13h às 18h. Entre na lista, receba a condição do lote em primeira mão e chegue no dia pronto pra construir.</p>
+    <a class="btn btn-primary btn-lg" href="#form" data-rv data-strat-cta="final-prevenda">Quero minha vaga no lote</a>
+  </div>
+</section>
+
+<footer>
+  <div class="container foot">
+    <img src="/images/strat-black.png" alt="Strat" width="295" height="91" loading="lazy">
+    <p><b>Bootcamp Construtor de IA</b> · uma iniciativa Strat AI · © 2026 · Todos os direitos reservados.</p>
+  </div>
+
+  <div style="text-align:center;padding:12px"><a href="https://stratacademy.com.br/politica-de-privacidade/" style="text-decoration:underline;font-size:14px">Política de Privacidade</a></div>
+</footer>
+
+<script>
+(function(){
+  /* reveal */
+  var rvs=document.querySelectorAll('[data-rv]');
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12,rootMargin:'0px 0px -30px 0px'});
+    rvs.forEach(function(e){io.observe(e)});
+  } else { rvs.forEach(function(e){e.classList.add('in')}); }
+
+  /* countdown até 08/08 13:00 (Brasília) */
+  var target=new Date('2026-08-08T13:00:00-03:00').getTime();
+  function pad(n){return n<10?'0'+n:''+n}
+  function tick(){
+    var d=target-Date.now(); if(d<0)d=0;
+    document.getElementById('cd').textContent=pad(Math.floor(d/864e5));
+    document.getElementById('ch').textContent=pad(Math.floor(d%864e5/36e5));
+    document.getElementById('cm').textContent=pad(Math.floor(d%36e5/6e4));
+    document.getElementById('cs').textContent=pad(Math.floor(d%6e4/1e3));
+  }
+  tick(); setInterval(tick,1000);
+
+  /* form → Lead (pixel + CAPI + webhook do funil) → /grupo */
+  var form=document.getElementById('leadform'), btn=document.getElementById('fbtn'), msg=document.getElementById('fmsg');
+  var DEST='/0808-v1/grupo';
+  var FALLBACK_WEBHOOK='https://n8nwebhook.strat.tec.br/webhook/lead-web-automation';
+  function val(id){return (document.getElementById(id).value||'').trim()}
+  function mark(id,bad){document.getElementById(id).classList[bad?'add':'remove']('err')}
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    if(form.__go)return;
+    var nome=val('f-nome'), tel=val('f-tel'), em=val('f-email');
+    var telDigits=tel.replace(/\D/g,'');
+    var bad=false;
+    mark('f-nome',!(nome.length>=2)); bad=bad||!(nome.length>=2);
+    mark('f-tel',!(telDigits.length>=10)); bad=bad||!(telDigits.length>=10);
+    var emOk=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em);
+    mark('f-email',!emOk); bad=bad||!emOk;
+    msg.style.display=bad?'block':'none';
+    if(bad)return;
+    form.__go=true; btn.disabled=true; btn.textContent='garantindo sua vaga…';
+    var parts=nome.split(/\s+/), fn=parts[0]||'', ln=parts.slice(1).join(' ');
+    var sent=false;
+    try{
+      if(window.stratTrack){
+        window.stratTrack('Lead',{product:'bootcamp-0808'},{em:em,ph:telDigits,fn:fn,ln:ln});
+        sent=true;
+      }
+    }catch(err){}
+    if(!sent){
+      try{
+        var payload=JSON.stringify({product:'bootcamp-0808',origin:'bootcamp-0808',email:em,name:nome,phone:telDigits,event_source_url:location.href,custom:{product:'bootcamp-0808',fallback:true},ts:Math.floor(Date.now()/1000)});
+        if(!(navigator.sendBeacon&&navigator.sendBeacon(FALLBACK_WEBHOOK,new Blob([payload],{type:'text/plain;charset=UTF-8'}))))
+          fetch(FALLBACK_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:payload,keepalive:true}).catch(function(){});
+      }catch(err){}
+    }
+    setTimeout(function(){location.href=DEST},450);
+  });
+})();
+</script>

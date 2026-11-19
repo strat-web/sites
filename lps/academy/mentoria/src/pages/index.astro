@@ -1,0 +1,21 @@
+---
+// LP da Mentoria Strat AI (V1, a principal), migrada do strat-lps (lps/mentoria/index.html) sem mudar texto, layout nem
+// tracking (WEB-48). O HTML mora em src/html/ (head e corpo); o kit põe título, descrição, canonical, Open Graph,
+// JSON-LD da marca e o <Tracking> perfil venda (Rastro mentoria e launcher da Hotmart, da linha "academy-mentoria" do
+// catálogo). O JSON-LD da página (Service e FAQPage) segue no corpo. O que mudou em relação ao strat-lps está no README.
+import Layout from '@strat/kit/Layout.astro';
+import head from '../html/home.head.html?raw';
+import corpo from '../html/home.corpo.html?raw';
+---
+<Layout
+  marca="academy"
+  perfil="venda"
+  titulo="Mentoria de IA aplicada a negócios | Strat AI"
+  descricao="Mentoria individual pra construir Agentes de IA e SaaS que geram receita. Claude Code, Cursor, Supabase e n8n — do protótipo ao produto no ar, com quem faz isso na operação real."
+  descricaoSocial="Do protótipo ao produto real: Agentes de IA e SaaS que geram receita. Mentoria individual com Helbert Paranhos."
+  imagem="/images/claude-logo.webp"
+  viewport="width=device-width,initial-scale=1"
+>
+  <Fragment slot="head" set:html={head} />
+  <Fragment set:html={corpo} />
+</Layout>

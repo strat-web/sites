@@ -1,0 +1,76 @@
+<div class="topbar">
+    <p>Pedido aprovado! Seu acesso chegará no seu e-mail em alguns minutos.</p>
+  </div>
+
+  <main class="main">
+    <div class="wrap">
+      <p class="hold"><u>NÃO ACESSE o Bootcamp</u> antes de ler isso ↓</p>
+
+      <h1>Você tem duas opções: anotar feito louco no dia do evento… ou ter o Bootcamp inteiro gravado em módulos:</h1>
+
+      <!-- ═══════════════ VÍDEO (Bunny Stream) — DESATIVADO por enquanto ═══════════════
+           Quando o vídeo for gravado: descomentar o bloco abaixo, trocar
+           LIBRARY_ID/VIDEO_ID pelo embed do painel do Bunny (Stream → vídeo → Embed)
+           e remover (ou encurtar) o bloco .pitch escrito.
+
+      <div class="player">
+        <iframe
+          data-strat-video-src="https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_ID?autoplay=false&loop=false&muted=false&preload=true&responsive=true"
+          loading="eager"
+          allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
+          allowfullscreen></iframe>
+      </div>
+      <p class="sound">▶ aperte o play e aumente o som</p>
+      ═══════════════════════════════════════════════════════════════════════════════ -->
+
+      <!-- versão escrita (primeiro momento, até o vídeo ficar pronto) -->
+      <div class="pitch">
+        <p>Sua vaga está garantida. Agora encara a realidade: o Bootcamp é <strong>ao vivo</strong> — um dia inteiro construindo sem parar, num ritmo que não espera ninguém.</p>
+        <p>Cada passo acontece <strong>uma única vez</strong>. Piscou, foi ao banheiro, travou num detalhe? Aquele pedaço do método foi embora — e é justamente o pedaço que você vai precisar quando for construir sozinho.</p>
+        <p>Por isso existe a <strong>Gravação do Bootcamp — Claude Code em Módulos</strong>: o evento completo, gravado e organizado módulo por módulo, pra você pausar, voltar e reconstruir cada projeto no seu ritmo, quantas vezes quiser.</p>
+        <p>A gravação custa <strong>R$297</strong>. Mas quem acabou de garantir a vaga — e decidir <strong>agora, nesta página</strong> — leva por:</p>
+      </div>
+
+      <div class="price">
+        <span class="price-old">de R$297</span>
+        <span class="price-new">R$97</span>
+        <span class="price-note">menos de 1/3 do valor — em 1 clique, sem preencher nada de novo</span>
+      </div>
+
+      <div class="pitch">
+        <p>E o aviso é sério: <strong>saiu desta página, a condição morre</strong>. Não volta por e-mail, não tem no suporte, não reaparece dentro do Bootcamp. Depois, é R$297.</p>
+        <p class="pitch-cta">↓ garanta a gravação por R$97 abaixo ↓</p>
+      </div>
+
+      <!-- HOTMART - Sales Funnel Widget (código oficial da etapa do funil) -->
+      <div class="funnel">
+        <!--- sales funnel container --->
+        <div id="hotmart-sales-funnel"></div>
+      </div>
+
+      <!--- script load and setup --->
+      <script src="https://checkout.hotmart.com/lib/hotmart-checkout-elements.js"></script>
+      <script>
+      checkoutElements.init('salesFunnel').mount('#hotmart-sales-funnel')
+      </script>
+      <!-- HOTMART - Sales Funnel Widget -->
+    </div>
+  </main>
+
+  <footer>
+    <p>Copyright © Strat Academy — 2026. Todos os direitos reservados.</p>
+    <p>Este site não é afiliado ao Facebook, ao Instagram ou à Meta Inc.</p>
+
+  <div style="text-align:center;padding:12px"><a href="https://stratacademy.com.br/politica-de-privacidade/" style="text-decoration:underline;font-size:14px">Política de Privacidade</a></div>
+</footer>
+
+<!-- O player abaixo da primeira dobra só inicia quando chega à tela; o vídeo de fundo continua automático. -->
+<script>
+(function(){
+  var frames=document.querySelectorAll('iframe[data-strat-video-src]');
+  function carregar(frame){frame.src=frame.getAttribute('data-strat-video-src');frame.removeAttribute('data-strat-video-src');}
+  if(!('IntersectionObserver' in window)){frames.forEach(carregar);return;}
+  var observer=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){carregar(entry.target);observer.unobserve(entry.target);}});});
+  frames.forEach(function(frame){observer.observe(frame);});
+})();
+</script>
