@@ -3,6 +3,8 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- feat(academy): migra a LP do bootcamp (24 rotas, com /0808-*, grupo e upsell/downsell) para o projeto academy-bootcamp do Pages (WEB-48)
+- feat(checagens): título e H1 repetidos só barram entre páginas indexáveis; variante de teste com noindex pode repetir a principal, separado do #47 a pedido do Helbert (WEB-48)
 - feat(academy): migra a LP da mentoria (principal e v2, o app React antigo, com termos e privacidade) para o projeto academy-mentoria do Pages (WEB-48)
 - feat(academy): migra a LP skills (principal e /b/) do strat-lps lp-500 para o projeto academy-skills do Pages (WEB-48)
 - feat(academy): migra a LP da comunidade (pós-cadastro de todos os funis, ?f=) do strat-lps para o projeto academy-comunidade do Pages; por-funil conserva o Umami do host e o Rastro segue pelo FUNIS da página (WEB-48)

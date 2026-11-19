@@ -1,0 +1,18 @@
+---
+// Migração do strat-lps (WEB-48), preservando caminho, conteúdo e funil. Tracking pelo kit.
+import Layout from '@strat/kit/Layout.astro';
+import head from "../../html/0808-combo.head.html?raw";
+import corpo from "../../html/0808-combo.corpo.html?raw";
+---
+<Layout
+  marca="academy"
+  perfil="venda"
+  titulo="Última chance · pacote completo por R$ 97 · Bootcamp Claude Code 08/08"
+  descricao="Bootcamp ao vivo 08/08 (R$ 97) + Gravação em módulos (R$ 97) + As 7 Skills do Helbert (R$ 19,90). Separado dá R$ 213,90. Você leva os 3 por R$ 97, ou 3x no cartão."
+  indexar={false}
+  tituloSocial="Os 3 juntos por R$ 97 — Bootcamp Claude Code 08/08"
+  descricaoSocial="Bootcamp ao vivo + Gravação em módulos + As 7 Skills do Helbert. Separado dá R$ 213,90; você leva tudo por R$ 97. 5 horas construindo 4 sistemas do zero, sem programar."
+>
+  <Fragment slot="head" set:html={head} />
+  <Fragment set:html={corpo} />
+</Layout>
