@@ -66,6 +66,41 @@ const descrever = (s) => (s.attrs.src ? s.attrs.src : `<script id="${s.attrs.id 
 
 const coladoAMao = (texto) => COLADO_A_MAO.filter(([re]) => re.test(texto)).map(([, nome]) => nome);
 
+// Evento no pixel que o próprio <Tracking> liga (m.js com data-pixel): fbq('track' | 'trackCustom', ...) não é pixel
+// colado, é a página contando um passo dela (WEB-24). Só vale em <script> inline da página que tem esse pixel, e só
+// com a lista fechada dos eventos que o /advogados original usa: ViewContent (capa) e FirstInteraction (1ª resposta).
+// Lead e LeadQualificado saem da tag do MetricaaS com o event_id da CAPI; repetidos aqui dariam evento em dobro.
+// fbq('init'), o fbevents.js e o resto continuam barrando.
+export const EVENTOS_DA_PAGINA = ['ViewContent', 'FirstInteraction'];
+// Evento que nunca sai da página: o nome escrito em qualquer string do script barra quando ele tem fbq de evento.
+export const EVENTOS_DA_TAG = ['Lead', 'LeadQualificado'];
+const EVENTO_NO_PIXEL = /\bfbq\s*\(\s*(['"])(?:track|trackCustom)\1\s*,\s*(?:(['"])([^'"\\]*)\2|[A-Za-z_$][\w$.]*)/g;
+const STRING_DA_TAG = new RegExp(`(['"\`])(${EVENTOS_DA_TAG.join('|')})\\1`, 'g');
+
+/**
+ * Tira do script os fbq de evento da lista fechada (para a regra do "colado à mão" não pegar) e devolve os problemas:
+ * evento escrito fora da lista, ou evento por variável num script que tem Lead/LeadQualificado em alguma string.
+ */
+export function eventosNoPixel(conteudo) {
+  const problemas = [];
+  let porVariavel = false;
+  const limpo = conteudo.replace(EVENTO_NO_PIXEL, (_tudo, _a, aspas, nome) => {
+    if (aspas === undefined) porVariavel = true;
+    else if (!EVENTOS_DA_PAGINA.includes(nome)) {
+      problemas.push(`fbq com o evento "${nome}" fora da lista da página (${EVENTOS_DA_PAGINA.join(', ')})`);
+    }
+    return '';
+  });
+  if (porVariavel) {
+    for (const nome of new Set([...conteudo.matchAll(STRING_DA_TAG)].map((m) => m[2]))) {
+      problemas.push(`fbq com evento por variável num script que tem "${nome}": ${EVENTOS_DA_TAG.join(' e ')} saem só da tag do MetricaaS`);
+    }
+  }
+  return { limpo, problemas };
+}
+
+const pixelDoKit = (scripts) => scripts.some((s) => s.attrs.src === METRICAAS && s.attrs['data-pixel']);
+
 // type que o navegador executa como JavaScript clássico. "module" também executa, mas muda a ordem e pede CORS; um
 // type qualquer (text/plain de gerenciador de consentimento, por exemplo) não executa: script presente e morto.
 const TIPOS_CLASSICOS = ['', 'text/javascript', 'application/javascript', 'text/ecmascript', 'application/ecmascript'];
@@ -96,9 +131,16 @@ export function checarPaginaTracking(pagina, catalogo, r) {
   const banner = ESQUELETOS[onde] ? null : bannerDoKit(catalogo, linhaDaPagina);
   const ehBanner = (s) => banner !== null && !s.attrs.src && s.conteudo.trim() === banner;
 
+  const comPixelDoKit = pixelDoKit(scripts);
   for (const s of scripts) {
     if (ehBanner(s)) continue;
-    for (const nome of coladoAMao(`${s.attrs.src || ''}\n${s.conteudo}`)) {
+    let conteudo = s.conteudo;
+    if (comPixelDoKit && !s.attrs.src) {
+      const eventos = eventosNoPixel(s.conteudo);
+      conteudo = eventos.limpo;
+      for (const p of eventos.problemas) r.erro(onde, `${p} em ${descrever(s)}`);
+    }
+    for (const nome of coladoAMao(`${s.attrs.src || ''}\n${conteudo}`)) {
       r.erro(onde, `${nome} colado à mão em ${descrever(s)}: tracking só pelo <Tracking> do kit`);
     }
   }

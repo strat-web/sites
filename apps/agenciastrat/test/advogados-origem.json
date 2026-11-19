@@ -1,0 +1,22 @@
+{
+  "origem": "Strat-Ai-Horus-OS/strat-lps@05ca028 (lps/agencia/advogados)",
+  "textos": {
+    "advogados": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "advogados-v2": "76fc69445903776a71140cba4e7a7b1e1b9923a259a0d981187a7f5ebadcba44"
+  },
+  "scripts": {
+    "advogados": "d501f94f69834c22062aed0be87aceecff5cf8d2334e7b873b528e518f1895c4",
+    "advogados-v2": "062717e6df7f5f7545c863a14a9f18e68b6f7bffd1a8b0ea2ff2f711eb06790c"
+  },
+  "midias": {
+    "favicon/favicon-180.png": "a1e352ea71342964e694faeaf3b52f78c53f9d25d468509a47f14b42ac920302",
+    "favicon/favicon.ico": "24955ff8db791f234807ccaba79f79074aab8a09208cad6fb99c65e69a15c061",
+    "logo/strat-ag.png": "fe2327532b25dad46cfebdda7686301de0a9f4c7bc815190c9fa1cab6f5e975d",
+    "logo/strat-ag-fundo-escuro.png": "82d08e759e95b264a5232281e05420803752f6cee67b6c590607b6b9ca0716cd",
+    "selos/google-partner.webp": "4533218170e73a91c01f8accd093d3b73930d903922a5d5141b2c23f90d5a76a",
+    "selos/meta-business-partner.webp": "a0a134d7fec76922378b0a15b6692b0065c5f8cd698ac428d2bb5b4443fdeed2",
+    "time/time-agencia-480.webp": "1b662c59769d393fe39529b291ca63bc17a36af044ad2d94dd827b6434bcfd6d",
+    "time/time-agencia-800.webp": "ea7baeb11f3b79d7d4dfc547928e1c6d5c466fe14d4726ae5b32e5c62e9c74e9",
+    "time/time-agencia-1200.webp": "7137974a52544ae937ec91846d48562e3745f5558c811b010041d539bd248fb7"
+  }
+}

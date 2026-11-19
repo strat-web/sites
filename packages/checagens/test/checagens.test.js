@@ -90,6 +90,45 @@ test('seo: página indexável fora do sitemap barra; dentro passa', () => {
   assert.deepEqual(checarSeo(ctx([p], { sitemap: [p.url] })).erros, []);
 });
 
+test('seo: <h1> montado numa string do <script> não conta como H1 da página (WEB-24)', () => {
+  const tela = `<script>app.innerHTML = '<h1 class="q">' + step.q + '</h1>';</script>`;
+  assert.deepEqual(checarSeo(ctx([pagina({ corpo: tela })])).erros, []);
+  assert.match(msgs(checarSeo(ctx([pagina({ h1: '', corpo: tela })]))), /exatamente um <h1> com texto/);
+});
+
+test('tracking: fbq de evento passa no pixel do m.js do kit; init e fbq sem esse pixel barram (WEB-24)', async () => {
+  // Agência: MetricaaS com o pixel no m.js (data-pixel), sem Rastro.
+  const semRastro = linha({ rastro_slug: null, metricaas_ws: 'strat-marketing', meta_pixel: '1815630929780241' });
+  const mjs = '<script defer src="https://t.metricaas.com.br/m.js" data-ws="strat-marketing" data-pixel="1815630929780241"></script>';
+  const evento = "<script>if (window.fbq) { fbq('track', 'ViewContent', {}); fbq( \"trackCustom\", 'FirstInteraction'); }</script>";
+  const r = await checarTracking(ctx([pagina({ head: mjs, corpo: evento })], { linhas: [semRastro] }), { semRede: true });
+  assert.deepEqual(r.erros, []);
+  const init = `<script>fbq('track', 'ViewContent'); fbq('init', '1');</script>`;
+  assert.match(msgs(await checarTracking(ctx([pagina({ head: mjs, corpo: init })], { linhas: [semRastro] }), { semRede: true })), /fbq\) colado à mão/);
+  // Com Rastro o m.js vai sem data-pixel: o evento escrito à mão continua barrando.
+  assert.match(msgs(await checarTracking(ctx([pagina({ corpo: evento })]), { semRede: true })), /fbq\) colado à mão/);
+});
+
+test('tracking: evento do pixel só da lista fechada; Lead e LeadQualificado barram (WEB-24)', async () => {
+  const semRastro = linha({ rastro_slug: null, metricaas_ws: 'strat-marketing', meta_pixel: '1815630929780241' });
+  const mjs = '<script defer src="https://t.metricaas.com.br/m.js" data-ws="strat-marketing" data-pixel="1815630929780241"></script>';
+  const checar = (corpo) => checarTracking(ctx([pagina({ head: mjs, corpo })], { linhas: [semRastro] }), { semRede: true });
+  for (const ev of ['Lead', 'LeadQualificado', 'Purchase']) {
+    for (const modo of ['track', 'trackCustom']) {
+      const r = await checar(`<script>fbq('${modo}', '${ev}');</script>`);
+      assert.match(msgs(r), new RegExp(`evento "${ev}" fora da lista da página`));
+      assert.doesNotMatch(msgs(r), /colado à mão/);
+    }
+  }
+  // Por variável (como o track() do /advogados): passa, a não ser que o script traga Lead ou LeadQualificado.
+  const porVariavel = (chamada) => `<script>function track(m){ if (m) fbq('track', m, {}); } ${chamada}</script>`;
+  assert.deepEqual((await checar(porVariavel("track('ViewContent');"))).erros, []);
+  assert.match(msgs(await checar(porVariavel("track('Lead');"))), /evento por variável num script que tem "Lead"/);
+  assert.match(msgs(await checar(porVariavel('track("LeadQualificado");'))), /evento por variável num script que tem "LeadQualificado"/);
+  // A palavra Lead em comentário ou dentro de outra string não conta.
+  assert.deepEqual((await checar(porVariavel("// Não dispare Lead aqui\ntrack('ViewContent', 'form_lead');"))).erros, []);
+});
+
 test('seo: href dentro de <script> não conta como link', () => {
   const r = checarSeo(ctx([pagina({ corpo: `<script>b.innerHTML = '<a href="#">x</a>';</script>` })]));
   assert.deepEqual(r.erros, []);
