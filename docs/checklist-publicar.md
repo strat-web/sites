@@ -27,7 +27,7 @@ com a evidência (print, curl, link). Adaptado do portão do setor de LP da cabi
 | C1 | Tracking só pelo `<Tracking>` do kit; nenhum pixel, gtag ou GTM à mão |
 | C2 | Slug do Rastro conhecido (`/sa` responde `known: true`) quando o perfil usa Rastro |
 | C3 | Domínio autorizado no MetricaaS e na lista de permissão do pixel |
-| C4 | Teste com `?utm_source=teste&utm_medium=verificacao`: `PageView`, `Contact`, `Lead`, evento no MetricaaS |
+| C4 | Teste com `?utm_source=teste&utm_medium=verificacao`: `PageView`, `Contact` no clique do WhatsApp (só com Rastro; sem Rastro, o clique aparece como `wa_click` no MetricaaS, sem `Contact` no navegador: WEB-86), `Lead`, evento no MetricaaS |
 | C5 | Mesmo `event_id` no navegador e na CAPI (Gerenciador de Eventos) |
 | C6 | Com e sem aceitar cookies, o comportamento bate com a política |
 
