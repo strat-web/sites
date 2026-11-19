@@ -1,0 +1,44 @@
+---
+import { getCollection, render } from 'astro:content';
+import PostLayout from '../../layouts/PostLayout.astro';
+import { naListagem } from '@strat/conteudo';
+
+export async function getStaticPaths() {
+  const posts = (await getCollection('blog', ({ data }) => naListagem(data))).sort(
+    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+  );
+
+  return posts.map((entry, i) => {
+    // Relacionados: maior nº de tags em comum, depois mais recentes. Top 3.
+    const related = posts
+      .filter((p) => p.id !== entry.id)
+      .map((p) => ({
+        p,
+        shared: p.data.tags.filter((t) => entry.data.tags.includes(t)).length,
+      }))
+      .filter((r) => r.shared > 0)
+      .sort((a, b) => b.shared - a.shared || b.p.data.pubDate.valueOf() - a.p.data.pubDate.valueOf())
+      .slice(0, 3)
+      .map((r) => r.p);
+
+    const newer = posts[i - 1];
+    const older = posts[i + 1];
+
+    return {
+      params: { slug: entry.id },
+      props: {
+        entry,
+        related,
+        prev: older ? { id: older.id, title: older.data.title } : null,
+        next: newer ? { id: newer.id, title: newer.data.title } : null,
+      },
+    };
+  });
+}
+
+const { entry, related, prev, next } = Astro.props;
+const { Content, headings } = await render(entry);
+---
+<PostLayout entry={entry} headings={headings} related={related} prev={prev} next={next}>
+  <Content />
+</PostLayout>

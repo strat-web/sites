@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" role="img" aria-hidden="true">
+  <defs>
+    <radialGradient id="aura" cx="78%" cy="0%" r="82%">
+      <stop offset="0%" stop-color="#D97A4A" stop-opacity=".16"/>
+      <stop offset="64%" stop-color="#D97A4A" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="quadro"><rect width="1200" height="675"/></clipPath>
+  </defs>
+  <g clip-path="url(#quadro)">
+    <rect width="1200" height="675" fill="#F5F3EE"/>
+    <rect width="1200" height="675" fill="url(#aura)"/>
+    
+    <circle cx="170" cy="540" r="200" fill="#D97A4A" fill-opacity=".14"/>
+    <g>
+      <rect x="341" y="105" width="620" height="440" rx="30" fill="#FFFFFF" opacity=".55"/>
+      <rect x="393" y="152" width="620" height="440" rx="30" fill="#FFFFFF" opacity=".8"/>
+      <rect x="445" y="200" width="620" height="440" rx="30" fill="#FFFFFF" stroke="rgba(15,17,21,.13)" stroke-width="2"/>
+      <rect x="487" y="246" width="230" height="26" rx="13" fill="#A8572E"/>
+      <rect x="487" y="300" width="470" height="20" rx="10" fill="#D97A4A" fill-opacity=".5"/>
+      <rect x="487" y="340" width="380" height="20" rx="10" fill="#D97A4A" fill-opacity=".5"/>
+      <rect x="487" y="380" width="420" height="20" rx="10" fill="#D97A4A" fill-opacity=".28"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,100 @@
+---
+// Listagem do blog — padrão §3: hero curto -> post em destaque (marca-d'água
+// permitida aqui) -> grade de 3 -> paginação.
+import RubikLayout from '../../layouts/RubikLayout.astro';
+import PostCardRubik from '../../components/PostCardRubik.astro';
+import CapaPost from '../../components/CapaPost.astro';
+import { fotoDaCapa } from '../../lib/capa';
+import { getCollection } from 'astro:content';
+import { getCategories, slugifyTag } from '../../lib/tags';
+import { SITE, PAGE_SIZE } from '../../consts';
+import { naListagem } from '@strat/conteudo';
+
+const posts = (await getCollection('blog', ({ data }) => naListagem(data))).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+const categories = await getCategories();
+const lastPage = Math.max(1, Math.ceil(posts.length / PAGE_SIZE));
+
+const destaque = posts[0];
+const resto = posts.slice(1, PAGE_SIZE);
+const fmt = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'long', year: 'numeric', timeZone: 'UTC' });
+---
+<RubikLayout
+  title={`Artigos sobre IA, automação e N8N — ${SITE.name}`}
+  description="Guias práticos de Claude Code, N8N e inteligência artificial aplicada a negócios. Conteúdo aberto, sem cadastro."
+  breadcrumb={[{ name: 'Início', url: '/' }, { name: 'Blog', url: '/blog/' }]}
+>
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="hero wrap blog-hero">
+      <p class="kicker rise d1">Blog</p>
+      <h1 class="rise d2">O que a gente aprendeu fazendo</h1>
+      <p class="lead rise d3">
+        Guias práticos de Claude Code, N8N e IA aplicada a negócio. Aberto, sem cadastro
+        e sem pop-up pedindo seu e-mail no meio da leitura.
+      </p>
+      <form action="/blog/buscar" class="busca rise d4" role="search">
+        <input type="search" name="q" placeholder="Buscar no blog…" aria-label="Buscar no blog" />
+        <button type="submit" class="btn btn-primario">Buscar</button>
+      </form>
+    </section>
+  </div>
+
+  <section class="wrap secao">
+    <div class="chips-cat">
+      <a href="/blog/" aria-current="page"><span class="pill">Todos</span></a>
+      {categories.map((c) => (
+        <a href={`/blog/categoria/${c.slug}/`}><span class="pill">{c.label}</span></a>
+      ))}
+    </div>
+  </section>
+
+  {destaque && (
+    <section class="wrap" style="padding-bottom: var(--s5)">
+      <a href={`/blog/${destaque.id}/`} class="post-destaque">
+        <span class="marca" aria-hidden="true">01</span>
+        <span class="capa-quadro">
+          <CapaPost titulo={destaque.data.title} tags={destaque.data.tags} slug={destaque.id} formato="destaque" foto={fotoDaCapa(destaque.data.cover)} />
+        </span>
+        <span class="pill" style="justify-self:start">Mais recente · {fmt.format(destaque.data.pubDate)}</span>
+        <h2>{destaque.data.title}</h2>
+        <p>{destaque.data.description}</p>
+        <span class="ver">Ler o artigo →</span>
+      </a>
+    </section>
+  )}
+
+  <section class="wrap" style="padding-bottom: var(--s6)">
+    <div class="grade grade-3">
+      {resto.map((p) => <PostCardRubik post={p} />)}
+    </div>
+
+    {lastPage > 1 && (
+      <nav class="paginacao" aria-label="Paginação">
+        <span class="atual">1</span>
+        {Array.from({ length: lastPage - 1 }, (_, i) => i + 2).map((n) => (
+          <a href={`/blog/pagina/${n}/`}>{n}</a>
+        ))}
+        <a href="/blog/pagina/2/">Próxima →</a>
+      </nav>
+    )}
+  </section>
+
+  <section class="wrap">
+    <div class="cta">
+      <p class="kicker">Strat Hub</p>
+      <h2>Ler é o começo. Fazer é dentro do Hub.</h2>
+      <p class="lead">
+        Conta gratuita, sem cartão, com as Masterclasses de N8N e Claude Code completas.
+      </p>
+      <a href="https://hub.stratacademy.com.br/cadastro" data-evento="SignUpIntent" data-evento-local="blog" class="btn btn-primario">Criar conta grátis</a>
+    </div>
+  </section>
+</RubikLayout>
+
+<style>
+  .blog-hero { padding-block: var(--s6) var(--s5); }
+  .blog-hero h1 { font-size: clamp(2rem, 4.6vw, 3.2rem); }
+  .post-destaque .ver { font-size: var(--t-meta); font-weight: var(--w-semi); color: var(--acento); }
+</style>

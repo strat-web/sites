@@ -1,0 +1,138 @@
+---
+import RubikLayout from '../layouts/RubikLayout.astro';
+import BrandLogo from '../components/BrandLogo.astro';
+import { SITE } from '../consts';
+import { PLANO, HUB, MASTERCLASSES } from '../data/catalogo';
+
+const materiais = [
+  { title: 'Workflows de N8N prontos', desc: 'Automações para importar no seu N8N e adaptar ao seu caso, em vez de montar do zero.' },
+  { title: 'Skills de Claude Code', desc: 'Skills prontas para instalar e usar no seu projeto — o que a gente repete, empacotado.' },
+  { title: 'Biblioteca de prompts', desc: 'Prompts organizados por caso de uso, testados na operação e não copiados de lista viral.' },
+  { title: 'Templates de projeto', desc: 'Estruturas iniciais para começar já com o esqueleto certo.' },
+  { title: 'Materiais das aulas', desc: 'Arquivos de apoio de cada aula, no lugar onde a aula está.' },
+  { title: 'Tutor IA', desc: 'Um tutor dentro da plataforma para destravar quando você travar, sem esperar suporte.' },
+];
+
+const faq = [
+  { q: 'Preciso pagar para baixar?', a: `Não para começar. A conta no Strat Hub é gratuita e já libera as masterclasses completas de N8N e de Claude Code. A biblioteca de workflows, skills, prompts e templates faz parte de ${PLANO.nome}, por ${PLANO.preco}${PLANO.periodo}.` },
+  { q: 'Por que os materiais ficam no Hub e não aqui no site?', a: 'Porque material solto em página de download envelhece e ninguém atualiza. Dentro do Hub o arquivo fica junto da aula que explica como usar — e quando a ferramenta muda, os dois mudam juntos.' },
+  { q: 'Vou receber e-mail de venda se criar a conta?', a: 'Você recebe avisos do que entra de novo na plataforma e pode cancelar quando quiser. O cadastro não pede cartão e não inicia cobrança nenhuma.' },
+  { q: 'Os workflows funcionam na versão gratuita do N8N?', a: 'A maior parte sim. Alguns dependem de integração específica ou de credencial paga de terceiro — quando for o caso, isso está avisado no próprio material.' },
+];
+
+const gratis = MASTERCLASSES.filter((m) => m.acesso === 'Gratuito');
+---
+<RubikLayout
+  title={`Materiais e downloads — workflows, skills e prompts — ${SITE.name}`}
+  description="Workflows de N8N, skills de Claude Code, prompts e templates. Tudo dentro do Strat Hub, junto da aula que explica como usar. Conta gratuita, sem cartão."
+  faq={faq}
+  breadcrumb={[{ name: 'Início', url: '/' }, { name: 'Materiais', url: '/downloads/' }]}
+>
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="hero wrap" data-gatilho>
+      <p class="kicker rise d1">Materiais</p>
+      <h1 class="rise d2">Os materiais ficam onde a aula está</h1>
+      <p class="lead rise d3">
+        A gente não mantém uma pasta de arquivos soltos. Workflow, skill, prompt e template
+        vivem dentro do Strat Hub, ao lado da aula que ensina a usar — assim os dois se
+        atualizam juntos.
+      </p>
+      <div class="cta-row rise d4">
+        <a href={HUB} data-evento="SignUpIntent" data-evento-local="downloads" class="btn btn-primario">{PLANO.chamada}</a>
+        <a href="#o-que-tem" class="btn btn-secundario">Ver o que tem lá</a>
+      </div>
+      <p class="hero-nota rise d4">Conta grátis · sem cartão</p>
+    </section>
+  </div>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Grátis no cadastro</p>
+      <h2>Duas trilhas completas, liberadas na hora</h2>
+      <p class="lead">Antes da biblioteca de materiais, o que já é seu por criar a conta.</p>
+    </div>
+    <div class="grade grade-2">
+      {gratis.map((m) => (
+        <div class="card card-largo">
+          <div class="card-topo">
+            <span class="chip-logo"><BrandLogo mark={m.mark} size={26} /></span>
+            <span class="pill pill-acento">grátis</span>
+          </div>
+          <h3>{m.nome}</h3>
+          <p>{m.desc}</p>
+          {m.aulas && <span class="pill" style="align-self:start">{m.aulas} aulas</span>}
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap secao" id="o-que-tem">
+    <div class="sec-head">
+      <p class="kicker">Na assinatura</p>
+      <h2>A biblioteca completa</h2>
+      <p class="lead">O que assinante encontra no Hub, sempre junto do contexto que explica quando usar cada coisa.</p>
+    </div>
+    <div class="grade grade-3">
+      {materiais.map((m) => (
+        <div class="card">
+          <span class="pill" style="align-self:start">assinante</span>
+          <h3>{m.title}</h3>
+          <p>{m.desc}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Sem cadastro nenhum</p>
+      <h2>E tem o que é aberto para todo mundo</h2>
+    </div>
+    <div class="grade grade-3">
+      <a href="/ferramentas/" class="card card-largo">
+        <h3>Ferramentas grátis</h3>
+        <p>Calculadora de funil de vendas e outras que resolvem a tarefa na hora. Sem cadastro, sem limite e sem enviar os seus números para lugar nenhum.</p>
+        <span class="ver">Abrir ferramentas →</span>
+      </a>
+      <a href="/blog/" class="card card-largo">
+        <h3>O blog</h3>
+        <p>Guias completos de Claude Code, N8N e IA aplicada. Sem cadastro, sem e-mail, sem pop-up.</p>
+        <span class="ver">Ler agora →</span>
+      </a>
+      <a href="/parceiros/" class="card card-largo">
+        <h3>Benefícios Strat</h3>
+        <p>As ferramentas que a gente usa de verdade, com o desconto que conseguimos para a comunidade.</p>
+        <span class="ver">Ver benefícios →</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Dúvidas</p>
+      <h2>Perguntas frequentes</h2>
+    </div>
+    <div class="faq">
+      {faq.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="cta">
+      <p class="kicker">Strat Hub</p>
+      <h2>Comece de graça. Pague só quando fizer sentido.</h2>
+      <p class="lead">
+        Criar conta no Strat Hub não custa nada e já libera as Masterclasses de N8N e Claude Code
+        completas. Você decide depois se quer o resto.
+      </p>
+      <a href={HUB} data-evento="SignUpIntent" data-evento-local="downloads" class="btn btn-primario">{PLANO.chamada}</a>
+      <p class="nota">{PLANO.nome} · {PLANO.preco}{PLANO.periodo} quando quiser assinar · cancela quando quiser</p>
+    </div>
+  </section>
+
+  <div class="barra-fixa">
+    <div class="info"><b>{PLANO.nome}</b><span>Grátis · sem cartão</span></div>
+    <a href={HUB} data-evento="SignUpIntent" data-evento-local="downloads" class="btn btn-primario">{PLANO.chamada}</a>
+  </div>
+</RubikLayout>

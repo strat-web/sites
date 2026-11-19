@@ -1,12 +1,177 @@
 ---
-import Layout from '@strat/kit/Layout.astro';
+// Home — as 4 portas da arquitetura nova + prova + últimos posts + CTA.
+// Ver docs/ARQUITETURA-SITE.md: o site não vende, converte em cadastro no Hub (C1).
+import RubikLayout from '../layouts/RubikLayout.astro';
+import BrandLogo from '../components/BrandLogo.astro';
+import PostCardRubik from '../components/PostCardRubik.astro';
+import { getCollection } from 'astro:content';
+import { SITE } from '../consts';
+import { CURSOS, MASTERCLASSES, PLANO, HUB } from '../data/catalogo';
+import { MARCAS_REAIS } from '../data/marcas';
+import { naListagem } from '@strat/conteudo';
+
+const posts = (await getCollection('blog', ({ data }) => naListagem(data))).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+const latest = posts.slice(0, 3);
+const destaque = CURSOS.filter((c) => MARCAS_REAIS[c.mark]).slice(0, 6);
+const gratis = MASTERCLASSES.filter((m) => m.acesso === 'Gratuito');
+
+const stats = [
+  { num: '11', label: 'trilhas por ferramenta' },
+  { num: '2', label: 'masterclasses grátis' },
+  { num: 'R$ 67', label: 'por mês para tudo' },
+  { num: '0', label: 'cartão para começar' },
+];
+
+// As quatro portas.
+const portas = [
+  {
+    kicker: 'Aprender',
+    title: 'Strat Academy 2.0',
+    desc: 'A plataforma: 11 trilhas por ferramenta, materiais, templates e Tutor IA. Comece de graça e assine se quiser o resto.',
+    href: '/assinatura/',
+    cta: 'Ver a assinatura',
+  },
+  {
+    kicker: 'Ao vivo',
+    title: 'Eventos',
+    desc: 'Imersão presencial e bootcamp online, com turma junta e gravação liberada no Hub depois.',
+    href: '/eventos/',
+    cta: 'Ver eventos',
+  },
+  {
+    kicker: 'Para empresas',
+    title: 'Strat Ai',
+    desc: 'A gente entra na operação, encontra o que trava e entrega automação funcionando — ou treina o seu time in loco.',
+    href: '/empresas/',
+    cta: 'Agendar diagnóstico',
+  },
+  {
+    kicker: 'Aberto',
+    title: 'Blog',
+    desc: 'Guias práticos de Claude Code, N8N e IA aplicada. Sem cadastro, sem pop-up, sem pedir seu e-mail no meio.',
+    href: '/blog/',
+    cta: 'Ler o blog',
+  },
+];
 ---
-<Layout
-  marca="academy"
-  titulo="Strat Academy · esqueleto do monorepo"
-  descricao="Esqueleto do app stratacademy no monorepo strat-web/sites. A migração do site vem em item próprio."
-  indexar={false}
+<RubikLayout
+  title={SITE.title}
+  description={SITE.description}
 >
-  <h1>Strat Academy</h1>
-  <p>Esqueleto do app <code>stratacademy</code> (WEB-15), já com o Layout do kit (WEB-16). A migração do site vem em item próprio; nenhuma página real está aqui.</p>
-</Layout>
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="hero hero-duplo wrap" data-gatilho>
+      <div>
+        <p class="kicker rise d1">IA aplicada a negócios</p>
+        <h1 class="rise d2">Aprenda as ferramentas de IA que a gente usa todo dia</h1>
+        <p class="lead rise d3">
+          Trilhas por ferramenta, eventos ao vivo e automação sob medida para empresas.
+          Comece pela conta gratuita no Strat Hub — duas masterclasses completas já entram liberadas.
+        </p>
+        <div class="cta-row rise d4">
+          <a href={HUB} data-evento="SignUpIntent" data-evento-local="index" class="btn btn-primario">{PLANO.chamada}</a>
+          <a href="/cursos/" class="btn btn-secundario">Ver as trilhas</a>
+        </div>
+        <p class="hero-nota rise d4">Sem cartão · {PLANO.preco}{PLANO.periodo} só quando quiser assinar</p>
+      </div>
+      <div class="constelacao rise d4" aria-hidden="true">
+        {destaque.map((c) => (
+          <span class="astro-chip"><BrandLogo mark={c.mark} size={30} /><b>{c.nome}</b></span>
+        ))}
+      </div>
+    </section>
+  </div>
+
+  <section class="wrap">
+    <div class="numeros">
+      {stats.map((s) => <div><b>{s.num}</b><span>{s.label}</span></div>)}
+    </div>
+  </section>
+
+  <section class="wrap esteira-secao">
+    <p class="esteira-rotulo">As ferramentas que você aprende aqui</p>
+    <div class="esteira">
+      <div class="esteira-trilho">
+        {[...CURSOS, ...CURSOS].map((c) => (
+          <span class="esteira-item"><BrandLogo mark={c.mark} size={22} />{c.nome}</span>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Por onde entrar</p>
+      <h2>Quatro caminhos, dependendo do que você precisa</h2>
+    </div>
+    <div class="grade grade-2">
+      {portas.map((p) => (
+        <a href={p.href} class="card card-largo">
+          <span class="pill" style="align-self:start">{p.kicker}</span>
+          <h3>{p.title}</h3>
+          <p>{p.desc}</p>
+          <span class="ver">{p.cta} →</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Grátis de verdade</p>
+      <h2>Duas masterclasses completas, liberadas no cadastro</h2>
+      <p class="lead">
+        Não é aula de degustação. São as trilhas inteiras, abertas para quem cria a conta —
+        sem cartão e sem prazo.
+      </p>
+    </div>
+    <div class="grade grade-2">
+      {gratis.map((m) => (
+        <div class="card card-largo">
+          <div class="card-topo">
+            <span class="chip-logo"><BrandLogo mark={m.mark} size={26} /></span>
+            <span class="pill pill-acento">grátis</span>
+          </div>
+          <h3>{m.nome}</h3>
+          <p>{m.desc}</p>
+          {m.aulas && <span class="pill" style="align-self:start">{m.aulas} aulas</span>}
+        </div>
+      ))}
+    </div>
+  </section>
+
+  {latest.length > 0 && (
+    <section class="wrap secao">
+      <div class="sec-head linha">
+        <div>
+          <p class="kicker">Do blog</p>
+          <h2>O que a gente aprendeu fazendo</h2>
+        </div>
+        <a href="/blog/" class="btn btn-ghost">Ver todos os artigos →</a>
+      </div>
+      <div class="grade grade-3">
+        {latest.map((p) => <PostCardRubik post={p} />)}
+      </div>
+    </section>
+  )}
+
+  <section class="wrap">
+    <div class="cta">
+      <p class="kicker">Strat Hub</p>
+      <h2>Comece de graça. Pague só quando fizer sentido.</h2>
+      <p class="lead">
+        Criar conta no Strat Hub não custa nada e já libera as Masterclasses de N8N e Claude Code
+        completas. Você decide depois se quer o resto.
+      </p>
+      <a href={HUB} data-evento="SignUpIntent" data-evento-local="index" class="btn btn-primario">{PLANO.chamada}</a>
+      <p class="nota">{PLANO.nome} · {PLANO.preco}{PLANO.periodo} quando quiser assinar · cancela quando quiser</p>
+    </div>
+  </section>
+
+  <div class="barra-fixa">
+    <div class="info"><b>{PLANO.nome}</b><span>Grátis · sem cartão</span></div>
+    <a href={HUB} data-evento="SignUpIntent" data-evento-local="index" class="btn btn-primario">{PLANO.chamada}</a>
+  </div>
+</RubikLayout>

@@ -7,5 +7,4 @@
 export const ESQUELETOS = {
   'https://agenciastrat.com.br/': 'WEB-23',
   'https://metricaas.com.br/': 'WEB-36',
-  'https://stratacademy.com.br/': 'WEB-49',
 };

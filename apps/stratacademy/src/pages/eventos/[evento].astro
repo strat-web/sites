@@ -1,0 +1,241 @@
+---
+import RubikLayout from '../../layouts/RubikLayout.astro';
+import BrandLogo from '../../components/BrandLogo.astro';
+import { SITE } from '../../consts';
+import { PLANO, HUB } from '../../data/catalogo';
+import { EVENTOS } from '../../data/eventos';
+
+export function getStaticPaths() {
+  return EVENTOS.map((e) => ({ params: { evento: e.slug }, props: { ev: e } }));
+}
+
+const { ev } = Astro.props;
+const url = `/eventos/${ev.slug}/`;
+const aberto = ev.edicao !== null;
+
+const jsonLd = aberto
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'Event',
+      name: ev.nome,
+      description: ev.lead,
+      startDate: ev.edicao!.inicioISO,
+      endDate: ev.edicao!.fimISO,
+      eventStatus: 'https://schema.org/EventScheduled',
+      eventAttendanceMode:
+        ev.formato === 'Online'
+          ? 'https://schema.org/OnlineEventAttendanceMode'
+          : 'https://schema.org/OfflineEventAttendanceMode',
+      location:
+        ev.formato === 'Online'
+          ? { '@type': 'VirtualLocation', url: new URL(url, SITE.url).href }
+          : { '@type': 'Place', name: ev.edicao!.local, address: ev.edicao!.cidade },
+      organizer: { '@type': 'Organization', name: SITE.name, url: SITE.url },
+      url: new URL(url, SITE.url).href,
+    }
+  : null;
+---
+<RubikLayout
+  title={`${ev.nome} — evento ${ev.formato.toLowerCase()} — ${SITE.name}`}
+  description={ev.lead}
+  faq={ev.faq}
+  breadcrumb={[
+    { name: 'Início', url: '/' },
+    { name: 'Eventos', url: '/eventos/' },
+    { name: ev.nome, url },
+  ]}
+>
+  {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="hero wrap" data-gatilho>
+      <nav class="migalhas rise d1" aria-label="Você está em">
+        <a href="/">Início</a><span>/</span><a href="/eventos/">Eventos</a><span>/</span>{ev.nome}
+      </nav>
+      <div class="hero-duplo">
+        <div>
+          <div class="marcadores rise d1">
+            <span class="pill">{ev.formato}</span>
+            {aberto
+              ? <span class="pill pill-acento">inscrições abertas</span>
+              : <span class="pill">próxima edição a definir</span>}
+          </div>
+          <h1 class="rise d2">{ev.h1}</h1>
+          <p class="lead rise d3">{ev.lead}</p>
+
+          {aberto ? (
+            <>
+              <div class="marcadores rise d4">
+                <span class="pill">{ev.edicao!.data}</span>
+                <span class="pill">{ev.edicao!.cidade}</span>
+                {ev.edicao!.vagas && <span class="pill">{ev.edicao!.vagas}</span>}
+              </div>
+              <div class="cta-row rise d4">
+                <a href={ev.edicao!.checkout} data-evento="InitiateCheckout" data-evento-local="evento" class="btn btn-primario">Garantir minha vaga</a>
+                <a href="#agenda" class="btn btn-secundario">Ver a agenda</a>
+              </div>
+            </>
+          ) : (
+            <>
+              <div class="cta-row rise d4">
+                <a href="#lista" class="btn btn-primario">Entrar na lista de espera</a>
+                <a href="#agenda" class="btn btn-secundario">Ver como funciona</a>
+              </div>
+              <p class="hero-nota rise d4">
+                Sem data marcada no momento · quem está na lista é avisado antes da abertura pública
+              </p>
+            </>
+          )}
+        </div>
+        <div class="marca-hero rise d4" aria-hidden="true">
+          <BrandLogo mark={ev.mark} size={96} />
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Para quem é</p>
+      <h2>O {ev.nome} é para você se…</h2>
+    </div>
+    <div class="grade grade-2">
+      {ev.paraQuem.map((p) => (
+        <div class="card"><ul class="card-lista"><li>{p}</li></ul></div>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">O que você leva</p>
+      <h2>O que sai de concreto de lá</h2>
+    </div>
+    <div class="grade">
+      {ev.sai.map((s) => (
+        <div class="card"><h3>{s.title}</h3><p>{s.desc}</p></div>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap secao" id="agenda">
+    <div class="sec-head">
+      <p class="kicker">Agenda</p>
+      <h2>Como o conteúdo se organiza</h2>
+    </div>
+    <div class="passos">
+      {ev.agenda.map((a) => (
+        <div class="passo">
+          <span class="passo-num">{a.n}</span>
+          <div><h3>{a.title}</h3><p>{a.desc}</p></div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  {aberto ? (
+    <section class="wrap secao" id="lotes">
+      <div class="sec-head">
+        <p class="kicker">Ingressos</p>
+        <h2>Lotes</h2>
+      </div>
+      <div class="grade grade-3">
+        {ev.edicao!.lotes.map((l) => (
+          <div class={l.esgotado ? 'card lote-esgotado' : 'card'}>
+            <span class="pill" style="align-self:start">{l.nome}</span>
+            <p class="lote-preco">{l.preco}</p>
+            {l.nota && <p>{l.nota}</p>}
+            {l.esgotado
+              ? <span class="pill" style="align-self:start">esgotado</span>
+              : <a href={ev.edicao!.checkout} data-evento="InitiateCheckout" data-evento-local="evento" class="btn btn-primario" style="align-self:start">Garantir vaga</a>}
+          </div>
+        ))}
+      </div>
+    </section>
+  ) : (
+    <section class="wrap secao" id="lista">
+      <div class="sec-head">
+        <p class="kicker">Lista de espera</p>
+        <h2>Sem edição marcada — e isso é de propósito</h2>
+      </div>
+      <div class="card card-largo">
+        <p>
+          A gente não mantém calendário fixo: abre edição quando dá para fazer bem feito.
+          Quem entra na lista é avisado antes de virar público — e o primeiro lote é sempre
+          o menor.
+        </p>
+        <p>
+          Enquanto isso, o caminho mais rápido para começar é a conta gratuita no Strat Hub:
+          a Masterclass de Claude Code está liberada lá dentro e é exatamente a preparação
+          para o {ev.nome}.
+        </p>
+        <div class="cta-row">
+          <a href="/newsletter/" class="btn btn-primario">Avise-me da próxima edição</a>
+          <a href={HUB} data-evento="SignUpIntent" data-evento-local="[evento]" class="btn btn-secundario">Começar de graça no Hub</a>
+        </div>
+      </div>
+    </section>
+  )}
+
+  {ev.recap && (
+    <section class="wrap secao">
+      <div class="sec-head">
+        <p class="kicker">Edição anterior</p>
+        <h2>Como foi da última vez</h2>
+      </div>
+      <p class="lead">{ev.recap}</p>
+    </section>
+  )}
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Dúvidas</p>
+      <h2>Dúvidas sobre o {ev.nome}</h2>
+    </div>
+    <div class="faq">
+      {ev.faq.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="cta">
+      <p class="kicker">Strat Hub</p>
+      <h2>Se prepare de graça enquanto isso.</h2>
+      <p class="lead">
+        A conta no Strat Hub é gratuita e já libera as masterclasses de N8N e Claude Code —
+        a melhor preparação possível para o evento.
+      </p>
+      <a href={HUB} data-evento="SignUpIntent" data-evento-local="[evento]" class="btn btn-primario">{PLANO.chamada}</a>
+      <p class="nota">{PLANO.nome} · {PLANO.preco}{PLANO.periodo} quando quiser assinar</p>
+    </div>
+  </section>
+
+  <div class="barra-fixa">
+    <div class="info">
+      <b>{ev.nome}</b>
+      <span>{aberto ? ev.edicao!.data : 'Aviso antes da abertura pública'}</span>
+    </div>
+    <a href={aberto ? ev.edicao!.checkout : '/newsletter/'} class="btn btn-primario">
+      {aberto ? 'Garantir vaga' : 'Entrar na lista'}
+    </a>
+  </div>
+</RubikLayout>
+
+<style>
+  .marcadores { display: flex; flex-wrap: wrap; gap: var(--s2); margin-bottom: var(--s3); }
+  .cta-row + .marcadores { margin-top: var(--s3); }
+  .marca-hero {
+    display: grid; place-items: center;
+    background: var(--surf); border-radius: var(--raio-g);
+    box-shadow: var(--sombra-card); padding: var(--s5);
+    animation: flutuar 7s var(--ease) infinite;
+  }
+  @media (max-width: 980px) { .marca-hero { display: none; } }
+  .lote-preco {
+    font-size: var(--t-h3); font-weight: var(--w-bold);
+    color: var(--acento); letter-spacing: -.03em;
+    font-variant-numeric: tabular-nums;
+  }
+  .lote-esgotado { opacity: .55; }
+</style>

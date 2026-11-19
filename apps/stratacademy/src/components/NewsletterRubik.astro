@@ -1,0 +1,162 @@
+---
+/**
+ * Captura de lead (§2.6 do design system).
+ *
+ * Substitui a integração antiga com o Sequenzy. Quem escolhe a lista e o que
+ * dispara é o Hermes, não o site.
+ *
+ * O destino e o formato do payload NÃO estão neste arquivo: moram em
+ * `src/lib/captacao.ts`, junto com os de todos os outros formulários do site.
+ * Este componente só coleta o e-mail e chama `enviarLead`. Ver o aviso lá sobre
+ * a migração para o sistema novo.
+ */
+interface Props {
+  /** Para onde mandar depois do sucesso. */
+  redirect?: string;
+  titulo?: string;
+  texto?: string;
+  rotulo?: string;
+  /** Identifica de qual página veio, para segmentar depois. */
+  origem?: string;
+  /** ID da lista no Listmonk. Vazio = o Hermes decide. */
+  lista?: string;
+}
+const {
+  redirect = '/obrigado',
+  titulo = 'Receba as edições no seu e-mail',
+  texto = 'Uma edição por semana, enxuta, com o que dá para aplicar já. Sem spam e você sai quando quiser.',
+  rotulo = 'Quero receber',
+  origem = 'site',
+  lista = '',
+} = Astro.props;
+
+// O destino do lead NÃO mora mais aqui: mora em src/lib/captacao.ts, que é o
+// único lugar do site que conhece endpoint e payload. Ver o aviso lá sobre a
+// migração para o Hermes.
+---
+<div class="cta">
+  <p class="kicker">Newsletter</p>
+  <h2>{titulo}</h2>
+  <p class="lead">{texto}</p>
+
+  <form
+    class="busca"
+    data-lead
+    data-redirect={redirect}
+    data-origem={origem}
+    data-lista={lista}
+  >
+    <label class="visualmente-oculto" for={`lead-${origem}`}>Seu e-mail</label>
+    <input
+      id={`lead-${origem}`}
+      type="email"
+      name="email"
+      required
+      placeholder="seu@email.com"
+      autocomplete="email"
+    />
+    <button type="submit" data-evento="Lead" data-evento-local={origem} class="btn btn-primario">
+      {rotulo}
+    </button>
+  </form>
+
+  <!-- Turnstile. Nasce vazio e FORA do <form>: `.busca` é flex sem wrap, e um
+       desafio visível dentro dele espremeria o campo de e-mail. O script da
+       Cloudflare só é baixado quando alguém foca o campo — nunca no
+       carregamento da página, nas três em que este componente aparece. -->
+  <div class="news-turnstile" data-turnstile-news></div>
+
+  <p class="nota" data-lead-msg aria-live="polite">
+    Sem spam. Você sai quando quiser, com um clique no rodapé do e-mail.
+  </p>
+  <noscript>
+    <p class="nota">Ative o JavaScript para se inscrever, ou fale com a gente pelo <a href="/contato/">contato</a>.</p>
+  </noscript>
+</div>
+
+<style>
+  .visualmente-oculto {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+  .cta .busca { width: 100%; max-width: 520px; }
+  /* Vazio não ocupa espaço; quando o desafio aparece, o layout cresce sozinho. */
+  .news-turnstile:empty { display: none; }
+  .news-turnstile { display: flex; justify-content: center; margin-top: var(--s2); }
+  [data-lead-msg][data-estado='erro'] { color: var(--erro); }
+  [data-lead-msg][data-estado='ok'] { color: var(--ok); }
+  form[data-lead][aria-busy='true'] { opacity: .6; pointer-events: none; }
+</style>
+
+<script>
+  // Sem fetch e sem payload aqui: tudo passa por lib/captacao.ts, para que a
+  // migração para o Hermes seja a troca de um arquivo só.
+  import {
+    enviarLead, rastrearLead, prepararTurnstile, tokenTurnstile, resetarTurnstile,
+  } from '../lib/captacao';
+
+  /** O contêiner do widget deste formulário. Fica fora do <form>, ao lado. */
+  const caixaDe = (form: HTMLFormElement) =>
+    form.parentElement?.querySelector<HTMLElement>('[data-turnstile-news]') ?? null;
+
+  // O gatilho é o FOCO no campo, não o carregamento da página. Aqui há um campo
+  // só e o envio vem logo depois, então quanto mais cedo o desafio começar,
+  // maior a chance de o token já estar pronto no submit. `prepararTurnstile` é
+  // idempotente, então repetir o foco não recria nada.
+  document.addEventListener(
+    'focusin',
+    (e) => {
+      const form = (e.target as HTMLElement)?.closest?.('form[data-lead]') as HTMLFormElement | null;
+      if (form) prepararTurnstile(caixaDe(form));
+    },
+    { passive: true },
+  );
+
+  document.addEventListener('submit', async (e) => {
+    const form = (e.target as HTMLElement)?.closest?.('form[data-lead]') as HTMLFormElement | null;
+    if (!form) return;
+    e.preventDefault();
+
+    const msg = form.parentElement?.querySelector('[data-lead-msg]') as HTMLElement | null;
+    const email = (form.querySelector('input[name=email]') as HTMLInputElement)?.value?.trim();
+    if (!email) return;
+
+    const dizer = (texto: string, estado = '') => {
+      if (!msg) return;
+      msg.textContent = texto;
+      if (estado) msg.dataset.estado = estado;
+      else delete msg.dataset.estado;
+    };
+
+    form.setAttribute('aria-busy', 'true');
+    dizer('Enviando…');
+
+    // Se a pessoa enviou antes de o desafio terminar, esperamos por ele — o
+    // `await` não trava a interface (o formulário já está em aria-busy com
+    // "Enviando…"), e sem token a Function devolve 403.
+    const caixa = caixaDe(form);
+    prepararTurnstile(caixa); // rede de segurança: submit por Enter sem foco prévio
+    const turnstileToken = await tokenTurnstile(caixa);
+
+    const origem = `site:${form.dataset.origem}`;
+    const { ok } = await enviarLead({
+      email,
+      formulario: 'newsletter',
+      origem,
+      lista: form.dataset.lista || '',
+      eventId: rastrearLead(origem, email),
+      turnstileToken,
+    });
+
+    // Token é de uso único: se der erro e a pessoa tentar de novo, precisa de outro.
+    resetarTurnstile(caixa);
+
+    if (ok) {
+      dizer('Inscrição confirmada. Redirecionando…', 'ok');
+      location.href = form.dataset.redirect || '/obrigado';
+      return;
+    }
+    form.removeAttribute('aria-busy');
+    dizer('Não conseguimos concluir agora. Tente de novo em instantes ou fale pelo contato.', 'erro');
+  });
+</script>

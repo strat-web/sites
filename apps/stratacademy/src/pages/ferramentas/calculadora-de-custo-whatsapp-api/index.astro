@@ -1,0 +1,399 @@
+---
+// Folha da ferramenta — /ferramentas/calculadora-de-custo-whatsapp-api. Conversão C1.
+//
+// A ORDEM DOS BLOCOS É O CONTRATO (ver a folha da calculadora de funil):
+//   h1 (tarefa) → uma frase → a ferramenta → passo a passo em texto →
+//   modelos prontos → o que dá para exportar → como foi construída → FAQ → CTA
+//
+// A tabela de preços sai do pacote da oficina e é renderizada no build: é o
+// que um robô sem JavaScript lê quando alguém pergunta "quanto custa a API do
+// WhatsApp" a um assistente.
+import RubikLayout from '../../../layouts/RubikLayout.astro';
+import WhatsappTool from '../../../components/WhatsappTool.astro';
+import Selo from '../../../components/Selo.astro';
+import { SITE } from '../../../consts';
+import { absUrl } from '@horus/seo';
+import { PLANO, HUB } from '../../../data/catalogo';
+import {
+  buscarFerramenta,
+  rotaFerramenta,
+  CATEGORIAS_WHATSAPP,
+  PASSOS_WHATSAPP,
+  MODELOS_WHATSAPP,
+  EXPORTACOES_WHATSAPP,
+  FAQ_WHATSAPP,
+} from '../../../data/ferramentas';
+import {
+  calcularMes,
+  migrar,
+  FAIXAS_UTILIDADE,
+  FAIXAS_AUTENTICACAO,
+  MARCOS,
+  PRECO_LISTA,
+  TABELA_POR_CONVERSA_USD,
+  type Faixa,
+} from '@strat-ai-horus-os/whatsapp-nucleo';
+import { fmtMoeda, fmtNum, fmtData, VIGENCIA_TEXTO } from '../../../lib/whatsapp';
+
+const f = buscarFerramenta('calculadora-de-custo-whatsapp-api')!;
+const url = rotaFerramenta(f.slug);
+const urlCanonica = `${SITE.url}${url}/`;
+
+// Exemplo inicial: números redondos, para a conta ser conferível de cabeça.
+const exemplo = migrar({
+  nome: 'Exemplo',
+  marketing: 5000,
+  utilidade: 10000,
+  utilidadeNaJanela: 2000,
+  autenticacao: 0,
+  servico: 4000,
+  numeros: 1,
+  pontoDeEntrada: 1000,
+  templatesPorConversa: 1.5,
+});
+const demo = calcularMes(exemplo);
+const linha = (c: string) => demo.linhas.find((l) => l.categoria === c)!;
+
+const faixaTexto = (faixas: Faixa[]) =>
+  faixas.map((fx, i) => {
+    const de = i === 0 ? 1 : (faixas[i - 1].ate ?? 0) + 1;
+    return {
+      faixa: fx.ate === null ? `acima de ${fmtNum(de - 1)}` : `${fmtNum(de)} a ${fmtNum(fx.ate)}`,
+      desconto: fx.desconto === 0 ? 'preço de lista' : `−${Math.round(fx.desconto * 100)}%`,
+      brl: fmtMoeda(fx.preco.BRL, 'BRL', 4),
+      usd: fmtMoeda(fx.preco.USD, 'USD', 4),
+    };
+  });
+
+const softwareLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: f.nome,
+  alternateName: f.termoDeBusca,
+  url: urlCanonica,
+  description: f.resumo,
+  applicationCategory: 'BusinessApplication',
+  applicationSubCategory: 'Calculadora de custo de mensageria',
+  operatingSystem: 'Navegador',
+  browserRequirements: 'Requer JavaScript para recalcular; a tabela e o exemplo funcionam sem.',
+  inLanguage: 'pt-BR',
+  isAccessibleForFree: true,
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'BRL', availability: 'https://schema.org/InStock' },
+  featureList: [
+    'Calcula o custo mensal da API oficial do WhatsApp por categoria de mensagem',
+    'Usa a tabela oficial da Meta para o Brasil, em reais e em dólar',
+    'Aplica as faixas de desconto por volume de utilidade e autenticação',
+    'Desconta a franquia de 1.000 respostas de atendimento por número',
+    'Compara com a cobrança por conversa e com as regras de 2025',
+    'Exporta CSV e JSON e gera link compartilhável sem cadastro',
+  ],
+  publisher: { '@type': 'Organization', name: SITE.name, url: SITE.url },
+};
+
+const howTo = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name: 'Como calcular o custo da API oficial do WhatsApp',
+  description: 'Como estimar quanto a sua empresa paga por mês à Meta na API do WhatsApp, categoria por categoria.',
+  totalTime: 'PT10M',
+  tool: [{ '@type': 'HowToTool', name: f.tarefa }],
+  step: PASSOS_WHATSAPP.map((p) => ({
+    '@type': 'HowToStep',
+    position: p.n,
+    name: p.titulo,
+    text: p.texto,
+    url: `${urlCanonica}#passo-${p.n}`,
+  })),
+};
+---
+
+<RubikLayout
+  perfil="lead"
+  title={`${f.tarefa} — ${SITE.name}`}
+  description="Calcule quanto custa a API oficial do WhatsApp por mês com a tabela da Meta de outubro de 2026: marketing, utilidade, autenticação e atendimento."
+  faq={FAQ_WHATSAPP}
+  image={absUrl(`/og/ferramenta-${f.slug}.png`)}
+  breadcrumb={[
+    { name: 'Início', url: '/' },
+    { name: 'Ferramentas', url: '/ferramentas' },
+    { name: f.nome, url },
+  ]}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(softwareLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(howTo)} />
+
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="hero wrap">
+      <nav class="migalhas rise d1" aria-label="Você está em">
+        <a href="/">Início</a><span>/</span><a href="/ferramentas">Ferramentas</a><span>/</span>{f.nome}
+      </nav>
+      <p class="kicker rise d1">Ferramenta gratuita · sem cadastro</p>
+      <h1 class="rise d2">{f.tarefa}</h1>
+      <p class="lead rise d3">{f.resumo}</p>
+    </section>
+  </div>
+
+  <section class="wrap secao secao-topo">
+    <WhatsappTool simulacao={exemplo} local="folha-whatsapp" />
+  </section>
+
+  <section class="wrap secao" id="como-calcular">
+    <div class="sec-head">
+      <p class="kicker">Passo a passo</p>
+      <h2>Como calcular o custo da API oficial do WhatsApp</h2>
+      <p class="lead">
+        São os mesmos sete passos que a calculadora acima executa. Entendendo a conta, você confere
+        a fatura do provedor e sabe quando o número que ele mandou não fecha.
+      </p>
+    </div>
+
+    <ol class="passos-texto">
+      {PASSOS_WHATSAPP.map((p) => (
+        <li class="passo-texto" id={`passo-${p.n}`}>
+          <span class="passo-num">{p.n}</span>
+          <div>
+            <h3>{p.titulo}</h3>
+            <p>{p.texto}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+
+    <div class="quadro" id="tabela">
+      <h3>Tabela de preços da API do WhatsApp no Brasil</h3>
+      <p class="lead">
+        Preço por mensagem entregue, em vigor desde {VIGENCIA_TEXTO}. Valores oficiais da Meta, sem
+        impostos e sem a taxa do provedor.
+      </p>
+      <div class="tabela-rola">
+        <table>
+          <thead>
+            <tr><th>Categoria</th><th>Em reais</th><th>Em dólar</th><th>Exemplos</th><th>Como é cobrada</th></tr>
+          </thead>
+          <tbody>
+            {CATEGORIAS_WHATSAPP.map((c) => {
+              const chave = ({ Marketing: 'marketing', Utilidade: 'utilidade', 'Autenticação': 'autenticacao', 'Serviço': 'servico' } as const)[c.nome];
+              return (
+                <tr>
+                  <th scope="row">{c.nome}</th>
+                  <td>{fmtMoeda(PRECO_LISTA[chave].BRL, 'BRL', 4)}</td>
+                  <td>{fmtMoeda(PRECO_LISTA[chave].USD, 'USD', 4)}</td>
+                  <td>{c.exemplos}</td>
+                  <td>{c.regra}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="quadro">
+      <h3>Desconto por volume: utilidade e autenticação</h3>
+      <p class="lead">
+        Cada faixa vale só para as mensagens dentro dela, contadas por mês em todos os números da
+        empresa. Marketing e atendimento não têm desconto por volume.
+      </p>
+      <div class="grade-faixas">
+        {[
+          { titulo: 'Utilidade', faixas: faixaTexto(FAIXAS_UTILIDADE) },
+          { titulo: 'Autenticação', faixas: faixaTexto(FAIXAS_AUTENTICACAO) },
+        ].map((g) => (
+          <div class="tabela-rola">
+            <table>
+              <caption>{g.titulo}</caption>
+              <thead><tr><th>Mensagens no mês</th><th>Desconto</th><th>R$</th><th>US$</th></tr></thead>
+              <tbody>
+                {g.faixas.map((x) => (
+                  <tr><th scope="row">{x.faixa}</th><td>{x.desconto}</td><td>{x.brl}</td><td>{x.usd}</td></tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div class="quadro" id="o-que-mudou">
+      <h3>O que mudou na cobrança, em ordem</h3>
+      <ol class="marcos">
+        {MARCOS.map((m) => (
+          <li>
+            <span class="marco-data">{fmtData(m.data)}</span>
+            <div><b>{m.titulo}.</b> {m.texto}</div>
+          </li>
+        ))}
+      </ol>
+      <p>
+        Antes de julho de 2025, a Meta cobrava por conversa de 24 horas: no Brasil, cerca de
+        US$ {TABELA_POR_CONVERSA_USD.marketing.toLocaleString('pt-BR')} por conversa de marketing,
+        US$ {TABELA_POR_CONVERSA_USD.utilidade.toLocaleString('pt-BR')} de utilidade e
+        US$ {TABELA_POR_CONVERSA_USD.autenticacao.toLocaleString('pt-BR')} de autenticação. A
+        explicação completa da mudança está no
+        <a href={`/blog/${f.postDoBlog}/`}>artigo sobre os novos preços da API do WhatsApp</a>.
+      </p>
+    </div>
+
+    <div class="quadro">
+      <h3>Um exemplo com números, do começo ao fim</h3>
+      <p class="lead">O mesmo mês que abre a calculadora, resolvido em texto.</p>
+      <p>
+        Uma empresa com um número de WhatsApp envia <b>{fmtNum(exemplo.marketing)} mensagens de
+        marketing</b> no mês: {fmtMoeda(linha('marketing').custo, 'BRL')}. Manda
+        <b>{fmtNum(exemplo.utilidade + exemplo.utilidadeNaJanela)} avisos de utilidade</b>, dos quais
+        {fmtNum(exemplo.utilidadeNaJanela)} saem durante uma conversa com o cliente:
+        {fmtMoeda(linha('utilidade').custo + linha('utilidadeNaJanela').custo, 'BRL')}. O atendimento
+        responde <b>{fmtNum(exemplo.servico)} mensagens</b>; as primeiras 1.000 são grátis e as outras
+        {fmtNum(exemplo.servico - 1000)} custam {fmtMoeda(linha('servico').custo, 'BRL')}. As
+        {fmtNum(exemplo.pontoDeEntrada)} mensagens para quem chegou por anúncio não custam nada.
+      </p>
+      <p>
+        Total para a Meta: <b>{fmtMoeda(demo.meta, 'BRL')}</b>. Nas regras que valiam até setembro de
+        2026, o mesmo mês custaria {fmtMoeda(demo.comparacao.porMensagem2025, 'BRL')} — a mudança de
+        outubro acrescentou <b>{fmtMoeda(demo.efeitoDaMudanca, 'BRL')}</b>, inteiramente em
+        atendimento e em utilidade dentro da janela.
+      </p>
+    </div>
+  </section>
+
+  <section class="wrap secao" id="modelos">
+    <div class="sec-head">
+      <p class="kicker">Cenários prontos</p>
+      <h2>Quanto custa a API do WhatsApp em cada tipo de negócio</h2>
+      <p class="lead">
+        Quatro operações já montadas, com volumes plausíveis, a conta pronta e o que costuma pesar em
+        cada uma. Abra a mais parecida com a sua e troque pelos seus números.
+      </p>
+    </div>
+    <div class="grade grade-2">
+      {MODELOS_WHATSAPP.map((m) => (
+        <a href={`${url}/modelos/${m.slug}`} class="card card-largo">
+          <div class="card-topo">
+            <h3>{m.nome}</h3>
+            <span class="pill">{fmtMoeda(calcularMes(m.simulacao).meta, 'BRL', 0)}/mês</span>
+          </div>
+          <p>{m.resumo}</p>
+          <span class="ver">Abrir cenário →</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap secao" id="exportar">
+    <div class="sec-head">
+      <p class="kicker">Saída</p>
+      <h2>O que dá para exportar</h2>
+      <p class="lead">Tudo é gerado no seu navegador, no momento do clique.</p>
+    </div>
+    <div class="grade grade-2">
+      {EXPORTACOES_WHATSAPP.map((e) => (
+        <div class="card card-largo">
+          <div class="card-topo">
+            <h3>{e.titulo}</h3>
+            <span class="pill pill-acento">{e.formato}</span>
+          </div>
+          <p>{e.desc}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap secao" id="como-foi-construida">
+    <div class="sec-head">
+      <p class="kicker">Por dentro</p>
+      <h2>Como esta ferramenta foi construída</h2>
+    </div>
+    <div class="construida-texto">
+      <p>
+        Ela foi feita com <b>Claude Code</b>, numa sessão: a pesquisa da tabela oficial da Meta, a
+        conta faixa a faixa, os cenários e esta página. A conta roda inteira dentro do seu navegador —
+        abra o F12, vá na aba <b>Rede</b> e digite um número: nenhuma requisição sai.
+      </p>
+      <p>
+        É a mesma forma de trabalho que as trilhas do Strat Hub ensinam: pegar uma dúvida real do
+        negócio — "quanto essa mudança da Meta vai me custar?" — e transformar em ferramenta que
+        responde, sem virar projeto de seis meses.
+      </p>
+      <Selo ferramenta={f} variante="compacto" />
+      <div class="construida-cta">
+        <a href={HUB} data-evento="SignUpIntent" data-evento-local="construida-whatsapp" class="btn btn-primario">
+          {PLANO.chamada}
+        </a>
+        <span class="construida-nota">Sem cartão · as Masterclasses de N8N e Claude Code já vêm liberadas</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap secao" id="duvidas">
+    <div class="sec-head">
+      <p class="kicker">Dúvidas</p>
+      <h2>Perguntas frequentes</h2>
+    </div>
+    <div class="faq">
+      {FAQ_WHATSAPP.map((q) => <details><summary>{q.q}</summary><p>{q.a}</p></details>)}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="cta">
+      <p class="kicker">Strat Hub</p>
+      <h2>Sabe quanto custa. Agora faça cada mensagem valer.</h2>
+      <p class="lead">
+        Com a cobrança por mensagem, disparo sem critério virou custo direto. As Masterclasses de N8N
+        e Claude Code ensinam a montar o fluxo que manda a mensagem certa, para a pessoa certa, na
+        hora certa — liberadas por inteiro na conta gratuita do Strat Hub.
+      </p>
+      <a href={HUB} data-evento="SignUpIntent" data-evento-local="folha-whatsapp" class="btn btn-primario">{PLANO.chamada}</a>
+      <p class="nota">{PLANO.nome} · {PLANO.preco}{PLANO.periodo} quando quiser assinar · cancela quando quiser</p>
+    </div>
+  </section>
+</RubikLayout>
+
+<style>
+  .secao-topo { padding-top: var(--s3); }
+
+  .passos-texto { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s4); }
+  .passo-texto { display: flex; gap: var(--s3); align-items: flex-start; scroll-margin-top: 6rem; }
+  .passo-texto h3 { font-size: var(--t-h4); font-weight: var(--w-semi); }
+  .passo-texto p { color: var(--txt-2); margin-top: .4rem; max-width: var(--leitura); }
+
+  .quadro {
+    background: var(--surf); border-radius: var(--raio-g);
+    box-shadow: var(--sombra-card); padding: var(--s5); margin-top: var(--s5);
+    scroll-margin-top: 6rem;
+  }
+  .quadro h3 { font-size: var(--t-h3); font-weight: var(--w-semi); }
+  .quadro .lead { margin-top: var(--s2); font-size: var(--t-peq); }
+  .quadro p + p { margin-top: var(--s3); }
+  .quadro > p { color: var(--txt-2); max-width: var(--leitura); }
+  .quadro > p b { color: var(--txt); }
+  .quadro > p:not(.lead) { margin-top: var(--s3); }
+
+  .tabela-rola { overflow-x: auto; }
+  .quadro table { width: 100%; border-collapse: collapse; margin-top: var(--s3); font-size: var(--t-peq); }
+  .quadro caption { text-align: left; font-weight: var(--w-semi); }
+  .quadro th, .quadro td { text-align: left; padding: var(--s2); border-bottom: 1px solid var(--linha); vertical-align: top; }
+  .quadro thead th { font-size: var(--t-meta); color: var(--txt-2); font-weight: var(--w-semi); }
+  .quadro tbody th { font-weight: var(--w-semi); white-space: nowrap; }
+  .quadro td { color: var(--txt-2); }
+
+  .grade-faixas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s4); margin-top: var(--s3); }
+
+  .marcos { list-style: none; margin: var(--s3) 0 0; padding: 0; display: grid; gap: var(--s3); }
+  .marcos li { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: var(--s3); color: var(--txt-2); font-size: var(--t-peq); }
+  .marcos b { color: var(--txt); }
+  .marco-data { font-weight: var(--w-semi); color: var(--txt); }
+
+  .construida-texto p { color: var(--txt-2); max-width: var(--leitura); }
+  .construida-texto p + p { margin-top: var(--s3); }
+  .construida-texto :global(.selo-strat) { margin-top: var(--s4); }
+  .construida-cta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3); margin-top: var(--s4); }
+  .construida-nota { font-size: var(--t-meta); color: var(--txt-2); }
+
+  @media (max-width: 780px) {
+    .quadro { padding: var(--s4) var(--s3); }
+    .grade-faixas { grid-template-columns: minmax(0, 1fr); }
+    .marcos li { grid-template-columns: minmax(0, 1fr); gap: .2rem; }
+  }
+</style>

@@ -32,7 +32,7 @@ ligados a este repositório e só com o endereço `.pages.dev` (ver `pages.md`).
 | metricaas.com.br | site do MetricaaS | Easypanel `strat-lps` (com proxy) | Pages `metricaas` (existe desde 11/11, metricaas.pages.dev) | WEB-36 |
 | app., go.metricaas.com.br | o produto | Easypanel `whatsapp/metricaas-app` | fica | — |
 | docs.metricaas.com.br | documentação | Mintlify | fica | — |
-| stratacademy.com.br | site e blog | Pages `stratacademy` (repositório horus) | Pages `sites-stratacademy`, deste repositório (existe desde 11/11; o nome `stratacademy` é o do horus, ver `pages.md`) | WEB-49 |
+| stratacademy.com.br | site e blog | Pages `stratacademy` (repositório horus) | Pages `sites-stratacademy`, deste repositório (existe desde 11/11; o nome `stratacademy` é o do horus, ver `pages.md`). Site e blog em `apps/stratacademy` desde o WEB-49; o domínio vira com o "pode virar" do Helbert, opção (a) de `decisoes.md` | WEB-49 |
 | claude., skills., mentoria., bootcamp., vibecode., comunidade.stratacademy.com.br | LPs de campanha | Easypanel `strat-lps` | um projeto do Pages por subdomínio | WEB-48 |
 | tracking., wa.stratacademy.com.br | Rastro | Pages `rastro-stratacademy` | fica (repositório vai para a strat-web, WEB-55) | — |
 | hub., links., lists., form., git.stratacademy.com.br | apps | Easypanel | fica | — |

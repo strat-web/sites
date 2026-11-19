@@ -1,0 +1,155 @@
+---
+import RubikLayout from '../../layouts/RubikLayout.astro';
+import BrandLogo from '../../components/BrandLogo.astro';
+import { SITE } from '../../consts';
+import { PLANO, HUB } from '../../data/catalogo';
+import { EVENTOS } from '../../data/eventos';
+
+const abertos = EVENTOS.filter((e) => e.edicao !== null);
+const semData = EVENTOS.filter((e) => e.edicao === null);
+
+const diferenca = [
+  { title: 'As trilhas do Hub', desc: 'Gravadas, no seu ritmo, sem data. É onde você aprende sozinho — e onde a maioria deve começar.' },
+  { title: 'Os eventos ao vivo', desc: 'Data marcada, turma junta e a gente do lado. É onde você destrava o que a aula gravada não destravou.' },
+  { title: 'A mentoria', desc: 'Individual, olhando só para o seu projeto. É o passo de quem já passou da fase de assistir.' },
+];
+
+const faq = [
+  { q: 'Com que frequência vocês fazem eventos?', a: 'Não temos calendário fixo. Abrimos edição quando dá para entregar bem feito, e avisamos a lista de espera antes de tornar público.' },
+  { q: 'Qual a diferença entre a imersão e o bootcamp?', a: 'A Imersão Claude Code é presencial, em hotel, com a turma na mesma sala por dois dias. O Bootcamp é online e ao vivo, em encontros, com foco em aplicar no negócio. Os dois liberam gravação no Strat Hub depois.' },
+  { q: 'A gravação fica disponível?', a: 'Fica. Quem compra o ingresso recebe a gravação na própria conta do Strat Hub — o evento é ao vivo, e a gravação é o que sobra para você revisitar.' },
+  { q: 'Ser assinante dá acesso aos eventos?', a: 'Não. A assinatura cobre as trilhas da plataforma; os eventos são ingresso à parte. O que a assinatura dá é preparação: quem chega tendo feito as trilhas aproveita muito mais o ao vivo.' },
+  { q: 'Como fico sabendo da próxima edição?', a: 'Entrando na lista de espera. Quem está nela é avisado primeiro, e o primeiro lote costuma ser o mais barato.' },
+];
+---
+<RubikLayout
+  title={`Eventos ao vivo — imersão presencial e bootcamp online — ${SITE.name}`}
+  description="Imersão Claude Code presencial e Bootcamp Claude Code online, ao vivo. Sem calendário fixo — entre na lista de espera e seja avisado antes da abertura pública."
+  faq={faq}
+  breadcrumb={[{ name: 'Início', url: '/' }, { name: 'Eventos', url: '/eventos/' }]}
+>
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="hero wrap">
+      <p class="kicker rise d1">Eventos</p>
+      <h1 class="rise d2">Onde a gente sai da tela e senta do seu lado</h1>
+      <p class="lead rise d3">
+        Aula gravada resolve muita coisa, mas não resolve tudo. Os eventos são para o que só
+        acontece ao vivo: destravar o seu caso específico, com a gente olhando junto.
+      </p>
+    </section>
+  </div>
+
+  {abertos.length > 0 && (
+    <section class="wrap secao">
+      <div class="sec-head">
+        <p class="kicker">Inscrições abertas</p>
+        <h2>Com data marcada</h2>
+      </div>
+      <div class="grade grade-2">
+        {abertos.map((e) => (
+          <a href={`/eventos/${e.slug}/`} class="card card-largo">
+            <div class="card-topo">
+              <span class="chip-logo"><BrandLogo mark={e.mark} size={26} /></span>
+              <span class="pill pill-acento">abertas</span>
+            </div>
+            <h3>{e.nome}</h3>
+            <p>{e.tagline}</p>
+            <span class="pill" style="align-self:start">{e.edicao!.data} · {e.edicao!.cidade}</span>
+            <span class="ver">Ver o evento →</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">{abertos.length > 0 ? 'Sem data no momento' : 'Nossos eventos'}</p>
+      <h2>{abertos.length > 0 ? 'Os outros formatos' : 'Dois formatos, duas experiências'}</h2>
+      <p class="lead">
+        Não trabalhamos com calendário fixo. Entre na lista de espera do que te interessa e
+        você é avisado antes de virar público.
+      </p>
+    </div>
+    <div class="grade grade-2">
+      {semData.map((e) => (
+        <a href={`/eventos/${e.slug}/`} class="card card-largo">
+          <div class="card-topo">
+            <span class="chip-logo"><BrandLogo mark={e.mark} size={26} /></span>
+            <span class="pill">{e.formato}</span>
+          </div>
+          <h3>{e.nome}</h3>
+          <p>{e.tagline}</p>
+          <span class="ver">Entrar na lista de espera →</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- A live semanal serve C1 (ARQUITETURA-SITE.md §3) e ficava órfã: nenhuma
+       página a linkava, mas ela estava no sitemap. Seção própria, e NÃO um item
+       de EVENTOS: aquele array alimenta o [evento].astro, e a live ali geraria
+       uma rota colidindo com o live-semanal.astro estático. É também outra
+       natureza — grátis, recorrente, sem lista de espera — e não cabe no
+       "dois formatos" pagos da seção de cima. -->
+  <section class="wrap secao" id="toda-semana">
+    <div class="sec-head">
+      <p class="kicker">Toda semana, de graça</p>
+      <h2>Quer ver antes de se inscrever em algo?</h2>
+      <p class="lead">
+        Toda semana tem uma hora ao vivo, gratuita e sem pré-requisito. É a porta mais leve para
+        conhecer como a gente trabalha antes de decidir por qualquer formato pago.
+      </p>
+    </div>
+    <div class="grade grade-2">
+      <a href="/eventos/live-semanal/" class="card card-largo">
+        <div class="card-topo">
+          <span class="pill pill-acento">gratuita</span>
+          <span class="pill">toda semana</span>
+        </div>
+        <h3>Live semanal de IA e automação</h3>
+        <p>
+          Uma hora ao vivo: fluxo montado do zero, o que mudou na semana em IA e automação, e espaço
+          aberto para o seu caso.
+        </p>
+        <span class="ver">Garantir meu lugar →</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Onde cada coisa entra</p>
+      <h2>Evento, plataforma e mentoria não competem</h2>
+    </div>
+    <div class="grade grade-3">
+      {diferenca.map((d) => (
+        <div class="card"><h3>{d.title}</h3><p>{d.desc}</p></div>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Dúvidas</p>
+      <h2>Perguntas frequentes</h2>
+    </div>
+    <div class="faq">
+      {faq.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="cta">
+      <p class="kicker">Strat Hub</p>
+      <h2>Enquanto não tem evento, tem o Hub.</h2>
+      <p class="lead">
+        Conta gratuita, sem cartão, com as masterclasses de N8N e Claude Code completas —
+        a melhor preparação para quando a próxima edição abrir.
+      </p>
+      <a href={HUB} data-evento="SignUpIntent" data-evento-local="index" class="btn btn-primario">{PLANO.chamada}</a>
+      <p class="nota">{PLANO.nome} · {PLANO.preco}{PLANO.periodo} quando quiser assinar</p>
+    </div>
+  </section>
+</RubikLayout>

@@ -2,6 +2,22 @@
 
 Uma entrada por decisão, com data e quem decidiu. A mais nova em cima.
 
+## 2026-11-17 · Site e blog da Academy no repositório (Jhonathan, WEB-49)
+- **Igual ao horus:** visual, textos e URLs do `horus/apps/stratacademy` (com os PRs #38 e #39 de lá, WEB-100 e
+  WEB-101). O `@horus/seo` veio copiado para `apps/stratacademy/src/horus/seo`, com o mesmo nome de import; o
+  `@horus/ui` e o `@horus/config` não vieram (o primeiro não era usado; o schema do blog já é o `@strat/conteudo`).
+- **Tracking pelo `<Tracking>` do kit**, no lugar do `@horus/analytics`: o snippet do Rastro expõe o mesmo
+  `window.stratTrack`, e o aviso de cookies passa a ser o do Rastro (mesma chave `strat_consent`). Todas as URLs em
+  `banner`, como o horus faz hoje (nada antes do aceite); por isso os produtos `calculadora-funil`,
+  `calculadora-whatsapp` e `criador-funil` do Rastro vão de `off` para `strict` (pedido no item).
+- **Catálogo com uma linha por URL** (88 da Academy, geradas do build), sem curinga: post novo leva a linha dele no
+  mesmo PR (o `/blog-publicar` passa a fazer isso no WEB-50).
+- **Pacotes das ferramentas pelo GitHub Packages** (`@strat-ai-horus-os/funil-nucleo`, `funil-react` e
+  `whatsapp-nucleo`), não copiados: o build pede o segredo `NPM_TOKEN` (só `read:packages`) no Pages
+  `sites-stratacademy` e na CI (`pages.md`).
+- **Links internos com barra no fim** (a página é a mesma; tira um redirecionamento por clique) e o `sitemap-index.xml`
+  e o `sitemap-0.xml` do horus em 301 para o `sitemap.xml` do kit.
+
 ## 2026-11-13 · Sem limite de PRs abertos (Helbert e Jhonathan, conversa pessoal; trazida pelo Jhonathan)
 Cai a regra de "no máximo 6 PRs abertos" de 12/11: item pronto vira PR na hora, sem esperar vaga numa branch. As
 outras regras de fluxo de 12/11 continuam (pilha de 2 níveis, janelas de revisão, D11, rebase que muda código e lead

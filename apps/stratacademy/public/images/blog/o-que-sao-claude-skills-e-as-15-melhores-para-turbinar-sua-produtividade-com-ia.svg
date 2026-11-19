@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" role="img" aria-hidden="true">
+  <defs>
+    <radialGradient id="aura" cx="78%" cy="0%" r="82%">
+      <stop offset="0%" stop-color="#D97A4A" stop-opacity=".16"/>
+      <stop offset="64%" stop-color="#D97A4A" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="quadro"><rect width="1200" height="675"/></clipPath>
+  </defs>
+  <g clip-path="url(#quadro)">
+    <rect width="1200" height="675" fill="#F5F3EE"/>
+    <rect width="1200" height="675" fill="url(#aura)"/>
+    
+    <g stroke="#D97A4A" stroke-opacity=".5" stroke-width="9" stroke-linecap="round">
+      <line x1="880" y1="337" x2="880" y2="-23"/><line x1="880" y1="337" x2="973.1748562369074" y2="-10.733297464064606"/><line x1="880" y1="337" x2="1060" y2="25.23085463760208"/><line x1="880" y1="337" x2="1134.5584412271571" y2="82.44155877284291"/><line x1="880" y1="337" x2="1191.769145362398" y2="157"/><line x1="880" y1="337" x2="1227.7332974640644" y2="243.82514376309246"/><line x1="880" y1="337" x2="1240" y2="337"/><line x1="880" y1="337" x2="1227.7332974640647" y2="430.17485623690743"/><line x1="880" y1="337" x2="1191.769145362398" y2="517"/><line x1="880" y1="337" x2="1134.5584412271571" y2="591.5584412271571"/><line x1="880" y1="337" x2="1060" y2="648.7691453623979"/><line x1="880" y1="337" x2="973.1748562369075" y2="684.7332974640645"/><line x1="880" y1="337" x2="880" y2="697"/>
+    </g>
+    <circle cx="880" cy="337" r="160" fill="#F5F3EE"/>
+    <circle cx="880" cy="337" r="111" fill="#D97A4A" fill-opacity=".35"/>
+    <circle cx="880" cy="337" r="56" fill="#A8572E"/>
+  </g>
+</svg>

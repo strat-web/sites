@@ -1,0 +1,88 @@
+---
+// Link-in-bio — destino de tráfego social, fora do menu do site.
+import RubikLayout from '../layouts/RubikLayout.astro';
+import { SITE } from '../consts';
+import { PLANO, HUB } from '../data/catalogo';
+
+const destaque = {
+  label: 'Comece de graça no Strat Hub',
+  desc: 'Conta gratuita, sem cartão, com as Masterclasses de N8N e Claude Code completas.',
+  href: HUB,
+};
+
+const menus = [
+  { label: 'Trilhas', desc: 'Uma por ferramenta: Claude Code, N8N, Cursor e mais', href: '/cursos/' },
+  { label: 'Strat Academy 2.0', desc: `A assinatura completa por ${PLANO.preco}${PLANO.periodo}`, href: '/assinatura/' },
+  { label: 'Mentoria', desc: 'Acompanhamento individual, ao vivo, no seu projeto', href: '/mentoria/' },
+  { label: 'Para empresas', desc: 'Automação sob medida e imersão presencial no seu time', href: '/empresas/' },
+  { label: 'Ferramentas grátis', desc: 'Calculadora de funil de vendas e outras, sem cadastro', href: '/ferramentas/' },
+  { label: 'Blog', desc: 'Guias de Claude Code, N8N e IA aplicada', href: '/blog/' },
+  { label: 'Benefícios Strat', desc: 'Descontos nas ferramentas que a gente usa', href: '/parceiros/' },
+  { label: 'YouTube', desc: 'Tutoriais e bastidores', href: 'https://www.youtube.com/@strat_ai' },
+];
+
+const social = [
+  { label: 'Instagram', href: 'https://instagram.com/stratacademy.ai' },
+  { label: 'TikTok', href: 'https://www.tiktok.com/@helbert.paranhos' },
+  { label: 'YouTube', href: 'https://www.youtube.com/@strat_ai' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/company/stratacademy' },
+];
+
+const externo = (h: string) => h.startsWith('http');
+---
+<RubikLayout
+  title={`${SITE.name} — todos os links`}
+  description="Trilhas, assinatura, mentoria, blog e redes da Strat Academy num lugar só."
+>
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="wrap bio">
+      <p class="kicker">Strat Academy</p>
+      <h1>Automação e IA aplicadas a negócio</h1>
+      <p class="lead">Escolha por onde você quer começar.</p>
+
+      <a href={destaque.href} data-evento="SignUpIntent" data-evento-local="strat" class="preco bio-destaque">
+        <p class="rotulo">Comece por aqui</p>
+        <p class="bio-destaque-titulo">{destaque.label}</p>
+        <p>{destaque.desc}</p>
+      </a>
+
+      <div class="bio-lista">
+        {menus.map((m) => (
+          <a
+            href={m.href}
+            target={externo(m.href) ? '_blank' : undefined}
+            rel={externo(m.href) ? 'noopener' : undefined}
+            class="card bio-item"
+          >
+            <h3>{m.label}</h3>
+            <p>{m.desc}</p>
+          </a>
+        ))}
+      </div>
+
+      <div class="bio-social">
+        {social.map((s) => (
+          <a href={s.href} target="_blank" rel="noopener"><span class="pill">{s.label}</span></a>
+        ))}
+      </div>
+    </section>
+  </div>
+</RubikLayout>
+
+<style>
+  .bio {
+    max-width: 640px; padding-block: var(--s6) var(--s7);
+    display: grid; gap: var(--s3); text-align: center;
+    position: relative; z-index: var(--z-conteudo);
+  }
+  .bio h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: var(--w-bold); letter-spacing: var(--tr-h1); }
+  .bio .lead { margin-inline: auto; }
+  .bio-destaque { text-decoration: none; display: block; text-align: left; margin-top: var(--s3); transition: var(--dur) var(--ease); }
+  .bio-destaque:hover { transform: translateY(var(--sobe)); }
+  .bio-destaque-titulo { font-size: var(--t-h3); font-weight: var(--w-bold); margin-top: var(--s2); letter-spacing: var(--tr-h3); }
+  .bio-lista { display: grid; gap: var(--s2); margin-top: var(--s2); }
+  .bio-item { text-align: left; gap: var(--s1); }
+  .bio-social { display: flex; flex-wrap: wrap; gap: var(--s2); justify-content: center; margin-top: var(--s4); }
+  .bio-social a { text-decoration: none; }
+</style>

@@ -1,0 +1,129 @@
+---
+import RubikLayout from '../../layouts/RubikLayout.astro';
+import NewsletterRubik from '../../components/NewsletterRubik.astro';
+import { SITE } from '../../consts';
+import { PLANO, HUB } from '../../data/catalogo';
+
+const acontece = [
+  { title: 'Demonstrações na prática', desc: 'Fluxos de automação, agentes de IA e experimentos com N8N montados ao vivo, do zero, para você ver o passo a passo real.' },
+  { title: 'Novidades da semana', desc: 'As atualizações que importam em IA e automação, filtradas e explicadas de forma direta — sem hype e sem tecniquês.' },
+  { title: 'Perguntas ao vivo', desc: 'Traga sua dúvida ou seu caso. O espaço de perguntas ao vivo serve para destravar o que você está tentando aplicar no seu negócio.' },
+];
+
+const paraQuem = [
+  { title: 'Empreendedores e gestores', desc: 'Quem quer usar IA e automação para escalar a operação sem inflar o time.' },
+  { title: 'Quem está começando em IA', desc: 'Se você ainda não sabe por onde começar, as demonstrações mostram o caminho de forma aplicada.' },
+  { title: 'Profissionais de automação', desc: 'Quem já mexe com N8N, agentes e ferramentas de IA e quer acompanhar o que há de novo toda semana.' },
+];
+
+const comoFunciona = [
+  { n: '01', title: 'Deixe seu e-mail', desc: 'Preencha o formulário abaixo. Leva menos de um minuto e é gratuito.' },
+  { n: '02', title: 'Receba o link', desc: 'A cada edição você recebe por e-mail o link para entrar na live ao vivo.' },
+  { n: '03', title: 'Participe toda semana', desc: 'Acompanhe as demonstrações, veja as novidades e faça suas perguntas ao vivo.' },
+];
+
+const numeros = [
+  { n: '+800', l: 'alunos' },
+  { n: '50+', l: 'aulas práticas' },
+  { n: '3.000+', l: 'prompts prontos' },
+  { n: '5,0', l: 'nota dos alunos' },
+];
+
+const faq = [
+  { q: 'A live é gratuita?', a: 'É. Você só precisa deixar o e-mail para receber o link de cada edição.' },
+  { q: 'Preciso saber automação para acompanhar?', a: 'Não. As demonstrações partem do problema e mostram o caminho — dá para acompanhar mesmo sem nunca ter aberto o N8N.' },
+  { q: 'Fica gravado?', a: 'O valor da live está no ao vivo, principalmente nas perguntas. Quando há gravação, o aviso vai por e-mail para quem está inscrito.' },
+  { q: 'Qual o dia e o horário?', a: 'A cada edição o e-mail traz dia, horário e link. É a forma mais confiável de não perder.' },
+];
+---
+<RubikLayout
+  title={`Live semanal de IA e automação — ${SITE.name}`}
+  description="Uma hora prática de IA e automação, ao vivo, toda semana. Demonstrações, novidades filtradas e perguntas ao vivo. Gratuito."
+  faq={faq}
+  breadcrumb={[{ name: 'Início', url: '/' }, { name: 'Eventos', url: '/eventos/' }, { name: 'Live semanal', url: '/eventos/live-semanal/' }]}
+>
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="hero wrap">
+      <p class="kicker rise d1">Live semanal · gratuita</p>
+      <h1 class="rise d2">Toda semana, IA e automação na prática</h1>
+      <p class="lead rise d3">
+        Uma hora ao vivo com demonstração de verdade: fluxo montado do zero, o que mudou na
+        semana e espaço aberto para o seu caso.
+      </p>
+      <div class="cta-row rise d4">
+        <a href="#inscrever" class="btn btn-primario">Garantir meu lugar</a>
+        <a href="#acontece" class="btn btn-secundario">O que acontece na live</a>
+      </div>
+    </section>
+  </div>
+
+  <section class="wrap">
+    <div class="numeros">
+      {numeros.map((s) => <div><b>{s.n}</b><span>{s.l}</span></div>)}
+    </div>
+  </section>
+
+  <section class="wrap secao" id="acontece">
+    <div class="sec-head">
+      <p class="kicker">O que acontece</p>
+      <h2>Uma hora prática de IA e automação, ao vivo</h2>
+    </div>
+    <div class="grade grade-3">
+      {acontece.map((a) => <div class="card"><h3>{a.title}</h3><p>{a.desc}</p></div>)}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Para quem é</p>
+      <h2>Feita para quem quer aplicar IA de verdade</h2>
+    </div>
+    <div class="grade grade-3">
+      {paraQuem.map((p) => <div class="card"><h3>{p.title}</h3><p>{p.desc}</p></div>)}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Como participar</p>
+      <h2>Três passos para participar toda semana</h2>
+    </div>
+    <div class="passos">
+      {comoFunciona.map((c) => (
+        <div class="passo">
+          <span class="passo-num">{c.n}</span>
+          <div><h3>{c.title}</h3><p>{c.desc}</p></div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Dúvidas</p>
+      <h2>Ainda com dúvidas?</h2>
+    </div>
+    <div class="faq">
+      {faq.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
+    </div>
+  </section>
+
+  <section class="wrap" id="inscrever">
+    <NewsletterRubik
+      origem="live-semanal"
+      redirect="/obrigado/live"
+      titulo="Garanta seu lugar na live semanal"
+      texto="Deixe seu e-mail e receba o link de cada edição. É gratuito e você sai quando quiser."
+      rotulo="Quero participar"
+    />
+  </section>
+
+  <section class="wrap secao">
+    <div class="card card-largo" style="text-align:center; display:grid; justify-items:center; gap: var(--s2)">
+      <h3>Quer ir além do ao vivo?</h3>
+      <p>A conta no Strat Hub é gratuita e já libera as Masterclasses de N8N e Claude Code completas.</p>
+      <a href={HUB} data-evento="SignUpIntent" data-evento-local="live-semanal" class="btn btn-secundario" style="margin-top: var(--s2)">{PLANO.chamada}</a>
+    </div>
+  </section>
+</RubikLayout>
