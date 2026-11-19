@@ -1,0 +1,20 @@
+---
+// Variante /b das +500 skills (teste A/B, tema escuro e fonte Inter), migrada do strat-lps (lps/lp-500/b) sem mudar
+// texto, layout nem tracking (WEB-48). Mesmo produto lp-500-skills e mesmo checkout; noindex (variante de teste).
+import Layout from '@strat/kit/Layout.astro';
+import head from '../../html/b.head.html?raw';
+import corpo from '../../html/b.corpo.html?raw';
+---
+<Layout
+  marca="academy"
+  perfil="venda"
+  indexar={false}
+  titulo="+500 Skills para Claude — Pare de escrever prompt do zero | Strat Academy"
+  descricao="+500 skills prontas pro Claude. Instala em 2 minutos, usa pra sempre — marketing, vendas, finanças e mais. Pagamento único de R$47, acesso vitalício."
+  tituloSocial="Pare de escrever prompt do zero."
+  descricaoSocial="+500 skills prontas pro Claude. Instala em 2 min, usa pra sempre. R$47, acesso vitalício."
+  viewport="width=device-width, initial-scale=1"
+>
+  <Fragment slot="head" set:html={head} />
+  <Fragment set:html={corpo} />
+</Layout>

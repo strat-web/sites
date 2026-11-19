@@ -1,12 +1,20 @@
 ---
+// Home do Metricaas, migrada do strat-lps (lps/metricaas/index.html) sem mudar texto, layout nem tracking (WEB-36).
+// O HTML da página mora em src/html/ (head e corpo); o kit põe título, descrição, canonical, Open Graph, JSON-LD
+// e o <Tracking> (Rastro metricaas e Umami, da linha "metricaas" do catálogo). O que mudou em relação ao strat-lps
+// está no README do app.
 import Layout from '@strat/kit/Layout.astro';
+import head from '../html/home.head.html?raw';
+import corpo from '../html/home.corpo.html?raw';
 ---
 <Layout
   marca="metricaas"
-  titulo="Metricaas · esqueleto do monorepo"
-  descricao="Esqueleto do app metricaas no monorepo strat-web/sites. A migração do site vem em item próprio."
-  indexar={false}
+  perfil="lead"
+  titulo="Metricaas — de onde vem cada cliente do seu WhatsApp"
+  descricao="Metricaas — plataforma de atribuição de leads de WhatsApp + CRM. Descubra qual anúncio (Meta ou Google) gerou cada conversa, devolva a conversão real pro Meta Ads e pro Google Ads e organize seus leads num só lugar."
+  descricaoSocial="Pare de perder a origem dos leads que caem no seu WhatsApp. Atribuição real anúncio→conversa, CRM próprio e conversão devolvida pro Meta Ads e Google Ads."
+  imagem="/og.png"
 >
-  <h1>Metricaas</h1>
-  <p>Esqueleto do app <code>metricaas</code> (WEB-15), já com o Layout do kit (WEB-16). A migração do site vem em item próprio; nenhuma página real está aqui.</p>
+  <Fragment slot="head" set:html={head} />
+  <Fragment set:html={corpo} />
 </Layout>

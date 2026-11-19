@@ -1,0 +1,21 @@
+---
+// Política de privacidade do Metricaas, migrada do strat-lps (lps/metricaas/politica-de-privacidade.html) com o mesmo
+// texto (WEB-36). É a URL cadastrada no app da Meta (Tech Provider) e na aprovação da API do Google Ads: agora com
+// barra no fim, e a forma sem barra (e .html) responde 301 pelo public/_redirects, com a âncora junto. Tracking como
+// no ar: Rastro metricaas e Umami (linha "metricaas-politica-de-privacidade" do catálogo).
+import Layout from '@strat/kit/Layout.astro';
+import head from '../../html/politica-de-privacidade.head.html?raw';
+import corpo from '../../html/politica-de-privacidade.corpo.html?raw';
+---
+<Layout
+  marca="metricaas"
+  perfil="conteudo"
+  tipo="article"
+  titulo="Política de Privacidade — Metricaas"
+  descricao="Política de Privacidade do Metricaas: como tratamos dados pessoais, dados da Plataforma Meta (WhatsApp Business), retenção, segurança, seus direitos e como solicitar a exclusão dos seus dados."
+  descricaoSocial="Como o Metricaas trata dados pessoais e dados da Plataforma Meta, e como solicitar a exclusão dos seus dados."
+  imagem="/og.png"
+>
+  <Fragment slot="head" set:html={head} />
+  <Fragment set:html={corpo} />
+</Layout>

@@ -2,12 +2,10 @@
 
 Uma entrada por decisão, com data e quem decidiu. A mais nova em cima.
 
-## 2026-11-18 · Título e H1 repetidos só barram entre páginas indexáveis (Jhonathan, WEB-48; espera o Helbert no PR)
-As variantes de teste A/B das LPs da Academy (claude /v1, /v3, /v4; skills /b; mentoria /v2; vibecode /v1; lotes do
-bootcamp) repetem a principal de propósito e saem com noindex, como já ficavam fora do sitemap no `strat-lps`. A
-checagem `seo` deixa de comparar página com noindex; a principal continua única no site. Alternativa descartada: mudar
-o título e o H1 visíveis das variantes, o que mexeria num teste A/B no ar. Separada do PR das LPs a pedido do Helbert
-(revisão do #47, 17/11): vale para todos os apps.
+## 2026-11-17 · Projeto do Pages de cada LP da Academy com o prefixo `academy-` (Jhonathan, WEB-48)
+O endereço `*.pages.dev` é de todas as contas da Cloudflare (`claude.pages.dev` não estaria livre), e o prefixo separa
+as LPs dos apps na lista da conta: `academy-claude`, `academy-skills`, `academy-mentoria`, `academy-bootcamp`,
+`academy-vibecode` e `academy-comunidade`.
 ## 2026-11-18 · Lighthouse da CI mede a página, não o destino para onde ela sai (Jhonathan, WEB-48; espera o Helbert no PR)
 A confirmação da comunidade e o grupo do bootcamp (`/0808-v1/grupo/`) abrem o WhatsApp sozinhos depois de 1,8 s, como
 no `strat-lps`. O Lighthouse seguia a navegação e media o `chat.whatsapp.com`: 79 e LCP 4,3 s, com a página do
@@ -15,6 +13,32 @@ WhatsApp como final. A checagem `peso` passa a responder 204 à navegação da a
 navegador fica na página, e o log diz para onde ela tentou sair. Medidas assim, as duas deram 100 e LCP de 1,4 a 1,7 s
 (18/11). Substitui as exceções com piso 65 / 7,0 s que o #47 propunha para essas páginas. Separada do PR das LPs, como
 a regra do `seo`, porque vale para todos os apps.
+
+## 2026-11-18 · Título e H1 repetidos só barram entre páginas indexáveis (Jhonathan, WEB-48; espera o Helbert no PR)
+As variantes de teste A/B das LPs da Academy (claude /v1, /v3, /v4; skills /b; mentoria /v2; vibecode /v1; lotes do
+bootcamp) repetem a principal de propósito e saem com noindex, como já ficavam fora do sitemap no `strat-lps`. A
+checagem `seo` deixa de comparar página com noindex; a principal continua única no site. Alternativa descartada: mudar
+o título e o H1 visíveis das variantes, o que mexeria num teste A/B no ar. Separada do PR das LPs a pedido do Helbert
+(revisão do #47, 17/11): vale para todos os apps.
+
+## 2026-11-17 · /advogados migrado: capa no HTML e evento no pixel do kit (Jhonathan, WEB-24; espera o Helbert no PR)
+- **Capa desenhada no HTML.** No ar, o /advogados (v1 e v2) não tem nenhum `<h1>` na marcação: a capa e as telas
+  saem do script. A checagem `seo` só passava por engano, porque contava os `'<h1'` das strings do JavaScript (agora
+  ela lê só a marcação, fora de `<script>` e `<style>`). A capa passa a vir no `<main>` do HTML, igual à que o script
+  desenha (copiada do próprio desenho dele no Chrome); o `renderCover` não a redesenha na abertura e só a desenha de
+  novo quando a pessoa volta para ela. O texto, as telas e o tracking são os mesmos; a página ganha um H1 de verdade
+  para a busca e a capa aparece antes do JavaScript.
+- **Evento no pixel do kit não é pixel colado.** O script do /advogados chama `fbq('track', 'ViewContent')` na capa e
+  `fbq('trackCustom', 'FirstInteraction')` na primeira resposta, no pixel que o `m.js` do `<Tracking>` liga
+  (`data-pixel`). A checagem `tracking` passa a aceitar `fbq('track' | 'trackCustom', ...)` em `<script>` inline da
+  página que tem esse pixel; `fbq('init')`, o `fbevents.js`, a imagem `facebook.com/tr`, `fbq` em `<noscript>` ou em
+  `.js` do build e `fbq` em página com Rastro (o `m.js` vai sem `data-pixel`) continuam barrando.
+- **Fontes servidas pelo app**, como no WEB-87: Lato (v1) e Space Grotesk e JetBrains Mono (v2) em
+  `apps/agenciastrat/public/fontes/`, no lugar da folha do Google, que bloqueava a renderização. Lighthouse celular
+  local: v1 96 e LCP 2,6 s → 100 e 1,5 s; v2 94 e 2,9 s → 99 e 1,8 s.
+- **Fica de fora da migração:** o `?nopixel` de teste (a tag agora sai do kit, sem o atributo condicional) e o
+  banner antigo da própria página (`consentimentoPixel` fica `false`; o consentimento é o da linha do catálogo, `off`
+  pela decisão de 02/11, e o banner, quando houver, é o do kit).
 
 ## 2026-11-13 · Sem limite de PRs abertos (Helbert e Jhonathan, conversa pessoal; trazida pelo Jhonathan)
 Cai a regra de "no máximo 6 PRs abertos" de 12/11: item pronto vira PR na hora, sem esperar vaga numa branch. As
