@@ -110,19 +110,26 @@ test('Rastro com banner monta: o produto tem de estar em strict e o banner do ki
   assert.equal(lead.consentMode, 'strict');
 });
 
-test('venda com banner e Rastro quebra o build: o launcher da Hotmart sairia antes do aceite (WEB-85)', () => {
+test('venda com banner e Rastro monta com o launcher depois do aceite do Rastro (WEB-85)', () => {
   const venda = { perfil: 'venda', rastro_slug: 'mentoria', hotmart_conta: 'h' };
-  assert.throws(() => falso({ ...venda, consentimento: 'banner' }), /perfil venda com consentimento "banner" e Rastro.*WEB-85/);
-  // soft e off montam com o launcher (em soft e off o Rastro não pede aceite antes de carregar nada).
+  const banner = falso({ ...venda, consentimento: 'banner' });
+  assert.equal(banner.hotmart, 'h');
+  assert.equal(banner.hotmartAposAceite, true);
+  assert.equal(banner.consentMode, 'strict');
+  assert.equal(banner.banner, false, 'o aviso é o do Rastro');
+  // soft e off: o launcher carrega na abertura (em soft e off o Rastro não pede aceite antes de carregar nada).
   for (const consentimento of ['soft', 'off']) {
     const p = falso({ ...venda, consentimento });
     assert.equal(p.hotmart, 'h', consentimento);
-    assert.equal(p.banner, false, consentimento);
+    assert.equal(p.hotmartAposAceite, false, consentimento);
   }
-  // Lead e conteúdo com Rastro e banner continuam montando: não há launcher.
+  // Lead e conteúdo com Rastro e banner: não há launcher.
   assert.equal(falso({ perfil: 'conteudo', rastro_slug: 'site', consentimento: 'banner' }).hotmart, null);
-  // Nenhuma linha do catálogo de hoje está em venda + banner.
-  assert.deepEqual(catalogo.urls.filter((l) => l.perfil === 'venda' && l.consentimento === 'banner').map((l) => l.id), []);
+  // No catálogo, venda + banner só na página de teste.
+  assert.deepEqual(catalogo.urls.filter((l) => l.perfil === 'venda' && l.consentimento === 'banner').map((l) => l.id), ['academy-kit-venda-banner']);
+  const teste = plano('https://stratacademy.com.br/kit/venda-banner/', 'venda');
+  assert.equal(teste.hotmartAposAceite, true);
+  assert.equal(teste.consentMode, 'strict');
 });
 
 test('consentimento × consentMode do Rastro: banner = strict, soft = soft, off = off; o resto não tem par', () => {

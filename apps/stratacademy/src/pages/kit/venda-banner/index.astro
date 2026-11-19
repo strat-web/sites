@@ -1,0 +1,16 @@
+---
+// Teste do <Tracking> perfil venda com banner (WEB-85): o launcher da Hotmart só depois do "aceitar" do Rastro (produto
+// site, em strict). Sai antes de o domínio virar (WEB-49).
+import Layout from '@strat/kit/Layout.astro';
+import TesteTracking from '@strat/kit/TesteTracking.astro';
+---
+<Layout marca="academy" perfil="venda" indexar={false}
+  titulo="Teste do Tracking, perfil venda com banner · Strat Academy"
+  descricao="Página de teste do componente Tracking do kit dos sites: perfil venda da Academy com banner, launcher da Hotmart só depois do aceite.">
+  <TesteTracking perfil="venda" esperado={[
+    'Na abertura: tracking.stratacademy.com.br/sa?product=site (known: true, consentMode strict) e o aviso do Rastro no rodapé (recusar / aceitar).',
+    'Antes do aceite: nenhum launcher.hotmart.com, nenhum facebook.com/tr e window.hot indefinido.',
+    'Depois de aceitar: launcher.hotmart.com/launcher.js uma vez (o do kit, com a conta do catálogo), e o pixel 860500981882285 liga pelo Rastro.',
+    'Recusar: a Hotmart não carrega. Aceite guardado (strat_consent=granted): o launcher carrega na abertura.',
+  ]} />
+</Layout>
