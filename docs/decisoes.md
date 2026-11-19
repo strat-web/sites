@@ -2,6 +2,13 @@
 
 Uma entrada por decisão, com data e quem decidiu. A mais nova em cima.
 
+## 2026-11-18 · Título e H1 repetidos só barram entre páginas indexáveis (Jhonathan, WEB-48; espera o Helbert no PR)
+As variantes de teste A/B das LPs da Academy (claude /v1, /v3, /v4; skills /b; mentoria /v2; vibecode /v1; lotes do
+bootcamp) repetem a principal de propósito e saem com noindex, como já ficavam fora do sitemap no `strat-lps`. A
+checagem `seo` deixa de comparar página com noindex; a principal continua única no site. Alternativa descartada: mudar
+o título e o H1 visíveis das variantes, o que mexeria num teste A/B no ar. Separada do PR das LPs a pedido do Helbert
+(revisão do #47, 17/11): vale para todos os apps.
+
 ## 2026-11-17 · /advogados migrado: capa no HTML e evento no pixel do kit (Jhonathan, WEB-24; espera o Helbert no PR)
 - **Capa desenhada no HTML.** No ar, o /advogados (v1 e v2) não tem nenhum `<h1>` na marcação: a capa e as telas
   saem do script. A checagem `seo` só passava por engano, porque contava os `'<h1'` das strings do JavaScript (agora
