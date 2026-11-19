@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- docs(tracking): `Contact` no clique do WhatsApp só em página com Rastro; sem Rastro (Agência, pixel pelo m.js) o clique é `wa_click` no MetricaaS e não dispara `Contact` no navegador (docs/tracking.md e C4 do checklist; WEB-86)
 - docs(search-console): propriedades importadas no Bing Webmaster com os sitemaps enviados, sitemaps de cada propriedade do Search Console conferidos (todos Processado) e o que muda em cada virada (WEB-38)
 - docs(auditoria): diagnóstico de LP do lab (rápido e completo) em stratai.com.br, Nota Strat 83/82, com o destino de cada achado: motor nos WEB-93 a WEB-95, site nos WEB-96 a WEB-99 e o que já tinha item (WEB-87, WEB-33, WEB-21/WEB-32) (WEB-41)
 - ci(checagens): a checagem catalogo barra duas linhas do mesmo produto do Rastro com pixel, GA4, tag do Google ou consentimento diferentes (o /sa é um só por produto); a linha academy, alinhada no WEB-46, conferida contra o /sa?product=site de 17/11 e com a checagem tracking verde com a home usando o <Tracking> (WEB-83)
