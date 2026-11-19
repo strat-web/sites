@@ -232,6 +232,17 @@ A checagem `tracking` garante isso no código (`EVENTOS_DA_PAGINA` e `EVENTOS_DA
 
 Referência completa do Rastro: `strat-web/rastro` (hoje `Strat-Ai-Horus-OS/rastro-stratacademy`), `docs/TRACKING-ARCHITECTURE.md`.
 
+## Rastro depois do primeiro quadro nas páginas de venda (WEB-104)
+
+No perfil `venda`, o kit escreve um carregador inline com `data-strat-rastro-apos-pintura` em vez de iniciar o `/sa` durante o parse. Depois de DOMContentLoaded, ele aguarda o FCP observado por PerformanceObserver antes de criar o script externo. Sem Paint Timing, usa dois requestAnimationFrame como fallback. Só dois callbacks não garantiam pintura: no teste com fontes carregando, o /sa iniciava aos 191 ms e o FCP vinha aos 252 ms. Isso dá ao navegador uma oportunidade de pintar o primeiro quadro sem a cadeia do Rastro (pixel, GA4 e PostHog), que segurava o desenho do hero da LP Claude.
+
+O produto, consentimento, ids e eventos continuam sendo os do Rastro. O MetricaaS permanece no head, com defer e antes de todo script; o launcher da Hotmart e o Umami mantêm seu comportamento. Os perfis lead e conteudo continuam carregando o Rastro diretamente.
+
+Uma aba aberta oculta, ou um navegador sem requestAnimationFrame, carrega depois de DOMContentLoaded sem esperar quadros; isso preserva a visita em segundo plano. Uma saída antes do carregamento pode deixar de contar PageView, limite explícito a ser aceito na revisão do Helbert. Não há atraso por interação nem temporizador arbitrário.
+
+A checagem tracking valida a URL do produto, o código inteiro do carregador e o tipo executável do script; atributo sem código ou script inerte barra o PR. Testes cobrem documento pronto/em parse, dois quadros, aba oculta, fallback e instalação única.
+
+Na validação da WEB-48, FCP de texto ainda podia anteceder a imagem do hero. O carregador também aguarda `document.fonts.ready` e decodifica as imagens com preload de alta prioridade (respeitando media) e os `img[fetchpriority=high]`. Depois dá dois quadros para pintar esses recursos. Erros de imagem/fontes não interrompem o carregamento; abas ocultas não esperam esses recursos. O risco de saída/compra antes do Rastro continua explícito e precisa do aceite do Helbert.
 
 ## Cobertura da checagem de tracking (WEB-92)
 

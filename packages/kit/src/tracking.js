@@ -128,7 +128,7 @@ export function planoDeTracking({ catalogo, url, perfil }) {
   }
 
   if (rastro) {
-    plano.scripts.push({ src: `${RASTRO}?product=${encodeURIComponent(rastro)}`, attrs: {} });
+    plano.scripts.push({ src: `${RASTRO}?product=${encodeURIComponent(rastro)}`, attrs: {}, ...(perfil === 'venda' ? { aposPintura: true } : {}) });
   }
 
   if (linha.umami_website_id) {

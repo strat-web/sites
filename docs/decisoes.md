@@ -224,3 +224,7 @@ Plano: [`docs/planos/sites-numa-casa-so.md`](planos/sites-numa-casa-so.md). Toda
 
 Também em 2026-11-04: o projeto do Infisical `strat-web` (antigo, de segredos) passa a ser o dos sites; a migração
 é tocada pelo Helbert e pelo Jhonathan, acompanhada no Plane, projeto `WEB` (P09 · Sites e LPs).
+
+## 17/11/2026 · WEB-104: carregar o Rastro após o primeiro quadro (aceito pelo Helbert em 19/11)
+
+Implementação solicitada por Jhonathan na continuação do WEB-48, **aceita pelo Helbert em 19/11, como está, sem teto de tempo** (revisão pela cabine, PR #51), sabendo que muda a janela de atribuição (o PR mediu o `/sa` terminando entre 0,56 e 2,49 s). Só o perfil venda adia o `/sa` até a primeira dobra estar pronta: depois de DOMContentLoaded, fontes e imagens prioritárias decodificadas, dois quadros e FCP observado por Paint Timing (rAF como fallback sem a API). MetricaaS, launcher da Hotmart, Umami, perfis lead/conteudo, produto e consentimento não mudam. Abas ocultas/navegadores sem rAF preservam a visita sem esperar quadros. Uma saída ou compra antes do carregamento pode perder PageView/xcod; medir e explicitar a janela no PR. A aprovação de código não autoriza virar DNS.

@@ -4,7 +4,7 @@
 // linha do catálogo; a checagem compara com o HTML gerado.
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { HOTMART_LAUNCHER, METRICAAS, RASTRO, UMAMI, consentModeEsperado, marca, planoDeTracking, scriptDoBanner } from '@strat/kit';
+import { ATR_RASTRO_APOS_PINTURA, scriptDoRastroAposPintura, HOTMART_LAUNCHER, METRICAAS, RASTRO, UMAMI, consentModeEsperado, marca, planoDeTracking, scriptDoBanner } from '@strat/kit';
 import { ehPaginaDeErro } from './contexto.js';
 import { lerPagina, scripts as todosOsScripts, tags } from './html.js';
 import { ESQUELETOS } from './esqueletos.js';
@@ -61,7 +61,7 @@ export function bannerDoKit(catalogo, linha) {
 
 /** Script que é do componente <Tracking> (Rastro, MetricaaS, Umami ou launcher da Hotmart). */
 export function ehScriptDeTracking(s) {
-  const src = s.attrs.src || '';
+  const src = s.attrs.src || s.attrs[ATR_RASTRO_APOS_PINTURA] || '';
   return (
     src.startsWith(RASTRO) ||
     ehMjsDoMetricaas(src) ||
@@ -197,15 +197,20 @@ export function checarPaginaTracking(pagina, catalogo, r) {
   }
   for (const aviso of plano.avisos) r.aviso(onde, aviso);
 
-  const esperados = plano.scripts.map((s) => ({ src: s.src, attrs: s.attrs }));
+  const esperados = plano.scripts.map((s) => ({ src: s.src, attrs: s.attrs, aposPintura: !!s.aposPintura }));
   const sobra = [...reais];
   for (const e of esperados) {
-    const i = sobra.findIndex((s) => s.attrs.src === e.src);
+    const i = sobra.findIndex((s) => (s.attrs.src || s.attrs[ATR_RASTRO_APOS_PINTURA]) === e.src);
     if (i < 0) {
       r.erro(onde, `falta ${e.src}: a página não usa o <Tracking> do kit (perfil "${linha.perfil}" no Layout)`);
       continue;
     }
     const [achado] = sobra.splice(i, 1);
+    const adiado = achado.attrs[ATR_RASTRO_APOS_PINTURA] !== undefined;
+    if (e.aposPintura !== adiado) r.erro(onde, `${e.src}: o Rastro de venda precisa esperar o primeiro quadro; lead e conteudo continuam diretos (WEB-104)`);
+    if (adiado && ('src' in achado.attrs || 'nomodule' in achado.attrs || !TIPOS_CLASSICOS.includes(tipo(achado)) || achado.conteudo.trim() !== scriptDoRastroAposPintura())) {
+      r.erro(onde, `${e.src}: carregador após pintura ausente, alterado ou inerte (WEB-104)`);
+    }
     for (const a of ATRIBUTOS) {
       const quer = e.attrs[a];
       const tem = achado.attrs[a];
