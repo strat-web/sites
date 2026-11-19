@@ -1,0 +1,12 @@
+# Redirecionamentos do metricaas.com.br no Cloudflare Pages (WEB-36). A query (UTM, fbclid) segue junto.
+# Política e termos: a URL passa a ter barra no fim (docs/padroes.md); a forma antiga, cadastrada na Meta e no
+# Google Ads, responde 301 (o navegador mantém a âncora, ex.: #exclusao-de-dados).
+/politica-de-privacidade /politica-de-privacidade/ 301
+/politica-de-privacidade.html /politica-de-privacidade/ 301
+/termos-de-uso /termos-de-uso/ 301
+/termos-de-uso.html /termos-de-uso/ 301
+# As imagens moravam em /images/ e o CSS das páginas legais em /legal.css (strat-lps): agora em /midia/ e /css/.
+# O ícone virou o logotipo do JSON-LD (o mesmo arquivo).
+/images/icon.png /midia/logo/metricaas.png 301
+/images/* /midia/:splat 301
+/legal.css /css/legal.css 301
