@@ -1,0 +1,16 @@
+---
+// Migração do strat-lps (WEB-48), preservando caminho, conteúdo e funil. Tracking pelo kit.
+import Layout from '@strat/kit/Layout.astro';
+import head from "../../html/upsell-imediato.head.html?raw";
+import corpo from "../../html/upsell-imediato.corpo.html?raw";
+---
+<Layout
+  marca="academy"
+  perfil="venda"
+  titulo="Espere! Não feche esta página · Strat AI"
+  descricao="Seu pedido foi aprovado. Antes de acessar, veja a condição especial da Gravação do Bootcamp em Módulos."
+  indexar={false}
+>
+  <Fragment slot="head" set:html={head} />
+  <Fragment set:html={corpo} />
+</Layout>

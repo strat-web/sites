@@ -1,0 +1,20 @@
+---
+// /advogados (v1), migrado do strat-lps 05ca028 (lps/agencia/advogados/index.html) sem mudar texto, layout nem
+// tracking (WEB-24). Captação de escritórios de advocacia da campanha CP21: formulário com filtro → mtc.lead() →
+// agenda na página (mtc.agenda) → confirmação e lembretes no WhatsApp pelo MetricaaS strat-marketing.
+// Tracking pelo kit: linha "agenciastrat-advogados" do catálogo (MetricaaS + pixel PX-001, consentimento off desde
+// 02/11, decisão do Helbert). O viewport mantém o viewport-fit=cover da página no ar.
+import Layout from '@strat/kit/Layout.astro';
+import head from '../../html/advogados.head.html?raw';
+import corpo from '../../html/advogados.corpo.html?raw';
+---
+<Layout
+  marca="agencia"
+  perfil="lead"
+  titulo="Strat | Captação Advogados"
+  descricao="Agência Strat: anúncios para advogados e escritórios de advocacia, com filtro dos contatos e acompanhamento até o contrato."
+  viewport="width=device-width, initial-scale=1, viewport-fit=cover"
+>
+  <Fragment slot="head" set:html={head} />
+  <Fragment set:html={corpo} />
+</Layout>

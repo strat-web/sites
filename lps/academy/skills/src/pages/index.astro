@@ -1,0 +1,19 @@
+---
+// LP das +500 skills para o Claude (a principal), migrada do strat-lps (lps/lp-500/index.html) sem mudar texto, layout
+// nem tracking (WEB-48). O HTML mora em src/html/ (head e corpo); o kit põe título, descrição, canonical, Open Graph,
+// JSON-LD da marca e o <Tracking> perfil venda (Rastro lp-500-skills e launcher da Hotmart, da linha "academy-skills"
+// do catálogo). O que mudou em relação ao strat-lps está no README.
+import Layout from '@strat/kit/Layout.astro';
+import head from '../html/home.head.html?raw';
+import corpo from '../html/home.corpo.html?raw';
+---
+<Layout
+  marca="academy"
+  perfil="venda"
+  titulo="+500 Skills para Claude — Transforme o Claude em Sua Equipe Completa"
+  descricao="+500 skills prontas que transformam o Claude em sua equipe completa. R$47 pagamento único."
+  viewport="width=device-width, initial-scale=1.0"
+>
+  <Fragment slot="head" set:html={head} />
+  <Fragment set:html={corpo} />
+</Layout>
