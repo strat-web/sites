@@ -224,6 +224,11 @@ ou `gh workflow run checagens.yml --ref <branch>`. O disparo manual fica dispon�
 `workflow_dispatch` chegar à `main`; a branch escolhida também precisa conter esse gatilho. Roda o mesmo build
 e as cinco checagens, com os mesmos nomes e limites. Confira a execução em Actions ou com `gh run view <id>`.
 
+Para rodar numa branch sem PR: GitHub → Actions → checagens → Run workflow → escolha a branch → Run workflow,
+ou `gh workflow run checagens.yml --ref <branch>`. O disparo manual fica disponível depois que o workflow com
+`workflow_dispatch` chegar à `main`; a branch escolhida também precisa conter esse gatilho. Roda o mesmo build
+e as cinco checagens, com os mesmos nomes e limites. Confira a execução em Actions ou com `gh run view <id>`.
+
 Na máquina: `pnpm checar` roda tudo (o Lighthouse precisa do Chrome instalado, ~1 min); `pnpm checar:rapido` pula
 o Lighthouse. Uma checagem ou um app: `node packages/checagens/src/cli.js seo links --app apps/stratai`.
 `--sem-rede` não pergunta ao Rastro (só para trabalhar desconectado; na CI ele pergunta sempre). Com `--app`, só os
