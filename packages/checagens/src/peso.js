@@ -140,20 +140,25 @@ export function ehSaidaExterna(urlDaPagina, urlDoPedido, navegacaoPrincipal) {
   }
 }
 
-async function medirComLighthouse(url, navegador) {
+// A interceptação só liga quando a página sai sozinha: com ela, todo pedido passa pelo puppeteer, e o Lighthouse, que
+// estima o LCP pelo tempo de rede de cada origem, infla as imagens de fora (em 19/11 a home do MetricaaS, com quatro
+// miniaturas do YouTube, foi de 99 e 2,0 s para 91 e 3,5 s na CI). A página que não sai é medida como antes do WEB-48.
+async function medirComLighthouse(url, navegador, { interceptar = false } = {}) {
   const { default: lighthouse } = await import('lighthouse');
   const aba = await navegador.newPage();
   const saidas = new Set();
   try {
-    await aba.setRequestInterception(true);
-    aba.on('request', (pedido) => {
-      if (pedido.isInterceptResolutionHandled()) return;
-      const principal = pedido.isNavigationRequest() && pedido.frame() === aba.mainFrame();
-      if (ehSaidaExterna(url, pedido.url(), principal)) {
-        saidas.add(new URL(pedido.url()).host);
-        pedido.respond({ status: 204, body: '' });
-      } else pedido.continue();
-    });
+    if (interceptar) {
+      await aba.setRequestInterception(true);
+      aba.on('request', (pedido) => {
+        if (pedido.isInterceptResolutionHandled()) return;
+        const principal = pedido.isNavigationRequest() && pedido.frame() === aba.mainFrame();
+        if (ehSaidaExterna(url, pedido.url(), principal)) {
+          saidas.add(new URL(pedido.url()).host);
+          pedido.respond({ status: 204, body: '' });
+        } else pedido.continue();
+      });
+    }
     const { lhr } = await lighthouse(url, {
       onlyCategories: ['performance'],
       blockedUrlPatterns: BLOQUEADOS_NO_LIGHTHOUSE,
@@ -166,10 +171,23 @@ async function medirComLighthouse(url, navegador) {
       lcpMs: Math.round(lhr.audits['largest-contentful-paint']?.numericValue ?? Infinity),
       cls: Number((lhr.audits['cumulative-layout-shift']?.numericValue ?? Infinity).toFixed(3)),
       saidas: [...saidas],
+      saiu: !interceptar && ehSaidaExterna(url, lhr.finalDisplayedUrl || lhr.finalUrl || url, true),
     };
   } finally {
     await aba.close();
   }
+}
+
+/** Mede sem interceptar; se a página saiu para outro domínio (ou o Lighthouse quebrou na saída), mede de novo com a
+ * saída presa na página. */
+async function medirPagina(url, navegador) {
+  let m;
+  try {
+    m = await medirComLighthouse(url, navegador);
+  } catch {
+    m = { saiu: true };
+  }
+  return m.saiu ? medirComLighthouse(url, navegador, { interceptar: true }) : m;
 }
 
 const dentro = (m, o) => m.performance >= o.performance && m.lcpMs <= o.lcpMs && m.cls <= o.cls;
@@ -204,8 +222,9 @@ export async function checarPeso(ctx, { semLighthouse = false, log = () => {} } 
   const { launch } = await import('chrome-launcher');
   const { default: puppeteer } = await import('puppeteer-core');
   const chrome = await launch({ chromeFlags: ['--headless=new', '--no-sandbox', '--disable-gpu'] });
-  const navegador = await puppeteer.connect({ browserURL: `http://127.0.0.1:${chrome.port}` });
+  let navegador;
   try {
+    navegador = await puppeteer.connect({ browserURL: `http://127.0.0.1:${chrome.port}` });
     for (const app of ctx.apps) {
       const { servidor, porta } = await servirDist(app.dist);
       try {
@@ -214,8 +233,8 @@ export async function checarPeso(ctx, { semLighthouse = false, log = () => {} } 
           const url = `http://127.0.0.1:${porta}${pagina.caminho}`;
           let m;
           try {
-            m = await medirComLighthouse(url, navegador);
-            if (julgarMedicao(pagina.url, m) !== 'ok') m = await medirComLighthouse(url, navegador); // uma segunda medição antes de barrar
+            m = await medirPagina(url, navegador);
+            if (julgarMedicao(pagina.url, m) !== 'ok') m = await medirPagina(url, navegador); // uma segunda medição antes de barrar
           } catch (e) {
             r.erro(pagina.url, `o Lighthouse não conseguiu medir: ${e.message}`);
             continue;
@@ -234,7 +253,7 @@ export async function checarPeso(ctx, { semLighthouse = false, log = () => {} } 
       }
     }
   } finally {
-    await navegador.disconnect();
+    await navegador?.disconnect();
     await chrome.kill();
   }
   return r;
