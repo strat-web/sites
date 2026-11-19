@@ -6,6 +6,11 @@
 // (Rastro, MetricaaS, launcher da Hotmart e Umami): eles são obrigatórios em toda página, não mudam por PR e variam a
 // cada medição (a página de venda oscilou entre 89 e 93 só por eles, 11/11/2026). Qualquer outro script de terceiro
 // que a página puser continua medido. O custo do tracking e o número de manchete ficam com o PageSpeed em produção.
+//
+// Página que sai sozinha para outro domínio (a confirmação da comunidade e o grupo do bootcamp abrem o WhatsApp depois
+// de 1,8 s) faria o Lighthouse medir o destino: em 18/11/2026 a comunidade deu 79 e LCP 4,3 s com o
+// chat.whatsapp.com como página final, e 100 e 1,4 s medindo só ela. Por isso a navegação da aba principal para outra
+// origem recebe 204 (o navegador fica na página) e o log diz para onde ela tentou sair (WEB-48).
 import { createReadStream, existsSync, readFileSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { pipeline } from 'node:stream';
@@ -122,21 +127,49 @@ export function servirDist(dist) {
   return new Promise((ok) => servidor.listen(0, '127.0.0.1', () => ok({ servidor, porta: servidor.address().port })));
 }
 
-async function medirComLighthouse(url, porta) {
+/**
+ * A navegação da aba principal para outra origem não é a página: no Lighthouse ela recebe 204 e o navegador fica
+ * onde está (ver o topo do arquivo). Subrecurso de outro domínio e navegação dentro da página continuam normais.
+ */
+export function ehSaidaExterna(urlDaPagina, urlDoPedido, navegacaoPrincipal) {
+  if (!navegacaoPrincipal) return false;
+  try {
+    return new URL(urlDoPedido).origin !== new URL(urlDaPagina).origin;
+  } catch {
+    return false;
+  }
+}
+
+async function medirComLighthouse(url, navegador) {
   const { default: lighthouse } = await import('lighthouse');
-  const { lhr } = await lighthouse(url, {
-    port: porta,
-    onlyCategories: ['performance'],
-    blockedUrlPatterns: BLOQUEADOS_NO_LIGHTHOUSE,
-    logLevel: 'error',
-    output: 'json',
-  });
-  if (lhr.runtimeError) throw new Error(lhr.runtimeError.message);
-  return {
-    performance: Math.round((lhr.categories.performance.score ?? 0) * 100),
-    lcpMs: Math.round(lhr.audits['largest-contentful-paint']?.numericValue ?? Infinity),
-    cls: Number((lhr.audits['cumulative-layout-shift']?.numericValue ?? Infinity).toFixed(3)),
-  };
+  const aba = await navegador.newPage();
+  const saidas = new Set();
+  try {
+    await aba.setRequestInterception(true);
+    aba.on('request', (pedido) => {
+      if (pedido.isInterceptResolutionHandled()) return;
+      const principal = pedido.isNavigationRequest() && pedido.frame() === aba.mainFrame();
+      if (ehSaidaExterna(url, pedido.url(), principal)) {
+        saidas.add(new URL(pedido.url()).host);
+        pedido.respond({ status: 204, body: '' });
+      } else pedido.continue();
+    });
+    const { lhr } = await lighthouse(url, {
+      onlyCategories: ['performance'],
+      blockedUrlPatterns: BLOQUEADOS_NO_LIGHTHOUSE,
+      logLevel: 'error',
+      output: 'json',
+    }, undefined, aba);
+    if (lhr.runtimeError) throw new Error(lhr.runtimeError.message);
+    return {
+      performance: Math.round((lhr.categories.performance.score ?? 0) * 100),
+      lcpMs: Math.round(lhr.audits['largest-contentful-paint']?.numericValue ?? Infinity),
+      cls: Number((lhr.audits['cumulative-layout-shift']?.numericValue ?? Infinity).toFixed(3)),
+      saidas: [...saidas],
+    };
+  } finally {
+    await aba.close();
+  }
 }
 
 const dentro = (m, o) => m.performance >= o.performance && m.lcpMs <= o.lcpMs && m.cls <= o.cls;
@@ -169,7 +202,9 @@ export async function checarPeso(ctx, { semLighthouse = false, log = () => {} } 
   }
 
   const { launch } = await import('chrome-launcher');
+  const { default: puppeteer } = await import('puppeteer-core');
   const chrome = await launch({ chromeFlags: ['--headless=new', '--no-sandbox', '--disable-gpu'] });
+  const navegador = await puppeteer.connect({ browserURL: `http://127.0.0.1:${chrome.port}` });
   try {
     for (const app of ctx.apps) {
       const { servidor, porta } = await servirDist(app.dist);
@@ -179,13 +214,14 @@ export async function checarPeso(ctx, { semLighthouse = false, log = () => {} } 
           const url = `http://127.0.0.1:${porta}${pagina.caminho}`;
           let m;
           try {
-            m = await medirComLighthouse(url, chrome.port);
-            if (julgarMedicao(pagina.url, m) !== 'ok') m = await medirComLighthouse(url, chrome.port); // uma segunda medição antes de barrar
+            m = await medirComLighthouse(url, navegador);
+            if (julgarMedicao(pagina.url, m) !== 'ok') m = await medirComLighthouse(url, navegador); // uma segunda medição antes de barrar
           } catch (e) {
             r.erro(pagina.url, `o Lighthouse não conseguiu medir: ${e.message}`);
             continue;
           }
-          const texto = `performance ${m.performance}, LCP ${(m.lcpMs / 1000).toFixed(1)} s, CLS ${m.cls}`;
+          const saida = m.saidas.length ? ` (a página sai para ${m.saidas.join(', ')}: medida sem o destino)` : '';
+          const texto = `performance ${m.performance}, LCP ${(m.lcpMs / 1000).toFixed(1)} s, CLS ${m.cls}${saida}`;
           const juizo = julgarMedicao(pagina.url, m);
           const exc = EXCECOES_LIGHTHOUSE[pagina.url];
           if (juizo === 'ok') log(`${pagina.url}: ${texto}`);
@@ -198,6 +234,7 @@ export async function checarPeso(ctx, { semLighthouse = false, log = () => {} } 
       }
     }
   } finally {
+    await navegador.disconnect();
     await chrome.kill();
   }
   return r;
