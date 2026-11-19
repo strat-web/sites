@@ -3,7 +3,7 @@
 export { grupo, marcas, marca } from './marcas.js';
 export { urlCanonica, caminhoCanonico, ehArquivo, dataDoDia, schemaMarca, schemaBreadcrumb, schemaFaq, jsonSeguro } from './schema.js';
 export {
-  PERFIS, planoDeTracking, linhaDoCatalogo, scriptDoBanner, scriptDoPorFunil, funisDaLinha, ID_POR_FUNIL, RASTRO, METRICAAS, UMAMI, HOTMART_LAUNCHER, CONSENT_MODE_DO_RASTRO,
+  PERFIS, planoDeTracking, linhaDoCatalogo, scriptDoBanner, MODOS_DO_AVISO, scriptDoPorFunil, funisDaLinha, ID_POR_FUNIL, RASTRO, METRICAAS, UMAMI, HOTMART_LAUNCHER, CONSENT_MODE_DO_RASTRO,
   consentModeEsperado,
 } from './tracking.js';
 // Integração do Astro que grava sitemap.xml, robots.txt e llms.txt no fim do build (WEB-18).
@@ -12,3 +12,5 @@ export { arquivosDoSite } from './arquivos-do-site.js';
 export { SEGURANCA, PAGES_DEV, montarHeaders } from './cabecalhos.js';
 // Página 404 de cada app: links da 404 que só aparecem quando a página existe no build (WEB-75).
 export { rotaDoArquivo, linksDaPaginaDeErro } from './pagina-de-erro.js';
+
+export { ATR_RASTRO_APOS_PINTURA, scriptDoRastroAposPintura } from './rastro-apos-pintura.js';

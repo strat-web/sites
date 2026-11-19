@@ -58,6 +58,23 @@ test('lead sem Rastro e com banner: m.js liga o pixel e segura até o aceite', (
   assert.equal(off.scripts[0].attrs['data-pixel-consent'], undefined);
 });
 
+test('lead sem Rastro em soft: o pixel liga na abertura e o aviso do kit entra em modo soft (WEB-84)', () => {
+  const p = plano('https://agenciastrat.com.br/kit/soft/', 'lead');
+  assert.deepEqual(srcs(p), ['https://t.metricaas.com.br/m.js', '/u/script.js']);
+  assert.deepEqual(p.scripts[0].attrs, { 'data-ws': 'strat-marketing', 'data-pixel': '1815630929780241' });
+  assert.equal(p.aviso, 'soft');
+  assert.equal(p.banner, false);
+  // banner continua com o modo banner; off, sem aviso.
+  assert.equal(plano('https://agenciastrat.com.br/kit/lead/', 'lead').aviso, 'banner');
+  assert.equal(plano('https://agenciastrat.com.br/advogados/', 'lead').aviso, null);
+  // Sem pixel, não há o que avisar nem o que recusar.
+  assert.equal(falso({ metricaas_ws: 'w', consentimento: 'soft' }).aviso, null);
+  // Com Rastro em soft, o aviso é o do Rastro (consentMode soft), não o do kit.
+  const rastro = falso({ rastro_slug: 'stratai', metricaas_ws: 'w', meta_pixel: '1', consentimento: 'soft' });
+  assert.equal(rastro.aviso, null);
+  assert.equal(rastro.consentMode, 'soft');
+});
+
 test('lead precisa de MetricaaS ou Rastro; GA4 sem Rastro quebra (WEB-73)', () => {
   assert.throws(() => falso({}), /metricaas_ws ou rastro_slug/);
   assert.throws(() => falso({ metricaas_ws: 'w', ga4: 'G-1' }), /WEB-73/);

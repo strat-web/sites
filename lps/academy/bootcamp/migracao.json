@@ -1,0 +1,170 @@
+[
+  {
+    "caminho": "/0808-combo/",
+    "fragmento": "0808-combo",
+    "perfil": "venda",
+    "rastro_slug": "bootcamp-0808",
+    "metricaas_ws": "vinicius-rocha-strat-ai"
+  },
+  {
+    "caminho": "/0808-v1/grupo/",
+    "fragmento": "0808-v1--grupo",
+    "perfil": "conteudo",
+    "rastro_slug": "bootcamp-0808",
+    "metricaas_ws": null
+  },
+  {
+    "caminho": "/0808-v1/",
+    "fragmento": "0808-v1",
+    "perfil": "lead",
+    "rastro_slug": "bootcamp-0808",
+    "metricaas_ws": null
+  },
+  {
+    "caminho": "/0808-v1-lote01/",
+    "fragmento": "0808-v1-lote01",
+    "perfil": "venda",
+    "rastro_slug": "bootcamp-0808",
+    "metricaas_ws": null
+  },
+  {
+    "caminho": "/0808-v1-lote02/",
+    "fragmento": "0808-v1-lote02",
+    "perfil": "venda",
+    "rastro_slug": "bootcamp-0808",
+    "metricaas_ws": null
+  },
+  {
+    "caminho": "/0808-v1-lote03/",
+    "fragmento": "0808-v1-lote03",
+    "perfil": "venda",
+    "rastro_slug": "bootcamp-0808",
+    "metricaas_ws": null
+  },
+  {
+    "caminho": "/0808-v2-lote01/",
+    "fragmento": "0808-v2-lote01",
+    "perfil": "venda",
+    "rastro_slug": "bootcamp-0808",
+    "metricaas_ws": "vinicius-rocha-strat-ai"
+  },
+  {
+    "caminho": "/0808-v2-lote02/",
+    "fragmento": "0808-v2-lote02",
+    "perfil": "venda",
+    "rastro_slug": "bootcamp-0808",
+    "metricaas_ws": "vinicius-rocha-strat-ai"
+  },
+  {
+    "caminho": "/0808-v2-lote03/",
+    "fragmento": "0808-v2-lote03",
+    "perfil": "venda",
+    "rastro_slug": "bootcamp-0808",
+    "metricaas_ws": "vinicius-rocha-strat-ai"
+  },
+  {
+    "caminho": "/0808-v3-lote01/",
+    "fragmento": "0808-v3-lote01",
+    "perfil": "venda",
+    "rastro_slug": "bootcamp-0808",
+    "metricaas_ws": "vinicius-rocha-strat-ai"
+  },
+  {
+    "caminho": "/0808-v3-lote02/",
+    "fragmento": "0808-v3-lote02",
+    "perfil": "venda",
+    "rastro_slug": "bootcamp-0808",
+    "metricaas_ws": "vinicius-rocha-strat-ai"
+  },
+  {
+    "caminho": "/0808-v3-lote03/",
+    "fragmento": "0808-v3-lote03",
+    "perfil": "venda",
+    "rastro_slug": "bootcamp-0808",
+    "metricaas_ws": "vinicius-rocha-strat-ai"
+  },
+  {
+    "caminho": "/0808-v4-lote02/",
+    "fragmento": "0808-v4-lote02",
+    "perfil": "venda",
+    "rastro_slug": "bootcamp-0808",
+    "metricaas_ws": "vinicius-rocha-strat-ai"
+  },
+  {
+    "caminho": "/0808-v4-lote03/",
+    "fragmento": "0808-v4-lote03",
+    "perfil": "venda",
+    "rastro_slug": "bootcamp-0808",
+    "metricaas_ws": "vinicius-rocha-strat-ai"
+  },
+  {
+    "caminho": "/0808-v5-lote01/",
+    "fragmento": "0808-v5-lote01",
+    "perfil": "venda",
+    "rastro_slug": "bootcamp-0808",
+    "metricaas_ws": "vinicius-rocha-strat-ai"
+  },
+  {
+    "caminho": "/0808-v5-lote02/",
+    "fragmento": "0808-v5-lote02",
+    "perfil": "venda",
+    "rastro_slug": "bootcamp-0808",
+    "metricaas_ws": "vinicius-rocha-strat-ai"
+  },
+  {
+    "caminho": "/0808-v5-lote03/",
+    "fragmento": "0808-v5-lote03",
+    "perfil": "venda",
+    "rastro_slug": "bootcamp-0808",
+    "metricaas_ws": "vinicius-rocha-strat-ai"
+  },
+  {
+    "caminho": "/b/",
+    "fragmento": "b",
+    "perfil": "lead",
+    "rastro_slug": "bootcamp",
+    "metricaas_ws": null
+  },
+  {
+    "caminho": "/downsell-imediato/",
+    "fragmento": "downsell-imediato",
+    "perfil": "venda",
+    "rastro_slug": "bootcamp",
+    "metricaas_ws": null
+  },
+  {
+    "caminho": "/",
+    "fragmento": "home",
+    "perfil": "venda",
+    "rastro_slug": "bootcamp",
+    "metricaas_ws": null
+  },
+  {
+    "caminho": "/m/",
+    "fragmento": "m",
+    "perfil": "lead",
+    "rastro_slug": "bootcamp",
+    "metricaas_ws": "vinicius-rocha-strat-ai"
+  },
+  {
+    "caminho": "/mentoria-grupo/",
+    "fragmento": "mentoria-grupo",
+    "perfil": "venda",
+    "rastro_slug": "bootcamp-0808",
+    "metricaas_ws": null
+  },
+  {
+    "caminho": "/strat/",
+    "fragmento": "strat",
+    "perfil": "venda",
+    "rastro_slug": "bootcamp-strat",
+    "metricaas_ws": null
+  },
+  {
+    "caminho": "/upsell-imediato/",
+    "fragmento": "upsell-imediato",
+    "perfil": "venda",
+    "rastro_slug": "bootcamp",
+    "metricaas_ws": null
+  }
+]

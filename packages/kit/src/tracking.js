@@ -37,11 +37,13 @@ export function linhaDoCatalogo(catalogo, url) {
   return linha;
 }
 
-// O que a página carrega. Devolve { linha, scripts, hotmart, banner, consentMode, avisos }:
+// O que a página carrega. Devolve { linha, scripts, hotmart, aviso, banner, consentMode, avisos }:
 // - scripts: lista de { src, attrs } na ordem do <head>, todos `defer` (o m.js nunca atrasado: regra dura do lead);
 // - hotmart: id da conta para o launcher (só no perfil venda), ou null;
-// - banner: true quando a página mostra o banner de cookies do kit (sem Rastro, pixel pelo m.js, consentimento
-//   `banner`). Com Rastro é sempre false: quem pede o aceite é o aviso do próprio Rastro (strict);
+// - aviso: o modo do banner de cookies do kit (banner-cookies.js), só sem Rastro e com o pixel pelo m.js:
+//   "banner" (o pixel espera o "Aceitar") ou "soft" (o pixel mede na abertura e para no "Recusar", WEB-84); null nos
+//   outros casos. Com Rastro é sempre null: quem pede o aceite é o aviso do próprio Rastro (strict ou soft);
+// - banner: true quando aviso é "banner" (o mesmo de antes do WEB-84);
 // - consentMode: o que o produto no Rastro tem de ter (strict, soft ou off), ou null sem Rastro;
 // - porFunil: { chave do ?f=: slug do produto } nas linhas `por-funil`, ou null (o componente escreve o script
 //   rastro-por-funil.js com ele);
@@ -54,7 +56,7 @@ export function planoDeTracking({ catalogo, url, perfil }) {
     throw erro(onde, `a página declara perfil "${perfil}", mas o catálogo diz "${linha.perfil}". Acerte um dos dois no mesmo PR`);
   }
 
-  const plano = { linha, scripts: [], hotmart: null, banner: false, consentMode: null, porFunil: null, avisos: [] };
+  const plano = { linha, scripts: [], hotmart: null, aviso: null, banner: false, consentMode: null, porFunil: null, avisos: [] };
   if (linha.consentimento === 'sem-tracking') return plano;
   // por-funil (T5, WEB-106): a página é de vários funis e o Rastro pertence ao funil do ?f=. O registro `funis` da
   // linha diz o produto de cada chave; o script rastro-por-funil.js liga o /sa dele no navegador. Sem ?f= ou com
@@ -122,14 +124,18 @@ export function planoDeTracking({ catalogo, url, perfil }) {
       attrs['data-pixel'] = linha.meta_pixel;
       if (linha.consentimento === 'banner') {
         attrs['data-pixel-consent'] = 'aguardar';
+        plano.aviso = 'banner';
         plano.banner = true;
       }
+      // soft sem Rastro (WEB-84): o pixel liga na abertura (sem data-pixel-consent) e o aviso do kit mostra
+      // "Recusar" e "Ok"; o "Recusar" corta o pixel. Sem o aviso, soft seria off na prática.
+      if (linha.consentimento === 'soft') plano.aviso = 'soft';
     }
     plano.scripts.push({ src: METRICAAS, attrs });
   }
 
   if (rastro) {
-    plano.scripts.push({ src: `${RASTRO}?product=${encodeURIComponent(rastro)}`, attrs: {} });
+    plano.scripts.push({ src: `${RASTRO}?product=${encodeURIComponent(rastro)}`, attrs: {}, ...(perfil === 'venda' ? { aposPintura: true } : {}) });
   }
 
   if (linha.umami_website_id) {
@@ -180,11 +186,14 @@ export function scriptDoPorFunil(fonte, funis) {
 }
 
 // Texto do <script> inline do banner de cookies (packages/kit/src/banner-cookies.js, lido como texto): a expressão de
-// função chamada com window, document e { privacidade, mjs }. Comentário de linha inteira não vai para o HTML; `<`
-// nos dados vira \u003c para não fechar o <script>. O aceite espera o <script> do m.js (src METRICAAS), sem prazo (WEB-80).
-export function scriptDoBanner(fonte, privacidade) {
+// função chamada com window, document e { privacidade, mjs, modo }. Comentário de linha inteira não vai para o HTML;
+// `<` nos dados vira \u003c para não fechar o <script>. O aceite espera o <script> do m.js (src METRICAAS), sem prazo
+// (WEB-80). `modo` é o `aviso` do plano: "banner" ou "soft" (WEB-84).
+export const MODOS_DO_AVISO = ['banner', 'soft'];
+export function scriptDoBanner(fonte, privacidade, modo = 'banner') {
+  if (!MODOS_DO_AVISO.includes(modo)) throw new Error(`[kit] banner de cookies: modo "${modo}" não existe. Use ${MODOS_DO_AVISO.join(' ou ')}`);
   // \r?\n: no Windows (core.autocrlf) o arquivo chega com CRLF, e o . não casa com \r.
   const codigo = fonte.replace(/^[ \t]*\/\/.*\r?\n/gm, '').trim();
-  const opcoes = JSON.stringify({ privacidade, mjs: METRICAAS }).replace(/</g, '\\u003c');
+  const opcoes = JSON.stringify({ privacidade, mjs: METRICAAS, modo }).replace(/</g, '\\u003c');
   return `${codigo}(window, document, ${opcoes});`;
 }

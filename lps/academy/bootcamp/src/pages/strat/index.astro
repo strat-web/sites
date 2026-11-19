@@ -1,0 +1,18 @@
+---
+// Migração do strat-lps (WEB-48), preservando caminho, conteúdo e funil. Tracking pelo kit.
+import Layout from '@strat/kit/Layout.astro';
+import head from "../../html/strat.head.html?raw";
+import corpo from "../../html/strat.corpo.html?raw";
+---
+<Layout
+  marca="academy"
+  perfil="venda"
+  titulo="Bootcamp Construtor de IA · 18/07 · 100% online · Strat AI"
+  descricao="Sábado, 18 de julho, 100% online e ao vivo. Um dia inteiro mão na massa: saia com site, app, CRM e agente de WhatsApp rodando de verdade — construídos por você, com o Claude Code. Sem escrever código."
+  indexar={false}
+  tituloSocial="Bootcamp Construtor de IA — 18/07, 100% online e ao vivo"
+  descricaoSocial="Um dia inteiro mão na massa: saia com site, app, CRM e agente de WhatsApp no ar, construídos por você com o Claude Code. Sem escrever código."
+>
+  <Fragment slot="head" set:html={head} />
+  <Fragment set:html={corpo} />
+</Layout>

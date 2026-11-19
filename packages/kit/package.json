@@ -6,7 +6,8 @@
   "main": "./src/index.js",
   "exports": {
     ".": "./src/index.js",
-    "./*.astro": "./src/*.astro"
+    "./*.astro": "./src/*.astro",
+    "./banner-cookies.js": "./src/banner-cookies.js"
   },
   "scripts": {
     "test": "node --test"
