@@ -409,9 +409,9 @@ test('peso: exceção do Lighthouse avisa acima do piso e barra abaixo dele (WEB
   assert.equal(julgarMedicao('https://x.com.br/', { performance: 60, lcpMs: 3900, cls: 0 }, exc), 'erro');
   assert.equal(julgarMedicao('https://x.com.br/', { performance: 80, lcpMs: 6000, cls: 0 }, exc), 'erro');
   assert.equal(julgarMedicao('https://y.com.br/', { performance: 80, lcpMs: 3900, cls: 0 }, exc), 'erro');
-  // exceções reais hoje: nenhuma; a home, o /raio-x/ e a política da StratAI saíram no WEB-87, e a home e a
-  // política do Metricaas no WEB-107
-  assert.deepEqual(Object.keys(EXCECOES_LIGHTHOUSE), []);
+  // exceções reais hoje: só a /v2/ da mentoria (WEB-48); a home, o /raio-x/ e a política da StratAI saíram no
+  // WEB-87, e a home e a política do Metricaas no WEB-107
+  assert.deepEqual(Object.keys(EXCECOES_LIGHTHOUSE), ['https://mentoria.stratacademy.com.br/v2/']);
 });
 
 // WEB-76: checagem de tracking sem falso verde.

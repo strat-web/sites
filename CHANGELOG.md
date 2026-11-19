@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- feat(academy): migra a LP da mentoria (principal e v2, o app React antigo, com termos e privacidade) para o projeto academy-mentoria do Pages (WEB-48)
 - feat(academy): migra a LP skills (principal e /b/) do strat-lps lp-500 para o projeto academy-skills do Pages (WEB-48)
 - feat(academy): migra a LP da comunidade (pós-cadastro de todos os funis, ?f=) do strat-lps para o projeto academy-comunidade do Pages; por-funil conserva o Umami do host e o Rastro segue pelo FUNIS da página (WEB-48)
 - feat(assets): buckets R2 assets-agenciastrat, assets-stratai e assets-metricaas nos domínios assets.<marca> (imagem de teste com Cache-Control immutable), scripts/subir-asset.mjs que grava o cache de 1 ano e recusa chave existente, e docs em dominios.md, padroes.md e infisical.md (WEB-44)
