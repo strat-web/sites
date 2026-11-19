@@ -231,3 +231,18 @@ A checagem `tracking` garante isso no código (`EVENTOS_DA_PAGINA` e `EVENTOS_DA
    `off` = `off`); `venda` com `banner` ainda não monta (WEB-85).
 
 Referência completa do Rastro: `strat-web/rastro` (hoje `Strat-Ai-Horus-OS/rastro-stratacademy`), `docs/TRACKING-ARCHITECTURE.md`.
+
+
+## Cobertura da checagem de tracking (WEB-92)
+
+A checagem ignora scripts dentro de comentários HTML, `noscript` e `template` (inclusive aninhado),
+preservando os índices para conferir a ordem no head. Esses scripts não satisfazem o catálogo; `nomodule`
+também barra nos scripts esperados. Um `</head>` em comentário não encerra o head para a checagem.
+
+Qualquer `m.js` de um host `*.metricaas.com.br`, inclusive em subpasta ou com query, conta como tracking:
+um segundo carregador barra. Pixels em `src` de `img` e `iframe` fora do `noscript`, `window['fbq'](...)`
+e `window.gtag?.(...)` também barram. A leitura dos arquivos `.js` do build mantém a abordagem existente.
+
+O filtro `--app` aceita `apps/stratai/`, `./apps/stratai` e separadores `\`; sem valor, sai com código 2 e orientação.
+Os testes de rede cobrem nova tentativa após 408, 429, timeout e resposta 200 sem `known`, com contagem das
+chamadas. Essas regras de tentativa já existiam; a WEB-92 acrescenta cobertura.
