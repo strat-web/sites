@@ -1,0 +1,20 @@
+---
+// Termos de uso do Metricaas, migrados do strat-lps (lps/metricaas/termos-de-uso.html) com o mesmo texto (WEB-36).
+// Agora com barra no fim; a forma sem barra (e .html) responde 301 pelo public/_redirects. Tracking como no ar:
+// Rastro metricaas e Umami (linha "metricaas-termos-de-uso" do catálogo).
+import Layout from '@strat/kit/Layout.astro';
+import head from '../../html/termos-de-uso.head.html?raw';
+import corpo from '../../html/termos-de-uso.corpo.html?raw';
+---
+<Layout
+  marca="metricaas"
+  perfil="conteudo"
+  tipo="article"
+  titulo="Termos de Uso — Metricaas"
+  descricao="Termos de Uso do Metricaas: condições de contratação, uso aceitável, obrigações do cliente, integrações com a Meta e WhatsApp, pagamento, responsabilidades e rescisão."
+  descricaoSocial="Condições de uso da plataforma Metricaas — atribuição de leads de WhatsApp + CRM."
+  imagem="/og.png"
+>
+  <Fragment slot="head" set:html={head} />
+  <Fragment set:html={corpo} />
+</Layout>

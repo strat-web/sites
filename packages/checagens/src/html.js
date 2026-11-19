@@ -63,9 +63,10 @@ export function noscripts(html) {
   return [...html.matchAll(/<noscript\b[^>]*>([\s\S]*?)<\/noscript>/gi)].map((m) => m[1]);
 }
 
-/** Texto de cada ocorrência de um elemento (sem as tags internas). */
+/** Texto de cada ocorrência de um elemento (sem as tags internas), fora de <script> e <style>: um '<h1>' montado
+ * numa string do JavaScript não é marcação da página (WEB-24). */
 export function textos(html, nome) {
-  return [...html.matchAll(new RegExp(`<${nome}\\b[^>]*>([\\s\\S]*?)<\\/${nome}>`, 'gi'))].map((m) => semTags(m[1]));
+  return [...marcacao(html).matchAll(new RegExp(`<${nome}\\b[^>]*>([\\s\\S]*?)<\\/${nome}>`, 'gi'))].map((m) => semTags(m[1]));
 }
 
 /** Posição do </head> no HTML (o mesmo índice de `scripts().inicio`), ignorando o que estiver dentro de <script>.
