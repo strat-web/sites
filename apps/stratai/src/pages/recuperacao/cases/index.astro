@@ -1,0 +1,27 @@
+---
+// Lista dos cases da StratAI (WEB-91). Conteúdo e cartões vêm de public/recuperacao/comum/cases.js (CASES.lista).
+import Layout from '@strat/kit/Layout.astro';
+---
+<Layout
+  marca="stratai"
+  perfil="lead"
+  indexar={false}
+  titulo="Cases da StratAI · agentes de IA e recuperação de vendas no ar"
+  descricao="Agentes de IA e recuperação de vendas da StratAI atendendo empresas de verdade, todos os dias."
+  imagem="/midia/og.png"
+>
+  <Fragment slot="head">
+    <link rel="icon" href="/midia/favicon/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="/midia/favicon/favicon-180.png" />
+    <meta name="theme-color" content="#191919" />
+    {/* Fontes pelo próprio site (public/fontes/, @font-face no base.css do funil), sem a folha do Google (revisão do PR #24). */}
+    <link rel="preload" href="/fontes/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" as="script" href="/recuperacao/comum/cases.js" />
+    <link rel="stylesheet" href="/recuperacao/comum/base.css" />
+    <link rel="stylesheet" href="/recuperacao/comum/laminas.css" />
+  </Fragment>
+  <h1 class="sr">Cases da StratAI</h1>
+  <div id="app"></div>
+  <script is:inline src="/recuperacao/comum/cases.js"></script>
+  <script is:inline>CASES.lista('../');</script>
+</Layout>
