@@ -67,8 +67,15 @@ async function main() {
   const tipo = TIPOS[extname(chave).toLowerCase()];
   const url = `https://${destino.dominio}/${chave}`;
   if (testar) return console.log(`subiria ${arquivo} (${tipo}) em ${destino.bucket}/${chave} → ${url}`);
-  execFileSync('npx', ['--yes', 'wrangler@4.160.0', 'r2', 'object', 'put', `${destino.bucket}/${chave}`, '--file', arquivo,
-    '--content-type', tipo, '--cache-control', CACHE, '--remote'], { stdio: 'inherit' });
+  const put = ['--yes', 'wrangler@4.160.0', 'r2', 'object', 'put', `${destino.bucket}/${chave}`, '--file', arquivo,
+    '--content-type', tipo, '--cache-control', CACHE, '--remote'];
+  // No Windows o npx é npx.cmd e só roda pelo shell: cada argumento vai entre aspas (caminho com espaço; o
+  // Cache-Control tem vírgula e espaço). Caminho do Windows não aceita aspas, então não há o que escapar.
+  if (process.platform === 'win32') {
+    execFileSync('npx.cmd', put.map((a) => `"${a}"`), { stdio: 'inherit', shell: true });
+  } else {
+    execFileSync('npx', put, { stdio: 'inherit' });
+  }
   console.log(url);
 }
 
