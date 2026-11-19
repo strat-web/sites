@@ -30,7 +30,7 @@ A regra mora em `packages/kit/src/tracking.js` e tem teste (`pnpm --filter @stra
 | A linha do catálogo tem | O `<head>` recebe |
 |---|---|
 | `metricaas_ws` | `m.js` com `data-ws`, `defer`, **antes** de tudo (regra dura do lead); a checagem `tracking` da CI barra o `m.js` sem `defer`, com `async`, com `type`, fora do `<head>` ou depois de outro script |
-| `metricaas_ws` + `meta_pixel`, sem `rastro_slug` | o `m.js` também liga o pixel (`data-pixel`); com `consentimento: banner`, `data-pixel-consent="aguardar"` e o banner de cookies do kit |
+| `metricaas_ws` + `meta_pixel`, sem `rastro_slug` | o `m.js` também liga o pixel (`data-pixel`); com `consentimento: banner`, `data-pixel-consent="aguardar"` e o banner de cookies do kit; com `soft`, o `m.js` sem `data-pixel-consent` e o banner do kit em modo soft (WEB-84) |
 | `rastro_slug` | `/sa?product=<slug>` com `defer`; pixel, GA4 e Google Ads vêm do produto no Rastro, então o `m.js` vai **sem** `data-pixel`. O produto tem de estar no `consentMode` do catálogo: `banner` = `strict`, `soft` = `soft`, `off` = `off` |
 | perfil `venda` | também o launcher da Hotmart com `hot('account', <hotmart_conta>)` escrito no HTML. Ele carrega na abertura, então `venda` com `consentimento: banner` quebra o build (até o WEB-85) |
 | `umami_website_id` | `/u/script.js` com `data-website-id`, pelo proxy `/u/` do próprio domínio (o proxy é do Strat Tracking) |
@@ -51,14 +51,39 @@ isso o `consentMode` do produto tem de ser o par do catálogo (`banner` = `stric
 compara os dois (o que ela já confere hoje está na seção "Consentimento", abaixo). Os valores aceitos são os de `packages/checagens/src/catalogo.js`; valor fora da lista barra a
 checagem `catalogo`. O texto é o mesmo da descrição do campo em `catalogo/sites.json`.
 
-**Banner do kit** (só sem Rastro e com `banner`): o texto e a chave `strat_cookies` são os da Agência (laudo de
-31/10/2026). "Aceitar" chama `mtc.consentir()` e o pixel liga; "Recusar" não manda nada à Meta. O cadastro do lead e a
+**Banner do kit** (só sem Rastro, com o pixel pelo `m.js`, em `banner` ou `soft`): o texto e a chave `strat_cookies`
+são os da Agência (laudo de 31/10/2026). Valores: `sim` (Aceitar do banner), `nao` (Recusar, nos dois modos) e `ok`
+(Ok do soft). O "Ok" do soft **não é aceite**: numa página em `banner` ele conta como sem escolha e o banner aparece de
+novo; a recusa vale nos dois modos, e o `sim` também tira o aviso do soft (revisão do Helbert no #37, 18/11/2026).
+Em `banner`, "Aceitar" chama `mtc.consentir()` e o pixel liga; "Recusar" não manda nada à Meta. O cadastro do lead e a
 CAPI do MetricaaS não dependem do banner. O link da política vem de `privacidade` em `packages/kit/src/marcas.js`.
 O aceite não tem prazo (WEB-80): o `m.js` não tem fila nem evento próprio e troca o `window.mtc` inteiro quando roda,
 então, se ele ainda não rodou (rede lenta, celular), o aceite (o clique ou o `sim` guardado) espera o `load` do próprio
 `<script>` do `m.js` e o `load` da página, sem timer, e chama o `consentir` uma vez só. Antes do aceite, nada chama o
 `consentir`. O script mora em `packages/kit/src/banner-cookies.js` (ES5, lido como texto pelo `<Tracking>`) e o
 teste roda o mesmo texto num DOM simulado com o `m.js` chegando depois de 8 s (`test/banner-cookies.test.js`).
+
+**Soft sem Rastro** (WEB-84): o `m.js` vai com `data-pixel` e sem `data-pixel-consent`, então o pixel mede desde a
+abertura, e o banner do kit mostra "Se preferir, recuse" com "Recusar" e "Ok". O MetricaaS não tem modo soft nem
+função de revogar (o `m.js` só tem o `consentir`; lido em 17/11/2026), então o kit corta o pixel pelo próprio fbq que o
+`mf.js` do MetricaaS cria, nas três fases do carregamento:
+
+| Quando a pessoa recusa | O que o banner faz | Efeito |
+|---|---|---|
+| antes de o `m.js` rodar (inclui a recusa guardada, na próxima visita) | põe `data-pixel-consent="aguardar"` no `<script>` do `m.js` (o banner roda inline logo depois dele) | o `mf.js` chama `fbq('consent', 'revoke')` antes do `init` e do `PageView` |
+| depois do `m.js` e antes do `mf.js` | `mtc._i.cons = "aguardar"` (o valor que o `mf.js` lê) | o mesmo |
+| com o pixel já ligado | `fbq('consent', 'revoke')` | nenhum evento novo do pixel no navegador |
+
+O próprio clique no "Recusar" também não vai: o pixel mede sozinho o clique em botão (evento automático
+`SubscribedButtonClick`, ouvido no `document`), então o banner revoga num ouvinte de clique na fase de captura do
+`window`, que roda antes dele. Na prévia do PR, antes disso, o clique no "Recusar" saía como `SubscribedButtonClick`; em
+`127.0.0.1` o pixel não manda eventos automáticos, por isso o teste local não pegou.
+
+"Ok" só guarda a escolha. O cadastro do lead e a CAPI do MetricaaS seguem como em `banner`. A checagem `tracking`
+aceita o `fbq` desse script porque compara o texto inteiro com o que o kit gera para a linha (`bannerDoKit`); qualquer
+outro `fbq` inline continua barrando como pixel colado à mão, e a página sem o banner que o catálogo pede também barra.
+Conferido em 17/11/2026 na `agenciastrat/kit/soft/` servida do `dist`: na abertura `fbevents.js` e o `PageView`
+(`/tr`); depois do "Recusar", um evento disparado à mão não sai; recarregando, sem aviso, com `aguardar` e nenhum `/tr`.
 
 **Rastro com `banner`** (WEB-81): o produto no Rastro tem de estar em `strict`, e o banner do kit **não** entra. O
 Rastro em `strict` (e em `soft`) já mostra o aviso dele no rodapé ("recusar" e "aceitar") e guarda a escolha no
@@ -88,7 +113,8 @@ com teste).
 **Conteúdo:** carrega o mesmo da marca e não tem formulário de lead (`data-strat-leadform`) na página.
 
 **Páginas de teste** (noindex, só no preview; saem antes de o domínio virar), cada uma com a lista do que deve
-disparar: `agenciastrat/kit/lead/` (lead sem Rastro, banner), `stratacademy/kit/venda/` (produto `mentoria`,
+disparar: `agenciastrat/kit/lead/` (lead sem Rastro, banner), `agenciastrat/kit/soft/` (lead sem Rastro, soft;
+WEB-84), `stratacademy/kit/venda/` (produto `mentoria`,
 launcher da Hotmart) e `stratacademy/kit/conteudo/` (Rastro com `banner`: produto `site` em `strict`, o aviso é o do
 Rastro; WEB-81). A página do portão F2, `agenciastrat/kit/portao/` (conteúdo sem Rastro, banner; WEB-22), junta o kit
 inteiro, e a linha dela no catálogo leva `"teste": true`, como toda página de teste nova. As da StratAI (`/kit/lead/`,
@@ -150,8 +176,9 @@ O kit garante que o catálogo bate com o Rastro.
   (`banner` = `strict`, `soft` = `soft`, `off` = `off`), e o `/sa` sem `consentMode` barra. O kit monta Rastro com
   `banner` sem o banner de cookies dele (o aviso é o do Rastro), menos no perfil `venda`, que quebra o build até o
   WEB-85 (o launcher da Hotmart carregaria antes do aceite).
-- **Sem Rastro** (hoje só a Agência), `banner` é o banner de cookies do kit, e o pixel vem pelo `m.js` do MetricaaS.
-  O clique no WhatsApp não vira `Contact` no navegador (o `Contact` no clique é do Rastro; ver "Antes de publicar").
+- **Sem Rastro** (hoje só a Agência), `banner` e `soft` são o banner de cookies do kit (modo `banner` ou `soft`,
+  WEB-84), e o pixel vem pelo `m.js` do MetricaaS. O clique no WhatsApp não vira `Contact` no navegador (o `Contact`
+  no clique é do Rastro; ver "Antes de publicar").
 - Outros valores do campo: `por-funil` (a página liga o Rastro do funil pelo `?f=`, hoje só a comunidade da Academy)
   e `sem-tracking`.
 
@@ -161,6 +188,7 @@ O que cada modo faz (conferido na auditoria de 2026-11, `docs/auditoria/2026-11/
 |---|---|---|---|
 | `off` | StratAI, MetricaaS, LPs de venda da Academy | sem aviso: pixel, GA4, Google Ads e o Rastro (`/tracker`) disparam na abertura | igual (não há escolha) |
 | `soft` | vibecode | pixel, GA4, Google Ads e Rastro disparam na abertura, com o aviso "recusar / ok" | quem recusa deixa de ser medido pelas tags do produto; quem aceita segue medido |
+| `soft` sem Rastro | `agenciastrat/kit/soft/` (teste) | o pixel dispara na abertura (`m.js` sem `data-pixel-consent`), com o aviso do kit "Recusar / Ok" | "Recusar" corta o pixel do navegador na hora e nas próximas visitas (`strat_cookies=nao`); "Ok" segue medido e grava `strat_cookies=ok`, que não vale como "Aceitar" nas páginas em `banner` (WEB-84) |
 | `banner` com Rastro (`strict` no produto) | home da Academy (produto `site`) | o pixel não dispara | o pixel liga; o aceite fica no `localStorage`, chave `strat_consent` (a mesma do horus, conferido no WEB-46), então quem já aceitou lá continua aceito. GA4 e Google Ads seguem o produto no Rastro: conferir no teste com e sem aceite |
 | `banner` sem Rastro | home e bio da Agência | o pixel não dispara (`data-pixel-consent="aguardar"`) | "Aceitar" chama `mtc.consentir()` e o pixel do navegador liga; "Recusar" deixa o pixel desligado. GA4: a Agência não usa (WEB-73) |
 

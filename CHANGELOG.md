@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- feat(kit): modo soft no banner de cookies para página sem Rastro: o pixel do m.js mede na abertura, o aviso mostra Recusar e Ok, e o Recusar corta o pixel; o Ok grava strat_cookies=ok, que não vale como Aceitar nas páginas em banner (data-pixel-consent="aguardar" antes do m.js, mtc._i.cons antes do mf.js, fbq consent revoke depois); checagem tracking aceita só o texto exato do banner do kit e barra o banner faltando; página de teste agenciastrat.com.br/kit/soft/ (noindex) com linha no catálogo (WEB-84)
 - fix(stratai): o nome acessível do logo do topo da home passa a conter o texto visível ("Strat.ai, início"), e o Lighthouse label-content-name-mismatch deixa de reprovar (WEB-99)
 - fix(stratai): títulos das colunas do rodapé da home passam de <h4> para <h2>, com o mesmo visual, e a ordem dos títulos deixa de pular nível (Lighthouse heading-order, WEB-98)
 - fix(stratai): contraste AA na home: o cinza `--mute` sobe de #85857d para #929289 (passa de 4,5:1 em todos os fundos), os degraus da escada não esmaecem o texto antes de acender (o efeito fica nas bordas, ícones e barras), o número do degrau roxo e o rótulo "Você sai com" ganham um tom mais claro; Lighthouse color-contrast sem reprovação em 390 e 1440 px (WEB-97)

@@ -81,8 +81,8 @@ const perguntas = [
 - Rota dinâmica com ponto no slug e `atualizado`: `apps/agenciastrat/src/pages/kit/[slug].astro` (`/kit/gpt-4.1/`,
   noindex, sai com a `/kit/lead/` antes da virada, WEB-77).
 - Página com tracking: `perfil` no `Layout` e a linha da URL no catálogo com o mesmo perfil, senão o build quebra.
-  Páginas de teste de cada perfil: `agenciastrat/kit/lead/`, `stratacademy/kit/venda/` e `stratacademy/kit/conteudo/`
-  (WEB-17); as da StratAI saíram antes de o domínio virar (WEB-32).
+  Páginas de teste de cada perfil: `agenciastrat/kit/lead/`, `agenciastrat/kit/soft/` (WEB-84), `stratacademy/kit/venda/`
+  e `stratacademy/kit/conteudo/` (WEB-17); as da StratAI saíram antes de o domínio virar (WEB-32).
 
 ## Página 404 (WEB-75)
 Todo app tem `src/pages/404.astro`, e o build gera o `dist/404.html`. O Cloudflare Pages serve esse arquivo, com
