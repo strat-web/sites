@@ -151,8 +151,11 @@ export function scriptDoBanner(fonte, privacidade, modo = 'banner') {
 // - aceite guardado (granted): carrega na hora, no parse do <head>, antes do Rastro (que então não duplica: ele pula o
 //   launcher dele quando já existe window.hot);
 // - sem aceite: embrulha o window.stratConsent.grant do Rastro (o "aceitar" do aviso chama window.stratConsent.grant()
-//   no clique) para carregar o launcher antes de o Rastro rodar o loadMarketing. O Rastro é defer: o
-//   window.stratConsent já existe no DOMContentLoaded; o load do <script> do Rastro é a garantia.
+//   no clique) para carregar o launcher antes de o Rastro rodar o loadMarketing. Em venda o Rastro entra depois do
+//   primeiro quadro, pelo carregador do WEB-104 (rastro-apos-pintura.js), então o window.stratConsent pode não existir
+//   no DOMContentLoaded: o embrulho também é tentado no load de cada <script> da página (ouvinte de captura no
+//   document, que pega o <script> que o carregador insere depois). O texto não escreve o endereço do Rastro: a
+//   checagem tracking barra inline com o /sa fora do kit (WEB-106).
 // Sem aceite, nada da Hotmart carrega. O teste (test/launcher-hotmart.test.js) roda este texto num DOM simulado.
 //
 // CONTRATO COM O RASTRO (revisão do Helbert no #38, 18/11/2026). O window.stratConsent é interno do Rastro
@@ -184,7 +187,7 @@ if(aceito)return carregar();
 function ligar(){var c=w.stratConsent;if(!c||c.__hotmart||typeof c.grant!=='function')return;var g=c.grant;
 c.grant=function(){carregar();return g.apply(this,arguments)};c.__hotmart=true}
 d.addEventListener('DOMContentLoaded',ligar);
-var s=d.querySelector('script[src^="${RASTRO}"]');if(s)s.addEventListener('load',ligar);
+d.addEventListener('load',function(e){if(e.target&&e.target.tagName==='SCRIPT')ligar()},true);
 })(window,document);
 `;
 }

@@ -100,7 +100,7 @@ Hotmart lê o HTML estático), mas dentro de uma função que só roda com o ace
 | Situação | O launcher |
 |---|---|
 | `strat_consent = granted` já guardado | carrega no parse do `<head>`, antes do Rastro, que pula o launcher dele porque `window.hot` já existe |
-| sem escolha | não carrega. O kit embrulha o `window.stratConsent.grant` do Rastro (no `DOMContentLoaded` e no `load` do `<script>` do Rastro); o "aceitar" do aviso chama esse `grant`, e o launcher do kit carrega antes do `loadMarketing` do Rastro, que então não duplica |
+| sem escolha | não carrega. O kit embrulha o `window.stratConsent.grant` do Rastro (no `DOMContentLoaded` e no `load` de cada `<script>` da página, ouvido no `document` na fase de captura: pega o `<script>` que o carregador do WEB-104 insere depois do primeiro quadro, sem escrever o endereço do Rastro no inline, que a checagem do WEB-106 barra); o "aceitar" do aviso chama esse `grant`, e o launcher do kit carrega antes do `loadMarketing` do Rastro, que então não duplica |
 | "recusar" ou `denied` guardado | nunca carrega |
 | Rastro bloqueado | sem aviso, sem aceite e sem Hotmart |
 

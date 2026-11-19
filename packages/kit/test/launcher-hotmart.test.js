@@ -1,5 +1,5 @@
 // Launcher da Hotmart do <Tracking> (scriptDoLauncher) num DOM simulado: o mesmo texto que vai no <script> inline roda
-// aqui, e o Rastro (defer) chega quando o teste manda. Regra do WEB-85: em venda + banner (Rastro em strict), nada da
+// aqui, e o Rastro chega quando o teste manda (em venda, depois do primeiro quadro, pelo carregador do WEB-104). Regra do WEB-85: em venda + banner (Rastro em strict), nada da
 // Hotmart carrega antes do "aceitar"; em soft e off, carrega na abertura.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -12,21 +12,19 @@ const LAUNCHER = '//launcher.hotmart.com/launcher.js';
 function alvo(obj = {}) {
   const ouvintes = {};
   obj.addEventListener = (tipo, fn) => (ouvintes[tipo] ||= []).push(fn);
-  obj.disparar = (tipo) => (ouvintes[tipo] || []).slice().forEach((fn) => fn({}));
+  obj.disparar = (tipo, ev = {}) => (ouvintes[tipo] || []).slice().forEach((fn) => fn(ev));
   return obj;
 }
 
-// Página no meio do parse do <head>: o <script defer> do Rastro já está no DOM e ainda não rodou. `escolha` é o que
-// está guardado em strat_consent (granted, denied ou nada).
+// Página no meio do parse do <head>: o Rastro ainda não rodou. `escolha` é o que está guardado em strat_consent
+// (granted, denied ou nada).
 function pagina({ escolha = null, semStorage = false } = {}) {
   const inseridos = [];
   const chamadasDoRastro = [];
-  const rastro = alvo({ src: `${RASTRO}?product=site` });
   const cabeca = { insertBefore: (el) => inseridos.push(el.src) };
   const document = alvo({
     createElement: () => ({}),
     getElementsByTagName: () => [{ parentNode: cabeca }],
-    querySelector: (sel) => (sel === `script[src^="${RASTRO}"]` ? rastro : null),
   });
   const window = alvo({
     localStorage: {
@@ -42,15 +40,19 @@ function pagina({ escolha = null, semStorage = false } = {}) {
   return {
     window, inseridos, chamadasDoRastro,
     rodar(aposAceite) { vm.runInContext(scriptDoLauncher(CONTA, { aposAceite }), ctx); },
-    // O Rastro roda (defer, antes do DOMContentLoaded): cria o window.stratConsent como o de verdade (o grant guarda
-    // granted e chama o loadMarketing, que pula o launcher quando já existe window.hot), e o <script> dispara "load".
-    chegaRastro() {
+    // Um <script> qualquer da página termina de carregar: o "load" chega ao document na fase de captura.
+    carregaScript() { document.disparar('load', { target: { tagName: 'SCRIPT' } }); },
+    // O Rastro roda: cria o window.stratConsent como o de verdade (o grant guarda granted e chama o loadMarketing, que
+    // pula o launcher quando já existe window.hot), e o <script> dele dispara "load". Com `aposPintura` (venda, WEB-104)
+    // o DOMContentLoaded já passou quando ele chega; sem, ele roda antes do DOMContentLoaded (defer).
+    chegaRastro({ aposPintura = false } = {}) {
+      if (aposPintura) document.disparar('DOMContentLoaded');
       window.stratConsent = {
         grant() { chamadasDoRastro.push(window.hot ? 'grant (hot já existe: não duplica)' : 'grant (carregaria a Hotmart do Rastro)'); },
         deny() { chamadasDoRastro.push('deny'); },
       };
-      document.disparar('DOMContentLoaded');
-      rastro.disparar('load');
+      if (!aposPintura) document.disparar('DOMContentLoaded');
+      this.carregaScript();
     },
     // O "aceitar" do aviso do Rastro: no.onclick = function(){ window.stratConsent.grant() }.
     aceitar() { window.stratConsent.grant(); },
@@ -88,6 +90,20 @@ test('banner: o DOMContentLoaded e o load do Rastro embrulham o grant uma vez s�
   p.aceitar();
   assert.deepEqual(p.inseridos, [LAUNCHER]);
   assert.equal(p.chamadasDoRastro.length, 2, 'o grant original roda a cada chamada');
+});
+
+test('venda + banner (carregador do WEB-104): o Rastro entra depois do DOMContentLoaded e o "aceitar" carrega o launcher do kit', () => {
+  const p = pagina();
+  p.rodar(true);
+  p.window.document.disparar('DOMContentLoaded');
+  p.carregaScript();
+  assert.equal(p.window.stratConsent, undefined, 'o DOMContentLoaded e outro <script> passaram sem o Rastro');
+  p.chegaRastro({ aposPintura: true });
+  assert.deepEqual(p.inseridos, [], 'nada antes do aceite');
+  p.aceitar();
+  assert.deepEqual(p.inseridos, [LAUNCHER], 'o grant foi embrulhado no load do <script> inserido pelo carregador');
+  assert.deepEqual(p.contaDaHotmart(), [['account', CONTA]], 'a conta do catálogo, não a do produto no Rastro');
+  assert.deepEqual(p.chamadasDoRastro, ['grant (hot já existe: não duplica)']);
 });
 
 test('banner com aceite guardado: o launcher carrega no parse, antes do Rastro', () => {
@@ -131,5 +147,7 @@ test('o texto do launcher: a URL e a conta escritas no HTML (verificação da Ho
     assert.ok(s.includes(`hot('account','${CONTA}')`), String(aposAceite));
   }
   assert.match(scriptDoLauncher(CONTA, { aposAceite: true }), /strat_consent/);
+  // A checagem tracking barra inline com o endereço do Rastro fora do kit (WEB-106): o launcher não o escreve.
+  assert.ok(!scriptDoLauncher(CONTA, { aposAceite: true }).includes(new URL(RASTRO).host));
   assert.doesNotMatch(scriptDoLauncher(CONTA), /strat_consent/);
 });
