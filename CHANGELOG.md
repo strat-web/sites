@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- fix(stratai): o nome acessível do logo do topo da home passa a conter o texto visível ("Strat.ai, início"), e o Lighthouse label-content-name-mismatch deixa de reprovar (WEB-99)
 - fix(stratai): títulos das colunas do rodapé da home passam de <h4> para <h2>, com o mesmo visual, e a ordem dos títulos deixa de pular nível (Lighthouse heading-order, WEB-98)
 - fix(stratai): contraste AA na home: o cinza `--mute` sobe de #85857d para #929289 (passa de 4,5:1 em todos os fundos), os degraus da escada não esmaecem o texto antes de acender (o efeito fica nas bordas, ícones e barras), o número do degrau roxo e o rótulo "Você sai com" ganham um tom mais claro; Lighthouse color-contrast sem reprovação em 390 e 1440 px (WEB-97)
 - docs(tracking): `Contact` no clique do WhatsApp só em página com Rastro; sem Rastro (Agência, pixel pelo m.js) o clique é `wa_click` no MetricaaS e não dispara `Contact` no navegador (docs/tracking.md e C4 do checklist; WEB-86)
