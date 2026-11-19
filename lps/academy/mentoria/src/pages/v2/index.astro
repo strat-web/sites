@@ -1,0 +1,20 @@
+---
+// V2 da Mentoria (a página antiga, React/Vite compilado de helbertparanhos/lp-mentoria-v2 com base '/v2/'), migrada do
+// strat-lps (lps/mentoria/v2) sem mudar texto, layout nem tracking (WEB-48). O build do Vite mora em public/v2/assets/;
+// aqui só o <head> (fontes, JS e CSS do app) e o <div id="root">. As classes do <html> (dark) e do <body> do original
+// entram por script antes do 1º desenho, porque o Layout do kit não as recebe. Variante de teste: noindex.
+import Layout from '@strat/kit/Layout.astro';
+import head from '../../html/v2.head.html?raw';
+import corpo from '../../html/v2.corpo.html?raw';
+---
+<Layout
+  marca="academy"
+  perfil="venda"
+  indexar={false}
+  titulo="Strat Academy | Domine a Era da IA"
+  descricao="Mentoria individual pra construir Agentes de IA e SaaS que geram receita. Claude Code, Cursor, Supabase e n8n — do protótipo ao produto no ar, com quem faz isso na operação real."
+  viewport="width=device-width, initial-scale=1.0"
+>
+  <Fragment slot="head" set:html={head} />
+  <Fragment set:html={corpo} />
+</Layout>

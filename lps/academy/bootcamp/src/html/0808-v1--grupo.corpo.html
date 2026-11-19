@@ -1,0 +1,52 @@
+<main>
+  <img class="logo" src="/images/strat-white.png" alt="Strat" width="295" height="91">
+  <div class="check">🎉</div>
+  <h1>Sua vaga na pré-venda está <span class="grad">garantida!</span></h1>
+  <p class="sub">Falta <b>um passo</b>: entre agora no <b>grupo VIP do WhatsApp</b> — é lá que sai a condição do lote promocional, em primeira mão.</p>
+
+  <div class="card">
+    <span class="step">passo final · grupo vip da pré-venda</span>
+    <a class="btn-wa" id="btn-grupo" href="https://chat.whatsapp.com/Kgu89I0OEHDCfvLwMU7KfC" data-strat-cta="grupo-whatsapp">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.019-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.172-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+      Entrar no grupo agora
+    </a>
+    <p class="autonote" id="autonote">vamos tentar abrir o WhatsApp <b>automaticamente</b> em instantes… se não abrir, toque no botão acima.</p>
+  </div>
+
+  <div class="card qr-card">
+    <div class="divider">ou escaneie no celular</div>
+    <div class="qr"><img src="/images/qr-grupo-0808.png" alt="QR code do grupo VIP no WhatsApp" width="460" height="460"></div>
+    <p>Aponte a câmera do celular pro QR code e entre direto no grupo.</p>
+  </div>
+
+  <div class="next">
+    <h2>o que acontece agora</h2>
+    <ul>
+      <li>No grupo, você recebe a <b style="color:var(--text-main)">condição do lote promocional</b> antes de todo mundo</li>
+      <li>Conteúdo de aquecimento pra chegar no dia 08/08 pronto pra construir</li>
+      <li>Sábado, 08/08, das 13h às 18h — 100% online e ao vivo</li>
+    </ul>
+  </div>
+  <p class="hint">salva na agenda: sábado, 08 de agosto · 13h às 18h 😉</p>
+</main>
+<footer>Bootcamp Construtor de IA · uma iniciativa Strat AI · © 2026
+  <div style="text-align:center;padding:12px"><a href="https://stratacademy.com.br/politica-de-privacidade/" style="text-decoration:underline;font-size:14px">Política de Privacidade</a></div>
+</footer>
+
+<script>
+(function(){
+  var GRUPO='https://chat.whatsapp.com/Kgu89I0OEHDCfvLwMU7KfC';
+  /* funil: chegada aqui = cadastro concluído */
+  var tries=0, t=setInterval(function(){
+    tries++;
+    if(window.stratTrack){ clearInterval(t); try{window.stratTrack('CompleteRegistration',{product:'bootcamp-0808'})}catch(e){} }
+    else if(tries>40){ clearInterval(t); }
+  },150);
+  /* tentativa automática de abrir o WhatsApp (uma vez, com aviso visível) */
+  setTimeout(function(){
+    try{ window.location.href=GRUPO; }catch(e){}
+    var n=document.getElementById('autonote');
+    if(n) n.innerHTML='se o WhatsApp não abriu, <b>toque no botão acima</b> ou escaneie o QR code.';
+  },1800);
+})();
+</script>

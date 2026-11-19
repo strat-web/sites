@@ -3,6 +3,7 @@
 // pede. Ninguém cola pixel, gtag ou GTM à mão. Entra pelo Layout (`perfil="..."`); use direto só fora dele.
 // A regra mora em tracking.js; aqui só se desenha o resultado.
 import catalogo from '../../../catalogo/sites.json';
+import { scriptDoRastroAposPintura } from './rastro-apos-pintura.js';
 import { planoDeTracking, scriptDoBanner, scriptDoLauncher } from './tracking.js';
 // Banner de cookies do kit: o script mora em banner-cookies.js (texto puro, testado em test/banner-cookies.test.js).
 import bannerCookies from './banner-cookies.js?raw';
@@ -25,18 +26,21 @@ for (const aviso of plano.avisos) console.warn(`[kit] Tracking em ${url}: ${avis
 const launcher = plano.hotmart && scriptDoLauncher(plano.hotmart, { aposAceite: plano.hotmartAposAceite });
 
 let banner = null;
-if (plano.banner) {
+if (plano.aviso) {
   const privacidade = dadosMarca(plano.linha.marca).privacidade;
   if (!privacidade) throw new Error(`[kit] Tracking em ${url}: o banner de cookies precisa de \`privacidade\` da marca em marcas.js`);
-  // O pixel só liga depois do "Aceitar"; o aceite espera o m.js carregar, sem prazo (WEB-80).
-  banner = scriptDoBanner(bannerCookies, privacidade);
+  // banner: o pixel só liga depois do "Aceitar"; o aceite espera o m.js carregar, sem prazo (WEB-80).
+  // soft: o pixel mede na abertura e o "Recusar" corta (WEB-84).
+  banner = scriptDoBanner(bannerCookies, privacidade, plano.aviso);
 }
 ---
-{plano.scripts.map((s) => <script is:inline defer src={s.src} {...s.attrs}></script>)}
+{plano.scripts.map((s) => s.aposPintura
+  ? <script is:inline data-strat-rastro-apos-pintura={s.src} set:html={scriptDoRastroAposPintura()}></script>
+  : <script is:inline defer src={s.src} {...s.attrs}></script>)}
 {plano.hotmart && (
   <script is:inline id="hotmart_launcher_script" set:html={launcher}></script>
 )}
-{plano.banner && (
+{banner && (
   <script is:inline set:html={banner}></script>
   <style is:global>
     .strat-cookies { position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 50; max-width: 560px; margin: 0 auto;

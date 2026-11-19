@@ -1,0 +1,173 @@
+<main>
+  <img class="logo" src="/images/strat-white.png" alt="Strat" width="295" height="91">
+  <div class="check">🎉</div>
+  <h1 id="t-titulo">Cadastro <span class="grad">confirmado!</span></h1>
+  <p class="sub" id="t-sub">Falta <b>um passo</b>: entre agora no <b>grupo do WhatsApp</b> — é lá que o acesso é liberado.</p>
+
+  <div class="card">
+    <span class="step" id="t-badge">passo final · grupo no whatsapp</span>
+    <a class="btn-wa" id="btn-grupo" href="https://chat.whatsapp.com/Kgu89I0OEHDCfvLwMU7KfC" data-strat-cta="grupo-whatsapp" rel="noopener">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.019-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.172-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+      Entrar no grupo agora
+    </a>
+    <p class="autonote" id="autonote">vamos tentar abrir o WhatsApp <b>automaticamente</b> em instantes… se não abrir, toque no botão acima.</p>
+  </div>
+
+  <div class="card qr-card" id="qr-card">
+    <div class="divider">ou escaneie no celular</div>
+    <div class="qr"><img id="t-qr" src="/images/qr-grupo.png" alt="QR code do grupo no WhatsApp" width="460" height="460"></div>
+    <p>Aponte a câmera do celular pro QR code e entre direto no grupo.</p>
+  </div>
+
+  <div class="next" id="next-card">
+    <h2>o que acontece agora</h2>
+    <ul id="t-passos"></ul>
+  </div>
+  <p class="hint" id="t-hint"></p>
+</main>
+<footer id="t-rodape">uma iniciativa Strat AI · © 2026
+  <div style="text-align:center;padding:12px"><a href="https://stratacademy.com.br/politica-de-privacidade/" style="text-decoration:underline;font-size:14px">Política de Privacidade</a></div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ═══════════════════ REGISTRO DE FUNIS ═══════════════════
+     Página de "entrou no grupo" COMPARTILHADA por todos os funis.
+     Cada funil é uma entrada aqui e chega pela URL: /?f=<chave>.
+
+     Por que registro e não parâmetro solto (ex.: ?grupo=<link>): um parâmetro
+     aberto deixaria qualquer pessoa montar um link no NOSSO domínio jogando gente
+     pra qualquer grupo de WhatsApp. O registro fecha isso — só entra grupo que
+     está aqui no código.
+
+     Campos:
+       produto  → slug no Rastro. É o que decide DE QUEM é a conversão.
+                  Vazio ou ausente = página não carrega tracking nenhum.
+       grupo    → link do convite do WhatsApp
+       qr       → imagem do QR (opcional; sem ela o cartão de QR some)
+       titulo / sub / badge / passos / hint / rodape → a copy da página
+     ─────────────────────────────────────────────────────────
+     PRA ADICIONAR UM FUNIL: copie um bloco, troque a chave e mande o pós-cadastro
+     pra https://comunidade.stratacademy.com.br/?f=<chave> (repassando as UTMs). */
+  var FUNIS = {
+    // fallback: link sem ?f= ou com funil desconhecido. SEM produto = sem tracking.
+    'default': {
+      produto: '',
+      grupo: 'https://chat.whatsapp.com/Kgu89I0OEHDCfvLwMU7KfC',
+      qr: '/images/qr-grupo.png',
+      titulo: 'Cadastro <span class="grad">confirmado!</span>',
+      sub: 'Falta <b>um passo</b>: entre agora no <b>grupo do WhatsApp</b> — é lá que o acesso é liberado.',
+      badge: 'passo final · grupo no whatsapp',
+      passos: [
+        'No grupo você recebe o <b>acesso</b> e os avisos em primeira mão',
+        'Conteúdo novo toda semana, direto por lá',
+        'Pode sair quando quiser — sem burocracia'
+      ],
+      hint: '',
+      rodape: 'uma iniciativa Strat AI · © 2026'
+    },
+
+    // LP da aula gratuita de Claude Code (vibecode.stratacademy.com.br)
+    // produto = aula-claude-code (NÃO é imersao-claude-code, que é a Imersão paga do Gabriel)
+    'vibecode': {
+      produto: 'aula-claude-code',
+      grupo: 'https://chat.whatsapp.com/Kgu89I0OEHDCfvLwMU7KfC',
+      qr: '/images/qr-grupo.png',
+      titulo: 'Acesso <span class="grad">liberado!</span>',
+      sub: 'A aula e as <b>15 skills</b> já estão indo pro seu WhatsApp. Falta <b>um passo</b>: entre no grupo pra receber a live semanal.',
+      badge: 'passo final · grupo da aula',
+      passos: [
+        'A <b>aula completa</b> e as <b>15 skills</b> chegam no seu WhatsApp',
+        'O link da <b>live semanal</b> é avisado no grupo',
+        'Dúvida na hora de rodar uma skill? Pergunta lá que a gente responde'
+      ],
+      hint: 'se a mensagem demorar, confere se o número que você digitou é o certo 😉',
+      rodape: 'Aula gratuita de Claude Code · uma iniciativa Strat AI · © 2026'
+    },
+
+    // Bootcamp Construtor de IA 08/08 — pronto pra quando a LP do bootcamp migrar
+    // pra cá (hoje ela ainda usa a página própria em /0808-v1/grupo).
+    'bootcamp-0808': {
+      produto: 'bootcamp-0808',
+      grupo: 'https://chat.whatsapp.com/Kgu89I0OEHDCfvLwMU7KfC',
+      qr: '/images/qr-grupo.png',
+      titulo: 'Sua vaga na pré-venda está <span class="grad">garantida!</span>',
+      sub: 'Falta <b>um passo</b>: entre agora no <b>grupo VIP do WhatsApp</b> — é lá que sai a condição do lote promocional, em primeira mão.',
+      badge: 'passo final · grupo vip da pré-venda',
+      passos: [
+        'No grupo você recebe a <b>condição do lote promocional</b> antes de todo mundo',
+        'Conteúdo de aquecimento pra chegar no dia 08/08 pronto pra construir',
+        'Sábado, 08/08, das 13h às 18h — 100% online e ao vivo'
+      ],
+      hint: 'salva na agenda: sábado, 08 de agosto · 13h às 18h 😉',
+      rodape: 'Bootcamp Construtor de IA · uma iniciativa Strat AI · © 2026'
+    }
+  };
+
+  function qp(n){try{return new URLSearchParams(location.search).get(n)||''}catch(e){return''}}
+  var chave = (qp('f')||'').toLowerCase().trim();
+  var cfg = FUNIS[chave] || FUNIS['default'];
+
+  /* ═══════════════════ MONTA A PÁGINA ═══════════════════ */
+  function set(id,html){var el=document.getElementById(id);if(el&&html!=null)el.innerHTML=html}
+  set('t-titulo',cfg.titulo); set('t-sub',cfg.sub); set('t-badge',cfg.badge);
+  set('t-rodape',cfg.rodape);
+  document.title = String(cfg.titulo).replace(/<[^>]*>/g,'') + ' · Strat';
+
+  var ul=document.getElementById('t-passos');
+  (cfg.passos||[]).forEach(function(p){var li=document.createElement('li');li.innerHTML=p;ul.appendChild(li)});
+  if(!(cfg.passos||[]).length)document.getElementById('next-card').style.display='none';
+
+  var hint=document.getElementById('t-hint');
+  if(cfg.hint)hint.innerHTML=cfg.hint; else hint.style.display='none';
+
+  if(cfg.qr)document.getElementById('t-qr').src=cfg.qr;
+  else document.getElementById('qr-card').style.display='none';
+
+  var btn=document.getElementById('btn-grupo');
+  btn.href=cfg.grupo;
+
+  /* ═══════════════════ TRACKING ═══════════════════
+     Snippet do Rastro injetado em runtime com o produto DO FUNIL — é isso que impede
+     esta página de carimbar conversão no produto errado quando outro funil usa ela.
+     Sem produto no funil, nada é carregado e nenhum evento sai.
+
+     O CompleteRegistration aqui é só o "chegou na confirmação". A conversão que conta
+     (Lead) é disparada na LP, no submit — lá o produto e a atribuição são certos.
+     Guarda de sessão: refresh/voltar não conta de novo. */
+  if(cfg.produto){
+    var s=document.createElement('script');
+    s.src='https://tracking.stratacademy.com.br/sa?product='+encodeURIComponent(cfg.produto);
+    s.defer=true;
+    document.head.appendChild(s);
+
+    var chaveSessao='strat_cr_'+cfg.produto;
+    var jaContou=false;
+    try{jaContou=sessionStorage.getItem(chaveSessao)==='1'}catch(e){}
+
+    if(!jaContou){
+      var tentativas=0, timer=setInterval(function(){
+        tentativas++;
+        if(window.stratTrack){
+          clearInterval(timer);
+          try{
+            window.stratTrack('CompleteRegistration',{product:cfg.produto,funil:chave||'default'});
+            sessionStorage.setItem(chaveSessao,'1');
+          }catch(e){}
+        }else if(tentativas>40){clearInterval(timer)}   // ~6s: snippet bloqueado, segue a vida
+      },150);
+    }
+  }
+
+  /* ═══════════════════ ABRE O WHATSAPP ═══════════════════
+     Tentativa automática uma única vez, com aviso visível. O botão e o QR continuam
+     valendo se o navegador bloquear a navegação automática. */
+  setTimeout(function(){
+    try{window.location.href=cfg.grupo}catch(e){}
+    var n=document.getElementById('autonote');
+    if(n)n.innerHTML='se o WhatsApp não abriu, <b>toque no botão acima</b> ou escaneie o QR code.';
+  },1800);
+})();
+</script>

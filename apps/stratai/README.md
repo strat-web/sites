@@ -60,8 +60,27 @@ antes de o domínio virar para cá (WEB-32). As de teste do `<Tracking>` que fic
 `/raio-x/v1/*` → `/raio-x/`. Todos 301, com a query junto.
 
 ## Desempenho
-A home mede abaixo do orçamento do Lighthouse (no ar em 12/11/2026: performance 68, LCP 5,4 s; no build: 80 e 3,9 s).
-Como a migração não muda a página, ela está em `packages/checagens/src/excecoes-peso.js`, com o número do ar como piso.
+A home passa no orçamento do Lighthouse sem exceção desde o WEB-87 (17/11/2026). Medição no build servido com gzip,
+Lighthouse em celular, 3 vezes cada, tracking bloqueado como na CI:
+
+| | Performance | FCP | LCP |
+|---|---|---|---|
+| Antes (fonte do Google, logo PNG de 70 KB) | 87 a 90 | 2,8 a 2,9 s | 3,0 s |
+| Depois | 99 | 1,2 s | 2,2 s |
+
+O que mudou, sem mudar texto, layout nem tracking:
+- **Fontes do próprio app.** A folha do Google Fonts saiu (bloqueava a renderização por ~0,9 s); a Space Grotesk e a
+  JetBrains Mono vêm de `public/fontes/` (os mesmos arquivos variáveis, subset latin, que o Google servia: um arquivo
+  cobre todos os pesos), com `font-display: swap` e preload só da Space Grotesk. O mesmo vale para o `/raio-x/` e a
+  política: nenhuma página do app chama mais o Google Fonts (no mesmo build, `/raio-x/` 100 e LCP 1,7 s; política 100
+  e LCP 1,5 s).
+- **Logo do Só Churrasco em WebP** (`so-churrasco-logo.webp`, 15 KB no lugar do PNG de 70 KB, mesma aparência): ele
+  está no topo da página e entrava na conta do LCP.
+- **Miniatura do botão "próximo caso" com `loading="lazy"`**: fica longe do topo e baixava junto com a página.
+
+O CSS da home (117 KB, ~20 KB com gzip) continua inteiro no `<head>`: em arquivo à parte, o LCP piorou de 2,2 s para
+2,4 s (mais uma ida e volta antes da primeira pintura). Separar CSS crítico do resto não foi preciso para caber no
+orçamento e arriscaria o visual das animações do topo.
 
 ## /parcerias/ (WEB-74)
 Programa de parceria e indicação, da prévia aprovada pelo Helbert em 12/11/2026 (texto, ordem e visual), só com a
