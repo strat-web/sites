@@ -48,9 +48,10 @@ export function semBlocosInertes(html) {
   return saida + (profundidade ? apagar(html.slice(fim)) : html.slice(fim));
 }
 
-/** <script>: atributos, conteúdo e posição no HTML (`inicio`, para a ordem e para saber se está no <head>). */
-export function scripts(html) {
-  return [...semBlocosInertes(html).matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)].map((m) => ({
+/** <script>: atributos, conteúdo e posição no HTML (`inicio`, para a ordem e para saber se está no <head>).
+ * Por padrão só o que o navegador executa; `inertes: true` inclui comentário, <template> e <noscript>. */
+export function scripts(html, { inertes = false } = {}) {
+  return [...(inertes ? html : semBlocosInertes(html)).matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)].map((m) => ({
     attrs: atributos(`<script${m[1]}>`),
     conteudo: m[2],
     inicio: m.index,

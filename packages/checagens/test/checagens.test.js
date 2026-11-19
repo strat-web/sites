@@ -488,6 +488,11 @@ for (const [nome, envolver] of [
   test(`tracking: script inerte em ${nome} antes do m.js não muda a ordem`, async () => {
     assert.equal(await erroDoMjs(envolver('<script>window.exemplo=1;</script>') + TRACKING_OK), '');
   });
+  test(`tracking: pixel colado à mão em ${nome} continua barrando`, async () => {
+    // Um JS da página pode clonar o <template>, e o script clonado roda (revisão do #36, 19/11).
+    const pixel = '<script src="https://connect.facebook.net/en_US/fbevents.js"></script>';
+    assert.match(await erroDoMjs(TRACKING_OK + envolver(pixel)), /colado à mão/);
+  });
 }
 
 test('tracking: nomodule no m.js ou Rastro barra', async () => {

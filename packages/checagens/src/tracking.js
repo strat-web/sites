@@ -4,7 +4,7 @@
 // linha do catálogo; a checagem compara com o HTML gerado.
 import { HOTMART_LAUNCHER, METRICAAS, RASTRO, UMAMI, consentModeEsperado, planoDeTracking } from '@strat/kit';
 import { ehPaginaDeErro } from './contexto.js';
-import { lerPagina, semBlocosInertes, tags } from './html.js';
+import { lerPagina, scripts as todosOsScripts, tags } from './html.js';
 import { ESQUELETOS } from './esqueletos.js';
 import { resultado } from './resultado.js';
 
@@ -77,7 +77,9 @@ export function checarPaginaTracking(pagina, catalogo, r) {
   const onde = pagina.url;
   const { scripts, noindex, noscripts, fimDoHead } = lerPagina(pagina.html);
 
-  for (const s of scripts) {
+  // Colado à mão procura no HTML bruto, inclusive em <template> e comentário: um JS da página pode clonar o
+  // <template> e o script dele roda (revisão do #36, 19/11). A ordem e o catálogo usam só o que executa.
+  for (const s of todosOsScripts(pagina.html, { inertes: true })) {
     for (const nome of coladoAMao(`${s.attrs.src || ''}\n${s.conteudo}`)) {
       r.erro(onde, `${nome} colado à mão em ${descrever(s)}: tracking só pelo <Tracking> do kit`);
     }
@@ -87,7 +89,7 @@ export function checarPaginaTracking(pagina, catalogo, r) {
   }
 
   for (const elemento of ['img', 'iframe']) {
-    for (const { attrs } of tags(semBlocosInertes(pagina.html), elemento)) {
+    for (const { attrs } of tags(pagina.html, elemento)) {
       for (const nome of coladoAMao(attrs.src || '')) {
         r.erro(onde, `${nome} colado à mão em <${elemento}>: tracking só pelo <Tracking> do kit`);
       }
