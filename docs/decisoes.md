@@ -2,6 +2,14 @@
 
 Uma entrada por decisão, com data e quem decidiu. A mais nova em cima.
 
+## 2026-11-18 · Lighthouse da CI mede a página, não o destino para onde ela sai (Jhonathan, WEB-48; espera o Helbert no PR)
+A confirmação da comunidade e o grupo do bootcamp (`/0808-v1/grupo/`) abrem o WhatsApp sozinhos depois de 1,8 s, como
+no `strat-lps`. O Lighthouse seguia a navegação e media o `chat.whatsapp.com`: 79 e LCP 4,3 s, com a página do
+WhatsApp como final. A checagem `peso` passa a responder 204 à navegação da aba principal para outra origem; o
+navegador fica na página, e o log diz para onde ela tentou sair. Medidas assim, as duas deram 100 e LCP de 1,4 a 1,7 s
+(18/11). Substitui as exceções com piso 65 / 7,0 s que o #47 propunha para essas páginas. Separada do PR das LPs, como
+a regra do `seo`, porque vale para todos os apps.
+
 ## 2026-11-18 · Título e H1 repetidos só barram entre páginas indexáveis (Jhonathan, WEB-48; espera o Helbert no PR)
 As variantes de teste A/B das LPs da Academy (claude /v1, /v3, /v4; skills /b; mentoria /v2; vibecode /v1; lotes do
 bootcamp) repetem a principal de propósito e saem com noindex, como já ficavam fora do sitemap no `strat-lps`. A

@@ -7,7 +7,7 @@ import { dirname, join } from 'node:path';
 import { checarCatalogo } from '../src/catalogo.js';
 import { RAIZ, checarApps, montarContexto } from '../src/contexto.js';
 import { checarLinks } from '../src/links.js';
-import { bytesDaPagina, julgarMedicao } from '../src/peso.js';
+import { bytesDaPagina, julgarMedicao, ehSaidaExterna } from '../src/peso.js';
 import { checarSeo } from '../src/seo.js';
 import { bannerDoKit, checarTracking, diferencasDoRastro, lerRastro, slugConhecido } from '../src/tracking.js';
 import { EXCECOES_LIGHTHOUSE } from '../src/excecoes-peso.js';
@@ -563,4 +563,14 @@ test('links: a 404 é conferida a partir da raiz; endereço relativo e link queb
 test('catalogo e tracking: a 404 fica fora do catálogo e do tracking', async () => {
   assert.deepEqual(checarCatalogo(ctx([pagina()])).erros, []);
   assert.deepEqual((await checarTracking(ctx([pagina()]), { semRede: true })).erros, []);
+});
+
+// WEB-48: a página que sai sozinha para outro domínio (confirmação que abre o WhatsApp) é medida sem o destino.
+test('peso: só a navegação principal para outra origem é saída externa', () => {
+  const pag = 'http://127.0.0.1:4321/';
+  assert.equal(ehSaidaExterna(pag, 'https://chat.whatsapp.com/abc', true), true);
+  assert.equal(ehSaidaExterna(pag, 'http://127.0.0.1:4321/obrigado/', true), false);
+  assert.equal(ehSaidaExterna(pag, 'https://chat.whatsapp.com/abc', false), false);
+  assert.equal(ehSaidaExterna(pag, 'https://fonts.example.com/x.woff2', false), false);
+  assert.equal(ehSaidaExterna(pag, 'nao é url', true), false);
 });

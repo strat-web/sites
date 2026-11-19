@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- ci(checagens): o Lighthouse do peso mede a página sem o destino quando ela sai sozinha para outro domínio (navegação respondida com 204 e registrada no log), em vez de medir o WhatsApp (WEB-48)
 - feat(checagens): título e H1 repetidos só barram entre páginas indexáveis; variante de teste com noindex pode repetir a principal, separado do #47 a pedido do Helbert (WEB-48)
 - feat(agenciastrat): /advogados (v1) e /advogados/v2/ migradas do strat-lps sem mudar texto, telas nem tracking (tag do MetricaaS com o pixel pelo <Tracking>, consentimento off como no ar; linha nova da v2 noindex no catálogo), com a capa desenhada no HTML (H1 para a busca) e as fontes servidas pelo app; a checagem seo deixa de contar <h1> dentro de <script> e a tracking aceita no pixel do m.js do kit só fbq('track'/'trackCustom') da lista fechada (ViewContent, FirstInteraction), barrando Lead e LeadQualificado, com teste (WEB-24)
 - perf(metricaas): home, política e termos no orçamento do Lighthouse sem exceção: Inter do próprio app no lugar do Google Fonts (home e legal.css), com preload; home 99 / LCP 2,0 s, política 100 / 1,7 s e CLS 0 (era 0,099); saem de excecoes-peso.js (WEB-107)
