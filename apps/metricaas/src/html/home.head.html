@@ -1,11 +1,11 @@
 <link rel="icon" type="image/png" href="/midia/logo/metricaas.png" />
 <meta name="theme-color" content="#0B0912" />
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="preload" href="/fontes/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 
 <style>
+/* Fonte do próprio app (public/fontes/, licença OFL ao lado), no lugar da folha do Google, que bloqueava a renderização (WEB-107, como o WEB-87). Mesmo arquivo variável, subset latin, que o Google servia: um arquivo cobre todos os pesos. */
+@font-face{font-family:"Inter";font-style:normal;font-weight:400 900;font-display:swap;src:url("/fontes/inter-latin.woff2") format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
 :root{
   --bg:#0B0912; --bg-1:#120F1C; --bg-2:#181322; --bg-3:#201A2E;
   --brand:#7200db; --brand-glow:#9d4dff; --brand-2:#b983ff; --brand-dark:#5a0fb0; --brand-deep:#460c8f;

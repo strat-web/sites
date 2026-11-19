@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- perf(metricaas): home, política e termos no orçamento do Lighthouse sem exceção: Inter do próprio app no lugar do Google Fonts (home e legal.css), com preload; home 99 / LCP 2,0 s, política 100 / 1,7 s e CLS 0 (era 0,099); saem de excecoes-peso.js (WEB-107)
 - feat(metricaas): home, /politica-de-privacidade/ e /termos-de-uso/ migradas do strat-lps sem mudar texto, layout nem tracking (Rastro metricaas e Umami pelo kit), 301 da casa antiga no _redirects (política e termos sem barra, /images/*, /legal.css), linhas da política e dos termos no catálogo, metricaas.com.br fora dos esqueletos e a home e a política na exceção do Lighthouse com o piso medido no ar, até o WEB-107 (desempenho do MetricaaS) (WEB-36)
 - WEB-91: itens "para depois" da revisão do #24: o navegador guarda só as respostas (nome, WhatsApp, e-mail e empresa ficam na memória da página), títulos montados por JS viram `<h2>`, o carrossel só anima na tela, testes de `classificar`, `estimar` e `validar`, e os arquivos de `public/recuperacao/comum/` saem do gerador com o cabeçalho "Gerado por" e sem comentários internos (o relógio da V2 não muda mais a cada geração).
 - WEB-91: fontes locais no funil e nos cases e remoção do motor de perguntas não utilizado nos cases para reduzir o LCP no celular.
