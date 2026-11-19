@@ -156,10 +156,11 @@ test('tracking: Umami com id no catálogo exige o script; sem id é só aviso', 
 });
 
 test('tracking: esqueleto passa sem tracking e barra quando ganha tracking', async () => {
-  // metricaas.com.br/ segue esqueleto até o WEB-36 (packages/checagens/src/esqueletos.js).
-  const MET = 'https://metricaas.com.br/';
+  // stratacademy.com.br/ segue esqueleto até o WEB-49 (packages/checagens/src/esqueletos.js); o metricaas.com.br/
+  // saiu da lista no WEB-36.
+  const MET = 'https://stratacademy.com.br/';
   const comUrl = (p) => ({ ...p, url: MET });
-  const linhas = [linha({ id: 'metricaas', url: MET })];
+  const linhas = [linha({ id: 'academy', url: MET })];
   const esqueleto = comUrl(pagina({ caminho: '/', head: '' }));
   assert.deepEqual((await checarTracking(ctx([esqueleto], { linhas }), { semRede: true })).erros, []);
   const migrada = comUrl(pagina({ caminho: '/' }));
@@ -358,7 +359,8 @@ test('peso: exceção do Lighthouse avisa acima do piso e barra abaixo dele (WEB
   assert.equal(julgarMedicao('https://x.com.br/', { performance: 60, lcpMs: 3900, cls: 0 }, exc), 'erro');
   assert.equal(julgarMedicao('https://x.com.br/', { performance: 80, lcpMs: 6000, cls: 0 }, exc), 'erro');
   assert.equal(julgarMedicao('https://y.com.br/', { performance: 80, lcpMs: 3900, cls: 0 }, exc), 'erro');
-  // exceções reais hoje: nenhuma; a home, o /raio-x/ e a política da StratAI saíram no WEB-87
+  // exceções reais hoje: nenhuma; a home, o /raio-x/ e a política da StratAI saíram no WEB-87, e a home e a
+  // política do Metricaas no WEB-107
   assert.deepEqual(Object.keys(EXCECOES_LIGHTHOUSE), []);
 });
 
