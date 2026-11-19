@@ -106,6 +106,10 @@ MetricaaS se confere na home e no `/raio-x/` da StratAI.
 
 No Rastro, pixel, GA4 e Google Ads vêm do produto (tabela `web_products`), não do HTML. Por isso o componente só
 precisa do slug.
+Como o `/sa` é um só por produto, toda linha do catálogo com o mesmo `rastro_slug` leva o mesmo pixel, GA4, tag do
+Google e consentimento; a checagem `catalogo` barra a diferença sem precisar de rede (WEB-83). O site da Academy
+(produto `site`, em `strict`) recebe GA4 G-R84BNVV2HX e Ads AW-17263684860 depois do aceite: a linha `academy` já
+pede os dois (WEB-46), e a checagem `tracking` passou com a home usando o `<Tracking>` contra o `/sa` de 17/11 (WEB-83).
 
 ## Umami (Strat Tracking, TRACK-8 e TRACK-9, 12/11/2026)
 
