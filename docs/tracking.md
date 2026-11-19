@@ -35,7 +35,7 @@ A regra mora em `packages/kit/src/tracking.js` e tem teste (`pnpm --filter @stra
 | perfil `venda` | também o launcher da Hotmart com `hot('account', <hotmart_conta>)` escrito no HTML. Ele carrega na abertura, então `venda` com `consentimento: banner` quebra o build (até o WEB-85) |
 | `umami_website_id` | `/u/script.js` com `data-website-id`, pelo proxy `/u/` do próprio domínio (o proxy é do Strat Tracking) |
 | `consentimento: sem-tracking` | nada |
-| `consentimento: por-funil` | nada pelo kit: a própria página liga o Rastro do funil pelo `?f=` (registro `FUNIS`, com o consentimento do produto); sem `?f=`, nada. Hoje só a comunidade da Academy (T5); entra no kit na migração (WEB-48) |
+| `consentimento: por-funil` | pelo kit, só o Umami do host, quando cadastrado (o servidor do strat-lps já injetava). O Rastro **não** passa pelo kit: o script da própria página lê o `?f=` no registro `FUNIS` e liga o produto do funil, com o consentimento dele; sem `?f=`, nenhum Rastro nem pixel. Hoje só a comunidade da Academy (T5), migrada assim no WEB-48, igual ao que está no ar. Levar o por-funil para o `<Tracking>` fica para o WEB-106 |
 
 **Consentimento:** o campo `consentimento` de cada URL é a regra da página, e o componente obedece (regra do
 WEB-72, decisão do Helbert de 11/11/2026). É o que a página deve fazer, não um retrato de como ela pede aceite hoje:
@@ -43,7 +43,7 @@ WEB-72, decisão do Helbert de 11/11/2026). É o que a página deve fazer, não 
 - `soft`: mede desde a abertura, com aviso, e para quando a pessoa recusa. Com Rastro, o produto em `soft`.
 - `off`: mede sem aviso. Só como exceção registrada em `docs/decisoes.md`. Com Rastro, o produto em `off`.
 - `sem-tracking`: a página não carrega tracking.
-- `por-funil`: a página escolhe o produto do Rastro pelo `?f=`, com o consentimento dele; sem `?f=`, nada.
+- `por-funil`: a página escolhe o produto do Rastro pelo `?f=`, com o consentimento dele, pelo próprio script (não pelo kit); sem `?f=`, nenhum Rastro nem pixel. O Umami do host é independente e vem do kit.
 
 Página nova nasce em `soft` no perfil `venda` ou `lead` e em `banner` no perfil `conteudo`. Mudar o padrão muda o
 valor no catálogo, não o componente. Com Rastro, quem segura o pixel é o produto no Rastro, e a página não troca: por
@@ -145,7 +145,7 @@ e antes do aceite. Não manda nada à Meta nem ao Google (isso segue no Rastro e
 | Peça | Onde |
 |---|---|
 | Website no Umami, um por host | `umami_website_id` de cada URL do catálogo (o mesmo id para todas as URLs do host) |
-| Tag | o `<Tracking>` põe `<script defer src="/u/script.js" data-website-id>` quando o id existe (nada com `sem-tracking` ou `por-funil`) |
+| Tag | o `<Tracking>` põe `<script defer src="/u/script.js" data-website-id>` quando o id existe (nada com `sem-tracking`; `por-funil` conserva o Umami do host) |
 | Proxy `/u/` | `functions/u/[[caminho]].js` na raiz do repositório (Pages Function dos quatro projetos): `/u/script.js` é o script do Umami com cache de 1 h + os eventos; `/u/api/send` repassa ao coletor `analytics.strat.tec.br` com o IP do visitante em `payload.ip` |
 | Eventos | `cta` (`data-strat-cta`, com o id), `whatsapp` (link `wa.me`), `checkout` (link `pay.hotmart.com`), `form_inicio` e `cadastro` (formulário com `data-strat-leadform`, e-mail ou telefone): a mesma regra do `umami-eventos.js` do `strat-lps` |
 
@@ -179,7 +179,7 @@ O kit garante que o catálogo bate com o Rastro.
 - **Sem Rastro** (hoje só a Agência), `banner` e `soft` são o banner de cookies do kit (modo `banner` ou `soft`,
   WEB-84), e o pixel vem pelo `m.js` do MetricaaS. O clique no WhatsApp não vira `Contact` no navegador (o `Contact`
   no clique é do Rastro; ver "Antes de publicar").
-- Outros valores do campo: `por-funil` (a página liga o Rastro do funil pelo `?f=`, hoje só a comunidade da Academy)
+- Outros valores do campo: `por-funil` (a própria página liga o Rastro do funil pelo `?f=`, fora do kit; hoje só a comunidade da Academy)
   e `sem-tracking`.
 
 O que cada modo faz (conferido na auditoria de 2026-11, `docs/auditoria/2026-11/`):

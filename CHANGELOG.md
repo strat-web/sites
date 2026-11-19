@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- feat(academy): migra a LP da comunidade (pós-cadastro de todos os funis, ?f=) do strat-lps para o projeto academy-comunidade do Pages; por-funil conserva o Umami do host e o Rastro segue pelo FUNIS da página (WEB-48)
 - feat(assets): buckets R2 assets-agenciastrat, assets-stratai e assets-metricaas nos domínios assets.<marca> (imagem de teste com Cache-Control immutable), scripts/subir-asset.mjs que grava o cache de 1 ano e recusa chave existente, e docs em dominios.md, padroes.md e infisical.md (WEB-44)
 - fix(checagens): scripts em blocos inertes não satisfazem tracking; nomodule, m.js extra de outro host, pixels soltos e chamadas alternativas barram; --app normalizado e com valor obrigatório; testes de novas tentativas do Rastro (WEB-92)
 - ci(checagens): o Lighthouse do peso mede a página sem o destino quando ela sai sozinha para outro domínio (navegação respondida com 204 e registrada no log), em vez de medir o WhatsApp (WEB-48)

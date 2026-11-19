@@ -2,6 +2,10 @@
 
 Uma entrada por decisão, com data e quem decidiu. A mais nova em cima.
 
+## 2026-11-17 · Projeto do Pages de cada LP da Academy com o prefixo `academy-` (Jhonathan, WEB-48)
+O endereço `*.pages.dev` é de todas as contas da Cloudflare (`claude.pages.dev` não estaria livre), e o prefixo separa
+as LPs dos apps na lista da conta: `academy-claude`, `academy-skills`, `academy-mentoria`, `academy-bootcamp`,
+`academy-vibecode` e `academy-comunidade`.
 ## 2026-11-18 · Lighthouse da CI mede a página, não o destino para onde ela sai (Jhonathan, WEB-48; espera o Helbert no PR)
 A confirmação da comunidade e o grupo do bootcamp (`/0808-v1/grupo/`) abrem o WhatsApp sozinhos depois de 1,8 s, como
 no `strat-lps`. O Lighthouse seguia a navegação e media o `chat.whatsapp.com`: 79 e LCP 4,3 s, com a página do

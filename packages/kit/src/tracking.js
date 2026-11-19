@@ -53,9 +53,13 @@ export function planoDeTracking({ catalogo, url, perfil }) {
   }
 
   const plano = { linha, scripts: [], hotmart: null, aviso: null, banner: false, consentMode: null, avisos: [] };
-  // por-funil: a própria página liga o Rastro do funil pelo ?f= (registro FUNIS); o kit não carrega nada por ela
-  // até a migração dessas páginas (WEB-48).
-  if (linha.consentimento === 'sem-tracking' || linha.consentimento === 'por-funil') return plano;
+  if (linha.consentimento === 'sem-tracking') return plano;
+  // Na comunidade, o Rastro pertence ao funil do ?f= (T5); o Umami pertence ao host e já era injetado pelo
+  // servidor do strat-lps. Preservar esse contador sem ligar um produto/pixel fixo na migração (WEB-48).
+  if (linha.consentimento === 'por-funil') {
+    if (linha.umami_website_id) plano.scripts.push({ src: UMAMI, attrs: { 'data-website-id': linha.umami_website_id } });
+    return plano;
+  }
 
   const rastro = linha.rastro_slug;
   const ws = linha.metricaas_ws;

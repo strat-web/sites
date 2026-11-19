@@ -51,7 +51,7 @@ token `pages-strat-web`; investigação no item de Triagem aberto pelo WEB-44.
 | app., go.metricaas.com.br | o produto | Easypanel `whatsapp/metricaas-app` | fica | — |
 | docs.metricaas.com.br | documentação | Mintlify | fica | — |
 | stratacademy.com.br | site e blog | Pages `stratacademy` (repositório horus) | Pages `sites-stratacademy`, deste repositório (existe desde 11/11; o nome `stratacademy` é o do horus, ver `pages.md`) | WEB-49 |
-| claude., skills., mentoria., bootcamp., vibecode., comunidade.stratacademy.com.br | LPs de campanha | Easypanel `strat-lps` | um projeto do Pages por subdomínio | WEB-48 |
+| claude., skills., mentoria., bootcamp., vibecode., comunidade.stratacademy.com.br | LPs de campanha | Easypanel `strat-lps` | um projeto do Pages por subdomínio: `academy-claude` (academy-claude.pages.dev, `lps/academy/claude`), `academy-comunidade` (academy-comunidade.pages.dev, `lps/academy/comunidade`) , `academy-mentoria` (academy-mentoria.pages.dev, `lps/academy/mentoria`) `academy-vibecode` (academy-vibecode.pages.dev, `lps/academy/vibecode`), `academy-skills` (academy-skills.pages.dev, `lps/academy/skills`) e `academy-bootcamp` (academy-bootcamp.pages.dev, `lps/academy/bootcamp`) existem desde 17/11; o DNS só vira com o "pode virar" do Helbert | WEB-48 |
 | tracking., wa.stratacademy.com.br | Rastro | Pages `rastro-stratacademy` | fica (repositório vai para a strat-web, WEB-55) | — |
 | hub., links., lists., form., git.stratacademy.com.br | apps | Easypanel | fica | — |
 | chat., class., crm.stratacademy.com.br | apps em Lovable (185.158.133.1) | Lovable | fica | — |
