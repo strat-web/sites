@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- fix(catalogo): restaura as linhas da vibecode (perfil lead, sem Hotmart), da mentoria e do bootcamp que o merge da sequência de 19/11 perdeu; a vibecode não compilava na main (WEB-48)
 - feat(academy): migra a LP vibecode (principal e v1 arquivada, noindex) para o projeto academy-vibecode do Pages; perfil lead, sem Hotmart (WEB-48)
 - feat(academy): migra a LP do bootcamp (24 rotas, com /0808-*, grupo e upsell/downsell) para o projeto academy-bootcamp do Pages (WEB-48)
 - feat(checagens): título e H1 repetidos só barram entre páginas indexáveis; variante de teste com noindex pode repetir a principal, separado do #47 a pedido do Helbert (WEB-48)
