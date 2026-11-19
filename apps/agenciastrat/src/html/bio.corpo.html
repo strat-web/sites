@@ -1,0 +1,208 @@
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <symbol id="i-wa" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .1-1.3c0-.1-.2-.2-.5-.3z"/></symbol>
+ <symbol id="i-ig" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r=".6" fill="currentColor"/></symbol>
+ <symbol id="i-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10.5V16M8 7.5v.01M12 16v-3.2a2.3 2.3 0 0 1 4.6 0V16M12 10.5V16"/></symbol>
+ <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-6.2-7-11.6a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.4" r="2.6"/></symbol>
+</svg>
+
+<div class="top-clip">
+<div class="mesh-box" aria-hidden="true"><div class="mesh"><i style="background:var(--red);left:10%;top:40px"></i><i style="background:var(--blue);left:40%;top:0;animation-delay:-3s"></i><i style="background:var(--purple);left:62%;top:90px;animation-delay:-6s"></i><i style="background:var(--lime);left:28%;top:150px;animation-delay:-9s"></i></div></div>
+<main class="wrap">
+  <header class="head" data-mtc-section="topo">
+    <div class="av"><img src="/midia/bio/avatar.png" alt="Agência Strat" width="96" height="96"></div>
+    <h1>Agência Strat</h1>
+    <p class="tag">Anúncio, conteúdo e IA pra sua empresa <span class="rot" id="rot">vender mais</span></p>
+    <div class="meta"><img class="seal" src="/midia/selos/google-partner.webp" alt="Google Partner" width="640" height="380"><img class="seal" src="/midia/selos/meta-business-partner.webp" alt="Meta Business Partner" width="640" height="380"><span>Joinville/SC</span></div>
+  </header>
+</main>
+</div>
+
+<!-- 1. RAIO-X (o botão que mais importa, já qualificando) -->
+<section class="xray stack" style="width:min(428px,calc(100% - 44px));margin-left:max(30px,calc(50% - 206px));margin-right:auto" id="xray" data-mtc-section="raiox">
+  <small>Raio-X grátis · 1 minuto</small>
+  <h2>Onde o seu marketing está vazando dinheiro?</h2>
+  <p class="sub">3 perguntas. No fim, você fala direto com o nosso time, já com o seu diagnóstico em mãos.</p>
+  <div class="steps"><i class="on"></i><i></i><i></i></div>
+  <div class="q on" data-q="seg"><b>1. Qual é o seu negócio?</b><div class="opts">
+    <button>Restaurante / food</button><button>Imobiliária / construtora</button><button>Saúde / clínica</button><button>Loja / e-commerce</button><button>Advogados</button><button>Outros</button></div></div>
+  <div class="q" data-q="ads"><b>2. Você anuncia hoje?</b><div class="opts">
+    <button>Não anuncio</button><button>Anuncio sozinho</button><button>Tenho agência</button><button>Tenho alguém interno</button></div></div>
+  <div class="q" data-q="dor"><b>3. O que mais dói agora?</b><div class="opts">
+    <button>Gasto e não sei se volta</button><button>Instagram parado</button><button>Falta criativo e vídeo</button><button>Lead chega e esfria</button></div></div>
+  <div class="q done" data-q="fim"><div class="big">✓</div><b>Falta só isso pra gente<span class="nl">preparar o seu Raio-X.</span></b>
+    <form class="cap" id="cap" novalidate data-mtc-form="raiox-bio">
+      <label for="fNome">Seu nome</label>
+      <input id="fNome" name="nome" type="text" autocomplete="name" placeholder="Nome e sobrenome" required>
+      <small class="err" id="eNome" hidden></small>
+      <label for="fWhats">Seu WhatsApp</label>
+      <input id="fWhats" name="whats" type="tel" inputmode="tel" autocomplete="tel" placeholder="(47) 99999-9999" required>
+      <small class="err" id="eWhats" hidden></small>
+      <label for="fEmail">Seu e-mail</label>
+      <input id="fEmail" name="email" type="email" inputmode="email" autocomplete="email" autocapitalize="none" spellcheck="false" placeholder="voce@empresa.com.br" required>
+      <small class="err" id="eEmail" hidden></small>
+      <label for="fInsta">Instagram da empresa ou o seu</label>
+      <input id="fInsta" name="insta" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="@suaempresa" required>
+      <small class="err" id="eInsta" hidden></small>
+      <button class="go" type="submit" id="xgo">Receber meu Raio-X</button>
+      <p class="fine2">Ao enviar, você concorda em receber contato da Agência Strat sobre o seu diagnóstico, conforme a <a href="https://agencia.stratai.com.br/politica-de-privacidade" target="_blank" rel="noopener" data-k="privacidade">política de privacidade</a>. Sem spam.</p>
+    </form></div>
+  <!-- obrigado: o botão de WhatsApp já existe no carregamento (escondido), pra o MetricaaS o enxergar e pôr o código de atribuição -->
+  <div class="q done" data-q="ok"><div class="big">✓</div><b>Valeu, <span id="okNome"></span>! Agora é com a gente.</b>
+    <p class="ok-p">Estamos abrindo o WhatsApp pra continuar a conversa. Se não abrir sozinho, toque no botão.</p>
+    <a class="go wa" id="okWa" data-msg="Oi! Vim pela bio do Instagram e quero mais informações sobre a agência." data-strat-cta="bio-raiox-whatsapp" href="https://wa.me/554831994338?text=Oi!%20Vim%20pela%20bio%20do%20Instagram%20e%20quero%20mais%20informa%C3%A7%C3%B5es%20sobre%20a%20ag%C3%AAncia." target="_blank" rel="noopener"><svg width="20" height="20"><use href="#i-wa"/></svg>Abrir o WhatsApp</a>
+  </div>
+</section>
+
+<main class="wrap" style="padding-top:0">
+  <!-- 2. Site e WhatsApp -->
+  <div class="ctas" data-mtc-section="links">
+    <a class="cta cta-site" data-k="site" data-strat-cta="bio-site" data-mtc-event="bio_site" href="https://stratai.com.br/agencia/" target="_blank" rel="noopener">Conheça o nosso site<span class="ar">→</span></a>
+    <a class="cta cta-wa wa" data-msg="Oi! Vim pela bio do Instagram e quero mais informações sobre a agência." data-strat-cta="bio-whatsapp" href="https://wa.me/554831994338?text=Oi!%20Vim%20pela%20bio%20do%20Instagram%20e%20quero%20mais%20informa%C3%A7%C3%B5es%20sobre%20a%20ag%C3%AAncia." target="_blank" rel="noopener"><svg width="20" height="20"><use href="#i-wa"/></svg>Falar no WhatsApp</a>
+  </div>
+
+  <!-- 5. Time -->
+  <div class="lbl" data-mtc-section="time">quem faz</div>
+  <div class="team">
+    <img src="/midia/bio/time-gabriel.jpg" alt="Gabriel Bocardo" title="Gabriel Bocardo · sócio"><img src="/midia/bio/time-helbert.jpg" alt="Helbert Paranhos" title="Helbert Paranhos · sócio"><img src="/midia/bio/time-daniel.jpg" alt="Daniel Moreno" title="Daniel Moreno · vídeo"><img src="/midia/bio/time-joao.jpg" alt="João Paranhos" title="João Paranhos"><img src="/midia/bio/time-vinicius.jpg" alt="Vinicius Rocha" title="Vinicius Rocha">
+  </div>
+  <p class="team-t"><b>5 pessoas, um time só.</b> Estratégia, tráfego, design, vídeo e IA na mesma mesa.</p>
+
+  <nav class="soc" aria-label="Redes">
+    <a href="https://www.instagram.com/agencia.strat/" target="_blank" rel="noopener" data-k="instagram" data-strat-cta="bio-icone-instagram" data-mtc-event="bio_instagram" aria-label="Instagram"><svg><use href="#i-ig"/></svg></a>
+    <a href="https://www.linkedin.com/company/strat-ag" target="_blank" rel="noopener" data-k="linkedin" data-strat-cta="bio-icone-linkedin" data-mtc-event="bio_linkedin" aria-label="LinkedIn"><svg><use href="#i-in"/></svg></a>
+    <a href="https://maps.app.goo.gl/CWKsVQpuhFMPmssw9" target="_blank" rel="noopener" data-k="maps" data-strat-cta="bio-icone-endereco" data-mtc-event="bio_endereco" aria-label="Endereço no Google Maps"><svg><use href="#i-pin"/></svg></a>
+    <a href="https://wa.me/554831994338?text=Oi!%20Vim%20pela%20bio%20do%20Instagram%20e%20quero%20mais%20informa%C3%A7%C3%B5es%20sobre%20a%20ag%C3%AAncia." target="_blank" rel="noopener" class="wa" data-strat-cta="bio-icone-whatsapp" data-msg="Oi! Vim pela bio do Instagram e quero mais informações sobre a agência." aria-label="WhatsApp"><svg><use href="#i-wa"/></svg></a>
+  </nav>
+</main>
+
+<footer>
+  <div class="degrau"><i style="background:var(--red)"></i><i style="background:var(--blue)"></i><i style="background:var(--purple)"></i><i style="background:var(--lime)"></i></div>
+  <p class="fine">Strat · Joinville/SC</p>
+</footer>
+
+<script>
+/* ====== EDITAR AQUI: todos os links da página ====== */
+const WHATSAPP = "554831994338";    // (48) 3199-4338 · o mesmo do site no ar
+const LINKS = {
+  site:       "https://stratai.com.br/agencia/",
+  privacidade:"https://agencia.stratai.com.br/politica-de-privacidade",
+  instagram:  "https://www.instagram.com/agencia.strat/",
+  linkedin:   "https://www.linkedin.com/company/strat-ag",
+  maps:       "https://maps.app.goo.gl/CWKsVQpuhFMPmssw9"   // perfil da Strat AI no Google Maps (Aubé Business Center)
+};
+/* ================================================== */
+const NO_AR = /(^|\.)(stratai|agenciastrat)\.com\.br$/.test(location.hostname);
+/* Atribuição até o site. A bio (agenciastrat.com.br/bio/) e o site (stratai.com.br/agencia/) são origens diferentes: o que a
+   pessoa trouxe na URL da bio não chega lá sozinho. Por isso o link pro site leva junto os
+   parâmetros com que ela chegou — da URL ou, se não vier nada, do último toque antigo que o Rastro
+   deixou guardado (strat_ft; desde 02/11/2026 o Rastro saiu desta página e não grava mais).
+   UTM fixa não entra: o link que vai na bio do Instagram é que sai do criador de UTM do Horus. */
+const ATRIB=["utm_source","utm_medium","utm_campaign","utm_content","utm_term","gclid","fbclid","msclkid","ttclid","src","sck"];
+function atribuicao(){
+  const q=new URLSearchParams(location.search), out={}; let ft={};
+  try{ ft=JSON.parse(localStorage.getItem("strat_ft")||"{}")||{}; }catch(e){}
+  const daUrl=ATRIB.some(k=>q.get(k));
+  ATRIB.forEach(k=>{ const v=daUrl? q.get(k) : ft[k]; if(v) out[k]=v; });
+  return out;
+}
+function comAtribuicao(u){
+  if(!/^https:\/\/([\w-]+\.)*stratai\.com\.br\//.test(u)) return u;
+  try{ const url=new URL(u); Object.entries(atribuicao()).forEach(([k,v])=>{ if(!url.searchParams.has(k)) url.searchParams.set(k,v); }); return url.href; }
+  catch(e){ return u; }
+}
+function wa(msg){ return "https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(msg); }
+document.querySelectorAll("[data-k]").forEach(a=>{
+  const u=LINKS[a.dataset.k];
+  if(!u||u.startsWith("[")){
+    // no ar, o link que falta some; abrindo o arquivo no computador, fica marcado de amarelo pra lembrar
+    if(NO_AR) a.remove(); else { a.classList.add("tbd"); a.title="Link [A PREENCHER]"; a.addEventListener("click",e=>e.preventDefault()); }
+    return;
+  }
+  a.href=comAtribuicao(u); a.target="_blank"; a.rel="noopener";
+  a.addEventListener("click",()=>{ a.href=comAtribuicao(u); });   // o último toque pode ter sido salvo depois do carregamento
+});
+document.querySelectorAll(".wa").forEach(el=>{
+  if(el.tagName==="A"){ el.href=wa(el.dataset.msg); el.target="_blank"; el.rel="noopener"; }
+  else el.addEventListener("click",()=>window.open(wa(el.dataset.msg),"_blank","noopener"));
+});
+/* Medição só pelo MetricaaS (workspace strat-marketing, decisão de 02/11/2026: sem Rastro, PostHog
+   nem tag do Google nas páginas da Agência). A tag, o pixel (PX-001) e o banner de cookies vêm do <Tracking> do kit,
+   pela linha "agenciastrat-bio" do catálogo (consentimento banner). Os botões têm data-mtc-event, as seções data-mtc-section
+   e o link de WhatsApp vira clique atribuído. Nada de fbq/dataLayer na mão: duplicaria o pixel.
+   Os data-strat-cta ficaram só para nomear o lugar do botão (padrão do processo de publicar). */
+function track(nome,props){ try{ if(window.mtc&&mtc.track) mtc.track(nome,Object.assign({pagina:"bio"},props)); }catch(e){} }
+/* a tag é defer: espera ela carregar (mesma função da raiz, js/agencia.js) */
+function waitMtc(ms){ return new Promise((ok,falha)=>{ const t0=Date.now();
+  (function tenta(){ if(window.mtc&&window.mtc.lead) return ok(window.mtc); if(Date.now()-t0>ms) return falha({erro:"tag-nao-carregou"}); setTimeout(tenta,150); })(); }); }
+/* palavra que gira (cor do degrau) */
+const W=[["vender mais","#ff1f1f"],["agendar mais","#57a1ea"],["lotar a agenda","#bb44f2"],["crescer","#c6ff34"]]; let wi=0;
+const rot=document.getElementById("rot");
+function spin(){ const [t,c]=W[wi]; rot.textContent=t; rot.style.background=c+(c==="#c6ff34"?"":"33"); wi=(wi+1)%W.length; }
+spin(); setInterval(spin,2200);
+/* Raio-X em 3 passos */
+const ans={}; const qs=[...document.querySelectorAll(".q")]; const bars=document.querySelectorAll(".steps i");
+qs.forEach((q,qi)=>q.querySelectorAll(".opts button").forEach(b=>b.addEventListener("click",()=>{
+  ans[q.dataset.q]=b.textContent; q.classList.remove("on"); qs[qi+1].classList.add("on"); if(bars[qi+1]) bars[qi+1].classList.add("on"); document.getElementById("xray").classList.add("adiante");
+  track("raiox_passo",{passo:qi+1,resposta:b.textContent});   // funil do Raio-X no MetricaaS: onde a pessoa desiste
+  if(qs[qi+1].dataset.q==="fim"){
+    bars.forEach(x=>x.classList.add("on"));
+  }
+})));
+/* fim do Raio-X: o mesmo fluxo da página de vendas da Agência. O lead vai pro MetricaaS (mtc.lead:
+   cria o lead no strat-marketing e manda Lead pela CAPI); a pessoa vê o obrigado e o WhatsApp abre
+   com a frase padrão, sem os dados. */
+const $=id=>document.getElementById(id);
+const cap=$("cap"), fN=$("fNome"), fW=$("fWhats"), fE=$("fEmail"), fI=$("fInsta"), xgo=$("xgo");
+fW.addEventListener("input",()=>{ let d=fW.value.replace(/\D/g,""); if(d.length>11&&d.startsWith("55")) d=d.slice(2); d=d.slice(0,11);
+  fW.value=d.length>6? "("+d.slice(0,2)+") "+d.slice(2,d.length-4)+"-"+d.slice(-4) : d.length>2? "("+d.slice(0,2)+") "+d.slice(2) : d; });
+const FIX={"gmail.con":"gmail.com","gmial.com":"gmail.com","gmai.com":"gmail.com","gmail.co":"gmail.com","hotmail.con":"hotmail.com","hotmial.com":"hotmail.com","hotmail.co":"hotmail.com","outlook.con":"outlook.com","yahoo.con":"yahoo.com"};
+function cleanEmail(v){ v=v.trim().toLowerCase(); const [u,d]=v.split("@"); return d&&FIX[d]? u+"@"+FIX[d] : v; }
+function cleanInsta(v){ v=v.trim().replace(/\s+/g,""); const m=v.match(/instagram\.com\/([A-Za-z0-9._]+)/i); if(m) v=m[1]; v=v.replace(/^@+/,""); return v? "@"+v : ""; }
+function setErr(input,box,msg){ box.textContent=msg; box.hidden=!msg; input.setAttribute("aria-invalid",msg?"true":"false"); }
+function checkCap(show){
+  const nm=fN.value.trim().replace(/\s+/g," "), dig=fW.value.replace(/\D/g,""), em=cleanEmail(fE.value), ig=cleanInsta(fI.value);
+  const nErr=nm.replace(/[^A-Za-zÀ-ÿ]/g,"").length>=2? "" : "Coloca o seu nome.";
+  const wErr=/^(\d)\1+$/.test(dig)? "Esse número não parece real." : dig.length<10? "Coloca o número com DDD." : "";
+  const eErr=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)? "" : "Confere o e-mail: falta o @ ou o final (ex.: .com).";
+  const iErr=/^@[A-Za-z0-9._]{1,30}$/.test(ig)? "" : "Coloca o @ do Instagram (da empresa ou o seu).";
+  if(show){ setErr(fN,$("eNome"),nErr); setErr(fW,$("eWhats"),wErr); setErr(fE,$("eEmail"),eErr); setErr(fI,$("eInsta"),iErr); }
+  return {ok:!nErr&&!wErr&&!eErr&&!iErr, nm, dig, em, ig, first: nErr? fN : wErr? fW : eErr? fE : iErr? fI : null};
+}
+[fN,fW,fE,fI].forEach(i=>i.addEventListener("input",()=>{ if(i.getAttribute("aria-invalid")==="true") checkCap(true); }));
+/* A tag do MetricaaS conta todo evento "submit" como "Enviou um formulário" na jornada do lead. Validando no clique
+   do botão (o Enter num campo vira clique nesse mesmo botão), a tentativa recusada nem chega a ser "submit": a
+   jornada registra um envio só, o que deu certo. Mesmo padrão da raiz (js/agencia.js, WEB-71). */
+xgo.addEventListener("click",e=>{ const c=checkCap(true); if(!c.ok){ e.preventDefault(); c.first.focus(); } });
+/* Campos do lead: resposta do Raio-X → chave do campo personalizado no strat-marketing. O MetricaaS grava pela chave e
+   descarta, sem erro, a que não existe no workspace; por isso só entram chaves que existem (as mesmas da raiz).
+   "Você anuncia hoje?" (ans.ads) não tem campo no workspace: fica só no evento raiox_enviar. */
+const CAMPOS={
+  ig:  "instagram",
+  seg: "segmento",
+  dor: "servicos"   // "O que mais dói agora?": na raiz, o "O que dói hoje" também vai como servicos
+};
+cap.addEventListener("submit",e=>{
+  e.preventDefault();
+  const c=checkCap(true);   // por garantia: o clique já validou
+  if(!c.ok){ c.first.focus(); return; }
+  fE.value=c.em; fI.value=c.ig; xgo.disabled=true;
+  track("raiox_enviar",{segmento:ans.seg,anuncios:ans.ads,dor:ans.dor});
+  // Lead no MetricaaS (workspace strat-marketing): cria o lead (ou completa o que já existe para o telefone) e manda
+  // Lead pela CAPI; o pixel do navegador, com o mesmo event_id, só sai depois do "Aceitar". Sem `resultado`: o
+  // Raio-X da bio não pergunta faturamento nem verba, então vai só como Lead (a raiz manda "qualificado").
+  // Em `campos` só vão as chaves do mapa CAMPOS, que existem como campo personalizado no workspace.
+  // Sem await: o WhatsApp abaixo precisa abrir dentro do clique; o envio segue sozinho.
+  try{
+    const valores={ig:c.ig, seg:ans.seg, dor:ans.dor}, campos={};
+    Object.keys(CAMPOS).forEach(k=>{ if(valores[k]) campos[CAMPOS[k]]=valores[k]; });
+    waitMtc(8000).then(m=>m.lead({nome:c.nm, telefone:"55"+c.dig, email:c.em, campos}).catch(err=>console.warn("[bio-agencia] lead não enviado",err)))
+      .catch(()=>console.warn("[bio-agencia] tag do MetricaaS não carregou: lead não enviado"));
+  }catch(err){}
+  // obrigado + WhatsApp. O clique sai de dentro do envio (gesto da pessoa), então o navegador deixa abrir a aba;
+  // o botão existe desde o carregamento, então o MetricaaS põe o código de atribuição.
+  $("okNome").textContent=c.nm.split(" ")[0];
+  qs.forEach(q=>q.classList.remove("on")); document.querySelector('.q[data-q="ok"]').classList.add("on");
+  $("xray").scrollIntoView({behavior:"smooth",block:"nearest"});
+  $("okWa").click();
+});
+</script>
