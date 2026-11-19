@@ -235,8 +235,9 @@ Exceções escritas no código, com o item que as tira:
 - `packages/checagens/src/esqueletos.js`: a home de cada app é um esqueleto do WEB-15 (noindex, sem tracking) até
   o item de migração. A checagem exige noindex e nenhum tracking nessas URLs e quebra quando a página real ganha o
   `<Tracking>`, pedindo para tirar a URL da lista no mesmo PR;
-- `packages/checagens/src/excecoes-peso.js`: página migrada sem mudança que ainda não cabe no orçamento do Lighthouse
-  (hoje só a home da StratAI, WEB-32). Cada uma tem um piso, o número da página no ar no dia da migração: entre o piso
+- `packages/checagens/src/excecoes-peso.js`: página que ainda não cabe no orçamento do Lighthouse, com o motivo e o
+  item que a tira (hoje vazia: a home, o `/raio-x/` e a política da StratAI saíram no WEB-87, depois do servidor com
+  gzip do WEB-88). Cada uma tem um piso, o número medido no mesmo Lighthouse: entre o piso
   e o orçamento a checagem só avisa; abaixo do piso, barra. O limite de 1,5 MB continua valendo. A URL sai da lista
   no item que acertar o desempenho da página;
 - `/u/` não é conferido como link: o proxy do Umami é do Strat Tracking, fora do build.
