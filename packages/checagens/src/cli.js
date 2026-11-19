@@ -29,8 +29,13 @@ const nomes = [];
 const opcoes = { semRede: false, semLighthouse: false, log: (t) => console.log(`  ${t}`) };
 for (let i = 0; i < args.length; i++) {
   const a = args[i];
-  if (a === '--app') apps.push(args[++i]);
-  else if (a === '--sem-rede') opcoes.semRede = true;
+  if (a === '--app') {
+    if (!args[i + 1]?.trim() || args[i + 1].startsWith('--')) {
+      console.error('--app precisa de um caminho de app, por exemplo: --app apps/stratai');
+      process.exit(2);
+    }
+    apps.push(args[++i]);
+  } else if (a === '--sem-rede') opcoes.semRede = true;
   else if (a === '--sem-lighthouse') opcoes.semLighthouse = true;
   else if (CHECAGENS[a]) nomes.push(a);
   else {

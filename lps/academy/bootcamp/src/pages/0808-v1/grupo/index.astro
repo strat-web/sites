@@ -1,0 +1,16 @@
+---
+// Migração do strat-lps (WEB-48), preservando caminho, conteúdo e funil. Tracking pelo kit.
+import Layout from '@strat/kit/Layout.astro';
+import head from "../../../html/0808-v1--grupo.head.html?raw";
+import corpo from "../../../html/0808-v1--grupo.corpo.html?raw";
+---
+<Layout
+  marca="academy"
+  perfil="conteudo"
+  titulo="Inscrição confirmada · entre no grupo · Bootcamp Construtor de IA"
+  descricao="Sua vaga na pré-venda está garantida — agora entre no grupo VIP do WhatsApp pra receber a condição do lote promocional."
+  indexar={false}
+>
+  <Fragment slot="head" set:html={head} />
+  <Fragment set:html={corpo} />
+</Layout>

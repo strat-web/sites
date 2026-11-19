@@ -1,0 +1,194 @@
+<meta name="theme-color" content="#ffffff">
+<link rel="preload" href="/fontes/lato-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fontes/lato-900-latin.woff2" as="font" type="font/woff2" crossorigin>
+<script>
+/* =====================================================================
+   CONFIGURAÇÃO: edite só este bloco
+   Método: Funil Shark Scale (ver README.md)
+   ===================================================================== */
+var NICHO_PADRAO = 'advogado';
+
+var COMUM = {
+  // MetricaaS: cria o lead, manda a CAPI, lê a agenda e manda confirmação e lembretes no WhatsApp (ADR 0062-0064)
+  metricaasWorkspace: 'strat-marketing',  // slug do workspace (Agência Strat)
+  metaPixelId: /[?&]nopixel/.test(location.search) ? '' : '1815630929780241', // PX-001 | Agência Strat (?nopixel desliga em testes)
+  // Agenda NA PÁGINA (02/11/2026): a etapa 6 mostra os horários livres da agenda de quem atende e marca a reunião
+  // com Meet e convite, pelo MetricaaS (mtc.agenda, ADR 0065). false = volta ao link da página de agendamento do Google.
+  agendaNaPagina: true,
+  // Link do Google só como reserva TEMPORÁRIA: se a agenda da página não responder (MetricaaS sem a reserva ligada,
+  // conexão sem permissão, Google fora), a etapa 6 cai no link abaixo com o código, como antes. false = só o WhatsApp.
+  agendaGoogleReserva: true,
+  // WhatsApp do fallback da agenda, com a mensagem pronta com o nome e o código
+  whatsappAgenda: '5547991658478',
+  whatsappAgendaMessage: 'Olá! Sou {nome} e preenchi o formulário da Strat para advogados (código {codigo}). Quero marcar a conversa.',
+  // Página de agendamento do Google Agenda de quem atende, com a pergunta "Código". Preencher antes de publicar.
+  // No Business Starter cada pessoa tem UMA página: use a dela, com a pergunta opcional (sem código, o MetricaaS
+  // casa pelo e-mail ou pelo telefone)
+  agendaUrl: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ1aZQCxsVUhQLsROvDCXsIWX-PANTcSukNqq2PzclaVGBZHAHCdZMK2SkozLl7l7QigNY2d8SLn', // "Reunião com advogados" do Gabriel (gabriel.bocardo@stratai.com.br); o link curto calendar.app.google/N8deMmSkDqf1rDHA7 leva à mesma página
+  // Política de privacidade da marca, linkada no passo do WhatsApp e no banner (portão A5 do processo-publicar)
+  privacidadeUrl: 'https://agencia.stratai.com.br/politica-de-privacidade',
+  // Banner de cookies: no app quem decide é o campo consentimento da linha no catalogo/sites.json (off desde 02/11,
+  // decisão do Helbert), e o banner, quando houver, é o do kit (WEB-24). Fica false: true desenharia o banner antigo
+  // da página sem segurar o pixel, que agora vem do <Tracking>.
+  consentimentoPixel: false,
+  whatsappNumber: '554831994338',        // WhatsApp da Strat (SDR); é também o número que manda confirmação e lembretes
+  whatsappMessage: 'Olá{nome}! Preenchi o formulário da Strat e quero conversar sobre tráfego pago.'
+};
+
+var NICHOS = {
+  advogado: {
+    niche: 'advogado', formName: 'Strat | Captação Advogados',
+    cover: {
+      icon: '⚖️',
+      // Checklist: emoji + para quem · até 10 palavras · resultado específico
+      // Laudo de política de 31/10/2026: número de leads sem prova é promessa de resultado (CONAR art. 1º) e
+      // contradiz o contrato de tráfego ("não garante número de leads"). Número só com case nomeado e autorizado.
+      headline: '<strong>Advogados:</strong> anúncios que trazem contatos qualificados ao escritório',
+      // Checklist: até 35 caracteres · emoji · promessa → meio 1 → meio 2 → autoridade
+      bullets: [
+        // Sem garantia de conformidade: quem responde pela publicidade é o escritório (Provimento 205 e cláusula
+        // de responsabilidade do contrato); a Agência descreve o processo, não promete o resultado ético.
+        {e:'📈', t:'Contato acompanhado <strong>até o contrato</strong>'},
+        {e:'📲', t:'Contatos direto no <strong>seu WhatsApp</strong>'},
+        {e:'✅', t:'Revisão pelo <strong>Provimento 205</strong> da OAB'},
+        {e:'🔎', t:'<strong>Filtro</strong> antes de chegar a você'}
+      ],
+      note: '→ Exclusivo para advogados e escritórios dispostos a investir a partir de R$2.000/mês em anúncios.',
+      cta: 'QUERO MAIS CONTRATOS'
+    },
+    texts: {
+      instagramQ: 'Qual @ do Instagram do seu escritório?',
+      revenueQ: 'Qual o faturamento médio mensal do seu escritório?',
+      investYes: '✅ Sim, tenho essa verba',
+      investNo: '❌ Não, por enquanto não'
+    }
+  }
+};
+
+var _n = new URLSearchParams(location.search).get('nicho') || NICHO_PADRAO;
+window.FORM_CONFIG = Object.assign({}, COMUM, NICHOS[_n] || NICHOS[NICHO_PADRAO]);
+document.title = window.FORM_CONFIG.formName;
+// A tag do MetricaaS (m.js, com o pixel) vem do <Tracking> do kit, pela linha do catálogo (WEB-24); o ?nopixel saiu.
+</script>
+<style>
+/* Fontes do próprio app (public/fontes/, licença OFL ao lado), no lugar da folha do Google, que bloqueava a renderização (WEB-24, como no WEB-87). Mesmos arquivos e mesmo subset latin que o Google servia. */
+@font-face{font-family:"Lato";font-style:normal;font-weight:400;font-display:swap;src:url("/fontes/lato-400-latin.woff2") format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:"Lato";font-style:italic;font-weight:400;font-display:swap;src:url("/fontes/lato-400-italic-latin.woff2") format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:"Lato";font-style:normal;font-weight:700;font-display:swap;src:url("/fontes/lato-700-latin.woff2") format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:"Lato";font-style:normal;font-weight:900;font-display:swap;src:url("/fontes/lato-900-latin.woff2") format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+:root{
+  --bg-2:#f1f0eb;
+  --ink:#161616; --ink-soft:#3A3F46; --muted:#6B7078;
+  --line:#E7E4DC; --line-strong:#D6D2C6; --bg:#FFFFFF; --err:#B42318;
+  /* Curso: fonte Lato, fundo branco, cores do nicho (advocacia: marinho, vinho, dourado sóbrio) */
+  --font-sans:'Lato',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-mono:'Lato',system-ui,sans-serif;
+  /* "green" = cor de ação (mantido o nome para não mexer no CSS todo) */
+  --green:#1F2A44; --green-deep:#141C30; --green-tint:#E9ECF3;
+  --wine:#7A1F2B; --gold:#B08D57;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--font-sans);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+.progress{position:fixed;top:0;left:0;right:0;height:4px;background:var(--bg-2);z-index:20}
+.progress[hidden]{display:none}
+.progress i{display:block;height:4px;width:0;background:linear-gradient(90deg,var(--green),var(--gold)) 0 0/100vw 100% no-repeat;transition:width .45s ease}
+main{max-width:680px;margin:0 auto;padding:calc(clamp(40px,9vh,92px) + env(safe-area-inset-top,0px)) 24px 0}
+.screen{animation:enter .35s ease both}
+@keyframes enter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.cover h1{font-size:clamp(27px,5vw,37px);font-weight:500;line-height:1.24;letter-spacing:-.025em;margin:0 0 28px}
+.cover h1 strong{font-weight:900;color:var(--wine)}
+.cover ul{list-style:none;padding:0;margin:0 0 30px;display:grid;gap:11px}
+.cover li{display:flex;gap:10px;font-size:17px;line-height:1.5;color:var(--muted)}
+.cover li strong{color:var(--ink-soft);font-weight:700}
+.cover .note{font-style:italic;color:var(--muted);font-size:15.5px;line-height:1.65;margin:0;max-width:56ch}
+
+.top{display:flex;align-items:center;gap:8px;margin-bottom:22px}
+.badge{min-width:26px;height:26px;padding:0 7px;border-radius:5px;background:var(--green);
+  color:#fff;font-family:var(--font-mono);font-weight:700;font-size:13px;display:inline-flex;align-items:center;justify-content:center}
+.req{color:#D14343;font-size:14px}
+.back{margin-left:auto;background:none;border:0;color:var(--muted);font:inherit;font-size:14px;cursor:pointer;padding:6px 4px;border-radius:4px}
+.back:hover{color:var(--ink)}
+h1.q{font-weight:500;font-size:clamp(23px,4.2vw,30px);line-height:1.32;letter-spacing:-.025em;margin:0 0 12px;max-width:30ch}
+h1.q strong{font-weight:700}
+.sub{color:var(--muted);font-size:16px;line-height:1.6;margin:0}
+.field{margin-top:34px}
+.field input{width:100%;border:0;border-bottom:2px solid var(--green);background:transparent;font:inherit;
+  font-size:clamp(18px,3.4vw,22px);padding:10px 2px;color:var(--ink);outline:none;border-radius:0}
+.field input::placeholder{color:#A6AAB1}
+.field input:focus{border-bottom-color:var(--green-deep)}
+.err{color:var(--err);font-size:14px;margin-top:12px;min-height:20px}
+.cookies{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:20;max-width:656px;
+  margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;
+  box-shadow:0 12px 30px -16px rgba(20,28,48,.45);font-size:14px;line-height:1.5;color:var(--ink-soft)}
+.cookies a{color:inherit;text-decoration:underline}
+.cookies .acoes{display:flex;gap:8px;margin-top:10px}
+.cookies button{flex:1;border:1px solid var(--line);border-radius:8px;background:#fff;font:inherit;font-weight:700;
+  padding:10px 12px;cursor:pointer;color:var(--ink)}
+.cookies button.sim{background:var(--green);border-color:var(--green);color:#fff}
+.legal{color:var(--muted);font-size:13px;line-height:1.55;margin:14px 0 0}
+.legal a{color:inherit;text-decoration:underline}
+
+.opts{display:grid;gap:10px;margin-top:30px}
+.opt{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:1px solid var(--line);background:#fff;
+  border-radius:10px;padding:14px 16px;font:inherit;font-size:16px;color:var(--ink);cursor:pointer;
+  transition:border-color .15s,background-color .15s}
+.opt:hover{border-color:var(--line-strong);background:#FCFBF7}
+.opt .key{flex:none;width:28px;height:28px;border-radius:6px;border:1px solid var(--line-strong);background:#F4F3EF;
+  font-family:var(--font-mono);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;color:var(--ink-soft)}
+.opt[aria-checked="true"]{border-color:var(--green);background:var(--green-tint)}
+.opt[aria-checked="true"] .key{background:var(--green);border-color:var(--green);color:#fff}
+
+.cal{margin-top:28px;border:1px solid var(--line);border-radius:14px;padding:18px 16px 20px}
+.cal-h{font-size:14px;font-weight:600;color:var(--ink-soft);margin:0 0 10px}
+.days{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;margin:0 -2px 14px;scroll-snap-type:x mandatory}
+.day{flex:none;scroll-snap-align:start;min-width:72px;border:1px solid var(--line);border-radius:10px;background:#fff;
+  padding:9px 8px;text-align:center;cursor:pointer;font:inherit;color:var(--ink)}
+.day .wd{display:block;font-family:var(--font-mono);font-size:12px;color:var(--muted);text-transform:capitalize}
+.day .dn{display:block;font-size:20px;font-weight:700;line-height:1.2;margin-top:2px}
+.day .mo{display:block;font-family:var(--font-mono);font-size:12px;color:var(--muted)}
+.day[aria-pressed="true"]{border-color:var(--green);background:var(--green-tint)}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px}
+.slot{border:1px solid var(--line);border-radius:8px;background:#fff;padding:11px 0;font:inherit;font-weight:600;
+  font-size:15px;color:var(--ink);cursor:pointer}
+.slot:hover{border-color:var(--line-strong)}
+.slot[aria-pressed="true"]{background:var(--green);border-color:var(--green);color:#fff}
+.picked{margin:16px 0 0;font-size:15px;color:var(--ink-soft);min-height:22px}
+.picked strong{color:var(--ink)}
+.empty{color:var(--muted);font-size:15px;margin:0}
+.code{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:22px 0 6px;padding:16px 18px;
+  border:1px dashed var(--line-strong);border-radius:10px;background:#fff}
+.code b{font-family:var(--font-mono);font-size:26px;letter-spacing:.18em;color:var(--ink)}
+.code button{border:1px solid var(--line);border-radius:8px;background:#fff;font:inherit;font-weight:700;font-size:14px;
+  padding:9px 14px;cursor:pointer;color:var(--ink)}
+.steps{margin:18px 0 0;padding-left:20px;color:var(--ink-soft);font-size:16px;line-height:1.7}
+
+.ag-confirm{margin-top:28px;border:1px solid var(--line);border-radius:14px;padding:18px 16px 20px}
+.ag-confirm .quando{font-size:19px;font-weight:700;margin:0 0 4px;color:var(--ink)}
+.ag-confirm .field{margin-top:18px}
+.ag-link{background:none;border:0;padding:6px 0;margin-top:12px;font:inherit;font-size:14px;color:var(--muted);cursor:pointer;text-decoration:underline}
+.ag-aviso{margin:20px 0 0;padding:12px 14px;border-radius:10px;background:#FDF3F2;color:var(--err);font-size:15px;line-height:1.5}
+.ag-alt{margin:16px 0 0;font-size:14px;color:var(--muted);line-height:1.55}
+.ag-alt a{color:inherit;text-decoration:underline}
+.cta[disabled]{opacity:.65;cursor:progress}
+
+.final h1{font-size:clamp(26px,5vw,34px);font-weight:700;letter-spacing:-.025em;line-height:1.2;margin:0 0 18px}
+.final p{color:var(--muted);font-size:17px;line-height:1.65;margin:0 0 14px;max-width:56ch}
+.final p strong{color:var(--ink)}
+
+/* Botão logo abaixo do conteúdo, alinhado com as perguntas (não fica preso no rodapé) */
+footer{max-width:680px;margin:0 auto;padding:30px 24px calc(40px + env(safe-area-inset-bottom,0px))}
+footer[hidden]{display:none}
+.cta{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin:0;border:0;
+  border-radius:8px;background:var(--green);color:#fff;font:inherit;font-weight:700;font-size:16px;padding:15px 20px;
+  cursor:pointer;letter-spacing:.01em;text-decoration:none;box-shadow:0 8px 20px -10px rgba(20,28,48,.7);transition:background-color .15s}
+.cta:hover{background:var(--green-deep)}
+.cta svg{width:17px;height:17px;flex:none}
+.hint{display:none;text-align:left;color:var(--muted);font-family:var(--font-mono);font-size:12px;margin:8px 0 0}
+@media (hover:hover) and (pointer:fine){.hint{display:block}}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.field input:focus-visible{outline:none}
+@media (prefers-reduced-motion:reduce){.screen{animation:none}.progress i{transition:none}}
+</style>
