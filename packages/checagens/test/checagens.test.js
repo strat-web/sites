@@ -9,7 +9,7 @@ import { RAIZ, checarApps, montarContexto } from '../src/contexto.js';
 import { checarLinks } from '../src/links.js';
 import { bytesDaPagina, julgarMedicao } from '../src/peso.js';
 import { checarSeo } from '../src/seo.js';
-import { checarTracking, diferencasDoRastro, lerRastro, slugConhecido } from '../src/tracking.js';
+import { bannerDoKit, checarTracking, diferencasDoRastro, lerRastro, slugConhecido } from '../src/tracking.js';
 import { EXCECOES_LIGHTHOUSE } from '../src/excecoes-peso.js';
 
 const SITE = 'https://stratai.com.br';
@@ -114,6 +114,32 @@ test('tracking: pixel colado à mão e script em dobro barram', async () => {
   assert.match(msgs(await checarTracking(ctx([pagina({ head: dobro })]), { semRede: true })), /em dobro/);
 });
 
+test('tracking: o banner do kit (que chama o fbq no soft) passa; faltando ou mexido, barra (WEB-84)', async () => {
+  // Página da Agência sem Rastro: o m.js liga o pixel, e o aviso do kit vem inline logo depois.
+  const agencia = (consentimento) => linha({
+    marca: 'agencia', rastro_slug: null, metricaas_ws: 'strat-marketing', meta_pixel: '1815630929780241', consentimento,
+  });
+  const mjs = (extra = '') =>
+    `<script defer src="https://t.metricaas.com.br/m.js" data-ws="strat-marketing" data-pixel="1815630929780241"${extra}></script>`;
+  for (const [consentimento, attrs] of [['soft', ''], ['banner', ' data-pixel-consent="aguardar"']]) {
+    const l = agencia(consentimento);
+    const banner = bannerDoKit({ urls: [l] }, l);
+    assert.match(banner, new RegExp(`"modo":"${consentimento}"`));
+    const ok = await checarTracking(ctx([pagina({ head: `${mjs(attrs)}<script>${banner}</script>` })], { linhas: [l] }), { semRede: true });
+    assert.deepEqual(ok.erros, [], consentimento);
+    const sem = await checarTracking(ctx([pagina({ head: mjs(attrs) })], { linhas: [l] }), { semRede: true });
+    assert.match(msgs(sem), new RegExp(`falta o banner de cookies do kit \\(modo "${consentimento}"\\)`));
+    // O mesmo texto com um fbq a mais já não é o do kit: volta a ser pixel colado à mão (e o banner do kit falta).
+    const mexido = banner.replace("w.fbq('consent', 'revoke');", "w.fbq('consent', 'revoke'); w.fbq('track', 'Lead');");
+    assert.notEqual(mexido, banner);
+    const r = await checarTracking(ctx([pagina({ head: `${mjs(attrs)}<script>${mexido}</script>` })], { linhas: [l] }), { semRede: true });
+    assert.match(msgs(r), /pixel da Meta \(fbq\) colado à mão/);
+  }
+  // off e página com Rastro não têm banner do kit.
+  assert.equal(bannerDoKit({ urls: [agencia('off')] }, agencia('off')), null);
+  assert.equal(bannerDoKit({ urls: [linha({ consentimento: 'soft' })] }, linha({ consentimento: 'soft' })), null);
+});
+
 test('tracking: slug que o Rastro não conhece barra', async () => {
   const r = await checarTracking(ctx([pagina()]), { buscar: rastroConhece([]) });
   assert.match(msgs(r), /não conhece o produto "stratai"/);
@@ -173,6 +199,27 @@ test('catalogo: slug com ponto precisa da barra, arquivo não; linha tipo site s
   assert.deepEqual(checarCatalogo(ctx([], { linhas: [site({ no_ar: false })] })).erros, []);
   // Fora de tipo site o campo é opcional.
   assert.deepEqual(checarCatalogo(ctx([], { linhas: [linha()] })).erros, []);
+});
+
+test('catalogo: linhas do mesmo produto do Rastro com pixel, GA4, tag do Google ou consentimento diferentes barram (WEB-83)', () => {
+  const academy = (extra) =>
+    linha({ rastro_slug: 'site', meta_pixel: '860500981882285', ga4: 'G-R84BNVV2HX', google_tag: 'AW-17263684860', consentimento: 'banner', ...extra });
+  const kit = academy({ id: 'academy-kit-conteudo', url: `${SITE}/kit/conteudo/` });
+  // O caso do WEB-83: a home sem GA4 e Ads, a página de teste com, as duas no produto site.
+  const home = academy({ id: 'academy', url: `${SITE}/`, ga4: null, google_tag: null });
+  const r = checarCatalogo(ctx([], { linhas: [kit, home] }));
+  assert.ok(r.erros.every((e) => e.onde === 'catalogo/sites.json, linha academy'));
+  const m = msgs(r);
+  assert.match(m, /ga4 "", mas a linha academy-kit-conteudo, do mesmo produto "site" no Rastro, tem "G-R84BNVV2HX"/);
+  assert.match(m, /google_tag "", mas a linha academy-kit-conteudo/);
+  assert.match(msgs(checarCatalogo(ctx([], { linhas: [kit, academy({ id: 'b', url: `${SITE}/b/`, consentimento: 'off' })] }))), /consentimento "off"/);
+  assert.match(msgs(checarCatalogo(ctx([], { linhas: [kit, academy({ id: 'b', url: `${SITE}/b/`, meta_pixel: '1' })] }))), /meta_pixel "1"/);
+  // Iguais passam; por-funil e sem-tracking não carregam o Rastro pelo kit e não entram na conta; null e ausente são iguais.
+  assert.deepEqual(checarCatalogo(ctx([], { linhas: [kit, academy({ id: 'academy', url: `${SITE}/` })] })).erros, []);
+  const funil = academy({ id: 'c', url: `${SITE}/c/`, consentimento: 'por-funil', ga4: null });
+  assert.deepEqual(checarCatalogo(ctx([], { linhas: [kit, funil] })).erros, []);
+  const semGa4 = linha({ id: 'd', url: `${SITE}/d/` });
+  assert.deepEqual(checarCatalogo(ctx([], { linhas: [linha(), { ...semGa4, ga4: null }] })).erros, []);
 });
 
 function distFalso() {
