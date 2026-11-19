@@ -89,8 +89,8 @@ const perguntas = [
 - Rota dinâmica com ponto no slug e `atualizado`: `apps/agenciastrat/src/pages/kit/[slug].astro` (`/kit/gpt-4.1/`,
   noindex, sai com a `/kit/lead/` antes da virada, WEB-77).
 - Página com tracking: `perfil` no `Layout` e a linha da URL no catálogo com o mesmo perfil, senão o build quebra.
-  Páginas de teste de cada perfil: `agenciastrat/kit/lead/`, `stratacademy/kit/venda/` e `stratacademy/kit/conteudo/`
-  (WEB-17); as da StratAI saíram antes de o domínio virar (WEB-32).
+  Páginas de teste de cada perfil: `agenciastrat/kit/lead/`, `agenciastrat/kit/soft/` (WEB-84), `stratacademy/kit/venda/`
+  e `stratacademy/kit/conteudo/` (WEB-17); as da StratAI saíram antes de o domínio virar (WEB-32).
 
 ## Página 404 (WEB-75)
 Todo app tem `src/pages/404.astro`, e o build gera o `dist/404.html`. O Cloudflare Pages serve esse arquivo, com
@@ -213,11 +213,11 @@ da `main` exige. A regra mora em `packages/checagens/` e lê o `dist/` de cada a
 |---|---|
 | build | algum app não compila ou algum teste dos pacotes falha (`pnpm build` e `pnpm test`) |
 | (todas) | app (pasta com `package.json` em `apps/` ou `lps/academy/`) sem `dist/`: cada checagem barra antes de começar, em vez de pular o app em silêncio |
-| seo | `<title>` ou `<h1>` faltando, repetido na página ou repetido no site; sem canonical ou canonical diferente da URL; `<a href="#">` (ou vazio, ou `javascript:`); JSON-LD que não é JSON ou sem `@context`/`@type`; página indexável fora do `sitemap.xml`; sitemap com página que tem noindex ou não existe; app sem `sitemap.xml`, `robots.txt` ou `404.html`; 404 sem noindex, sem um `<title>` e um `<h1>`, ou no sitemap |
-| tracking | script do `<Tracking>` faltando ou diferente do que a linha do catálogo pede (`data-ws`, `data-pixel`, `data-website-id`); `m.js` sem `defer`, com `async`, com `type` (só JavaScript clássico), fora do `<head>` ou depois de outro script que executa (JSON-LD não conta); script do `<Tracking>` com `type` que o navegador não executa; script de tracking a mais ou em dobro; pixel da Meta, gtag, GTM ou pixel do TikTok colado à mão, no HTML, em `<noscript>` (inclusive a imagem `facebook.com/tr`) ou dentro de um `.js` do build; slug que o Rastro não conhece (`/sa?product=<slug>` com `known: false`); produto do Rastro que injeta pixel, GA4 ou tag do Google diferente da linha do catálogo, ou com `consentMode` fora do par do `consentimento` (`banner` = `strict`, `soft` = `soft`, `off` = `off`) ou sem `consentMode` no `/sa`; perfil `venda` com `banner` e script da Hotmart em página com `banner` (carregaria antes do aceite, até o WEB-85) |
+| seo | `<title>` ou `<h1>` faltando, repetido na página ou repetido entre as páginas indexáveis do site (variante de teste com noindex pode repetir a principal, WEB-48; conta só a marcação: `<h1>` dentro de `<script>` não vale, WEB-24); sem canonical ou canonical diferente da URL; `<a href="#">` (ou vazio, ou `javascript:`); JSON-LD que não é JSON ou sem `@context`/`@type`; página indexável fora do `sitemap.xml`; sitemap com página que tem noindex ou não existe; app sem `sitemap.xml`, `robots.txt` ou `404.html`; 404 sem noindex, sem um `<title>` e um `<h1>`, ou no sitemap |
+| tracking | script do `<Tracking>` faltando ou diferente do que a linha do catálogo pede (`data-ws`, `data-pixel`, `data-website-id`); `m.js` sem `defer`, com `async`, com `type` (só JavaScript clássico), fora do `<head>` ou depois de outro script que executa (JSON-LD não conta); script do `<Tracking>` com `type` que o navegador não executa; script de tracking a mais ou em dobro; pixel da Meta, gtag, GTM ou pixel do TikTok colado à mão (evento `fbq('track' | 'trackCustom')` no pixel do `m.js` do kit não conta, WEB-24), no HTML, em `<noscript>` (inclusive a imagem `facebook.com/tr`) ou dentro de um `.js` do build; slug que o Rastro não conhece (`/sa?product=<slug>` com `known: false`); produto do Rastro que injeta pixel, GA4 ou tag do Google diferente da linha do catálogo, ou com `consentMode` fora do par do `consentimento` (`banner` = `strict`, `soft` = `soft`, `off` = `off`) ou sem `consentMode` no `/sa`; perfil `venda` com `banner` e script da Hotmart em página com `banner` (carregaria antes do aceite, até o WEB-85) |
 | links | link interno quebrado (caminho, relativo ou URL do próprio domínio sem arquivo no build); âncora `#id` sem o id na página; endereço relativo na 404 (ela é servida em qualquer caminho) |
-| peso | página acima de 1,5 MB (HTML + CSS, JS, imagem e fonte do build); no Lighthouse em celular, performance abaixo de 90, LCP acima de 2,5 s ou CLS acima de 0,1 |
-| catalogo | página do build sem linha em `catalogo/sites.json` ou com `app` diferente; linha sem campo obrigatório, com valor fora da lista, URL sem barra, id ou URL repetidos |
+| peso | página acima de 1,5 MB (HTML + CSS, JS, imagem e fonte do build); no Lighthouse em celular, performance abaixo de 90, LCP acima de 2,5 s ou CLS acima de 0,1. Página que sai sozinha para outro domínio (confirmação que abre o WhatsApp) é medida sem o destino: a navegação recebe 204 e o log diz para onde ela ia (WEB-48) |
+| catalogo | página do build sem linha em `catalogo/sites.json` ou com `app` diferente; linha sem campo obrigatório, com valor fora da lista, URL sem barra, id ou URL repetidos; duas linhas do mesmo produto do Rastro (`rastro_slug`) com `meta_pixel`, `ga4`, `google_tag` ou `consentimento` diferentes (o `/sa` é um só por produto; `sem-tracking` e `por-funil` ficam de fora) |
 
 Para rodar numa branch sem PR: GitHub → Actions → checagens → Run workflow → escolha a branch → Run workflow,
 ou `gh workflow run checagens.yml --ref <branch>`. O disparo manual fica disponível depois que o workflow com
@@ -243,8 +243,9 @@ Exceções escritas no código, com o item que as tira:
 - `packages/checagens/src/esqueletos.js`: a home de cada app é um esqueleto do WEB-15 (noindex, sem tracking) até
   o item de migração. A checagem exige noindex e nenhum tracking nessas URLs e quebra quando a página real ganha o
   `<Tracking>`, pedindo para tirar a URL da lista no mesmo PR;
-- `packages/checagens/src/excecoes-peso.js`: página migrada sem mudança que ainda não cabe no orçamento do Lighthouse
-  (hoje só a home da StratAI, WEB-32). Cada uma tem um piso, o número da página no ar no dia da migração: entre o piso
+- `packages/checagens/src/excecoes-peso.js`: página que ainda não cabe no orçamento do Lighthouse, com o motivo e o
+  item que a tira (hoje vazia: a home, o `/raio-x/` e a política da StratAI saíram no WEB-87, depois do servidor com
+  gzip do WEB-88). Cada uma tem um piso, o número medido no mesmo Lighthouse: entre o piso
   e o orçamento a checagem só avisa; abaixo do piso, barra. O limite de 1,5 MB continua valendo. A URL sai da lista
   no item que acertar o desempenho da página;
 - `/u/` não é conferido como link: o proxy do Umami é do Strat Tracking, fora do build.

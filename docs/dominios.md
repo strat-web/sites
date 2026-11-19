@@ -43,11 +43,11 @@ token `pages-strat-web`; investigação no item de Triagem aberto pelo WEB-44.
 
 | URL | O que é | Hoje | Alvo | Item |
 |---|---|---|---|---|
-| agenciastrat.com.br | site da Agência, /advogados, /bio, /blog | não publicado | Pages `agenciastrat` (existe desde 11/11, agenciastrat.pages.dev) | WEB-23 a 31 |
+| agenciastrat.com.br | site da Agência, /advogados (v1) e /advogados/v2/ (no app desde o WEB-24), /bio, /blog | não publicado | Pages `agenciastrat` (existe desde 11/11, agenciastrat.pages.dev) | WEB-23 a 31 |
 | agencia.stratai.com.br | site da Agência (antigo) | Easypanel `strat-lps` | 301 para agenciastrat.com.br | WEB-29 |
 | stratai.com.br | site da StratAI, /raio-x, /politica-de-privacidade/, /recuperacao/ (funil e cases, rascunho, WEB-91), /parcerias/ (WEB-74, página nova) | Easypanel `strat-lps` | Pages `stratai` (existe desde 11/11, stratai-ti7.pages.dev). As três páginas e os 301 da casa antiga (`/politica-de-privacidade` sem barra, `/agencia/*` para agencia.stratai.com.br, `/raio-x/v1/`) já estão no app desde o WEB-32; o DNS só vira com o "pode virar" do Helbert | WEB-32 |
 | bio.stratai.com.br | bio da StratAI e da Agência | Easypanel `strat-lps` | 301 para /bio de cada marca | WEB-25, WEB-35 |
-| metricaas.com.br | site do MetricaaS | Easypanel `strat-lps` (com proxy) | Pages `metricaas` (existe desde 11/11, metricaas.pages.dev) | WEB-36 |
+| metricaas.com.br, www.metricaas.com.br | site do MetricaaS, /politica-de-privacidade/, /termos-de-uso/ | Easypanel `strat-lps` (registros A com proxy para a VPS) | Pages `metricaas` (existe desde 11/11, metricaas.pages.dev). As três páginas e os 301 da casa antiga (`/politica-de-privacidade` e `/termos-de-uso` sem barra, `/images/*`, `/legal.css`) já estão no app desde o WEB-36; o DNS da raiz e do www só vira com o "pode virar" do Helbert | WEB-36 |
 | app., go.metricaas.com.br | o produto | Easypanel `whatsapp/metricaas-app` | fica | — |
 | docs.metricaas.com.br | documentação | Mintlify | fica | — |
 | stratacademy.com.br | site e blog | Pages `stratacademy` (repositório horus) | Pages `sites-stratacademy`, deste repositório (existe desde 11/11; o nome `stratacademy` é o do horus, ver `pages.md`) | WEB-49 |
