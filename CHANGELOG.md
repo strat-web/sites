@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- feat(agenciastrat): /bio/ migrada de bio.stratai.com.br/agencia/ (strat-lps, com a correção do WEB-82) sem mudar texto, layout nem tracking: tag do MetricaaS strat-marketing com o PX-001 atrás do banner pelo <Tracking>, banner próprio trocado pelo do kit (mesmo texto e mesma chave), fontes do app no lugar do Google Fonts, links do WhatsApp e das redes escritos no HTML, noindex; Umami passa a ser o da Agência; test/bio.test.js (WEB-25)
 - feat(academy): migra a LP claude (principal, v1, v3 e v4) do strat-lps para o projeto academy-claude do Pages, com SEO e Tracking do kit, fontes locais e variantes noindex (WEB-48)
 - fix(kit): carrega o Rastro após o primeiro quadro no perfil venda, preserva m.js/Hotmart/Umami e valida o carregador nas checagens (WEB-104)
 - fix(catalogo): restaura as linhas da vibecode (perfil lead, sem Hotmart), da mentoria e do bootcamp que o merge da sequência de 19/11 perdeu; a vibecode não compilava na main (WEB-48)
