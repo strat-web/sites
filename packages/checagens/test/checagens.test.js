@@ -201,6 +201,27 @@ test('catalogo: slug com ponto precisa da barra, arquivo não; linha tipo site s
   assert.deepEqual(checarCatalogo(ctx([], { linhas: [linha()] })).erros, []);
 });
 
+test('catalogo: linhas do mesmo produto do Rastro com pixel, GA4, tag do Google ou consentimento diferentes barram (WEB-83)', () => {
+  const academy = (extra) =>
+    linha({ rastro_slug: 'site', meta_pixel: '860500981882285', ga4: 'G-R84BNVV2HX', google_tag: 'AW-17263684860', consentimento: 'banner', ...extra });
+  const kit = academy({ id: 'academy-kit-conteudo', url: `${SITE}/kit/conteudo/` });
+  // O caso do WEB-83: a home sem GA4 e Ads, a página de teste com, as duas no produto site.
+  const home = academy({ id: 'academy', url: `${SITE}/`, ga4: null, google_tag: null });
+  const r = checarCatalogo(ctx([], { linhas: [kit, home] }));
+  assert.ok(r.erros.every((e) => e.onde === 'catalogo/sites.json, linha academy'));
+  const m = msgs(r);
+  assert.match(m, /ga4 "", mas a linha academy-kit-conteudo, do mesmo produto "site" no Rastro, tem "G-R84BNVV2HX"/);
+  assert.match(m, /google_tag "", mas a linha academy-kit-conteudo/);
+  assert.match(msgs(checarCatalogo(ctx([], { linhas: [kit, academy({ id: 'b', url: `${SITE}/b/`, consentimento: 'off' })] }))), /consentimento "off"/);
+  assert.match(msgs(checarCatalogo(ctx([], { linhas: [kit, academy({ id: 'b', url: `${SITE}/b/`, meta_pixel: '1' })] }))), /meta_pixel "1"/);
+  // Iguais passam; por-funil e sem-tracking não carregam o Rastro pelo kit e não entram na conta; null e ausente são iguais.
+  assert.deepEqual(checarCatalogo(ctx([], { linhas: [kit, academy({ id: 'academy', url: `${SITE}/` })] })).erros, []);
+  const funil = academy({ id: 'c', url: `${SITE}/c/`, consentimento: 'por-funil', ga4: null });
+  assert.deepEqual(checarCatalogo(ctx([], { linhas: [kit, funil] })).erros, []);
+  const semGa4 = linha({ id: 'd', url: `${SITE}/d/` });
+  assert.deepEqual(checarCatalogo(ctx([], { linhas: [linha(), { ...semGa4, ga4: null }] })).erros, []);
+});
+
 function distFalso() {
   const dist = mkdtempSync(join(tmpdir(), 'checagens-'));
   mkdirSync(join(dist, 'existe'), { recursive: true });

@@ -132,6 +132,10 @@ MetricaaS se confere na home e no `/raio-x/` da StratAI.
 
 No Rastro, pixel, GA4 e Google Ads vêm do produto (tabela `web_products`), não do HTML. Por isso o componente só
 precisa do slug.
+Como o `/sa` é um só por produto, toda linha do catálogo com o mesmo `rastro_slug` leva o mesmo pixel, GA4, tag do
+Google e consentimento; a checagem `catalogo` barra a diferença sem precisar de rede (WEB-83). O site da Academy
+(produto `site`, em `strict`) recebe GA4 G-R84BNVV2HX e Ads AW-17263684860 depois do aceite: a linha `academy` já
+pede os dois (WEB-46), e a checagem `tracking` passou com a home usando o `<Tracking>` contra o `/sa` de 17/11 (WEB-83).
 
 ## Umami (Strat Tracking, TRACK-8 e TRACK-9, 12/11/2026)
 
@@ -173,7 +177,8 @@ O kit garante que o catálogo bate com o Rastro.
   `banner` sem o banner de cookies dele (o aviso é o do Rastro), menos no perfil `venda`, que quebra o build até o
   WEB-85 (o launcher da Hotmart carregaria antes do aceite).
 - **Sem Rastro** (hoje só a Agência), `banner` e `soft` são o banner de cookies do kit (modo `banner` ou `soft`,
-  WEB-84), e o pixel vem pelo `m.js` do MetricaaS.
+  WEB-84), e o pixel vem pelo `m.js` do MetricaaS. O clique no WhatsApp não vira `Contact` no navegador (o `Contact`
+  no clique é do Rastro; ver "Antes de publicar").
 - Outros valores do campo: `por-funil` (a página liga o Rastro do funil pelo `?f=`, hoje só a comunidade da Academy)
   e `sem-tracking`.
 
@@ -200,8 +205,13 @@ cadastro do lead no MetricaaS não depende do aceite.
 ## Antes de publicar uma página nova
 1. Slug cadastrado no Rastro (`/sa?product=<slug>` responde `known: true`). Slug desconhecido cai no pixel da Strat sem erro.
 2. Domínio na lista de "Domínios autorizados" do MetricaaS e na lista de permissão do pixel (Gerenciador de Eventos).
-3. Teste com `?utm_source=teste&utm_medium=verificacao`: `PageView`; `Contact` no clique do WhatsApp; `Lead` no
-   formulário com o mesmo `event_id` no navegador e na CAPI; evento no MetricaaS. No celular emulado (4G lento),
+3. Teste com `?utm_source=teste&utm_medium=verificacao`: `PageView`; `Contact` no clique do WhatsApp **só em página
+   com Rastro** (quem dispara é o detector de WhatsApp do Rastro); `Lead` no formulário com o mesmo `event_id` no
+   navegador e na CAPI; evento no MetricaaS. Sem Rastro (hoje a Agência, pixel pelo `m.js`), o clique no WhatsApp não
+   manda `Contact` ao pixel do navegador: o `m.js` só envia o `wa_click` ao `/e` do MetricaaS (código no texto e
+   atribuição), e o `mf.js` só dispara `PageView` e os eventos que o servidor devolve no formulário (`/f`) e no
+   agendamento (`/ag`). Conferido no código público do `m.js` e do `mf.js` em 18/11/2026 (WEB-86). Se o servidor do
+   MetricaaS manda `Contact` pela CAPI a partir do `wa_click` ainda está em aberto no WEB-86 (dataset da Agência). No celular emulado (4G lento),
    tocar no WhatsApp do topo logo que ele aparece: o código do MetricaaS tem de estar no texto.
 4. Com e sem aceitar cookies, conferindo o modo da linha do catálogo (seção "Consentimento"). Com Rastro, o
    `consentMode` do `/sa?product=<slug>` tem de ser o par do catálogo (`banner` = `strict`, `soft` = `soft`,
