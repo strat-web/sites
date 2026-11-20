@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- feat(agenciastrat): home e política migradas de agencia.stratai.com.br (strat-lps 05ca028, com o formulário da WEB-71) para apps/agenciastrat sem mudar texto, layout nem tracking (Layout e Tracking do kit, MetricaaS strat-marketing com o pixel); os três vídeos da home servidos do R2 em assets.agenciastrat.com.br, decisão do Helbert de 19/11; 301 locais da política sem barra e .html; as páginas de teste /kit/ continuam (WEB-23)
 - feat(academy): migra a LP claude (principal, v1, v3 e v4) do strat-lps para o projeto academy-claude do Pages, com SEO e Tracking do kit, fontes locais e variantes noindex (WEB-48)
 - fix(kit): carrega o Rastro após o primeiro quadro no perfil venda, preserva m.js/Hotmart/Umami e valida o carregador nas checagens (WEB-104)
 - fix(catalogo): restaura as linhas da vibecode (perfil lead, sem Hotmart), da mentoria e do bootcamp que o merge da sequência de 19/11 perdeu; a vibecode não compilava na main (WEB-48)
