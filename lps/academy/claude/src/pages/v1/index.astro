@@ -1,0 +1,20 @@
+---
+// V1 da LP (QUAIA, a versão original), migrada do strat-lps (lps/quaia/v1/index.html) sem mudar texto, layout nem
+// tracking (WEB-48). Variante de teste: noindex e fora do sitemap, como no ar (o sitemap de lá só tinha a principal).
+import Layout from '@strat/kit/Layout.astro';
+import head from '../../html/v1.head.html?raw';
+import corpo from '../../html/v1.corpo.html?raw';
+---
+<Layout
+  marca="academy"
+  perfil="venda"
+  indexar={false}
+  titulo="Qualquer Um Aprende I.A. — QUAIA | Strat Academy"
+  descricao="Aprenda a usar ChatGPT, Claude e Gemini com método — não na tentativa e erro. Do zero à Engenharia de Prompt em menos de 2 horas. Por R$97."
+  tituloSocial="QUAIA — Qualquer Um Aprende I.A."
+  descricaoSocial="Do zero à Engenharia de Prompt em menos de 2 horas. Por R$97."
+  viewport="width=device-width,initial-scale=1"
+>
+  <Fragment slot="head" set:html={head} />
+  <Fragment set:html={corpo} />
+</Layout>

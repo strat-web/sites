@@ -1,0 +1,21 @@
+---
+// V4 da LP, migrada do strat-lps (lps/quaia/v4/index.html) sem mudar texto, layout nem tracking (WEB-48).
+// Variante de teste: noindex e fora do sitemap, como no ar (o sitemap de lá só tinha a principal).
+import Layout from '@strat/kit/Layout.astro';
+import head from '../../html/v4.head.html?raw';
+import corpo from '../../html/v4.corpo.html?raw';
+---
+<Layout
+  marca="academy"
+  perfil="venda"
+  indexar={false}
+  titulo="Curso Claude Code para Negócios | Strat Academy"
+  descricao="Domine o Claude, o Claude Code, o Claude Cowork e o Claude Skills com método, não na tentativa e erro. Do zero ao avançado em menos de 2 horas. Por R$97, acesso vitalício."
+  tituloSocial="Curso Claude Code para Negócios"
+  descricaoSocial="Do zero ao Claude Code em menos de 2 horas. Método, não tentativa e erro. Por R$97."
+  imagem="/v4/images/hero2.webp"
+  viewport="width=device-width,initial-scale=1"
+>
+  <Fragment slot="head" set:html={head} />
+  <Fragment set:html={corpo} />
+</Layout>

@@ -1,0 +1,21 @@
+---
+// LP do Curso Claude Code para Negócios (V2, a principal), migrada do strat-lps (lps/quaia/index.html) sem mudar
+// texto, layout nem tracking (WEB-48). O HTML mora em src/html/ (head e corpo); o kit põe título, descrição,
+// canonical, Open Graph, JSON-LD e o <Tracking> perfil venda (Rastro quaia e launcher da Hotmart, da linha
+// "academy-claude" do catálogo). O que mudou em relação ao strat-lps está no README.
+import Layout from '@strat/kit/Layout.astro';
+import head from '../html/home.head.html?raw';
+import corpo from '../html/home.corpo.html?raw';
+---
+<Layout
+  marca="academy"
+  perfil="venda"
+  titulo="Curso Claude Code para Negócios | Strat Academy"
+  descricao="Aprenda a usar o Claude, o Claude Code, o Claude Cowork e o Claude Skills com método, não na tentativa e erro. Do zero ao Claude Code em menos de 2 horas. Por R$97."
+  tituloSocial="Curso Claude Code para Negócios"
+  descricaoSocial="Do zero ao Claude Code em menos de 2 horas. Por R$97."
+  viewport="width=device-width,initial-scale=1"
+>
+  <Fragment slot="head" set:html={head} />
+  <Fragment set:html={corpo} />
+</Layout>
