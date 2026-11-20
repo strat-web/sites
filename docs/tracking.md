@@ -177,8 +177,8 @@ O kit garante que o catálogo bate com o Rastro.
   `banner` sem o banner de cookies dele (o aviso é o do Rastro), menos no perfil `venda`, que quebra o build até o
   WEB-85 (o launcher da Hotmart carregaria antes do aceite).
 - **Sem Rastro** (hoje só a Agência), `banner` e `soft` são o banner de cookies do kit (modo `banner` ou `soft`,
-  WEB-84), e o pixel vem pelo `m.js` do MetricaaS. O clique no WhatsApp não vira `Contact` no navegador (o `Contact`
-  no clique é do Rastro; ver "Antes de publicar").
+  WEB-84), e o pixel vem pelo `m.js` do MetricaaS. O clique no WhatsApp não vira `Contact` nem no navegador nem pela
+  CAPI (o `Contact` no clique é do Rastro; o MetricaaS só grava o `wa_click`; ver "Antes de publicar").
 - Outros valores do campo: `por-funil` (a própria página liga o Rastro do funil pelo `?f=`, fora do kit; hoje só a comunidade da Academy)
   e `sem-tracking`.
 
@@ -223,8 +223,13 @@ A checagem `tracking` garante isso no código (`EVENTOS_DA_PAGINA` e `EVENTOS_DA
    navegador e na CAPI; evento no MetricaaS. Sem Rastro (hoje a Agência, pixel pelo `m.js`), o clique no WhatsApp não
    manda `Contact` ao pixel do navegador: o `m.js` só envia o `wa_click` ao `/e` do MetricaaS (código no texto e
    atribuição), e o `mf.js` só dispara `PageView` e os eventos que o servidor devolve no formulário (`/f`) e no
-   agendamento (`/ag`). Conferido no código público do `m.js` e do `mf.js` em 18/11/2026 (WEB-86). Se o servidor do
-   MetricaaS manda `Contact` pela CAPI a partir do `wa_click` ainda está em aberto no WEB-86 (dataset da Agência). No celular emulado (4G lento),
+   agendamento (`/ag`). Conferido no código público do `m.js` e do `mf.js` em 18/11/2026 (WEB-86). O servidor do
+   MetricaaS também não manda `Contact` pela CAPI: o `wa_click` só é gravado (`page_events` e `click_events`, ADR 0007
+   do MetricaaS). Pelo servidor, a Meta recebe o `Lead` (formulário ou primeira mensagem) e as conversões por etapa do
+   funil, lista fechada em `dashboard/src/conversoes-do-funil.ts` (`LeadQualificado`, `Agendamento`, `Schedule`,
+   `ContatoIniciado` e `PropostaEnviada`). Conferido pelo Helbert no código do `Strat-Ai-Metricaas/metricaas`
+   (`master`) em 19/11/2026 (WEB-86). A Agência não passa a mandar `Contact` no clique: otimiza por `Lead` e
+   `LeadQualificado`, do servidor (decisão do Helbert em 19/11/2026, `decisoes.md`). No celular emulado (4G lento),
    tocar no WhatsApp do topo logo que ele aparece: o código do MetricaaS tem de estar no texto.
 4. Com e sem aceitar cookies, conferindo o modo da linha do catálogo (seção "Consentimento"). Com Rastro, o
    `consentMode` do `/sa?product=<slug>` tem de ser o par do catálogo (`banner` = `strict`, `soft` = `soft`,
