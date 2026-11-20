@@ -53,3 +53,15 @@ test('todo arquivo do próprio site citado nas páginas existe em public/', () =
     }
   }
 });
+
+test('a Clash Grotesk tem reserva com as métricas dela na home, na v1 e na v3 (sem salto do título; WEB-48)', () => {
+  // O título pinta antes de a Clash chegar. Com a reserva do sistema (mais larga no Linux do PageSpeed), o H1 ganha
+  // linhas e empurra o .hero-art quando a fonte troca (CLS 0,177). A reserva calibrada ocupa o mesmo espaço.
+  for (const p of ['home', 'v1', 'v3']) {
+    const head = ler(`${p}.head.html`);
+    assert.match(head, /--font-display:\s*'Clash Grotesk', 'Clash Grotesk Reserva',/, `${p}: pilha da fonte`);
+    const faces = head.match(/@font-face\{font-family:'Clash Grotesk Reserva';[^}]+\}/g) || [];
+    assert.equal(faces.length, 2, `${p}: reserva 600 e 700`);
+    for (const f of faces) assert.match(f, /size-adjust:[\d.]+%;ascent-override:[\d.]+%;descent-override:[\d.]+%;line-gap-override:[\d.]+%/, `${p}: métricas`);
+  }
+});
