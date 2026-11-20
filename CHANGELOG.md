@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- docs(dominios): virada de 20/11 no catálogo, em dominios.md e em pages.md: comunidade, skills, vibecode, mentoria e bootcamp no Pages (a claude espera o LCP e o CLS) e metricaas.com.br no Pages (WEB-48, WEB-36)
 - feat(academy): migra a LP claude (principal, v1, v3 e v4) do strat-lps para o projeto academy-claude do Pages, com SEO e Tracking do kit, fontes locais e variantes noindex (WEB-48)
 - fix(kit): carrega o Rastro após o primeiro quadro no perfil venda, preserva m.js/Hotmart/Umami e valida o carregador nas checagens (WEB-104)
 - fix(catalogo): restaura as linhas da vibecode (perfil lead, sem Hotmart), da mentoria e do bootcamp que o merge da sequência de 19/11 perdeu; a vibecode não compilava na main (WEB-48)
