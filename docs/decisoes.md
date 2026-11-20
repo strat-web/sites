@@ -2,6 +2,11 @@
 
 Uma entrada por decisão, com data e quem decidiu. A mais nova em cima.
 
+## 2026-11-19 · A Agência não manda `Contact` no clique do WhatsApp (Helbert, WEB-86)
+Decisão do Helbert no Plane (19/11, 17h04): fica como está. A Agência (sem Rastro, pixel pelo `m.js`) otimiza por
+`Lead` e `LeadQualificado`, que saem do servidor do MetricaaS; o clique no WhatsApp segue só como `wa_click` no
+MetricaaS, sem `Contact` no navegador nem pela CAPI. O C4 do checklist de publicar não cobra `Contact` nas páginas
+sem Rastro.
 ## 2026-11-17 · Projeto do Pages de cada LP da Academy com o prefixo `academy-` (Jhonathan, WEB-48)
 O endereço `*.pages.dev` é de todas as contas da Cloudflare (`claude.pages.dev` não estaria livre), e o prefixo separa
 as LPs dos apps na lista da conta: `academy-claude`, `academy-skills`, `academy-mentoria`, `academy-bootcamp`,

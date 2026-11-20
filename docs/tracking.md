@@ -228,8 +228,8 @@ A checagem `tracking` garante isso no código (`EVENTOS_DA_PAGINA` e `EVENTOS_DA
    do MetricaaS). Pelo servidor, a Meta recebe o `Lead` (formulário ou primeira mensagem) e as conversões por etapa do
    funil, lista fechada em `dashboard/src/conversoes-do-funil.ts` (`LeadQualificado`, `Agendamento`, `Schedule`,
    `ContatoIniciado` e `PropostaEnviada`). Conferido pelo Helbert no código do `Strat-Ai-Metricaas/metricaas`
-   (`master`) em 19/11/2026 (WEB-86). Se a Agência deve passar a mandar `Contact` no clique é decisão dele, em aberto
-   no WEB-86. No celular emulado (4G lento),
+   (`master`) em 19/11/2026 (WEB-86). A Agência não passa a mandar `Contact` no clique: otimiza por `Lead` e
+   `LeadQualificado`, do servidor (decisão do Helbert em 19/11/2026, `decisoes.md`). No celular emulado (4G lento),
    tocar no WhatsApp do topo logo que ele aparece: o código do MetricaaS tem de estar no texto.
 4. Com e sem aceitar cookies, conferindo o modo da linha do catálogo (seção "Consentimento"). Com Rastro, o
    `consentMode` do `/sa?product=<slug>` tem de ser o par do catálogo (`banner` = `strict`, `soft` = `soft`,
