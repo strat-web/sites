@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- feat(stratai): /bio/ migrada de bio.stratai.com.br (strat-lps) sem mudar texto, layout nem tracking, com noindex, o diagnóstico de 11 perguntas e o Lead pelo Rastro; MetricaaS passa a ser o agencia-strat da linha do catálogo (era o strat-marketing, da Agência); no orçamento do Lighthouse sem exceção (99, LCP 2,1 s, 125 KB): fontes servidas pelo app no lugar do Google Fonts (como o WEB-87) e fotos dos sócios recomprimidas em WebP 128×160 em midia/bio/ (eram os JPG 640×800 exibidos a 64 px); a regra de 301 do host fica descrita em dominios.md para o Helbert (WEB-35)
 - feat(academy): migra a LP claude (principal, v1, v3 e v4) do strat-lps para o projeto academy-claude do Pages, com SEO e Tracking do kit, fontes locais e variantes noindex (WEB-48)
 - fix(kit): carrega o Rastro após o primeiro quadro no perfil venda, preserva m.js/Hotmart/Umami e valida o carregador nas checagens (WEB-104)
 - fix(catalogo): restaura as linhas da vibecode (perfil lead, sem Hotmart), da mentoria e do bootcamp que o merge da sequência de 19/11 perdeu; a vibecode não compilava na main (WEB-48)
