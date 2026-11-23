@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- fix(academy): LP claude sem salto do título no celular: fonte reserva da Clash Grotesk com as métricas dela (size-adjust e overrides) na home, v1 e v3; CLS da / de 0,177 para 0 nas 5 rodadas do PageSpeed na prévia (WEB-48)
 - feat(agenciastrat): home e política migradas de agencia.stratai.com.br (strat-lps 05ca028, com o formulário da WEB-71) para apps/agenciastrat sem mudar texto, layout nem tracking (Layout e Tracking do kit, MetricaaS strat-marketing com o pixel); os três vídeos da home servidos do R2 em assets.agenciastrat.com.br, decisão do Helbert de 19/11; 301 locais da política sem barra e .html; as páginas de teste /kit/ continuam (WEB-23)
 - feat(stratai): /bio/ migrada de bio.stratai.com.br (strat-lps) sem mudar texto, layout nem tracking, com noindex, o diagnóstico de 11 perguntas e o Lead pelo Rastro; MetricaaS passa a ser o agencia-strat da linha do catálogo (era o strat-marketing, da Agência); no orçamento do Lighthouse sem exceção (99, LCP 2,1 s, 125 KB): fontes servidas pelo app no lugar do Google Fonts (como o WEB-87) e fotos dos sócios recomprimidas em WebP 128×160 em midia/bio/ (eram os JPG 640×800 exibidos a 64 px); a regra de 301 do host fica descrita em dominios.md para o Helbert (WEB-35)
 - feat(stratai): rodapé da home com links para /raio-x/ e /parcerias/, que estavam no sitemap sem nenhuma página apontando para elas (WEB-110)
