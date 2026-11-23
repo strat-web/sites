@@ -1,0 +1,305 @@
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <symbol id="i-wa" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .1-1.3c0-.1-.2-.2-.5-.3z"/></symbol>
+ <symbol id="i-ig" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r=".6" fill="currentColor"/></symbol>
+ <symbol id="i-yt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="4"/><path d="M10 9v6l5-3z"/></symbol>
+ <symbol id="i-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10.5V16M8 7.5v.01M12 16v-3.2a2.3 2.3 0 0 1 4.6 0V16M12 10.5V16"/></symbol>
+</svg>
+
+<div class="top-clip">
+<main class="wrap">
+  <header class="head">
+    <div class="av"><img src="/midia/bio/avatar.png" alt="Strat"></div>
+    <h1>Strat<span>.ai</span></h1>
+    <p class="tag">Agentes de IA pra sua empresa<br><span class="rot" id="rot">atender 24h</span></p>
+    <div class="meta"><img class="seal" src="/midia/web/selos/google-partner.webp" alt="Google Partner" width="640" height="380"><img class="seal" src="/midia/web/selos/meta-business-partner.webp" alt="Meta Business Partner" width="640" height="380"><span>Joinville/SC</span></div>
+  </header>
+</main>
+</div>
+
+<!-- 1. DIAGNÓSTICO (o formulário da LP1 StratAI v5, já qualificando) -->
+<section class="diag stack" id="diag" data-mtc-section="diagnostico">
+  <small class="eb">Diagnóstico grátis · 3 minutos</small>
+  <h2>Onde a IA pode devolver horas para a sua empresa?</h2>
+  <button class="go start" id="diagStart" type="button" data-strat-cta="bio-diag-comecar" data-mtc-event="bio_diag_comecar">Começar diagnóstico<span class="ar" aria-hidden="true">→</span></button>
+  <div class="diag-open" id="diagOpen" aria-hidden="true" inert><div class="diag-in">
+  <div class="bot" id="bot">
+    <div class="bot-head"><span class="av-bot" aria-hidden="true"><svg class="robo" viewBox="0 0 32 32"><circle class="bot-ant" cx="16" cy="4.6" r="2.2"/><path d="M15.2 6.5h1.6V10h-1.6zM3 15.5h2v5H3zM27 15.5h2v5h-2z"/><rect x="6" y="10" width="20" height="15" rx="5"/><g class="bot-eyes"><circle cx="12" cy="17" r="2.3"/><circle cx="20" cy="17" r="2.3"/></g><rect class="bot-mouth" x="13" y="21.2" width="6" height="1.5" rx=".75"/></svg></span><div><b>Diagnóstico Strat.ai</b><small id="botStatus">online</small></div><button class="restart" type="button" id="botRestart" aria-label="Recomeçar o diagnóstico"><span aria-hidden="true">↺</span><span class="rs-t">recomeçar</span></button></div>
+    <div class="prog" aria-hidden="true"><i id="botProg"></i></div>
+    <div class="bot-body" id="botBody" aria-live="polite"></div>
+    <div class="bot-in" id="botIn"></div>
+  </div>
+  <p class="fine2">Seus dados ficam só com a Strat. Ao continuar, você concorda em receber contato da Strat.ai sobre o seu diagnóstico, conforme a <a href="https://stratai.com.br/politica-de-privacidade/" data-k="privacidade">política de privacidade</a>. Sem spam.</p>
+  </div></div>
+</section>
+
+<main class="wrap" style="padding-top:0">
+  <!-- 2. Site e WhatsApp -->
+  <div class="ctas" data-mtc-section="links">
+    <a class="cta cta-site" data-k="site" data-strat-cta="bio-site" data-mtc-event="bio_site" href="https://stratai.com.br/">Conheça o nosso site<span class="ar">→</span></a>
+    <a class="cta cta-wa wa" data-msg="Oi! Vim pela bio do Instagram da Strat.ai e quero conversar sobre IA na minha empresa." data-strat-cta="bio-whatsapp" href="https://wa.me/5547991658478?text=Oi!%20Vim%20pela%20bio%20do%20Instagram%20da%20Strat.ai%20e%20quero%20conversar%20sobre%20IA%20na%20minha%20empresa."><svg width="20" height="20"><use href="#i-wa"/></svg>Falar no WhatsApp</a>
+  </div>
+
+  <!-- 3. Sócios -->
+  <div class="lbl" data-mtc-section="socios">quem faz</div>
+  <div class="team">
+    <img src="/midia/bio/socio-gabriel.webp" alt="Gabriel Bocardo" title="Gabriel Bocardo · sócio · estratégia e negócios" width="128" height="160"><img src="/midia/bio/socio-helbert.webp" alt="Helbert Paranhos" title="Helbert Paranhos · sócio · tecnologia e implementação" width="128" height="160">
+  </div>
+  <p class="team-t"><b>Gabriel Bocardo e Helbert Paranhos.</b> Os sócios estão dentro dos projetos: quem desenha a estratégia e constrói os agentes é quem dá aula no Bootcamp.</p>
+
+  <nav class="soc" aria-label="Redes">
+    <a href="https://www.instagram.com/strat.ai/" data-k="instagram" data-strat-cta="bio-icone-instagram" data-mtc-event="bio_instagram" aria-label="Instagram"><svg><use href="#i-ig"/></svg></a>
+    <a href="https://www.youtube.com/@stratacademy" data-k="youtube" data-strat-cta="bio-icone-youtube" data-mtc-event="bio_youtube" aria-label="YouTube"><svg><use href="#i-yt"/></svg></a>
+    <a href="https://www.linkedin.com/company/strataibr/" data-k="linkedin" data-strat-cta="bio-icone-linkedin" data-mtc-event="bio_linkedin" aria-label="LinkedIn"><svg><use href="#i-in"/></svg></a>
+    <a href="https://wa.me/5547991658478?text=Oi!%20Vim%20pela%20bio%20do%20Instagram%20da%20Strat.ai%20e%20quero%20conversar%20sobre%20IA%20na%20minha%20empresa." class="wa" data-strat-cta="bio-icone-whatsapp" data-msg="Oi! Vim pela bio do Instagram da Strat.ai e quero conversar sobre IA na minha empresa." aria-label="WhatsApp"><svg><use href="#i-wa"/></svg></a>
+  </nav>
+</main>
+
+<footer>
+  <div class="degrau"><i style="background:var(--red)"></i><i style="background:var(--blue)"></i><i style="background:var(--purple)"></i><i style="background:var(--lime)"></i></div>
+  <p class="fine">Strat · Joinville/SC</p>
+</footer>
+
+<script>
+/* ====== EDITAR AQUI: todos os links da página ======
+   Onde estiver "[A PREENCHER]": no ar o botão some; abrindo o arquivo no computador, fica com contorno amarelo. */
+const WHATSAPP = "5547991658478";    // (47) 99165-8478 · o mesmo da LP StratAI
+const REF = "[ref: BIO-AI-DIAG-v2]"; // etiqueta do CRM no fim da mensagem do diagnóstico
+const LINKS = {
+  site:       "https://stratai.com.br/",
+  privacidade:"https://stratai.com.br/politica-de-privacidade/",
+  instagram:  "https://www.instagram.com/strat.ai/",
+  youtube:    "https://www.youtube.com/@stratacademy",
+  linkedin:   "https://www.linkedin.com/company/strataibr/"
+};
+/* ================================================== */
+const NO_AR = /(^|\.)stratai\.com\.br$/.test(location.hostname);
+/* Atribuição até o site. Nasceu quando a bio morava em bio.stratai.com.br, outra origem; desde o WEB-35 ela
+   está em stratai.com.br/bio/ e o último toque (strat_ft) já é o mesmo, mas o link pro site segue levando os
+   parâmetros com que a pessoa chegou na bio (da URL ou do último toque), sem mudar o comportamento.
+   UTM fixa não entra: o link que vai na bio do Instagram é que sai do criador de UTM do Horus. */
+const ATRIB=["utm_source","utm_medium","utm_campaign","utm_content","utm_term","gclid","fbclid","msclkid","ttclid","src","sck"];
+function atribuicao(){
+  const q=new URLSearchParams(location.search), out={}; let ft={};
+  try{ ft=JSON.parse(localStorage.getItem("strat_ft")||"{}")||{}; }catch(e){}
+  const daUrl=ATRIB.some(k=>q.get(k));
+  ATRIB.forEach(k=>{ const v=daUrl? q.get(k) : ft[k]; if(v) out[k]=v; });
+  return out;
+}
+function comAtribuicao(u){
+  if(!/^https:\/\/([\w-]+\.)*stratai\.com\.br\//.test(u)) return u;
+  try{ const url=new URL(u); Object.entries(atribuicao()).forEach(([k,v])=>{ if(!url.searchParams.has(k)) url.searchParams.set(k,v); }); return url.href; }
+  catch(e){ return u; }
+}
+function wa(msg){ return "https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(msg); }
+/* funil do diagnóstico no PostHog (onde a pessoa desiste). Os cliques nos botões já viram CTAClick
+   no Rastro pelo data-strat-cta, e o WhatsApp vira Contact: nada de fbq/dataLayer na mão, duplicaria. */
+function push(o){ try{ if(window.posthog&&posthog.capture){ const {event,...p}=o; posthog.capture(event,Object.assign({product:"stratai",pagina:"bio"},p)); } }catch(e){} }
+document.querySelectorAll("[data-k]").forEach(a=>{
+  const u=LINKS[a.dataset.k];
+  if(!u||u.startsWith("[")){
+    if(NO_AR) a.remove(); else { a.classList.add("tbd"); a.title="Link [A PREENCHER]"; a.addEventListener("click",e=>e.preventDefault()); }
+    return;
+  }
+  a.href=comAtribuicao(u); a.target="_blank"; a.rel="noopener";
+  a.addEventListener("click",()=>{ a.href=comAtribuicao(u); });   // o último toque pode ter sido salvo depois do carregamento
+});
+document.querySelectorAll(".wa").forEach(el=>{ el.href=wa(el.dataset.msg); el.target="_blank"; el.rel="noopener"; });
+/* palavra que gira (cor do degrau) */
+const W=[["atender 24h","#ff1f1f"],["vender mais","#57a1ea"],["sair do operacional","#bb44f2"],["crescer sem contratar","#c6ff34"]]; let wi=0;
+const rot=document.getElementById("rot");
+function spin(){ const [t,c]=W[wi], lime=c==="#c6ff34"; rot.textContent=t; rot.style.background=lime?c:c+"40"; rot.style.color=lime?"#141414":""; wi=(wi+1)%W.length; }
+spin(); setInterval(spin,2200);
+
+/* ====== DIAGNÓSTICO (mesmas 11 perguntas e a mesma conta da LP StratAI v5) ====== */
+const $=(s)=>document.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const sleep=(ms)=>new Promise(r=>setTimeout(r,ms));
+const esc=(s)=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const addMsg=(who,html)=>{ const d=document.createElement("div"); d.className="msg "+who; d.innerHTML=html; body.appendChild(d); return d; };
+const body=$("#botBody"), input=$("#botIn"), prog=$("#botProg"), status=$("#botStatus"), diag=$("#diag");
+const A={};
+const first=()=>(A.nome||"").trim().split(/\s+/)[0]||"";
+const emp=()=>esc(A.empresa||"sua empresa");
+const SEGS={
+  "Restaurante e alimentação":"responder cardápio e horário, anotar reservas e pedidos, confirmar presença",
+  "Imobiliária":"atender o lead na hora, qualificar a renda, agendar visitas",
+  "E-commerce":'responder "cadê meu pedido?", tirar dúvidas de produto, recuperar carrinho',
+  "Saúde e clínicas":"agendar e confirmar consultas, pré-atendimento, reduzir faltas",
+  "Serviços":"responder orçamentos na hora, retomar propostas paradas, cobrar clientes",
+  "Jurídico e indenizações":"triar casos novos, pedir documentos, qualificar o lead",
+  "Indústria":"cotar compras, montar orçamentos, fechar relatórios de produção",
+  "Varejo":"responder preço e disponibilidade, controlar estoque, campanhas de data",
+  "Educação":"atender aluno e responsável, conduzir matrículas, cobrar mensalidades"
+};
+const SIZE={"Só eu":[1,3],"De 2 a 10 pessoas":[2,6],"De 11 a 50 pessoas":[11,12],"De 51 a 200 pessoas":[51,17],"Mais de 200 pessoas":[200,20]};
+const REV={"Ainda não faturo":0,"Até R$ 500 mil por ano":8,"De R$ 500 mil a R$ 1 milhão":14,"De R$ 1 a 5 milhões":20,"De R$ 5 a 10 milhões":24,"Mais de R$ 10 milhões":30};
+const AREA={
+  "Atendimento e WhatsApp":["Agente de atendimento no WhatsApp","Atendimento é onde o agente aparece mais rápido: responde na hora, a qualquer hora, e só chama o time quando precisa."],
+  "Vendas e comercial":["Agente SDR (qualifica e agenda)","Em vendas, o agente qualifica, faz o follow-up e entrega a reunião marcada. É onde hora vira receita mais rápido."],
+  "Financeiro e cobrança":["Automação de cobrança e conciliação","Financeiro é cheio de rotina com regra clara. Terreno perfeito para agente."],
+  "Operação e entrega":["Agente de operação ligado às suas planilhas e sistemas","Operação é onde mora o grosso das horas. O que um agente assume ali aparece direto na margem."],
+  "Relatórios e processos internos":["Relatórios e rotinas automáticas","Relatório é o trabalho mais invisível e mais caro da empresa. Costuma ser uma ótima primeira alavanca."]
+};
+const REP={"Pouco: menos de 20%":.15,"Uma parte: de 20% a 40%":.3,"Quase metade: de 40% a 60%":.5,"A maior parte: mais de 60%":.7,"Não faço ideia":.15};
+const URG={"O quanto antes":15,"Nos próximos 3 meses":8,"Sem prazo, só pesquisando":1};
+const hoursWeek=()=>{ const s=SIZE[A.tamanho]||[1]; return Math.max(6,Math.round(s[0]*40*(REP[A.repetitivo]||.15))); };
+const STEPS=[
+  {key:"nome",type:"text",ask:()=>"Pra começar: qual é o seu <b>nome</b>?",ph:"Nome e sobrenome",
+    valid:(v)=>/^[A-Za-zÀ-ÿ' .-]{2,}$/.test(v.trim())?"":"Só letras aqui, por favor.",
+    echo:()=>"Prazer, "+esc(first())+"."},
+  {key:"whats",type:"tel",ask:()=>"Qual é o seu <b>WhatsApp</b>? É por lá que a gente fala do resultado.",ph:"(47) 99999-9999",
+    valid:(v)=>{ const d=v.replace(/\D/g,""); if(/^(\d)\1+$/.test(d)) return "Esse número não parece real."; if(d.length<10) return "Faltou número. Coloca com DDD."; if(+d.slice(0,2)<11) return "Esse DDD não existe."; return ""; },
+    echo:()=>"Anotado."},
+  {key:"email",type:"email",ask:()=>"E o seu <b>e-mail</b>?",ph:"voce@empresa.com.br",
+    valid:(v)=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim())?"":"Confere o e-mail: falta o @ ou o final (ex.: .com).",
+    echo:()=>"Anotado. Se você parar no meio, a gente não perde o que você já respondeu."},
+  {key:"empresa",type:"text",optional:"Ainda não tenho empresa",ask:()=>"E qual é o <b>nome da sua empresa</b>?",ph:"Nome da empresa",
+    echo:()=>A.empresa?"Boa. A partir daqui, cada resposta calibra o diagnóstico da "+emp()+".":"Tranquilo. Quem começa agora pode montar a operação já pensando em agentes, e isso é vantagem."},
+  {key:"segmento",type:"opts",options:[...Object.keys(SEGS),"Outro"],ask:()=>"Qual é o <b>segmento</b> da "+emp()+"?",
+    echo:()=>SEGS[A.segmento]?"Em "+A.segmento.toLowerCase()+", agentes de IA já assumem trabalhos como <b>"+SEGS[A.segmento]+"</b>.":"Anotado. Ainda são poucas empresas do seu setor usando agentes, e quem começa sai na frente."},
+  {key:"tamanho",type:"opts",options:Object.keys(SIZE),ask:()=>"Quantas <b>pessoas</b> trabalham na "+emp()+"?",
+    echo:()=>A.tamanho==="Só eu"?"Operação de uma pessoa só: cada tarefa que sai do seu colo é uma hora sua de volta.":"Boa. Com esse porte, cada processo que vira agente libera horas do time todo mês."},
+  {key:"faturamento",type:"opts",options:Object.keys(REV),ask:()=>"Qual é o <b>faturamento anual</b>, mais ou menos?",
+    echo:()=>A.faturamento==="Ainda não faturo"?"Então dá pra montar a operação já pensando em agentes, sem precisar contratar pra crescer.":"Anotado. Isso ajuda a dimensionar o tamanho da primeira alavanca."},
+  {key:"area",type:"opts",options:Object.keys(AREA),ask:()=>"Qual <b>área</b> hoje mais consome tempo do time?",
+    echo:()=>AREA[A.area][1]},
+  {key:"repetitivo",type:"opts",options:Object.keys(REP),ask:()=>"Do tempo do seu time, <b>quanto vai em tarefa repetitiva</b>? Responder a mesma pergunta, copiar e colar, planilha, relatório.",
+    echo:()=>{ const h=hoursWeek(); return (A.repetitivo==="Não faço ideia"?"Normal, quase ninguém mede. Pelo porte, ":"Fazendo a conta pelo porte, ")+"isso dá perto de <b>"+h+" horas por semana</b> em trabalho repetitivo, umas "+Math.round(h*4.33)+" horas por mês."; }},
+  {key:"objetivo",type:"opts",options:["Sair do operacional","Crescer sem aumentar o time","Cortar custo da operação","Parar de perder cliente por demora"],ask:()=>"O que você quer que mude nos <b>próximos 90 dias</b>?",
+    echo:()=>"Anotado. Vou priorizar isso na recomendação."},
+  {key:"urgencia",type:"opts",options:Object.keys(URG),ask:()=>"Última: <b>quando você quer começar</b>?",
+    echo:()=>"Fechei o diagnóstico da "+emp()+". Montando o resultado…"}
+];
+let step=0, busy=false;
+const setProg=(i)=>prog.style.setProperty("--p",(Math.pow(i/STEPS.length,.45)*100).toFixed(1)+"%");
+const scrollDown=()=>{ body.scrollTop=body.scrollHeight; };
+const desk=()=>matchMedia("(min-width: 800px)").matches;
+// no celular, a página desce junto para a pergunta e as opções ficarem à vista
+const follow=()=>{ const r=input.getBoundingClientRect(); if(r.bottom>innerHeight||r.top<0) input.scrollIntoView({behavior:reduce?"auto":"smooth",block:"end"}); };
+async function say(html){
+  status.textContent="digitando…";
+  if(!reduce){ const t=addMsg("a typing","<i></i><i></i><i></i>"); scrollDown(); await sleep(Math.min(1400,380+html.replace(/<[^>]+>/g,"").length*11)); t.remove(); }
+  addMsg("a",html); scrollDown(); status.textContent="online";
+}
+function renderInput(s){
+  input.innerHTML="";
+  if(s.type==="opts"){
+    const w=document.createElement("div"); w.className="opts";
+    s.options.forEach((o,i)=>{ const b=document.createElement("button"); b.type="button"; b.className="opt"; b.innerHTML="<kbd>"+(i+1)+"</kbd>"+esc(o); b.onclick=()=>answer(o); w.appendChild(b); });
+    input.appendChild(w); if(desk()) w.querySelector("button").focus({preventScroll:true});
+    return;
+  }
+  const f=document.createElement("form"); f.className="field"; f.noValidate=true;
+  if(s.type==="tel"){ const d=document.createElement("span"); d.className="ddi"; d.textContent="🇧🇷 +55"; f.appendChild(d); }
+  const el=document.createElement("input"); el.placeholder=s.ph||""; el.setAttribute("aria-label",s.ph||s.key);
+  if(s.type==="tel"){ el.type="tel"; el.inputMode="tel"; el.autocomplete="tel-national";
+    el.addEventListener("input",()=>{ let d=el.value.replace(/\D/g,"").slice(0,11); el.value=d.length>6?"("+d.slice(0,2)+") "+d.slice(2,d.length-4)+"-"+d.slice(-4):d.length>2?"("+d.slice(0,2)+") "+d.slice(2):d; }); }
+  else if(s.type==="email"){ el.type="email"; el.inputMode="email"; el.autocomplete="email"; el.autocapitalize="none"; el.spellcheck=false; }
+  else { el.type="text"; el.autocomplete=s.key==="nome"?"name":"organization"; el.autocapitalize="words"; }
+  const ok=document.createElement("button"); ok.className="ok"; ok.type="submit"; ok.textContent="OK";
+  f.appendChild(el); f.appendChild(ok); input.appendChild(f);
+  const err=document.createElement("div"); err.className="err"; err.hidden=true; input.appendChild(err);
+  if(s.optional){ const k=document.createElement("button"); k.type="button"; k.className="skip"; k.textContent=s.optional; k.onclick=()=>answer("",s.optional); input.appendChild(k); }
+  f.onsubmit=(e)=>{
+    e.preventDefault(); const v=el.value.trim();
+    const msg=!v?"Preencha esse campo.":(s.valid?s.valid(v):"");
+    if(msg){ err.textContent=msg; err.hidden=false; el.setAttribute("aria-invalid","true"); el.focus(); return; }
+    answer(v);
+  };
+  if(desk()) el.focus({preventScroll:true});
+}
+async function answer(v,shown){
+  if(busy) return; busy=true;
+  const s=STEPS[step]; A[s.key]=v;
+  $$(".msg",body).forEach(m=>m.classList.add("old"));
+  addMsg("c",esc(shown||v)); scrollDown(); input.innerHTML="";
+  diag.classList.add("adiante");
+  setProg(step+1);
+  // nome e WhatsApp não vão para a medição (dado pessoal)
+  push({event:"diag_passo",passo:step+1,campo:s.key,resposta:(s.key==="nome"||s.key==="whats")?"(preenchido)":(shown||v)});
+  saveLead(step>=1?"parcial":null);
+  await say(s.echo());
+  step++;
+  if(step<STEPS.length){ await say(STEPS[step].ask()); renderInput(STEPS[step]); follow(); }
+  else { await sleep(reduce?0:700); showResult(); }
+  busy=false;
+}
+function score(){
+  const pts=(REV[A.faturamento]||0)+((SIZE[A.tamanho]||[0,0])[1])+(URG[A.urgencia]||0);
+  const s=Math.round(pts/65*100);
+  return {s,tier:s>=70?"A":s>=55?"B":s>=40?"C":"D"};
+}
+function showResult(){
+  const {s,tier}=score();
+  const h=hoursWeek()*4.33, lo=Math.round(h*.4), hi=Math.round(h*.6);
+  const lever=AREA[A.area][0];
+  const big=tier==="A"||tier==="B";
+  const next=big
+    ?{t:"Conversa de 30 minutos com o time",d:"A gente leva o desenho da primeira alavanca da "+(A.empresa||"sua empresa")+" e você decide se faz sentido.",cta:"Quero marcar a conversa"}
+    :{t:"Começar construindo com o seu próprio time",d:"No seu momento, o caminho mais rápido é aprender a construir na Imersão ou no Bootcamp Claude Code, e implementar com a gente quando a operação crescer.",cta:"Quero saber da próxima turma"};
+  // frase padrão, sem os dados da pessoa: eles chegam no n8n pelo Lead (abaixo)
+  const msg="Oi! Fiz o diagnóstico pela bio do Instagram da Strat.ai. "+next.cta+".\n"+REF;
+  input.innerHTML="";
+  const r=document.createElement("div"); r.className="result";
+  r.innerHTML='<span class="eb2">Diagnóstico Strat.ai</span><h3>'+esc(first())+', aqui está o seu resultado</h3>'+
+    '<div class="r-grid">'+
+    '<div class="r-card"><small>Horas por mês em repetitivo</small><b>'+Math.round(h)+' h</b><p>estimativa pelo porte e pela sua resposta</p></div>'+
+    '<div class="r-card"><small>Dá pra devolver com agentes</small><b>'+lo+' a '+hi+' h</b><p>por mês, de 40% a 60% do repetitivo</p></div>'+
+    '<div class="r-card wide"><small>Primeira alavanca recomendada</small><b>'+esc(lever)+'</b><p>'+AREA[A.area][1]+'</p></div>'+
+    '<div class="r-card wide"><small>Próximo passo</small><b>'+next.t+'</b><p>'+esc(next.d)+'</p></div>'+
+    '</div>';
+  // Lead pro Rastro (Meta CAPI, GA4, PostHog e o webhook do funil no n8n) assim que o resultado aparece: quem
+  // não clicar no WhatsApp também chega no funil. Nome e telefone em user_data, o resto em custom.
+  try{ if(typeof window.stratTrack==="function"){
+    const p=(A.nome||"").trim().split(/\s+/);
+    window.stratTrack("Lead",{form:"diagnostico-bio",empresa:A.empresa||"",segmento:A.segmento,tamanho:A.tamanho,faturamento:A.faturamento,area:A.area,repetitivo:A.repetitivo,objetivo:A.objetivo,urgencia:A.urgencia,horas_mes:Math.round(h),tier,score:s},
+      {em:(A.email||"").trim().toLowerCase(),ph:"55"+A.whats.replace(/\D/g,""),fn:p[0],ln:p.slice(1).join(" ")});
+  } }catch(err){}
+  const go=document.createElement("a"); go.className="go"; go.target="_blank"; go.rel="noopener"; go.href=wa(msg);
+  go.innerHTML='<svg width="20" height="20" aria-hidden="true"><use href="#i-wa"/></svg>'+next.cta+' no WhatsApp';
+  go.addEventListener("click",()=>{
+    push({event:"diag_enviar",segmento:A.segmento,area:A.area,tier,score:s});
+    // o botão nasce agora, depois que o Rastro já olhou os links: o Contact vai na mão (o Metricaas pega sozinho)
+    try{ window.stratTrack&&window.stratTrack("Contact",{method:"whatsapp",cta:"bio-diag-resultado"}); }catch(err){}
+  });
+  r.appendChild(go);
+  const fn=document.createElement("p"); fn.className="fine3"; fn.textContent="Estimativa com base no que você respondeu; o número real sai do mapeamento."; r.appendChild(fn);
+  input.appendChild(r); setProg(STEPS.length);
+  push({event:"diag_resultado",tier,score:s,area:A.area});
+  saveLead("final",{score:s,tier});
+  if(!desk()) r.scrollIntoView({behavior:reduce?"auto":"smooth",block:"nearest"});
+}
+function saveLead(kind,extra){
+  if(!kind) return;
+  try{ localStorage.setItem("stratai_bio_diag",JSON.stringify({kind,respostas:A,...extra,em:new Date().toISOString()})); }catch(e){}
+}
+async function startBot(){
+  body.innerHTML=""; input.innerHTML=""; step=0; busy=true; Object.keys(A).forEach(k=>delete A[k]); setProg(0);
+  await say("Oi! Em 3 minutos eu te mostro quantas horas a IA pode devolver pra sua empresa, e qual é o primeiro agente que valeria construir.");
+  await say(STEPS[0].ask()); renderInput(STEPS[0]); busy=false;
+}
+$("#botRestart").onclick=()=>{ if(!busy){ push({event:"diag_recomecar"}); startBot(); } };
+/* o diagnóstico só abre no clique de "Começar diagnóstico" e a tela desliza até ele */
+let started=false;
+const open=$("#diagOpen");
+function centerDiag(){
+  const H=Math.min(innerHeight-24,580);                       // altura do formulário aberto (aprox.)
+  const y=diag.getBoundingClientRect().top+scrollY-Math.max(12,(innerHeight-H)/2);
+  scrollTo({top:Math.max(0,y),behavior:reduce?"auto":"smooth"});
+}
+$("#diagStart").addEventListener("click",()=>{
+  if(started) return; started=true;
+  diag.classList.add("aberto"); open.removeAttribute("inert"); open.setAttribute("aria-hidden","false");
+  push({event:"diag_comecar"});
+  requestAnimationFrame(centerDiag);
+  const fim=e=>{ if(e.target===open&&e.propertyName==="grid-template-rows"){ open.removeEventListener("transitionend",fim); centerDiag(); } };
+  open.addEventListener("transitionend",fim);
+  startBot();
+});
+/* no computador: as teclas 1, 2, 3… escolhem a opção */
+document.addEventListener("keydown",e=>{
+  if(e.target.closest("input,select,textarea")) return;
+  const n=+e.key; if(!n) return;
+  const o=$$(".opt",input); if(o[n-1]){ e.preventDefault(); o[n-1].click(); }
+});
+</script>

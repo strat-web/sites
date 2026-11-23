@@ -14,8 +14,8 @@ const DIST = join(APP, 'dist');
 const fragmentos = readdirSync(HTML).filter((f) => f.endsWith('.html'));
 const ler = (f) => readFileSync(join(HTML, f), 'utf8');
 
-test('as três páginas migradas têm head e corpo', () => {
-  for (const p of ['home', 'raio-x', 'politica-de-privacidade']) {
+test('as páginas migradas têm head e corpo (WEB-32 e a bio do WEB-35)', () => {
+  for (const p of ['home', 'raio-x', 'politica-de-privacidade', 'bio']) {
     assert.ok(fragmentos.includes(`${p}.head.html`), `${p}.head.html`);
     assert.ok(fragmentos.includes(`${p}.corpo.html`), `${p}.corpo.html`);
   }
@@ -39,6 +39,17 @@ test('nenhum link sem destino (href="#"): o WhatsApp sai escrito no HTML com o m
   for (const [, href, texto] of was) {
     // a mesma conta do script da página: waLink(a.dataset.wa + ' [ref: LP-AI-v6]')
     assert.equal(href, 'https://wa.me/5547991658478?text=' + encodeURIComponent(texto + ' [ref: LP-AI-v6]'));
+  }
+});
+
+test('bio (WEB-35): os dois botões de WhatsApp saem escritos no HTML com o mesmo texto do script', () => {
+  const bio = ler('bio.corpo.html');
+  const was = [...bio.matchAll(/<a\b[^>]*>/g)].map((m) => m[0]).filter((a) => /\bwa\b/.test(a.match(/class="([^"]*)"/)?.[1] ?? ''));
+  assert.equal(was.length, 2);
+  for (const a of was) {
+    // a mesma conta do script da bio: wa(el.dataset.msg), sem a etiqueta do CRM (ela só vai na mensagem do diagnóstico)
+    const msg = a.match(/data-msg="([^"]+)"/)[1];
+    assert.match(a, new RegExp(`href="${('https://wa.me/5547991658478?text=' + encodeURIComponent(msg)).replace(/[.?*+()]/g, '\\$&')}"`));
   }
 });
 
@@ -98,4 +109,20 @@ test('dist: os scripts de tracking são os mesmos da produção (src e data-ws)'
     '<script defer src="/u/script.js" data-website-id="d6394916-40aa-45da-b80e-7285ec5bcb45">',
   ]);
   assert.deepEqual(scripts(pagina('politica-de-privacidade')), []);
+  // bio (WEB-35): o mesmo produto do Rastro de bio.stratai.com.br; o MetricaaS passa a ser o da StratAI (era o da Agência)
+  assert.deepEqual(scripts(pagina('bio')), [
+    '<script defer src="https://t.metricaas.com.br/m.js" data-ws="agencia-strat">',
+    '<script defer src="https://tracking.stratacademy.com.br/sa?product=stratai">',
+    '<script defer src="/u/script.js" data-website-id="d6394916-40aa-45da-b80e-7285ec5bcb45">',
+  ]);
+});
+
+test('dist: a bio fica fora da busca e mantém o cartão de bio.stratai.com.br (WEB-35)', { skip: semDist }, () => {
+  const bio = pagina('bio');
+  assert.match(bio, /<meta name="robots" content="noindex, nofollow">/);
+  assert.match(bio, /<link rel="canonical" href="https:\/\/stratai\.com\.br\/bio\/">/);
+  assert.match(bio, /<title>Strat\.ai · Agentes de IA para a sua empresa<\/title>/);
+  assert.match(bio, /<meta property="og:description" content="Faça o diagnóstico grátis em 3 minutos e veja quantas horas a IA devolve pra sua empresa\.">/);
+  assert.match(bio, /<meta property="og:image" content="https:\/\/stratai\.com\.br\/midia\/bio\/avatar\.png">/);
+  assert.match(bio, /<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">/);
 });
