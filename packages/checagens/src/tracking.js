@@ -4,7 +4,7 @@
 // linha do catálogo; a checagem compara com o HTML gerado.
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { ATR_RASTRO_APOS_PINTURA, scriptDoRastroAposPintura, HOTMART_LAUNCHER, ID_POR_FUNIL, METRICAAS, RASTRO, UMAMI, consentModeEsperado, marca, planoDeTracking, scriptDoBanner } from '@strat/kit';
+import { ATR_RASTRO_APOS_PINTURA, scriptDoRastroAposPintura, HOTMART_LAUNCHER, ID_POR_FUNIL, METRICAAS, RASTRO, UMAMI, consentModeEsperado, marca, planoDeTracking, scriptDoBanner, scriptDoLauncher } from '@strat/kit';
 import { ehPaginaDeErro } from './contexto.js';
 import { lerPagina, scripts as todosOsScripts, tags } from './html.js';
 import { ESQUELETOS } from './esqueletos.js';
@@ -57,6 +57,20 @@ export function bannerDoKit(catalogo, linha) {
     return null; // marca fora do kit: o build já quebra no <Tracking>
   }
   return privacidade ? scriptDoBanner(FONTE_DO_BANNER, privacidade, plano.aviso) : null;
+}
+
+/**
+ * Texto do launcher da Hotmart que o <Tracking> põe na página da linha quando ele espera o aceite do Rastro (venda +
+ * banner, WEB-85), ou null nos outros casos. Em página com banner, só esse texto exato da Hotmart passa.
+ */
+export function launcherAposAceite(catalogo, linha) {
+  if (!linha) return null;
+  try {
+    const plano = planoDeTracking({ catalogo, url: linha.url, perfil: linha.perfil });
+    return plano.hotmart && plano.hotmartAposAceite ? scriptDoLauncher(plano.hotmart, { aposAceite: true }) : null;
+  } catch {
+    return null; // o erro do plano é acusado mais abaixo
+  }
 }
 
 /** Script que é do componente <Tracking> (Rastro, MetricaaS, Umami, Rastro por funil ou launcher da Hotmart). */
@@ -187,10 +201,13 @@ export function checarPaginaTracking(pagina, catalogo, r) {
 
   const linha = linhaDaPagina;
   if (!linha) return []; // a checagem catalogo acusa
-  // Com banner nada de venda carrega antes do "aceitar" (WEB-81): o kit já recusa venda + banner (até o WEB-85), e
-  // aqui barra também o script da Hotmart que entrou por outro caminho (colado à mão, widget de checkout, build velho).
+  // Com banner nada de venda carrega antes do "aceitar" (WEB-81). O único script da Hotmart que passa é o launcher do
+  // kit que espera o aceite do Rastro (venda + banner, WEB-85), com o texto exato que o kit gera para a linha; o resto
+  // barra (colado à mão, widget de checkout, launcher que carrega na abertura, build velho).
   if (linha.consentimento === 'banner') {
+    const doKit = launcherAposAceite(catalogo, linha);
     for (const s of scripts) {
+      if (doKit !== null && !s.attrs.src && s.attrs.id === 'hotmart_launcher_script' && s.conteudo.trim() === doKit.trim()) continue;
       if (DE_VENDA.test(`${s.attrs.src || ''}\n${s.conteudo}`)) {
         r.erro(onde, `script da Hotmart em página com consentimento "banner": ${descrever(s)} carrega antes do "aceitar" (WEB-85)`);
       }
