@@ -1,0 +1,4 @@
+# .npmrc de usuário do build no Cloudflare Pages (WEB-49). Cada projeto que instala o workspace aponta para ele com
+# NPM_CONFIG_USERCONFIG=/opt/buildhome/repo/.npmrc.pages e tem o segredo NPM_TOKEN (só read:packages). Aqui fica só a
+# referência à variável: o token nunca entra no repositório.
+//npm.pkg.github.com/:_authToken=${NPM_TOKEN}

@@ -95,7 +95,7 @@ repositório.
 
 | Onde | O quê |
 |---|---|
-| Pages `sites-stratacademy`, produção e prévia | segredo `NPM_TOKEN` (token clássico, só `read:packages`, de quem lê os pacotes da `Strat-Ai-Horus-OS`) e `NPM_CONFIG_USERCONFIG` apontando para um `.npmrc` com `//npm.pkg.github.com/:_authToken=${NPM_TOKEN}` |
+| **Todo projeto do Pages deste repositório** (o Pages instala o workspace inteiro, então os 10 baixam os pacotes), produção e prévia | segredo `NPM_TOKEN` (token clássico, só `read:packages`, de quem lê os pacotes da `Strat-Ai-Horus-OS`) e `NPM_CONFIG_USERCONFIG=/opt/buildhome/repo/.npmrc.pages` (o arquivo está na raiz e só referencia o `${NPM_TOKEN}`). Sem os dois, o `pnpm install` dá 401 e o build falha |
 | Pages `sites-stratacademy`, produção e prévia | `LEAD_WEBHOOK_URL` e `TURNSTILE_SECRET` (segredos, os mesmos do projeto `stratacademy` do horus) e `PUBLIC_TURNSTILE_KEY` (chave pública do Turnstile, lida no build) para o `functions/api/lead.ts` |
 | Actions do `strat-web/sites` | segredo `NPM_TOKEN`, para o build das checagens |
 | Na máquina | `NPM_TOKEN` no ambiente (ex.: `NPM_TOKEN=$(gh auth token)` com o escopo `read:packages`) e `NPM_CONFIG_USERCONFIG` num arquivo fora do repositório com a mesma linha |
