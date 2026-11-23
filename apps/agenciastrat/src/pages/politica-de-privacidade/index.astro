@@ -1,0 +1,18 @@
+---
+// WEB-23: conteúdo do strat-lps 05ca028, preservado; SEO e tracking vêm do kit.
+import Layout from '@strat/kit/Layout.astro';
+import head from '../../html/politica-de-privacidade.head.html?raw';
+import corpo from '../../html/politica-de-privacidade.corpo.html?raw';
+---
+<Layout
+  marca="agencia"
+  perfil="conteudo"
+  titulo="Política de privacidade · Agência Strat"
+  descricao="Como a Agência Strat trata os dados pessoais de quem visita a página e pede um diagnóstico: o que coletamos, para quê, com quem compartilhamos, por quanto tempo guardamos e como exercer seus direitos."
+  descricaoSocial="Como a Agência Strat trata os dados pessoais de quem visita a página e pede um diagnóstico."
+  imagem="/midia/og.png"
+  tipo="article"
+>
+  <Fragment slot="head" set:html={head} />
+  <Fragment set:html={corpo} />
+</Layout>

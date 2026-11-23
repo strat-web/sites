@@ -1,0 +1,22 @@
+---
+// Link na bio do @strat.ai, migrado do strat-lps (lps/bio-stratai/index.html) sem mudar texto, layout nem tracking
+// (WEB-35). Antes em bio.stratai.com.br, que passa a dar 301 para cá (regra na zona stratai.com.br, ver
+// docs/dominios.md). Tracking pelo kit: Rastro stratai e MetricaaS agencia-strat (linha "stratai-bio" do catálogo;
+// no strat-lps carregava o strat-marketing, da Agência). Bio fica fora da busca: quem procura a StratAI cai na home.
+import Layout from '@strat/kit/Layout.astro';
+import head from '../../html/bio.head.html?raw';
+import corpo from '../../html/bio.corpo.html?raw';
+---
+<Layout
+  marca="stratai"
+  perfil="lead"
+  indexar={false}
+  titulo="Strat.ai · Agentes de IA para a sua empresa"
+  descricao="Agentes de IA no WhatsApp, consultoria e cursos de Claude Code para negócios. Strat.ai, Joinville/SC."
+  descricaoSocial="Faça o diagnóstico grátis em 3 minutos e veja quantas horas a IA devolve pra sua empresa."
+  imagem="/midia/bio/avatar.png"
+  viewport="width=device-width, initial-scale=1, viewport-fit=cover"
+>
+  <Fragment slot="head" set:html={head} />
+  <Fragment set:html={corpo} />
+</Layout>

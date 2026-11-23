@@ -1,0 +1,40 @@
+{
+  "origem": "Strat-Ai-Horus-OS/strat-lps@05ca028",
+  "textos": {
+    "home": "676f2e62da4d8c48482760c56db87e3271b7ddfbb5c9702e8dad5429df57fc00",
+    "politica-de-privacidade": "8e0132848515ff00768a901316aacc4b4cb9f5c3e24b3d2d09848bf904baf05c"
+  },
+  "midias": {
+    "og.png": "d3d25a9afba215dc909d0316941ed5b89d98266c40f6c7049879b55ebb4ed70b",
+    "criativos/criativo-guizeline-viverti.webp": "2a8817ace5038a38c06d7dbc136cee56f60ff22333efad843c7c905494d24e94",
+    "criativos/video-contato-indenizacoes-capa.webp": "fade050dbc89f4f82887173334dbd2d4af0bfc8795175ab8f476efb605d1b8b4",
+    "criativos/criativo-contato-joelho.webp": "4a34f1a9200c32cf59f7f878997d112bfbbc65ed4f82f44405b0b5223affd0ab",
+    "criativos/criativo-hostly-franquia.webp": "b72b3224fbe99c4f1447e7994a647efa1d8f0b3d742f6173dba1aa9485502809",
+    "criativos/criativo-apartamento-porto-belo.webp": "6995bbaef0901c43268827996bfd22df387b0f014bd7788e2cfbf8c191a1acd5",
+    "criativos/video-apresentador-capa.webp": "89f3f556160131f5506c25487fe2798c869f2ac5a459211ce8ac3f7253362306",
+    "criativos/video-pedrinni-rodizio-capa.webp": "ca4ac3eed84c1f2201eb8eba48c1fe0e95c1b266d275b696b17c9e517548d4c4",
+    "criativos/criativo-usina-de-massas.webp": "f73a8a9d1fe0de484f08e8e1c72fd6654d34e744900ebd072c60dbda613be44d",
+    "selos/google-partner.webp": "4533218170e73a91c01f8accd093d3b73930d903922a5d5141b2c23f90d5a76a",
+    "selos/meta-business-partner.webp": "a0a134d7fec76922378b0a15b6692b0065c5f8cd698ac428d2bb5b4443fdeed2",
+    "favicon/favicon-192.png": "b68eebce78a8483e60c71e0fd7d3a0f492efba132b0467c99cf1bcf3bf94c807",
+    "favicon/favicon.ico": "24955ff8db791f234807ccaba79f79074aab8a09208cad6fb99c65e69a15c061",
+    "favicon/favicon-180.png": "a1e352ea71342964e694faeaf3b52f78c53f9d25d468509a47f14b42ac920302",
+    "time/time-agencia-480.webp": "1b662c59769d393fe39529b291ca63bc17a36af044ad2d94dd827b6434bcfd6d",
+    "time/time-agencia-1200.webp": "7137974a52544ae937ec91846d48562e3745f5558c811b010041d539bd248fb7",
+    "time/time-vinicius.webp": "0034d5d3c0877e71c5a8019fbdc3d447c088da479acfdfd35aa28ff4be9fb8ea",
+    "time/time-agencia-800.webp": "ea7baeb11f3b79d7d4dfc547928e1c6d5c466fe14d4726ae5b32e5c62e9c74e9",
+    "time/socio-gabriel.webp": "959fdd9a40236db3f1219f4cbec33c93b35ab5f2137baca09b09ac0b21910cb1",
+    "time/socio-helbert.webp": "f7c0ae1aef3cb291e4275b664f81afe341b507d745f8af9c17c7e8d50e1ebfe5",
+    "time/time-joao.webp": "f5be8877c47d54783e28ca50187000227832d6b6f8d85e92fa9b643e397b13c9",
+    "time/time-joao-fernandes.webp": "8e551b7d3bf8ed4774138b1a88787b8f813e0cd74baec759845dc307f8d2320c",
+    "time/time-daniel.webp": "47c535a86cdb9b385eb5ac7cdec1a2bef0d46a544c7db73fd497fba321031a58",
+    "logo/strat-ag.png": "fe2327532b25dad46cfebdda7686301de0a9f4c7bc815190c9fa1cab6f5e975d",
+    "logo/strat-ag-fundo-escuro.png": "82d08e759e95b264a5232281e05420803752f6cee67b6c590607b6b9ca0716cd"
+  },
+  "r2": {
+    "_nota": "Vídeos pesados da home no R2 (decisão do Helbert, 19/11): https://assets.agenciastrat.com.br/midia/<arquivo>. SHA-256 dos objetos no R2 conferido igual ao da origem em 20/11/2026 (WEB-23).",
+    "criativos/video-pedrinni-rodizio.mp4": "39d9ba0fe5c379aa41dd291d818cdf90dc3c09becde5934892df9a48424d120a",
+    "criativos/video-apresentador.mp4": "3167c1cbc8b63c30aa58a07bbd31d89ca0780a9ccd1b8a5a1b847b0bb41ee4e1",
+    "criativos/video-contato-indenizacoes.mp4": "61709607fe5729b39427be785b518e56adde5a36d7040f02715d2f85dd136cea"
+  }
+}
