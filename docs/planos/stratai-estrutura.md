@@ -94,7 +94,7 @@ são proposta: o plano de Joinville v2 só definiu o título da home. Só entra 
 | nenhuma | `/agente-de-ia-whatsapp/` | produto | WEB-34 | | Agente de IA no WhatsApp para empresas · StratAI | Um agente de IA no WhatsApp que atende na hora, até fora do horário | agente de IA para WhatsApp | Lote A |
 | nenhuma | `/casos/restaurante-reservas-no-whatsapp/` | caso | WEB-34 | | Caso: 180 reservas por mês pelo WhatsApp · StratAI | Restaurante de Joinville: 180 reservas por mês feitas por um agente de IA | agente de IA para reservas de restaurante | Lote A |
 | nenhuma | `/casos/` | casos (índice) | WEB-60 (proposta: antecipar para o WEB-34) | | Casos de IA em empresas reais · StratAI | Casos da StratAI: o número que cada agente moveu | casos de uso de IA em empresas | Lote A (proposta) |
-| nenhuma | `/sobre/` | institucional | WEB-34 | | Sobre a StratAI: agência de IA de Joinville/SC | StratAI: a empresa de agentes de IA do Grupo Strat, em Joinville/SC (proposta) | StratAI (marca) | Lote A |
+| nenhuma | `/sobre/` | institucional | WEB-34 | | Sobre a StratAI: a empresa de agentes de IA do Grupo Strat | StratAI: a empresa de agentes de IA do Grupo Strat, em Joinville/SC (proposta) | StratAI (marca) | Lote A |
 | nenhuma | `/agente-sdr-ia/` | produto | WEB-59 | | Agente SDR com IA: atende e qualifica o lead · StratAI | Um SDR com IA que atende o lead do anúncio na hora e marca a reunião | agente SDR com IA | Lote B |
 | nenhuma | `/automacao-com-ia/` | serviço | WEB-59 | | Automação com IA para a rotina da empresa · StratAI | Automação com IA para o trabalho repetitivo do seu time | automação com IA para empresas | Lote B |
 | nenhuma | `/sistemas-sob-medida/` | personalizado | WEB-59 | | Sistemas sob medida com IA para a sua empresa · StratAI | Painéis e sistemas sob medida, ligados às ferramentas que você já usa | sistema sob medida com IA | Lote B |
@@ -137,7 +137,7 @@ workspace do MetricaaS (`agencia-strat`) da home.
 
 | Página | Perfil | Saída 1: produto novo no Rastro | Saída 2: exceção | Depende de |
 |---|---|---|---|---|
-| `/parcerias/` (WEB-74) | `lead` | `stratai-parcerias` em `soft` | `off` com o Rastro `stratai`, como está no #22 | a decisão já pedida no WEB-74 |
+| `/parcerias/` (WEB-74) | `lead` | `stratai-parcerias` em `soft` (no ar: entrou assim com o #22) | não usada | decidido: saída 1 (#22, mesclado em 13/11) |
 | `/agencia-de-ia-joinville/`, `/agente-de-ia-whatsapp/` (Lote A) | `lead` | `stratai-paginas` em `soft` | `off` com o Rastro `stratai` | |
 | `/agente-sdr-ia/`, `/automacao-com-ia/`, `/sistemas-sob-medida/`, `/metodo-das-alavancas/` (Lote B) | `lead` | `stratai-paginas` em `soft` | `off` com o Rastro `stratai` | |
 | `/ia-para-restaurantes/`, `/ia-para-imobiliarias/`, `/ia-para-ecommerce/`, `/ia-para-clinicas/` (Lote C) | `lead` | `stratai-paginas` em `soft` | `off` com o Rastro `stratai` | |
@@ -233,7 +233,7 @@ Abaixo das colunas: nome, endereço, telefone e CNPJ iguais aos de `docs/seo-geo
 
 | Passo | Item | URLs | Depende de |
 |---|---|---|---|
-| 1 | WEB-32 (mesclado em 12/11, PR #16) e WEB-74 | `/`, `/raio-x/`, `/politica-de-privacidade/`, `/agencia/` (301), `/parcerias/` | o #22 ajustado; a virada do DNS sai com os dois |
+| 1 | WEB-32 (mesclado em 12/11, PR #16) e WEB-74 | `/`, `/raio-x/`, `/politica-de-privacidade/`, `/agencia/` (301), `/parcerias/` | feito: o #22 entrou com `/parcerias/` em `soft` e o produto `stratai-parcerias`; o domínio responde pelo Pages desde a virada do WEB-32 |
 | 2 | WEB-33 e WEB-35 | título e kicker da home; `/bio/` com 301 | o passo 1 |
 | 3 | WEB-34 (Lote A) | `/agencia-de-ia-joinville/`, `/agente-de-ia-whatsapp/`, caso do restaurante, `/casos/`, `/sobre/`; menu e rodapé novos | este mapa aprovado, o consentimento de cada linha decidido e, para `/sobre/`, `/casos/` e o caso (`conteudo`, em `banner`), o #17 (WEB-81) |
 | 4 | WEB-59 (Lote B) | `/agente-sdr-ia/`, `/automacao-com-ia/`, `/sistemas-sob-medida/`, `/metodo-das-alavancas/` | este mapa aprovado |
