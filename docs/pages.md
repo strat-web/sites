@@ -103,7 +103,7 @@ Um projeto por LP e por subdomínio, criado no WEB-48 (`lps/academy/<lp>/`), com
 
 | Projeto | Endereço `.pages.dev` | Pacote | Criado | Domínio |
 |---|---|---|---|---|
-| `academy-claude` | https://academy-claude.pages.dev | `@strat/claude` (`lps/academy/claude`) | 17/11/2026, pela API, ligado ao GitHub (WEB-48) | claude.stratacademy.com.br, só com o "pode virar" do Helbert |
+| `academy-claude` | https://academy-claude.pages.dev | `@strat/claude` (`lps/academy/claude`) | 17/11/2026, pela API, ligado ao GitHub (WEB-48) | claude.stratacademy.com.br e www, ligados em 23/11/2026 (WEB-48) |
 | `academy-mentoria` | https://academy-mentoria.pages.dev | `@strat/mentoria` (`lps/academy/mentoria`) | 17/11/2026, pela API, ligado ao GitHub (WEB-48) | mentoria.stratacademy.com.br e www, ligados em 20/11/2026 (WEB-48) |
 | `academy-vibecode` | https://academy-vibecode.pages.dev | `@strat/vibecode` (`lps/academy/vibecode`) | 17/11/2026, pela API, ligado ao GitHub (WEB-48) | vibecode.stratacademy.com.br e www, ligados em 20/11/2026 (WEB-48) |
 | `academy-comunidade` | https://academy-comunidade.pages.dev | `@strat/comunidade` (`lps/academy/comunidade`) | 17/11/2026, pela API, ligado ao GitHub (WEB-48) | comunidade.stratacademy.com.br e www, ligados em 20/11/2026 (WEB-48) |
