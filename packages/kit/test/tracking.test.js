@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { planoDeTracking, linhaDoCatalogo, PERFIS, CONSENT_MODE_DO_RASTRO, consentModeEsperado } from '../src/index.js';
+import { planoDeTracking, linhaDoCatalogo, PERFIS, CONSENT_MODE_DO_RASTRO, consentModeEsperado, scriptDoPorFunil, RASTRO } from '../src/index.js';
 
 const catalogo = JSON.parse(readFileSync(new URL('../../../catalogo/sites.json', import.meta.url), 'utf8'));
 const plano = (url, perfil) => planoDeTracking({ catalogo, url, perfil });
@@ -58,6 +58,23 @@ test('lead sem Rastro e com banner: m.js liga o pixel e segura até o aceite', (
   assert.equal(off.scripts[0].attrs['data-pixel-consent'], undefined);
 });
 
+test('lead sem Rastro em soft: o pixel liga na abertura e o aviso do kit entra em modo soft (WEB-84)', () => {
+  const p = plano('https://agenciastrat.com.br/kit/soft/', 'lead');
+  assert.deepEqual(srcs(p), ['https://t.metricaas.com.br/m.js', '/u/script.js']);
+  assert.deepEqual(p.scripts[0].attrs, { 'data-ws': 'strat-marketing', 'data-pixel': '1815630929780241' });
+  assert.equal(p.aviso, 'soft');
+  assert.equal(p.banner, false);
+  // banner continua com o modo banner; off, sem aviso.
+  assert.equal(plano('https://agenciastrat.com.br/kit/lead/', 'lead').aviso, 'banner');
+  assert.equal(plano('https://agenciastrat.com.br/advogados/', 'lead').aviso, null);
+  // Sem pixel, não há o que avisar nem o que recusar.
+  assert.equal(falso({ metricaas_ws: 'w', consentimento: 'soft' }).aviso, null);
+  // Com Rastro em soft, o aviso é o do Rastro (consentMode soft), não o do kit.
+  const rastro = falso({ rastro_slug: 'stratai', metricaas_ws: 'w', meta_pixel: '1', consentimento: 'soft' });
+  assert.equal(rastro.aviso, null);
+  assert.equal(rastro.consentMode, 'soft');
+});
+
 test('lead precisa de MetricaaS ou Rastro; GA4 sem Rastro quebra (WEB-73)', () => {
   assert.throws(() => falso({}), /metricaas_ws ou rastro_slug/);
   assert.throws(() => falso({ metricaas_ws: 'w', ga4: 'G-1' }), /WEB-73/);
@@ -93,19 +110,26 @@ test('Rastro com banner monta: o produto tem de estar em strict e o banner do ki
   assert.equal(lead.consentMode, 'strict');
 });
 
-test('venda com banner e Rastro quebra o build: o launcher da Hotmart sairia antes do aceite (WEB-85)', () => {
+test('venda com banner e Rastro monta com o launcher depois do aceite do Rastro (WEB-85)', () => {
   const venda = { perfil: 'venda', rastro_slug: 'mentoria', hotmart_conta: 'h' };
-  assert.throws(() => falso({ ...venda, consentimento: 'banner' }), /perfil venda com consentimento "banner" e Rastro.*WEB-85/);
-  // soft e off montam com o launcher (em soft e off o Rastro não pede aceite antes de carregar nada).
+  const banner = falso({ ...venda, consentimento: 'banner' });
+  assert.equal(banner.hotmart, 'h');
+  assert.equal(banner.hotmartAposAceite, true);
+  assert.equal(banner.consentMode, 'strict');
+  assert.equal(banner.banner, false, 'o aviso é o do Rastro');
+  // soft e off: o launcher carrega na abertura (em soft e off o Rastro não pede aceite antes de carregar nada).
   for (const consentimento of ['soft', 'off']) {
     const p = falso({ ...venda, consentimento });
     assert.equal(p.hotmart, 'h', consentimento);
-    assert.equal(p.banner, false, consentimento);
+    assert.equal(p.hotmartAposAceite, false, consentimento);
   }
-  // Lead e conteúdo com Rastro e banner continuam montando: não há launcher.
+  // Lead e conteúdo com Rastro e banner: não há launcher.
   assert.equal(falso({ perfil: 'conteudo', rastro_slug: 'site', consentimento: 'banner' }).hotmart, null);
-  // Nenhuma linha do catálogo de hoje está em venda + banner.
-  assert.deepEqual(catalogo.urls.filter((l) => l.perfil === 'venda' && l.consentimento === 'banner').map((l) => l.id), []);
+  // No catálogo, venda + banner só na página de teste.
+  assert.deepEqual(catalogo.urls.filter((l) => l.perfil === 'venda' && l.consentimento === 'banner').map((l) => l.id), ['academy-kit-venda-banner']);
+  const teste = plano('https://stratacademy.com.br/kit/venda-banner/', 'venda');
+  assert.equal(teste.hotmartAposAceite, true);
+  assert.equal(teste.consentMode, 'strict');
 });
 
 test('consentimento × consentMode do Rastro: banner = strict, soft = soft, off = off; o resto não tem par', () => {
@@ -124,11 +148,41 @@ test('consentimento × consentMode do Rastro: banner = strict, soft = soft, off 
   assert.equal(plano('https://agenciastrat.com.br/kit/lead/', 'lead').consentMode, null);
 });
 
-test('sem-tracking e por-funil não carregam nada; Umami entra pelo proxy /u/ quando o id existe', () => {
-  assert.deepEqual(plano('https://comunidade.stratacademy.com.br/', 'conteudo').scripts, []);
+test('por-funil: só o Umami do host como tag, e o registro funis vira { chave: produto } para o script do kit (WEB-106)', () => {
+  const comunidade = plano('https://comunidade.stratacademy.com.br/', 'conteudo');
+  assert.deepEqual(comunidade.scripts, [{ src: '/u/script.js', attrs: { 'data-website-id': '292545fe-45fd-481b-832f-99ab2c972d04' } }]);
+  assert.deepEqual(comunidade.porFunil, { vibecode: 'aula-claude-code', 'bootcamp-0808': 'bootcamp-0808' });
+  assert.equal(comunidade.hotmart, null);
+  assert.equal(comunidade.banner, false);
+  assert.equal(comunidade.consentMode, null);
   assert.deepEqual(falso({ metricaas_ws: 'w', consentimento: 'sem-tracking' }).scripts, []);
+  assert.equal(falso({ metricaas_ws: 'w', consentimento: 'sem-tracking' }).porFunil, null);
   const u = falso({ metricaas_ws: 'w', umami_website_id: 'abc-123' });
   assert.deepEqual(u.scripts.at(-1), { src: '/u/script.js', attrs: { 'data-website-id': 'abc-123' } });
+  assert.equal(u.porFunil, null);
+});
+
+test('por-funil: registro funis obrigatório e conferido; fora do por-funil, funis barra', () => {
+  const f = (funis, extra = {}) => falso({ perfil: 'conteudo', consentimento: 'por-funil', funis, ...extra });
+  const ok = { aula: { rastro_slug: 'aula-claude-code', consentimento: 'soft' } };
+  assert.deepEqual(f(ok).porFunil, { aula: 'aula-claude-code' });
+  assert.throws(() => f(undefined), /precisa do registro "funis"/);
+  assert.throws(() => f({}), /precisa do registro "funis"/);
+  assert.throws(() => f([]), /precisa do registro "funis"/);
+  assert.throws(() => f(ok, { rastro_slug: 'stratai' }), /não leva rastro_slug na linha/);
+  assert.throws(() => f({ Aula: ok.aula }), /só minúsculas, números e hífen/);
+  assert.throws(() => f({ aula: { consentimento: 'soft' } }), /sem rastro_slug/);
+  assert.throws(() => f({ aula: { rastro_slug: 'x', consentimento: 'strict' } }), /não tem consentMode no Rastro/);
+  assert.throws(() => f({ aula: { rastro_slug: 'x', consentimento: 'por-funil' } }), /não tem consentMode no Rastro/);
+  assert.throws(() => falso({ rastro_slug: 'stratai', funis: ok }), /"funis" só vale com consentimento "por-funil"/);
+});
+
+test('scriptDoPorFunil: o texto do arquivo chamado com o /sa e o registro, sem fechar o <script>', () => {
+  const fonte = readFileSync(new URL('../src/rastro-por-funil.js', import.meta.url), 'utf8');
+  const s = scriptDoPorFunil(fonte, { vibecode: 'aula-claude-code', x: '</script>' });
+  assert.match(s, /^\(function \(w, d, o\)/);
+  assert.ok(s.endsWith(`(window, document, {"rastro":"${RASTRO}","funis":{"vibecode":"aula-claude-code","x":"\\u003c/script>"}});`));
+  assert.doesNotMatch(s, /^\s*\/\//m, 'comentário de linha inteira não vai para o HTML');
 });
 
 test('toda linha do catálogo gera um plano sem erro', () => {

@@ -2,20 +2,22 @@
 // gtag colado à mão (no HTML, em <noscript> ou num .js do build), m.js fora do lugar (ordem, defer e type) e slug que
 // o Rastro não conhece. O esperado de cada página sai da mesma regra do componente (planoDeTracking do kit), lida da
 // linha do catálogo; a checagem compara com o HTML gerado.
-import { HOTMART_LAUNCHER, METRICAAS, RASTRO, UMAMI, consentModeEsperado, planoDeTracking } from '@strat/kit';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { ATR_RASTRO_APOS_PINTURA, scriptDoRastroAposPintura, HOTMART_LAUNCHER, ID_POR_FUNIL, METRICAAS, RASTRO, UMAMI, consentModeEsperado, marca, planoDeTracking, scriptDoBanner, scriptDoLauncher } from '@strat/kit';
 import { ehPaginaDeErro } from './contexto.js';
-import { lerPagina } from './html.js';
+import { lerPagina, scripts as todosOsScripts, tags } from './html.js';
 import { ESQUELETOS } from './esqueletos.js';
 import { resultado } from './resultado.js';
 
 // Ninguém cola pixel, gtag ou GTM à mão: o Rastro injeta e daria evento em dobro (regra dura 2 do CLAUDE.md).
 const COLADO_A_MAO = [
   [/connect\.facebook\.net/i, 'pixel da Meta'],
-  [/\bfbq\s*\(/, 'pixel da Meta (fbq)'],
+  [/\bfbq\s*(?:\?\.)?\s*\(|\bwindow\s*\[\s*['"]fbq['"]\s*\]\s*(?:\?\.)?\s*\(/, 'pixel da Meta (fbq)'],
   [/facebook\.com\/tr(?![\w-])/i, 'pixel da Meta (imagem facebook.com/tr)'],
   [/googletagmanager\.com/i, 'gtag ou GTM'],
   [/google-analytics\.com/i, 'Google Analytics'],
-  [/\bgtag\s*\(/, 'gtag'],
+  [/\bgtag\s*(?:\?\.)?\s*\(|\bwindow\s*\[\s*['"]gtag['"]\s*\]\s*(?:\?\.)?\s*\(/, 'gtag'],
   [/analytics\.tiktok\.com/i, 'pixel do TikTok'],
 ];
 
@@ -24,13 +26,61 @@ const DE_VENDA = /hotmart\.com/i;
 
 const ATRIBUTOS = ['data-ws', 'data-pixel', 'data-pixel-consent', 'data-website-id'];
 
-/** Script que é do componente <Tracking> (Rastro, MetricaaS, Umami ou launcher da Hotmart). */
+function ehMjsDoMetricaas(src) {
+  try {
+    const url = new URL(src, 'https://pagina.invalid');
+    return (url.hostname === 'metricaas.com.br' || url.hostname.endsWith('.metricaas.com.br')) && /\/m\.js$/.test(url.pathname);
+  } catch {
+    return false;
+  }
+}
+
+// Fonte do banner de cookies do kit: o <Tracking> põe este texto inline (scriptDoBanner). No modo soft ele chama
+// fbq('consent', 'revoke') no "Recusar" (WEB-84), então só o texto exato que o kit gera para a linha passa pela regra do
+// "colado à mão"; qualquer outro fbq inline segue barrando.
+const FONTE_DO_BANNER = readFileSync(fileURLToPath(import.meta.resolve('@strat/kit/banner-cookies.js')), 'utf8');
+
+/** Texto do banner de cookies que o <Tracking> põe na página da linha, ou null quando a linha não tem banner. */
+export function bannerDoKit(catalogo, linha) {
+  if (!linha) return null;
+  let plano;
+  try {
+    plano = planoDeTracking({ catalogo, url: linha.url, perfil: linha.perfil });
+  } catch {
+    return null; // o erro do plano é acusado mais abaixo
+  }
+  if (!plano.aviso) return null;
+  let privacidade;
+  try {
+    privacidade = marca(linha.marca).privacidade;
+  } catch {
+    return null; // marca fora do kit: o build já quebra no <Tracking>
+  }
+  return privacidade ? scriptDoBanner(FONTE_DO_BANNER, privacidade, plano.aviso) : null;
+}
+
+/**
+ * Texto do launcher da Hotmart que o <Tracking> põe na página da linha quando ele espera o aceite do Rastro (venda +
+ * banner, WEB-85), ou null nos outros casos. Em página com banner, só esse texto exato da Hotmart passa.
+ */
+export function launcherAposAceite(catalogo, linha) {
+  if (!linha) return null;
+  try {
+    const plano = planoDeTracking({ catalogo, url: linha.url, perfil: linha.perfil });
+    return plano.hotmart && plano.hotmartAposAceite ? scriptDoLauncher(plano.hotmart, { aposAceite: true }) : null;
+  } catch {
+    return null; // o erro do plano é acusado mais abaixo
+  }
+}
+
+/** Script que é do componente <Tracking> (Rastro, MetricaaS, Umami, Rastro por funil ou launcher da Hotmart). */
 export function ehScriptDeTracking(s) {
-  const src = s.attrs.src || '';
+  const src = s.attrs.src || s.attrs[ATR_RASTRO_APOS_PINTURA] || '';
   return (
     src.startsWith(RASTRO) ||
-    src === METRICAAS ||
+    ehMjsDoMetricaas(src) ||
     src === UMAMI ||
+    s.attrs.id === ID_POR_FUNIL ||
     s.attrs.id === 'hotmart_launcher_script' ||
     s.conteudo.includes(HOTMART_LAUNCHER)
   );
@@ -39,6 +89,41 @@ export function ehScriptDeTracking(s) {
 const descrever = (s) => (s.attrs.src ? s.attrs.src : `<script id="${s.attrs.id || ''}"> inline`);
 
 const coladoAMao = (texto) => COLADO_A_MAO.filter(([re]) => re.test(texto)).map(([, nome]) => nome);
+
+// Evento no pixel que o próprio <Tracking> liga (m.js com data-pixel): fbq('track' | 'trackCustom', ...) não é pixel
+// colado, é a página contando um passo dela (WEB-24). Só vale em <script> inline da página que tem esse pixel, e só
+// com a lista fechada dos eventos que o /advogados original usa: ViewContent (capa) e FirstInteraction (1ª resposta).
+// Lead e LeadQualificado saem da tag do MetricaaS com o event_id da CAPI; repetidos aqui dariam evento em dobro.
+// fbq('init'), o fbevents.js e o resto continuam barrando.
+export const EVENTOS_DA_PAGINA = ['ViewContent', 'FirstInteraction'];
+// Evento que nunca sai da página: o nome escrito em qualquer string do script barra quando ele tem fbq de evento.
+export const EVENTOS_DA_TAG = ['Lead', 'LeadQualificado'];
+const EVENTO_NO_PIXEL = /\bfbq\s*\(\s*(['"])(?:track|trackCustom)\1\s*,\s*(?:(['"])([^'"\\]*)\2|[A-Za-z_$][\w$.]*)/g;
+const STRING_DA_TAG = new RegExp(`(['"\`])(${EVENTOS_DA_TAG.join('|')})\\1`, 'g');
+
+/**
+ * Tira do script os fbq de evento da lista fechada (para a regra do "colado à mão" não pegar) e devolve os problemas:
+ * evento escrito fora da lista, ou evento por variável num script que tem Lead/LeadQualificado em alguma string.
+ */
+export function eventosNoPixel(conteudo) {
+  const problemas = [];
+  let porVariavel = false;
+  const limpo = conteudo.replace(EVENTO_NO_PIXEL, (_tudo, _a, aspas, nome) => {
+    if (aspas === undefined) porVariavel = true;
+    else if (!EVENTOS_DA_PAGINA.includes(nome)) {
+      problemas.push(`fbq com o evento "${nome}" fora da lista da página (${EVENTOS_DA_PAGINA.join(', ')})`);
+    }
+    return '';
+  });
+  if (porVariavel) {
+    for (const nome of new Set([...conteudo.matchAll(STRING_DA_TAG)].map((m) => m[2]))) {
+      problemas.push(`fbq com evento por variável num script que tem "${nome}": ${EVENTOS_DA_TAG.join(' e ')} saem só da tag do MetricaaS`);
+    }
+  }
+  return { limpo, problemas };
+}
+
+const pixelDoKit = (scripts) => scripts.some((s) => s.attrs.src === METRICAAS && s.attrs['data-pixel']);
 
 // type que o navegador executa como JavaScript clássico. "module" também executa, mas muda a ordem e pede CORS; um
 // type qualquer (text/plain de gerenciador de consentimento, por exemplo) não executa: script presente e morto.
@@ -53,6 +138,7 @@ export const executa = (s) => TIPOS_CLASSICOS.includes(tipo(s)) || tipo(s) === '
  */
 export function problemasDoMjs(mjs, scripts, fimDoHead = Infinity) {
   const p = [];
+  if ('nomodule' in mjs.attrs) p.push('com nomodule (não executa em navegadores modernos)');
   if (!('defer' in mjs.attrs)) p.push('sem defer');
   if ('async' in mjs.attrs) p.push('com async (a ordem deixa de ser garantida)');
   if (!TIPOS_CLASSICOS.includes(tipo(mjs))) p.push(`com type="${mjs.attrs.type}" (só JavaScript clássico, sem type)`);
@@ -63,34 +149,65 @@ export function problemasDoMjs(mjs, scripts, fimDoHead = Infinity) {
 }
 
 /** Compara o HTML de uma página com o plano do catálogo. Devolve [{ slug, linha }] do Rastro usado. */
-export function checarPaginaTracking(pagina, catalogo, r) {
+export function checarPaginaTracking(pagina, catalogo, r, esqueletos = ESQUELETOS) {
   const onde = pagina.url;
   const { scripts, noindex, noscripts, fimDoHead } = lerPagina(pagina.html);
+  const linhaDaPagina = (catalogo.urls || []).find((l) => l.url === onde);
+  const banner = esqueletos[onde] ? null : bannerDoKit(catalogo, linhaDaPagina);
+  const ehBanner = (s) => banner !== null && !s.attrs.src && s.conteudo.trim() === banner;
 
-  for (const s of scripts) {
-    for (const nome of coladoAMao(`${s.attrs.src || ''}\n${s.conteudo}`)) {
+  const comPixelDoKit = pixelDoKit(scripts);
+  // Colado à mão procura no HTML bruto, inclusive em <template> e comentário: um JS da página pode clonar o
+  // <template> e o script dele roda (revisão do #36, 19/11). A ordem e o catálogo usam só o que executa.
+  for (const s of todosOsScripts(pagina.html, { inertes: true })) {
+    if (ehBanner(s)) continue;
+    let conteudo = s.conteudo;
+    if (comPixelDoKit && !s.attrs.src) {
+      const eventos = eventosNoPixel(s.conteudo);
+      conteudo = eventos.limpo;
+      for (const p of eventos.problemas) r.erro(onde, `${p} em ${descrever(s)}`);
+    }
+    for (const nome of coladoAMao(`${s.attrs.src || ''}\n${conteudo}`)) {
       r.erro(onde, `${nome} colado à mão em ${descrever(s)}: tracking só pelo <Tracking> do kit`);
     }
   }
   for (const n of noscripts) {
     for (const nome of coladoAMao(n)) r.erro(onde, `${nome} colado à mão em <noscript>: tracking só pelo <Tracking> do kit`);
   }
+  // Rastro montado pelo script da própria página (createElement com o /sa, como a comunidade fazia até o WEB-106):
+  // o produto fica fora do catálogo e a CI não confere. Página de vários funis usa consentimento "por-funil".
+  for (const s of scripts) {
+    if (!s.attrs.src && s.attrs.id !== ID_POR_FUNIL && s.conteudo.includes(RASTRO)) {
+      r.erro(onde, `Rastro montado pelo script da página em ${descrever(s)}: só pelo <Tracking> (página de vários funis: consentimento "por-funil" e registro "funis" no catálogo)`);
+    }
+  }
+
+  for (const elemento of ['img', 'iframe']) {
+    for (const { attrs } of tags(pagina.html, elemento)) {
+      for (const nome of coladoAMao(attrs.src || '')) {
+        r.erro(onde, `${nome} colado à mão em <${elemento}>: tracking só pelo <Tracking> do kit`);
+      }
+    }
+  }
 
   const reais = scripts.filter(ehScriptDeTracking);
 
-  if (ESQUELETOS[onde]) {
-    const item = ESQUELETOS[onde];
+  if (esqueletos[onde]) {
+    const item = esqueletos[onde];
     if (reais.length) r.erro(onde, `já carrega tracking: a migração (${item}) tem de tirar a URL de packages/checagens/src/esqueletos.js`);
     else if (!noindex) r.erro(onde, `esqueleto (até o ${item}) precisa de noindex: a página real ainda está na hospedagem antiga`);
     return [];
   }
 
-  const linha = (catalogo.urls || []).find((l) => l.url === onde);
+  const linha = linhaDaPagina;
   if (!linha) return []; // a checagem catalogo acusa
-  // Com banner nada de venda carrega antes do "aceitar" (WEB-81): o kit já recusa venda + banner (até o WEB-85), e
-  // aqui barra também o script da Hotmart que entrou por outro caminho (colado à mão, widget de checkout, build velho).
+  // Com banner nada de venda carrega antes do "aceitar" (WEB-81). O único script da Hotmart que passa é o launcher do
+  // kit que espera o aceite do Rastro (venda + banner, WEB-85), com o texto exato que o kit gera para a linha; o resto
+  // barra (colado à mão, widget de checkout, launcher que carrega na abertura, build velho).
   if (linha.consentimento === 'banner') {
+    const doKit = launcherAposAceite(catalogo, linha);
     for (const s of scripts) {
+      if (doKit !== null && !s.attrs.src && s.attrs.id === 'hotmart_launcher_script' && s.conteudo.trim() === doKit.trim()) continue;
       if (DE_VENDA.test(`${s.attrs.src || ''}\n${s.conteudo}`)) {
         r.erro(onde, `script da Hotmart em página com consentimento "banner": ${descrever(s)} carrega antes do "aceitar" (WEB-85)`);
       }
@@ -105,15 +222,20 @@ export function checarPaginaTracking(pagina, catalogo, r) {
   }
   for (const aviso of plano.avisos) r.aviso(onde, aviso);
 
-  const esperados = plano.scripts.map((s) => ({ src: s.src, attrs: s.attrs }));
+  const esperados = plano.scripts.map((s) => ({ src: s.src, attrs: s.attrs, aposPintura: !!s.aposPintura }));
   const sobra = [...reais];
   for (const e of esperados) {
-    const i = sobra.findIndex((s) => s.attrs.src === e.src);
+    const i = sobra.findIndex((s) => (s.attrs.src || s.attrs[ATR_RASTRO_APOS_PINTURA]) === e.src);
     if (i < 0) {
       r.erro(onde, `falta ${e.src}: a página não usa o <Tracking> do kit (perfil "${linha.perfil}" no Layout)`);
       continue;
     }
     const [achado] = sobra.splice(i, 1);
+    const adiado = achado.attrs[ATR_RASTRO_APOS_PINTURA] !== undefined;
+    if (e.aposPintura !== adiado) r.erro(onde, `${e.src}: o Rastro de venda precisa esperar o primeiro quadro; lead e conteudo continuam diretos (WEB-104)`);
+    if (adiado && ('src' in achado.attrs || 'nomodule' in achado.attrs || !TIPOS_CLASSICOS.includes(tipo(achado)) || achado.conteudo.trim() !== scriptDoRastroAposPintura())) {
+      r.erro(onde, `${e.src}: carregador após pintura ausente, alterado ou inerte (WEB-104)`);
+    }
     for (const a of ATRIBUTOS) {
       const quer = e.attrs[a];
       const tem = achado.attrs[a];
@@ -121,8 +243,23 @@ export function checarPaginaTracking(pagina, catalogo, r) {
     }
     if (e.src === METRICAAS) {
       for (const p of problemasDoMjs(achado, scripts, fimDoHead)) r.erro(onde, `m.js ${p}: o código do WhatsApp chegaria tarde (regra dura do lead)`);
+    } else if ('nomodule' in achado.attrs) {
+      r.erro(onde, `${e.src} com nomodule: não executa em navegadores modernos`);
     } else if (!TIPOS_CLASSICOS.includes(tipo(achado))) {
       r.erro(onde, `${e.src} com type="${achado.attrs.type}": o navegador não executa como o <Tracking> do kit desenha`);
+    }
+  }
+  if (plano.porFunil) {
+    const i = sobra.findIndex((s) => s.attrs.id === ID_POR_FUNIL);
+    if (i < 0) {
+      r.erro(onde, 'por-funil sem o script do Rastro por funil do <Tracking> (o ?f= não liga produto nenhum)');
+    } else {
+      const [achado] = sobra.splice(i, 1);
+      // O registro que vai para o navegador tem de ser o do catálogo (build velho ou script trocado à mão daria outro produto).
+      if (!achado.conteudo.includes(`"funis":${JSON.stringify(plano.porFunil)}`)) {
+        r.erro(onde, `o script do Rastro por funil não leva o registro "funis" do catálogo (${JSON.stringify(plano.porFunil)})`);
+      }
+      if (!TIPOS_CLASSICOS.includes(tipo(achado))) r.erro(onde, `script do Rastro por funil com type="${achado.attrs.type}": o navegador não executa`);
     }
   }
   if (plano.hotmart) {
@@ -131,11 +268,16 @@ export function checarPaginaTracking(pagina, catalogo, r) {
     else sobra.splice(i, 1);
   }
   for (const s of sobra) r.erro(onde, `script de tracking que o catálogo não pede (colado à mão ou em dobro): ${descrever(s)}`);
+  if (banner !== null && !scripts.some(ehBanner)) {
+    r.erro(onde, `falta o banner de cookies do kit (modo "${plano.aviso}"): consentimento "${linha.consentimento}" sem Rastro pede o aviso do <Tracking>`);
+  }
 
   if (esperados.length && !linha.umami_website_id) {
     r.aviso(onde, 'sem umami_website_id no catálogo: a página não mede no Umami (o id vem do Strat Tracking)');
   }
-  return linha.rastro_slug && !['sem-tracking', 'por-funil'].includes(linha.consentimento) ? [{ slug: linha.rastro_slug, linha }] : [];
+  // por-funil: cada produto do registro se confere no Rastro como uma linha (consentimento e ids do funil).
+  if (plano.porFunil) return Object.values(linha.funis).map((f) => ({ slug: f.rastro_slug, linha: { ...f, url: linha.url } }));
+  return linha.rastro_slug && linha.consentimento !== 'sem-tracking' ? [{ slug: linha.rastro_slug, linha }] : [];
 }
 
 // O Rastro fora do ar (rede, tempo esgotado, 5xx, 429) não pode deixar todo PR vermelho por uma oscilação: o /sa é
@@ -255,14 +397,15 @@ export function checarJsDoBuild(app, r) {
   }
 }
 
-export async function checarTracking(ctx, { semRede = false, buscar = fetch, tentativas = TENTATIVAS_DO_RASTRO, pausas, esperar } = {}) {
+// `esqueletos` existe para o teste: com a lista real vazia (todos os apps migrados), ele passa uma lista própria.
+export async function checarTracking(ctx, { semRede = false, buscar = fetch, tentativas = TENTATIVAS_DO_RASTRO, pausas, esperar, esqueletos = ESQUELETOS } = {}) {
   const r = resultado();
   const slugs = new Map();
   for (const app of ctx.apps) {
     checarJsDoBuild(app, r);
     for (const pagina of app.paginas) {
       if (ehPaginaDeErro(pagina)) continue;
-      for (const { slug, linha } of checarPaginaTracking(pagina, ctx.catalogo, r)) {
+      for (const { slug, linha } of checarPaginaTracking(pagina, ctx.catalogo, r, esqueletos)) {
         if (!slugs.has(slug)) slugs.set(slug, []);
         slugs.get(slug).push({ url: pagina.url, linha });
       }

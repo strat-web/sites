@@ -45,14 +45,12 @@ export const marcas = {
     resumo:
       'Agência de marketing em Joinville/SC (Brasil) que junta tráfego pago, social media, conteúdo e inteligência artificial em um time só, com tudo medido no número que importa para o cliente: cliente novo. Google Partner e membro do programa Meta Business Partner.',
     url: 'https://agenciastrat.com.br/',
-    // A imagem ainda mora no endereço antigo; muda para agenciastrat.com.br na migração (WEB-23).
-    imagem: 'https://agencia.stratai.com.br/midia/og.png',
+    imagem: 'https://agenciastrat.com.br/midia/og.png',
     // O logotipo do topo de agencia.stratai.com.br (midia/logo/strat-ag.png), no mesmo caminho.
     logo: 'https://agenciastrat.com.br/midia/logo/strat-ag.png',
     telefone: '+55 48 3199-4338',
     email: 'comercial@stratai.com.br',
-    // Muda para agenciastrat.com.br na migração (WEB-23), junto da imagem.
-    privacidade: 'https://agencia.stratai.com.br/politica-de-privacidade',
+    privacidade: 'https://agenciastrat.com.br/politica-de-privacidade/',
     endereco: joinville,
     sameAs: ['https://www.instagram.com/agencia.strat/'],
   },

@@ -6,7 +6,8 @@ Bing indexam, de páginas com fatos claros e de quem cita a empresa. O kit cuida
 ## Toda página indexável
 - **Título** de 10 a 65 caracteres, com a busca principal e a marca (`Agente de IA no WhatsApp para empresas · StratAI`).
 - **Descrição** de 50 a 160 caracteres.
-- **Um H1**, com a busca principal. Título e H1 únicos no site (a CI barra repetido).
+- **Um H1**, com a busca principal. Título e H1 únicos entre as páginas indexáveis do site (a CI barra repetido). Variante
+  de teste A/B com noindex pode repetir a principal (WEB-48).
 - **Canonical** para a própria URL, com barra no fim e no domínio final (nunca `pages.dev`).
 - **Open Graph** com imagem absoluta.
 - **JSON-LD:** `Organization` ou `ProfessionalService` da marca (com `parentOrganization` "Grupo Strat", que liga as

@@ -1,0 +1,18 @@
+---
+// Migração do strat-lps (WEB-48), preservando caminho, conteúdo e funil. Tracking pelo kit.
+import Layout from '@strat/kit/Layout.astro';
+import head from "../../html/mentoria-grupo.head.html?raw";
+import corpo from "../../html/mentoria-grupo.corpo.html?raw";
+---
+<Layout
+  marca="academy"
+  perfil="venda"
+  titulo="Mentoria em Grupo — Claude Code | Strat Academy"
+  descricao="Continue construindo depois do bootcamp: aplicações novas toda semana e seus projetos acompanhados de perto pelo Helbert. 4 encontros ao vivo, começa 12/08."
+  indexar={false}
+  tituloSocial="Mentoria em Grupo — Claude Code | Strat Academy"
+  descricaoSocial="Não pare de construir. 4 encontros ao vivo com o Helbert. Aplicações novas + hot seat do seu projeto. Começa 12/08."
+>
+  <Fragment slot="head" set:html={head} />
+  <Fragment set:html={corpo} />
+</Layout>

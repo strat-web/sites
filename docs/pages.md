@@ -116,3 +116,17 @@ Function da raiz. Nos outros três, sem a `LEAD_WEBHOOK_URL`, responde 503 e nã
 Um projeto por LP e por subdomínio, criado no WEB-48 (`lps/academy/<lp>/`), com o mesmo desenho: comando
 `pnpm --filter @strat/<lp> build`, saída `lps/academy/<lp>/dist`, observando `lps/academy/<lp>/*`, `packages/*`, `catalogo/*`,
 `functions/*`, `pnpm-lock.yaml` e os quatro arquivos da raiz (`package.json`, `pnpm-workspace.yaml`, `.npmrc`, `.nvmrc`), e excluindo `docs/*`.
+
+| Projeto | Endereço `.pages.dev` | Pacote | Criado | Domínio |
+|---|---|---|---|---|
+| `academy-claude` | https://academy-claude.pages.dev | `@strat/claude` (`lps/academy/claude`) | 17/11/2026, pela API, ligado ao GitHub (WEB-48) | claude.stratacademy.com.br, só com o "pode virar" do Helbert |
+| `academy-mentoria` | https://academy-mentoria.pages.dev | `@strat/mentoria` (`lps/academy/mentoria`) | 17/11/2026, pela API, ligado ao GitHub (WEB-48) | mentoria.stratacademy.com.br e www, ligados em 20/11/2026 (WEB-48) |
+| `academy-vibecode` | https://academy-vibecode.pages.dev | `@strat/vibecode` (`lps/academy/vibecode`) | 17/11/2026, pela API, ligado ao GitHub (WEB-48) | vibecode.stratacademy.com.br e www, ligados em 20/11/2026 (WEB-48) |
+| `academy-comunidade` | https://academy-comunidade.pages.dev | `@strat/comunidade` (`lps/academy/comunidade`) | 17/11/2026, pela API, ligado ao GitHub (WEB-48) | comunidade.stratacademy.com.br e www, ligados em 20/11/2026 (WEB-48) |
+| `academy-skills` | https://academy-skills.pages.dev | `@strat/skills` (`lps/academy/skills`) | 17/11/2026, pela API, ligado ao GitHub (WEB-48) | skills.stratacademy.com.br e www, ligados em 20/11/2026 (WEB-48) |
+| `academy-bootcamp` | https://academy-bootcamp.pages.dev | `@strat/bootcamp` (`lps/academy/bootcamp`) | 17/11/2026, pela API, ligado ao GitHub (WEB-48) | bootcamp.stratacademy.com.br e www, ligados em 20/11/2026 (WEB-48) |
+
+Os seis projetos existem desde 17/11; o código de cada LP entra pelo PR dela (o WEB-48 foi dividido por LP).
+Preview em todas as branches. De 18/11 a 19/11 cada projeto `academy-*` só construiu `web-48-<lp>` (e `web-48-lps-academy`, o #47), porque toda branch do WEB-48 mexia no catálogo ou no lockfile e o projeto de uma LP falharia na branch de outra; com as seis LPs na `main` (19/11), o preview voltou para todas as branches (pedido do Helbert no #62, WEB-106).
+O nome do projeto leva o prefixo `academy-` porque o endereço `*.pages.dev` vale para todas as contas da Cloudflare (o
+`claude.pages.dev` não estaria livre) e para separar as LPs dos apps na lista da conta.
