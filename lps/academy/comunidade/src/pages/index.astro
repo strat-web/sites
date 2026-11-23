@@ -1,8 +1,8 @@
 ---
 // Página pós-cadastro ("entre no grupo") de todos os funis da Academy, migrada do strat-lps (lps/comunidade/index.html)
 // sem mudar texto, layout nem tracking (WEB-48). O funil chega pelo ?f=<chave>: o registro FUNIS, no script do corpo,
-// escolhe a copy, o grupo do WhatsApp e o produto do Rastro. O kit não carrega tracking nenhum aqui (consentimento
-// "por-funil" no catálogo, docs/tracking.md): sem ?f= ou com funil desconhecido, nada carrega, de propósito.
+// escolhe a copy e o grupo do WhatsApp. O Rastro do funil vem do <Tracking> do kit (consentimento "por-funil" e
+// registro "funis" no catálogo, docs/tracking.md; WEB-106): sem ?f= ou com funil desconhecido, nada carrega, de propósito.
 import Layout from '@strat/kit/Layout.astro';
 import head from '../html/home.head.html?raw';
 import corpo from '../html/home.corpo.html?raw';
