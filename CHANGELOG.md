@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- feat(stratai): /bio/ migrada de bio.stratai.com.br (strat-lps) sem mudar texto, layout nem tracking, com noindex, o diagnóstico de 11 perguntas e o Lead pelo Rastro; MetricaaS passa a ser o agencia-strat da linha do catálogo (era o strat-marketing, da Agência); no orçamento do Lighthouse sem exceção (99, LCP 2,1 s, 125 KB): fontes servidas pelo app no lugar do Google Fonts (como o WEB-87) e fotos dos sócios recomprimidas em WebP 128×160 em midia/bio/ (eram os JPG 640×800 exibidos a 64 px); a regra de 301 do host fica descrita em dominios.md para o Helbert (WEB-35)
 - feat(stratai): rodapé da home com links para /raio-x/ e /parcerias/, que estavam no sitemap sem nenhuma página apontando para elas (WEB-110)
 - docs(tracking): o servidor do MetricaaS não manda Contact pela CAPI no wa_click; pelo servidor saem só o Lead e as conversões por etapa do funil (LeadQualificado, Agendamento, Schedule, ContatoIniciado, PropostaEnviada), conferido pelo Helbert no código do MetricaaS; a Agência segue sem Contact no clique e otimiza por Lead e LeadQualificado (decisão dele em 19/11, em decisoes.md) (WEB-86)
 - docs(dominios): virada de 20/11 no catálogo, em dominios.md e em pages.md: comunidade, skills, vibecode, mentoria e bootcamp no Pages (a claude espera o LCP e o CLS) e metricaas.com.br no Pages (WEB-48, WEB-36)
