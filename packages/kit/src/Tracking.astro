@@ -4,7 +4,7 @@
 // A regra mora em tracking.js; aqui só se desenha o resultado.
 import catalogo from '../../../catalogo/sites.json';
 import { scriptDoRastroAposPintura } from './rastro-apos-pintura.js';
-import { planoDeTracking, scriptDoBanner, HOTMART_LAUNCHER } from './tracking.js';
+import { planoDeTracking, scriptDoBanner, scriptDoLauncher } from './tracking.js';
 // Banner de cookies do kit: o script mora em banner-cookies.js (texto puro, testado em test/banner-cookies.test.js).
 import bannerCookies from './banner-cookies.js?raw';
 import { urlCanonica } from './schema.js';
@@ -21,15 +21,9 @@ const plano = planoDeTracking({ catalogo, url, perfil });
 for (const aviso of plano.avisos) console.warn(`[kit] Tracking em ${url}: ${aviso}`);
 
 // Launcher da Hotmart com o id escrito no HTML: o "verificar instalação" da Hotmart lê o HTML estático. O snippet
-// do Rastro detecta o launcher e não duplica. Ele carrega na abertura, sem esperar aceite: por isso venda com
-// consentimento "banner" não monta (tracking.js, até o WEB-85).
-const launcher = plano.hotmart && `
-(function(l,a,u,n,c,h,e,r){l['HotmartLauncherObject']=c;l[c]=l[c]||function(){
-(l[c].q=l[c].q||[]).push(arguments)},l[c].l=1*new Date();h=a.createElement(u),
-e=a.getElementsByTagName(u)[0];h.async=1;h.src=n;e.parentNode.insertBefore(h,e)
-})(window,document,'script','${HOTMART_LAUNCHER}','hot');
-hot('account',${JSON.stringify(plano.hotmart).replace(/"/g, "'")});
-`;
+// do Rastro detecta o launcher e não duplica. Em soft e off ele carrega na abertura; em banner (Rastro em strict), só
+// depois do "aceitar" do Rastro (scriptDoLauncher, WEB-85).
+const launcher = plano.hotmart && scriptDoLauncher(plano.hotmart, { aposAceite: plano.hotmartAposAceite });
 
 let banner = null;
 if (plano.aviso) {
