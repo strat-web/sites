@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- perf(stratacademy): blog no orçamento do peso: fotos dos posts otimizadas no build (capa 800/1200 px, Markdown com srcset e lazy), sem preload das três fontes que o site não usa, Material Symbols servido pelo app e print do criador de funil em src/assets (WEB-49)
 - feat(stratacademy): site e blog da Academy trazidos do horus com as URLs idênticas (D8): 88 URLs com linha no catálogo, tracking pelo <Tracking> do kit (aviso de cookies do Rastro, banner em todas), @horus/seo copiado para o app, /api/lead na raiz, pacotes das ferramentas pelo GitHub Packages (NPM_TOKEN), links internos com barra no fim, 301 do sitemap-index.xml e do sitemap-0.xml, home fora dos esqueletos das checagens e post de teste da stratacademy removido (WEB-49)
 - fix(academy): LP claude sem salto do título no celular: fonte reserva da Clash Grotesk com as métricas dela (size-adjust e overrides) na home, v1 e v3; CLS da / de 0,177 para 0 nas 5 rodadas do PageSpeed na prévia (WEB-48)
 - feat(agenciastrat): home e política migradas de agencia.stratai.com.br (strat-lps 05ca028, com o formulário da WEB-71) para apps/agenciastrat sem mudar texto, layout nem tracking (Layout e Tracking do kit, MetricaaS strat-marketing com o pixel); os três vídeos da home servidos do R2 em assets.agenciastrat.com.br, decisão do Helbert de 19/11; 301 locais da política sem barra e .html; as páginas de teste /kit/ continuam (WEB-23)

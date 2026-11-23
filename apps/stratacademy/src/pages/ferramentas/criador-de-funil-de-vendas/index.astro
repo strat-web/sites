@@ -1,4 +1,7 @@
 ---
+import { Image } from 'astro:assets';
+// Print do editor: em src/assets o build gera as larguras em webp (eram 317 KB em PNG no public/, WEB-49).
+import printDoEditor from '../../../assets/blog/criador-de-funil-de-vendas.png';
 // Folha da ferramenta — /ferramentas/criador-de-funil-de-vendas. Conversão C1.
 //
 // A ORDEM DOS BLOCOS É O CONTRATO, não preferência de layout:
@@ -280,11 +283,11 @@ const howTo = {
       </div>
 
       <figure class="construida-figura">
-        <img
-          src="/images/tools/criador-de-funil-de-vendas.png"
+        <Image
+          src={printDoEditor}
           alt="O editor aberto com o funil de lançamento desenhado: audiência própria e tráfego pago levam à página de inscrição, que leva ao aquecimento por e-mail e aos lembretes no WhatsApp, e daí às três aulas ao vivo, à página de vendas, ao checkout e à área de membros, com carrinho abandonado e fechamento em 72 horas."
-          width="2332"
-          height="1358"
+          widths={[640, 1000, 1600, 2332]}
+          sizes="(max-width: 1100px) 100vw, 1100px"
           loading="lazy"
           decoding="async"
         />

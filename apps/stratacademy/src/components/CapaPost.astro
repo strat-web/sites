@@ -16,6 +16,7 @@
  */
 import { MARCAS_REAIS } from '../data/marcas';
 import { CURSOS } from '../data/catalogo';
+import { getImage } from 'astro:assets';
 
 interface Props {
   titulo: string;
@@ -72,6 +73,12 @@ const escala = formato === 'destaque' ? 12 : 15;
 const logoX = 780;
 const logoY = cy - (24 * escala) / 2;
 const id = `capa-${slug}`;
+
+// A foto do R2 vem em tamanho cheio; o <image> do SVG não aceita loading="lazy", então ela sai do build no tamanho da
+// capa (o dobro da largura em que o card aparece no celular), em webp, servida pelo site (WEB-49).
+const fotoNoTamanho = foto
+  ? (await getImage({ src: foto, inferSize: true, width: formato === 'destaque' ? 1200 : 800, format: 'webp', quality: 72 })).src
+  : undefined;
 ---
 <svg
   class={`capa capa-${formato}${foto ? ' capa-foto' : ''}`}
@@ -100,7 +107,7 @@ const id = `capa-${slug}`;
   <g clip-path={`url(#${id}-quadro)`}>
   {foto ? (
     <>
-      <image href={foto} x="0" y="0" width={L} height={A} preserveAspectRatio="xMidYMid slice" />
+      <image href={fotoNoTamanho} x="0" y="0" width={L} height={A} preserveAspectRatio="xMidYMid slice" />
       <rect width={L} height={A} fill={`url(#${id}-veu)`} />
     </>
   ) : (

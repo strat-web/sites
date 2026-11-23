@@ -23,7 +23,7 @@ Ele mora em pedaços espalhados: a página de captura numa aba, a sequência de 
 
 Por isso colocamos no ar o [criador de funil de vendas](/ferramentas/criador-de-funil-de-vendas/): um quadro onde você arrasta as etapas e enxerga o funil inteiro numa tela só. É gratuito, não pede cadastro e não tem limite de uso.
 
-![O editor aberto com um funil de lançamento desenhado: audiência própria e tráfego pago levam à página de inscrição, que leva ao aquecimento por e-mail e aos lembretes no WhatsApp, e daí às três aulas ao vivo, à página de vendas, ao checkout e à área de membros, com carrinho abandonado e fechamento em 72 horas.](/images/tools/criador-de-funil-de-vendas.png)
+![O editor aberto com um funil de lançamento desenhado: audiência própria e tráfego pago levam à página de inscrição, que leva ao aquecimento por e-mail e aos lembretes no WhatsApp, e daí às três aulas ao vivo, à página de vendas, ao checkout e à área de membros, com carrinho abandonado e fechamento em 72 horas.](../../assets/blog/criador-de-funil-de-vendas.png)
 
 ## O funil que ninguém desenhou é o que ninguém consegue arrumar
 

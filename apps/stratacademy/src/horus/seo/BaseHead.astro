@@ -147,15 +147,16 @@ const jsonLd =
 <link rel="alternate" type="application/rss+xml" title={site.name} href={absUrl('/rss.xml')} />
 <link rel="sitemap" href={withBase('/sitemap.xml')} />
 
-<link rel="preload" href={withBase('/fonts/ClashDisplay-Variable.woff2')} as="font" type="font/woff2" crossorigin />
-<link rel="preload" href={withBase('/fonts/Switzer-Variable.woff2')} as="font" type="font/woff2" crossorigin />
-<link rel="preload" href={withBase('/fonts/JetBrainsMono-Variable.woff2')} as="font" type="font/woff2" crossorigin />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link
-  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=account_tree,add,arrow_back,arrow_forward,arrow_right,article,auto_awesome,bolt,brush,bug_report,build,business_center,calendar_month,calendar_today,chat,check,close,code,compare_arrows,construction,content_copy,content_paste_search,database,draft,edit_document,edit_note,error,event,extension,folder_managed,folder_open,forum,graph_3,group,groups,hourglass_empty,hub,info,lightbulb,link,list,live_tv,location_on,lock,mail,menu,menu_book,movie,movie_filter,neurology,newspaper,palette,play_circle,psychology,public,redeem,remove,rocket_launch,rule,schedule,school,search,settings,settings_suggest,share,shield,smart_toy,speed,storage,supervisor_account,support_agent,swap_horiz,terminal,travel_explore,trending_down,trending_up,update,video_library,warning,webhook,work,workspace_premium&display=swap"
-  rel="stylesheet"
-/>
+{/* Sem preload da Clash Display, da Switzer e da JetBrains Mono (vieram do horus): o site é todo em Rubik (fontsource)
+    e na mono do sistema, nenhuma regra usa essas três, e os ~140 KB pré-carregados disputavam a banda com o texto do LCP
+    no celular (WEB-49). */}
+<!-- Material Symbols servido pelo app (WEB-49): antes vinha do fonts.googleapis.com e travava a renderização (~650 ms no
+     celular). O woff2 é o subconjunto que o Google gerava para os ícones abaixo; ícone novo pede baixar o subconjunto
+     de novo com o nome dele. Ícones: account_tree,add,arrow_back,arrow_forward,arrow_right,article,auto_awesome,bolt,brush,bug_report,build,business_center,calendar_month,calendar_today,chat,check,close,code,compare_arrows,construction,content_copy,content_paste_search,database,draft,edit_document,edit_note,error,event,extension,folder_managed,folder_open,forum,graph_3,group,groups,hourglass_empty,hub,info,lightbulb,link,list,live_tv,location_on,lock,mail,menu,menu_book,movie,movie_filter,neurology,newspaper,palette,play_circle,psychology,public,redeem,remove,rocket_launch,rule,schedule,school,search,settings,settings_suggest,share,shield,smart_toy,speed,storage,supervisor_account,support_agent,swap_horiz,terminal,travel_explore,trending_down,trending_up,update,video_library,warning,webhook,work,workspace_premium -->
+<style is:inline>
+@font-face{font-family:'Material Symbols Outlined';font-style:normal;font-weight:400;font-display:swap;src:url(/fonts/MaterialSymbolsOutlined-subset.woff2) format('woff2')}
+.material-symbols-outlined{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:24px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-feature-settings:'liga';-webkit-font-smoothing:antialiased}
+</style>
 
 <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 {breadcrumbLd && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />}

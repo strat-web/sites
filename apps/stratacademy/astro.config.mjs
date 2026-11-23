@@ -18,6 +18,12 @@ export default defineConfig({
   // sitemap.xml, robots.txt, llms.txt e _headers a partir do catálogo (WEB-18). O sitemap-index.xml e o
   // sitemap-0.xml do horus respondem 301 para o sitemap.xml (public/_redirects).
   integrations: [arquivosDoSite({ app: 'apps/stratacademy' })],
+  // As fotos dos posts moram no R2 em tamanho cheio (até 1600 px e 274 KB). Liberado o domínio, o build baixa cada uma
+  // e gera a versão do tamanho em que ela aparece (capa do card na CapaPost; imagem do Markdown com loading="lazy" e
+  // largura/altura), servida pelo próprio site. Era o que deixava o blog fora do orçamento do peso no celular (WEB-49).
+  // `layout: 'constrained'` dá srcset e sizes às imagens do Markdown; sem os estilos globais do Astro
+  // (responsiveStyles fica false), para o visual do .prose continuar o mesmo.
+  image: { domains: ['assets.stratacademy.com.br'], layout: 'constrained', responsiveStyles: false },
   vite: {
     plugins: [tailwindcss()],
     resolve: {
