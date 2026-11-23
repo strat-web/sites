@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- feat(stratai): rodapé da home com links para /raio-x/ e /parcerias/, que estavam no sitemap sem nenhuma página apontando para elas (WEB-110)
 - docs(tracking): o servidor do MetricaaS não manda Contact pela CAPI no wa_click; pelo servidor saem só o Lead e as conversões por etapa do funil (LeadQualificado, Agendamento, Schedule, ContatoIniciado, PropostaEnviada), conferido pelo Helbert no código do MetricaaS; a Agência segue sem Contact no clique e otimiza por Lead e LeadQualificado (decisão dele em 19/11, em decisoes.md) (WEB-86)
 - docs(dominios): virada de 20/11 no catálogo, em dominios.md e em pages.md: comunidade, skills, vibecode, mentoria e bootcamp no Pages (a claude espera o LCP e o CLS) e metricaas.com.br no Pages (WEB-48, WEB-36)
 - feat(kit): por-funil pelo <Tracking>: o registro funis da linha do catálogo (chave do ?f= → produto do Rastro, com consentimento e ids) e o script rastro-por-funil.js, que liga o /sa do funil e dispara o CompleteRegistration uma vez por sessão; a comunidade da Academy deixa de montar o Rastro no próprio script, e a checagem tracking passa a barrar Rastro montado pela página e a conferir cada produto do registro no Rastro (WEB-106)
