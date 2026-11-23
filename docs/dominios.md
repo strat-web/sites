@@ -61,3 +61,7 @@ token `pages-strat-web`; investigação no item de Triagem aberto pelo WEB-44.
 ## Serviços do Easypanel ligados a site (para desligar no fim)
 - `aplicativos/strat-lps`: 13 domínios, build nixpacks na VPS. Desliga no WEB-53, depois de 2 semanas de 301 sem erro.
 - `aplicativos/stratacademy-site`: builda o horus sem domínio próprio; duplicado do Pages. Desliga no WEB-52.
+
+## Migração da Agência (WEB-23)
+
+Home e política copiadas do strat-lps `05ca028` para `apps/agenciastrat`, com o kit e a mesma medição; produção segue em agencia.stratai.com.br até a virada. A política no app usa `/politica-de-privacidade/`, com 301 das formas sem barra e `.html`. Os três vídeos da home (cerca de 4,8 MB) ficam no R2 `assets-agenciastrat`, em `https://assets.agenciastrat.com.br/midia/criativos/`, por decisão do Helbert em 19/11/2026 (subidos em 20/11 pelo `scripts/subir-asset.mjs`, SHA-256 igual ao da origem). As páginas de teste `/kit/` continuam no app. Publicação do domínio e redirecionamento entre hosts ficam nos WEB-26 e WEB-29.
