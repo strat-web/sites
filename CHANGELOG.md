@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- feat(stratai): rodapé da home com links para /raio-x/ e /parcerias/, que estavam no sitemap sem nenhuma página apontando para elas (WEB-110)
 - feat(academy): migra a LP claude (principal, v1, v3 e v4) do strat-lps para o projeto academy-claude do Pages, com SEO e Tracking do kit, fontes locais e variantes noindex (WEB-48)
 - fix(kit): carrega o Rastro após o primeiro quadro no perfil venda, preserva m.js/Hotmart/Umami e valida o carregador nas checagens (WEB-104)
 - fix(catalogo): restaura as linhas da vibecode (perfil lead, sem Hotmart), da mentoria e do bootcamp que o merge da sequência de 19/11 perdeu; a vibecode não compilava na main (WEB-48)
