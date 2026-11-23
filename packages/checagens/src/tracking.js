@@ -4,7 +4,7 @@
 // linha do catálogo; a checagem compara com o HTML gerado.
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { ATR_RASTRO_APOS_PINTURA, scriptDoRastroAposPintura, HOTMART_LAUNCHER, METRICAAS, RASTRO, UMAMI, consentModeEsperado, marca, planoDeTracking, scriptDoBanner } from '@strat/kit';
+import { ATR_RASTRO_APOS_PINTURA, scriptDoRastroAposPintura, HOTMART_LAUNCHER, ID_POR_FUNIL, METRICAAS, RASTRO, UMAMI, consentModeEsperado, marca, planoDeTracking, scriptDoBanner, scriptDoLauncher } from '@strat/kit';
 import { ehPaginaDeErro } from './contexto.js';
 import { lerPagina, scripts as todosOsScripts, tags } from './html.js';
 import { ESQUELETOS } from './esqueletos.js';
@@ -59,13 +59,28 @@ export function bannerDoKit(catalogo, linha) {
   return privacidade ? scriptDoBanner(FONTE_DO_BANNER, privacidade, plano.aviso) : null;
 }
 
-/** Script que é do componente <Tracking> (Rastro, MetricaaS, Umami ou launcher da Hotmart). */
+/**
+ * Texto do launcher da Hotmart que o <Tracking> põe na página da linha quando ele espera o aceite do Rastro (venda +
+ * banner, WEB-85), ou null nos outros casos. Em página com banner, só esse texto exato da Hotmart passa.
+ */
+export function launcherAposAceite(catalogo, linha) {
+  if (!linha) return null;
+  try {
+    const plano = planoDeTracking({ catalogo, url: linha.url, perfil: linha.perfil });
+    return plano.hotmart && plano.hotmartAposAceite ? scriptDoLauncher(plano.hotmart, { aposAceite: true }) : null;
+  } catch {
+    return null; // o erro do plano é acusado mais abaixo
+  }
+}
+
+/** Script que é do componente <Tracking> (Rastro, MetricaaS, Umami, Rastro por funil ou launcher da Hotmart). */
 export function ehScriptDeTracking(s) {
   const src = s.attrs.src || s.attrs[ATR_RASTRO_APOS_PINTURA] || '';
   return (
     src.startsWith(RASTRO) ||
     ehMjsDoMetricaas(src) ||
     src === UMAMI ||
+    s.attrs.id === ID_POR_FUNIL ||
     s.attrs.id === 'hotmart_launcher_script' ||
     s.conteudo.includes(HOTMART_LAUNCHER)
   );
@@ -159,6 +174,13 @@ export function checarPaginaTracking(pagina, catalogo, r) {
   for (const n of noscripts) {
     for (const nome of coladoAMao(n)) r.erro(onde, `${nome} colado à mão em <noscript>: tracking só pelo <Tracking> do kit`);
   }
+  // Rastro montado pelo script da própria página (createElement com o /sa, como a comunidade fazia até o WEB-106):
+  // o produto fica fora do catálogo e a CI não confere. Página de vários funis usa consentimento "por-funil".
+  for (const s of scripts) {
+    if (!s.attrs.src && s.attrs.id !== ID_POR_FUNIL && s.conteudo.includes(RASTRO)) {
+      r.erro(onde, `Rastro montado pelo script da página em ${descrever(s)}: só pelo <Tracking> (página de vários funis: consentimento "por-funil" e registro "funis" no catálogo)`);
+    }
+  }
 
   for (const elemento of ['img', 'iframe']) {
     for (const { attrs } of tags(pagina.html, elemento)) {
@@ -179,10 +201,13 @@ export function checarPaginaTracking(pagina, catalogo, r) {
 
   const linha = linhaDaPagina;
   if (!linha) return []; // a checagem catalogo acusa
-  // Com banner nada de venda carrega antes do "aceitar" (WEB-81): o kit já recusa venda + banner (até o WEB-85), e
-  // aqui barra também o script da Hotmart que entrou por outro caminho (colado à mão, widget de checkout, build velho).
+  // Com banner nada de venda carrega antes do "aceitar" (WEB-81). O único script da Hotmart que passa é o launcher do
+  // kit que espera o aceite do Rastro (venda + banner, WEB-85), com o texto exato que o kit gera para a linha; o resto
+  // barra (colado à mão, widget de checkout, launcher que carrega na abertura, build velho).
   if (linha.consentimento === 'banner') {
+    const doKit = launcherAposAceite(catalogo, linha);
     for (const s of scripts) {
+      if (doKit !== null && !s.attrs.src && s.attrs.id === 'hotmart_launcher_script' && s.conteudo.trim() === doKit.trim()) continue;
       if (DE_VENDA.test(`${s.attrs.src || ''}\n${s.conteudo}`)) {
         r.erro(onde, `script da Hotmart em página com consentimento "banner": ${descrever(s)} carrega antes do "aceitar" (WEB-85)`);
       }
@@ -224,6 +249,19 @@ export function checarPaginaTracking(pagina, catalogo, r) {
       r.erro(onde, `${e.src} com type="${achado.attrs.type}": o navegador não executa como o <Tracking> do kit desenha`);
     }
   }
+  if (plano.porFunil) {
+    const i = sobra.findIndex((s) => s.attrs.id === ID_POR_FUNIL);
+    if (i < 0) {
+      r.erro(onde, 'por-funil sem o script do Rastro por funil do <Tracking> (o ?f= não liga produto nenhum)');
+    } else {
+      const [achado] = sobra.splice(i, 1);
+      // O registro que vai para o navegador tem de ser o do catálogo (build velho ou script trocado à mão daria outro produto).
+      if (!achado.conteudo.includes(`"funis":${JSON.stringify(plano.porFunil)}`)) {
+        r.erro(onde, `o script do Rastro por funil não leva o registro "funis" do catálogo (${JSON.stringify(plano.porFunil)})`);
+      }
+      if (!TIPOS_CLASSICOS.includes(tipo(achado))) r.erro(onde, `script do Rastro por funil com type="${achado.attrs.type}": o navegador não executa`);
+    }
+  }
   if (plano.hotmart) {
     const i = sobra.findIndex((s) => s.attrs.id === 'hotmart_launcher_script');
     if (i < 0) r.erro(onde, 'perfil venda sem o launcher da Hotmart do <Tracking>');
@@ -237,7 +275,9 @@ export function checarPaginaTracking(pagina, catalogo, r) {
   if (esperados.length && !linha.umami_website_id) {
     r.aviso(onde, 'sem umami_website_id no catálogo: a página não mede no Umami (o id vem do Strat Tracking)');
   }
-  return linha.rastro_slug && !['sem-tracking', 'por-funil'].includes(linha.consentimento) ? [{ slug: linha.rastro_slug, linha }] : [];
+  // por-funil: cada produto do registro se confere no Rastro como uma linha (consentimento e ids do funil).
+  if (plano.porFunil) return Object.values(linha.funis).map((f) => ({ slug: f.rastro_slug, linha: { ...f, url: linha.url } }));
+  return linha.rastro_slug && linha.consentimento !== 'sem-tracking' ? [{ slug: linha.rastro_slug, linha }] : [];
 }
 
 // O Rastro fora do ar (rede, tempo esgotado, 5xx, 429) não pode deixar todo PR vermelho por uma oscilação: o /sa é
