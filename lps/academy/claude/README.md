@@ -41,6 +41,13 @@ Critério do Helbert para esta LP (WEB-63, 12/11/2026): LCP abaixo de 2,5 s na m
 celular, medido no preview do Pages, com o atraso do `div.hero-art` isolado e `content-encoding` e `cache-control`
 conferidos. Medições no PR do WEB-48.
 
+**Fonte reserva calibrada (20/11/2026).** O título do topo pinta antes de a Clash Grotesk chegar. Com a reserva do
+sistema (no Linux do PageSpeed ela é mais larga), o H1 ganhava linhas e empurrava o `.hero-art` na troca (CLS 0,177 no
+`div.hero-art`). Home, v1 e v3 declaram a `'Clash Grotesk Reserva'`: Arial Bold local (ou Liberation Sans Bold / Arimo
+Bold, que têm as mesmas medidas) com `size-adjust` 95,25% (600) e 94,67% (700) e `ascent`/`descent`/`line-gap` da
+Clash (890/250/90 por 1000), medidos com fontTools sobre o texto do H1. Com a Clash carregada, nada muda na tela; a
+v4 usa outras famílias e ficou como estava. Medições no PR.
+
 ## Fontes locais (WEB-48)
 
 As mesmas famílias e pesos da origem são servidos pelo Pages, sem CSS de fonts.googleapis.com na primeira pintura. Na Mentoria V2, o arquivo Material Symbols foi reduzido aos ícones usados, preservando as ligaturas e variações. Esta mudança reduz bloqueio de renderização e trocas de tamanho do texto sem alterar a tipografia.
