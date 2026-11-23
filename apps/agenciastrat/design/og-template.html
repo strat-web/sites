@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>og.png · Agência Strat (template 1200×630)</title>
+<!-- Template da imagem de compartilhamento. Pra exportar (Edge ou Chrome headless), na raiz do repo:
+     msedge --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --window-size=1200,630
+            --virtual-time-budget=8000 --screenshot=midia/og.png "file:///CAMINHO/midia/og-template.html" -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=block" rel="stylesheet">
+<style>
+:root{--red:#ff1f1f;--blue:#57a1ea;--purple:#bb44f2;--lime:#c6ff34;--dark:#191919}
+html,body{margin:0;padding:0}
+body{width:1200px;height:630px;overflow:hidden;position:relative;background:var(--dark);color:#fff;font-family:"Space Grotesk",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.stripe{position:absolute;left:0;right:0;top:0;height:10px;background:linear-gradient(90deg,var(--red) 0 25%,var(--blue) 25% 50%,var(--purple) 50% 75%,var(--lime) 75%)}
+.glow{position:absolute;width:620px;height:620px;border-radius:50%;filter:blur(120px);opacity:.28;pointer-events:none}
+.glow.a{background:var(--purple);right:-180px;top:-220px}
+.glow.b{background:var(--blue);right:140px;bottom:-360px}
+.logo{position:absolute;left:64px;top:52px;height:74px;width:auto}
+h1{position:absolute;left:64px;top:168px;width:740px;margin:0;font-size:62px;line-height:1.06;letter-spacing:-.03em;font-weight:700}
+.box{display:inline-block;background:#fff;color:var(--dark);padding:0 .16em;margin-left:.1em;box-shadow:-3px 3px 0 var(--lime),-6px 6px 0 var(--purple),-9px 9px 0 var(--blue),-12px 12px 0 var(--red)}
+.meta{position:absolute;left:64px;bottom:120px;display:flex;gap:26px;font:500 16px/1 "JetBrains Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:#b9b9b1}
+.meta span{display:inline-flex;align-items:center;gap:10px}
+.meta span::before{content:"";width:9px;height:9px;background:var(--c)}
+.url{position:absolute;left:64px;bottom:62px;font:700 24px/1 "JetBrains Mono",monospace;color:var(--lime);letter-spacing:.02em}
+.badges{position:absolute;right:64px;bottom:62px;display:grid;gap:14px}
+.badge{width:250px;padding:12px 16px;border-radius:14px;background:#fff;box-sizing:border-box}
+.badge img{width:100%;height:auto;display:block}
+.tag{position:absolute;right:64px;top:60px;background:var(--lime);color:#141414;padding:12px 18px;font:700 15px/1 "JetBrains Mono",monospace;letter-spacing:.08em;transform:rotate(-3deg);box-shadow:-3px 3px 0 var(--purple),-6px 6px 0 var(--blue),-9px 9px 0 var(--red)}
+</style>
+</head>
+<body>
+<div class="stripe"></div>
+<div class="glow a"></div><div class="glow b"></div>
+<img class="logo" src="logo/strat-ag-fundo-escuro.png" alt="Strat.ag">
+<span class="tag">DIAGNÓSTICO GRATUITO</span>
+<h1>Tráfego, conteúdo e IA trabalhando juntos pra sua empresa <span class="box">vender mais.</span></h1>
+<div class="meta"><span style="--c:var(--red)">Meta e Google Ads</span><span style="--c:var(--blue)">Social media</span><span style="--c:var(--purple)">Criativos</span><span style="--c:var(--lime)">IA no marketing</span></div>
+<div class="url">stratai.com.br/agencia</div>
+<div class="badges"><div class="badge"><img src="selos/google-partner.webp" alt="Google Partner"></div><div class="badge"><img src="selos/meta-business-partner.webp" alt="Meta Business Partner"></div></div>
+</body>
+</html>
