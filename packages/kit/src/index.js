@@ -1,9 +1,10 @@
 // Kit dos sites. Componentes: import Layout from '@strat/kit/Layout.astro' (Seo, JsonLd, Breadcrumb, Faq e Tracking idem).
 // Aqui ficam os dados das marcas e as funções que montam o canonical e o JSON-LD.
 export { grupo, marcas, marca } from './marcas.js';
-export { urlCanonica, schemaMarca, schemaBreadcrumb, schemaFaq, jsonSeguro } from './schema.js';
+export { urlCanonica, caminhoCanonico, ehArquivo, dataDoDia, schemaMarca, schemaBreadcrumb, schemaFaq, jsonSeguro } from './schema.js';
 export {
-  PERFIS, planoDeTracking, linhaDoCatalogo, RASTRO, METRICAAS, UMAMI, HOTMART_LAUNCHER, CONSENT_MODE_DO_RASTRO, consentModeEsperado,
+  PERFIS, planoDeTracking, linhaDoCatalogo, scriptDoBanner, MODOS_DO_AVISO, scriptDoLauncher, scriptDoPorFunil, funisDaLinha, ID_POR_FUNIL, RASTRO, METRICAAS, UMAMI, HOTMART_LAUNCHER, CONSENT_MODE_DO_RASTRO,
+  consentModeEsperado,
 } from './tracking.js';
 // Integração do Astro que grava sitemap.xml, robots.txt e llms.txt no fim do build (WEB-18).
 export { arquivosDoSite } from './arquivos-do-site.js';
@@ -11,3 +12,5 @@ export { arquivosDoSite } from './arquivos-do-site.js';
 export { SEGURANCA, PAGES_DEV, montarHeaders } from './cabecalhos.js';
 // Página 404 de cada app: links da 404 que só aparecem quando a página existe no build (WEB-75).
 export { rotaDoArquivo, linksDaPaginaDeErro } from './pagina-de-erro.js';
+
+export { ATR_RASTRO_APOS_PINTURA, scriptDoRastroAposPintura } from './rastro-apos-pintura.js';

@@ -9,13 +9,32 @@ app. Conta "Strat Academy" (`6258e000cf06b29a9f3fa797f8592171`); mexer só com o
 
 | Projeto | Endereço `.pages.dev` | Comando de build | Saída | Caminho observado (inclui) | Domínio entra no |
 |---|---|---|---|---|---|
-| `agenciastrat` | https://agenciastrat.pages.dev | `pnpm --filter @strat/agenciastrat build` | `apps/agenciastrat/dist` | `apps/agenciastrat/*`, `packages/*`, `catalogo/*`, `functions/*`, `pnpm-lock.yaml` | WEB-26 |
-| `stratai` | https://stratai-ti7.pages.dev | `pnpm --filter @strat/stratai build` | `apps/stratai/dist` | `apps/stratai/*`, `packages/*`, `catalogo/*`, `functions/*`, `pnpm-lock.yaml` | WEB-32 |
-| `metricaas` | https://metricaas.pages.dev | `pnpm --filter @strat/metricaas build` | `apps/metricaas/dist` | `apps/metricaas/*`, `packages/*`, `catalogo/*`, `functions/*`, `pnpm-lock.yaml` | WEB-36 |
-| `sites-stratacademy` | https://sites-stratacademy.pages.dev | `pnpm --filter @strat/stratacademy build` | `apps/stratacademy/dist` | `apps/stratacademy/*`, `packages/*`, `catalogo/*`, `functions/*`, `pnpm-lock.yaml` | WEB-49 |
+| `agenciastrat` | https://agenciastrat.pages.dev | `pnpm --filter @strat/agenciastrat build` | `apps/agenciastrat/dist` | `apps/agenciastrat/*`, `packages/*`, `catalogo/*`, `functions/*`, `pnpm-lock.yaml`, `package.json`, `pnpm-workspace.yaml`, `.npmrc`, `.nvmrc` | WEB-26 |
+| `stratai` | https://stratai-ti7.pages.dev | `pnpm --filter @strat/stratai build` | `apps/stratai/dist` | `apps/stratai/*`, `packages/*`, `catalogo/*`, `functions/*`, `pnpm-lock.yaml`, `package.json`, `pnpm-workspace.yaml`, `.npmrc`, `.nvmrc` | WEB-32 |
+| `metricaas` | https://metricaas.pages.dev | `pnpm --filter @strat/metricaas build` | `apps/metricaas/dist` | `apps/metricaas/*`, `packages/*`, `catalogo/*`, `functions/*`, `pnpm-lock.yaml`, `package.json`, `pnpm-workspace.yaml`, `.npmrc`, `.nvmrc` | WEB-36 |
+| `sites-stratacademy` | https://sites-stratacademy.pages.dev | `pnpm --filter @strat/stratacademy build` | `apps/stratacademy/dist` | `apps/stratacademy/*`, `packages/*`, `catalogo/*`, `functions/*`, `pnpm-lock.yaml`, `package.json`, `pnpm-workspace.yaml`, `.npmrc`, `.nvmrc` | WEB-49 |
 
-Nos quatro, `docs/*` fica fora do caminho observado. Mudou `packages/kit` ou `catalogo/`, os quatro buildam (é o que se
-quer: ajuste no kit vale para todos).
+Nos quatro, `docs/*` fica fora do caminho observado (exclui). Mudou `packages/kit` ou `catalogo/`, os quatro buildam
+(é o que se quer: ajuste no kit vale para todos). Os quatro arquivos da raiz (`package.json`, `pnpm-workspace.yaml`,
+`.npmrc`, `.nvmrc`) entraram no WEB-78 (12/11/2026): eles mudam a instalação e a versão do Node de todos os apps, e
+sem eles um PR que mexe só num deles não disparava build nem preview. Arquivo novo na raiz que mude o build entra
+aqui e nos quatro projetos no mesmo PR.
+
+O valor de cada projeto, como a API do Pages guarda (`source.config`), é:
+
+```json
+{
+  "path_includes": ["apps/<app>/*", "packages/*", "catalogo/*", "functions/*", "pnpm-lock.yaml",
+                    "package.json", "pnpm-workspace.yaml", ".npmrc", ".nvmrc"],
+  "path_excludes": ["docs/*"]
+}
+```
+
+Para conferir: `GET /accounts/<id>/pages/projects/<projeto>` com o token `pages-strat-web` e ler
+`result.source.config.path_includes` e `path_excludes`. Para mudar: `PATCH` no mesmo endereço com
+`{"source": {"type": "github", "config": {...}}}`, mandando o `config` inteiro lido antes e só os dois campos de
+caminho trocados (o resto, como branch de produção, preview e comentário no PR, fica igual). No painel, o campo é
+"Build watch paths" em Settings, Build.
 
 **Por que `stratai-ti7`:** o endereço `*.pages.dev` vale para todas as contas da Cloudflare, e `stratai.pages.dev` já
 era de outra conta. A Cloudflare acrescentou o sufixo sozinha; o nome do projeto continua `stratai`. Não importa
@@ -79,4 +98,19 @@ mudou a Function, os quatro buildam (como `packages/*` e `catalogo/*`).
 
 ## LPs da Academy
 Um projeto por LP e por subdomínio, criado no WEB-48 (`lps/academy/<lp>/`), com o mesmo desenho: comando
-`pnpm --filter @strat/<lp> build`, saída `lps/academy/<lp>/dist`, observando `lps/academy/<lp>/*`, `packages/*` e `catalogo/*`.
+`pnpm --filter @strat/<lp> build`, saída `lps/academy/<lp>/dist`, observando `lps/academy/<lp>/*`, `packages/*`, `catalogo/*`,
+`functions/*`, `pnpm-lock.yaml` e os quatro arquivos da raiz (`package.json`, `pnpm-workspace.yaml`, `.npmrc`, `.nvmrc`), e excluindo `docs/*`.
+
+| Projeto | Endereço `.pages.dev` | Pacote | Criado | Domínio |
+|---|---|---|---|---|
+| `academy-claude` | https://academy-claude.pages.dev | `@strat/claude` (`lps/academy/claude`) | 17/11/2026, pela API, ligado ao GitHub (WEB-48) | claude.stratacademy.com.br, só com o "pode virar" do Helbert |
+| `academy-mentoria` | https://academy-mentoria.pages.dev | `@strat/mentoria` (`lps/academy/mentoria`) | 17/11/2026, pela API, ligado ao GitHub (WEB-48) | mentoria.stratacademy.com.br e www, ligados em 20/11/2026 (WEB-48) |
+| `academy-vibecode` | https://academy-vibecode.pages.dev | `@strat/vibecode` (`lps/academy/vibecode`) | 17/11/2026, pela API, ligado ao GitHub (WEB-48) | vibecode.stratacademy.com.br e www, ligados em 20/11/2026 (WEB-48) |
+| `academy-comunidade` | https://academy-comunidade.pages.dev | `@strat/comunidade` (`lps/academy/comunidade`) | 17/11/2026, pela API, ligado ao GitHub (WEB-48) | comunidade.stratacademy.com.br e www, ligados em 20/11/2026 (WEB-48) |
+| `academy-skills` | https://academy-skills.pages.dev | `@strat/skills` (`lps/academy/skills`) | 17/11/2026, pela API, ligado ao GitHub (WEB-48) | skills.stratacademy.com.br e www, ligados em 20/11/2026 (WEB-48) |
+| `academy-bootcamp` | https://academy-bootcamp.pages.dev | `@strat/bootcamp` (`lps/academy/bootcamp`) | 17/11/2026, pela API, ligado ao GitHub (WEB-48) | bootcamp.stratacademy.com.br e www, ligados em 20/11/2026 (WEB-48) |
+
+Os seis projetos existem desde 17/11; o código de cada LP entra pelo PR dela (o WEB-48 foi dividido por LP).
+Preview em todas as branches. De 18/11 a 19/11 cada projeto `academy-*` só construiu `web-48-<lp>` (e `web-48-lps-academy`, o #47), porque toda branch do WEB-48 mexia no catálogo ou no lockfile e o projeto de uma LP falharia na branch de outra; com as seis LPs na `main` (19/11), o preview voltou para todas as branches (pedido do Helbert no #62, WEB-106).
+O nome do projeto leva o prefixo `academy-` porque o endereço `*.pages.dev` vale para todas as contas da Cloudflare (o
+`claude.pages.dev` não estaria livre) e para separar as LPs dos apps na lista da conta.

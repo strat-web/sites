@@ -1,0 +1,19 @@
+---
+// /advogados/v2/ (teste A/B com a v1), migrado do strat-lps 05ca028 (lps/agencia/advogados/v2/index.html) sem
+// mudar texto, layout nem tracking (WEB-24). Mesma agenda e mesmo MetricaaS da v1; noindex como no ar.
+// Tracking pelo kit: linha "agenciastrat-advogados-v2" do catálogo (mesmos ids e consentimento off da v1).
+import Layout from '@strat/kit/Layout.astro';
+import head from '../../../html/advogados-v2.head.html?raw';
+import corpo from '../../../html/advogados-v2.corpo.html?raw';
+---
+<Layout
+  marca="agencia"
+  perfil="lead"
+  titulo="Strat | Marketing para advogados"
+  descricao="Agência Strat: tráfego pago para escritórios de advocacia, com conteúdo revisado pelo Provimento 205 e medição do clique até a conversa."
+  indexar={false}
+  viewport="width=device-width, initial-scale=1, viewport-fit=cover"
+>
+  <Fragment slot="head" set:html={head} />
+  <Fragment set:html={corpo} />
+</Layout>

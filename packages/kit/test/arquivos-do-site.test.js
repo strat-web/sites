@@ -4,6 +4,8 @@ import { test } from 'node:test';
 import {
   completarHistorico,
   dataDoUltimoCommit,
+  entradaDaPagina,
+  lastmodDaPagina,
   lerHtml,
   montarLlms,
   montarRobots,
@@ -17,7 +19,8 @@ const catalogo = {
     { url: 'https://stratai.com.br/', marca: 'stratai', tipo: 'site', indexar: true },
     { url: 'https://stratai.com.br/raio-x/', marca: 'stratai', tipo: 'lp', indexar: true },
     { url: 'https://stratai.com.br/bio/', marca: 'stratai', tipo: 'bio', indexar: false },
-    { url: 'https://agenciastrat.com.br/', marca: 'agencia', tipo: 'site', indexar: true },
+    { url: 'https://agenciastrat.com.br/', marca: 'agencia', tipo: 'site', indexar: true, no_ar: true },
+    { url: 'https://metricaas.com.br/', marca: 'metricaas', tipo: 'site', indexar: true, no_ar: false },
   ],
   marcas: {
     stratai: {
@@ -28,6 +31,7 @@ const catalogo = {
       sameAs: ['https://www.instagram.com/strat.ai/'],
     },
     agencia: { nome: 'Agência Strat', resumo: 'Marketing.' },
+    metricaas: { nome: 'Metricaas', resumo: 'Atribuição.' },
   },
 };
 
@@ -38,6 +42,52 @@ test('lerHtml acha noindex, título e descrição em qualquer ordem de atributo'
   assert.equal(lerHtml('<meta name="robots" content="index, follow">').noindex, false);
   assert.equal(lerHtml('<meta name="robots" content="none">').noindex, true);
   assert.equal(lerHtml('<title>x</title>').noindex, false);
+  assert.equal(lerHtml('<title>x</title>').atualizado, undefined);
+});
+
+test('lerHtml lê a data que a página declara no article:modified_time (WEB-77)', () => {
+  assert.equal(lerHtml('<meta content="2026-11-09" property="article:modified_time">').atualizado, '2026-11-09');
+  assert.equal(lerHtml(`<meta property='article:modified_time' content='2026-11-09T10:00:00Z'>`).atualizado, '2026-11-09');
+  // name= não conta: é property, como o Open Graph.
+  assert.equal(lerHtml('<meta name="article:modified_time" content="2026-11-09">').atualizado, undefined);
+  assert.throws(() => lerHtml('<meta property="article:modified_time" content="ontem">'), /data inválida/);
+});
+
+// Rotas como o Astro entrega no astro:routes:resolved (trailingSlash: always), já separadas pela integração.
+const rotas = {
+  fixas: new Map([
+    ['/', 'src/pages/index.astro'],
+    ['/blog/', 'src/pages/blog/index.astro'],
+    ['/blog/destaque/', 'src/pages/blog/destaque.astro'],
+  ]),
+  dinamicas: [
+    { regex: /^\/blog\/([^/]+?)\/$/, entrada: 'src/pages/blog/[slug].astro' },
+    { regex: /^\/guias(?:\/(.*?))?\/$/, entrada: 'src/pages/guias/[...caminho].astro' },
+  ],
+};
+
+test('rota dinâmica também acha o arquivo de origem; a fixa vem antes (WEB-77)', () => {
+  assert.equal(entradaDaPagina('/', rotas), 'src/pages/index.astro');
+  assert.equal(entradaDaPagina('blog/', rotas), 'src/pages/blog/index.astro');
+  assert.equal(entradaDaPagina('/blog/destaque/', rotas), 'src/pages/blog/destaque.astro');
+  assert.equal(entradaDaPagina('/blog/agente-de-ia/', rotas), 'src/pages/blog/[slug].astro');
+  assert.equal(entradaDaPagina('blog/gpt-4.1/', rotas), 'src/pages/blog/[slug].astro');
+  assert.equal(entradaDaPagina('/guias/whatsapp/agente/', rotas), 'src/pages/guias/[...caminho].astro');
+  assert.equal(entradaDaPagina('/sem-rota/', rotas), undefined);
+  // Expressão do Astro sem a barra (trailingSlash: never ou ignore) também serve.
+  const semBarra = { fixas: new Map(), dinamicas: [{ regex: /^\/blog\/([^/]+?)$/, entrada: 'src/pages/blog/[slug].astro' }] };
+  assert.equal(entradaDaPagina('/blog/x/', semBarra), 'src/pages/blog/[slug].astro');
+});
+
+test('lastmod: a data que a página declara vale; sem ela, o commit do arquivo da rota, fixa ou dinâmica (WEB-77)', () => {
+  const commits = { 'apps/stratai/src/pages/blog/[slug].astro': '2026-11-01', 'apps/stratai/src/pages/index.astro': '2026-11-10' };
+  const dataDoCommit = (arquivo) => commits[arquivo];
+  // Post (rota dinâmica): a data do conteúdo, não a do molde, para cada post ter a sua.
+  assert.equal(lastmodDaPagina({ atualizado: '2026-11-09', entrada: 'apps/stratai/src/pages/blog/[slug].astro' }, dataDoCommit), '2026-11-09');
+  // Rota dinâmica sem data declarada: o último commit do arquivo da rota (antes ficava sem lastmod).
+  assert.equal(lastmodDaPagina({ entrada: 'apps/stratai/src/pages/blog/[slug].astro' }, dataDoCommit), '2026-11-01');
+  assert.equal(lastmodDaPagina({ entrada: 'apps/stratai/src/pages/index.astro' }, dataDoCommit), '2026-11-10');
+  assert.equal(lastmodDaPagina({}, dataDoCommit), undefined);
 });
 
 test('só entra página com indexar: true no catálogo e sem noindex no HTML', () => {
@@ -78,7 +128,7 @@ test('robots libera todos os robôs de IA e aponta o sitemap do domínio final',
   assert.doesNotMatch(txt, /Disallow/);
 });
 
-test('llms.txt traz a marca, as páginas e as outras marcas do grupo', () => {
+test('llms.txt traz a marca, as páginas e as outras marcas do grupo que estão no ar', () => {
   const txt = montarLlms({
     marca: 'stratai',
     site: 'https://stratai.com.br/',
@@ -88,7 +138,44 @@ test('llms.txt traz a marca, as páginas e as outras marcas do grupo', () => {
   assert.match(txt, /^# StratAI\n\n> Agentes de IA\.\n\nSite: https:\/\/stratai.com.br\/\nContato: WhatsApp \+55 47 0000-0000\n/);
   assert.match(txt, /Endereço: Rua Aubé, 777, Boa Vista, Joinville\/SC, 89205-000\nRedes: https:\/\/www.instagram.com\/strat.ai\/\n/);
   assert.match(txt, /## Páginas\n\n- \[StratAI\]\(https:\/\/stratai.com.br\/\): Agentes\./);
-  assert.match(txt, /## Outras marcas do Grupo Strat\n\n- \[Agência Strat\]\(https:\/\/agenciastrat.com.br\/\)/);
+  assert.match(txt, /## Outras marcas do Grupo Strat\n\n- \[Agência Strat\]\(https:\/\/agenciastrat.com.br\/\)\n$/);
+});
+
+test('llms.txt não lista domínio que ainda não está no ar (no_ar: false ou sem o campo) (WEB-77)', () => {
+  const foraDoAr = {
+    ...catalogo,
+    urls: catalogo.urls.map((u) => (u.marca === 'agencia' ? { ...u, no_ar: false } : u)),
+  };
+  const txt = montarLlms({ marca: 'stratai', site: 'https://stratai.com.br/', indexaveis: [], catalogo: foraDoAr });
+  assert.doesNotMatch(txt, /agenciastrat\.com\.br|metricaas\.com\.br/);
+  assert.doesNotMatch(txt, /## Outras marcas/);
+
+  const semCampo = { ...catalogo, urls: catalogo.urls.map(({ no_ar, ...u }) => u) };
+  assert.doesNotMatch(montarLlms({ marca: 'stratai', site: 'https://stratai.com.br/', indexaveis: [], catalogo: semCampo }), /Outras marcas/);
+});
+
+test('llms.txt lista só a raiz de cada outra marca, não a página interna com tipo site (WEB-77)', () => {
+  const comPolitica = {
+    ...catalogo,
+    urls: [...catalogo.urls, { url: 'https://agenciastrat.com.br/politica-de-privacidade/', marca: 'agencia', tipo: 'site', indexar: true, no_ar: true }],
+  };
+  const txt = montarLlms({ marca: 'stratai', site: 'https://stratai.com.br/', indexaveis: [], catalogo: comPolitica });
+  assert.match(txt, /## Outras marcas do Grupo Strat\n\n- \[Agência Strat\]\(https:\/\/agenciastrat.com.br\/\)\n$/);
+  assert.doesNotMatch(txt, /politica-de-privacidade/);
+});
+
+test('catálogo real: o llms.txt da StratAI não lista agenciastrat.com.br enquanto o DNS não vira (WEB-23)', async () => {
+  const { lerCatalogo } = await import('../src/arquivos-do-site.js');
+  const real = lerCatalogo();
+  const txt = montarLlms({ marca: 'stratai', site: 'https://stratai.com.br/', indexaveis: [], catalogo: real });
+  const agencia = real.urls.find((u) => u.id === 'agenciastrat');
+  assert.equal(agencia.no_ar, false);
+  assert.doesNotMatch(txt, /agenciastrat\.com\.br/);
+  assert.match(txt, /- \[Strat Academy\]\(https:\/\/stratacademy.com.br\/\)/);
+  // a política da StratAI também é tipo site no catálogo, mas não vira "outra marca" no llms.txt da Academy
+  const daAcademy = montarLlms({ marca: 'academy', site: 'https://stratacademy.com.br/', indexaveis: [], catalogo: real });
+  assert.match(daAcademy, /- \[StratAI\]\(https:\/\/stratai.com.br\/\)/);
+  assert.doesNotMatch(daAcademy, /politica-de-privacidade/);
 });
 
 test('os dados reais das 4 marcas têm o que o llms.txt precisa', async () => {

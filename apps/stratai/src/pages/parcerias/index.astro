@@ -1,0 +1,25 @@
+---
+// Programa de parceria e indicação da StratAI (WEB-74). Prévia aprovada pelo Helbert em 12/11/2026 (texto, ordem e
+// visual), em /parcerias/ e só com a indicação: o bloco de ferramentas parceiras com desconto entra depois. O
+// cadastro vai ao MetricaaS da StratAI (workspace agencia-strat) pelo mtc.lead(); ver components/parcerias/Formulario.
+import Parcerias from '../../layouts/Parcerias.astro';
+import Hero from '../../components/parcerias/Hero.astro';
+import Recorrencia from '../../components/parcerias/Recorrencia.astro';
+import Perfis from '../../components/parcerias/Perfis.astro';
+import Oferta from '../../components/parcerias/Oferta.astro';
+import Passos from '../../components/parcerias/Passos.astro';
+import Perguntas from '../../components/parcerias/Perguntas.astro';
+import Formulario from '../../components/parcerias/Formulario.astro';
+---
+<Parcerias
+  titulo="Parceria e indicação · StratAI"
+  descricao="Trabalha com IA? Indique empresas para a StratAI e receba comissão todo mês, enquanto o cliente pagar. Quanto mais você indicar, mais você vai ganhar."
+>
+  <Hero />
+  <Recorrencia />
+  <Perfis />
+  <Oferta />
+  <Passos />
+  <Perguntas />
+  <Formulario />
+</Parcerias>

@@ -9,7 +9,7 @@ e em `docs/`; se o caso não estiver previsto, pergunte no item do Plane antes d
 - **Branch:** `web-<N>-<slug>` (ex.: `web-23-agencia-site`), sempre a partir da `main` atualizada.
 - **Commit:** Conventional Commits em português, com o item no fim: `feat(agenciastrat): migra o site da Agência (WEB-23)`.
 - **PR:** um por item, pelo modelo `.github/pull_request_template.md`, aberto pela conta própria do dev (o `gh`
-  logado de quem fez), não pela `strat-aibr`. No máximo 6 PRs abertos e pilha de 2 níveis. PR só em `apps/<app>`, com
+  logado de quem fez), não pela `strat-aibr`. Pilha de no máximo 2 níveis; sem limite de PRs abertos. PR só em `apps/<app>`, com
   as 6 checagens verdes e o `/lab:lp-revisar` aprovado, o dev mescla sozinho; o resto espera a revisão do Helbert
   (janelas 9h e 17h). PR que toca `packages/`, `catalogo/`, `.github/` ou `docs/decisoes.md` pede a aprovação dele
   pelo CODEOWNERS. Detalhe em `docs/padroes.md`, "Fluxo dos PRs".

@@ -1,0 +1,43 @@
+---
+import { programa } from '../../lib/parcerias.js';
+---
+<section class="faixa passos-sec" id="como-funciona" data-mtc-section="como-funciona" aria-labelledby="passos-titulo">
+  <div data-revelar>
+    <p class="mono destaque eyebrow">COMO FUNCIONA</p>
+    <h2 id="passos-titulo" class="titulo-secao">Você indica. A gente fecha. Você recebe todo mês.</h2>
+  </div>
+  <ol class="passos" data-revelar>
+    <span class="linha" aria-hidden="true"><span></span></span>
+    {programa.passos.map((p, i) => (
+      <li style={`--k:${i}`}>
+        <span class="bola mono">{String(i + 1).padStart(2, '0')}</span>
+        <h3>{p.nome}</h3>
+        <p>{p.texto}</p>
+      </li>
+    ))}
+  </ol>
+</section>
+<style>
+  .passos-sec { margin-top: var(--secao); }
+  .passos-sec h2 { margin-top: 14px; }
+  .passos { position: relative; list-style: none; padding: 0; margin: 48px 0 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  .linha { position: absolute; left: 28px; right: calc((100% - 72px) / 4 - 28px); top: 27px; height: 1px; background: var(--line); }
+  .linha span { display: block; height: 100%; background: var(--lime); transform: scaleX(0); transform-origin: left; transition: transform 1.6s var(--ease) .3s; }
+  .passos.visivel .linha span { transform: scaleX(1); }
+  .passos li { position: relative; display: grid; gap: 10px; align-content: start; opacity: .35; transition: opacity .5s var(--ease); transition-delay: calc(var(--k) * .4s + .3s); }
+  .passos.visivel li { opacity: 1; }
+  .bola { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; background: var(--bg); border: 1px solid var(--line); color: var(--ink) !important; font-size: 14px !important; transition: border-color .4s, color .4s, background .4s; transition-delay: inherit; }
+  .passos.visivel .bola { border-color: var(--lime); color: var(--lime-text) !important; }
+  .passos.visivel li:last-child .bola { background: var(--lime); color: var(--lime-ink) !important; }
+  .passos h3 { font-size: 21px; margin-top: 8px; }
+  .passos p { color: var(--ink-2); max-width: 28ch; }
+  @media (max-width: 860px) {
+    .passos { grid-template-columns: 1fr; gap: 28px; }
+    .linha { left: 27px; right: auto; top: 28px; bottom: 28px; width: 1px; height: auto; }
+    .linha span { width: 100%; height: 100%; transform: scaleY(0); transform-origin: top; }
+    .passos.visivel .linha span { transform: scaleY(1); }
+    .passos li { grid-template-columns: 56px 1fr; column-gap: 18px; }
+    .passos li .bola { grid-row: span 2; }
+    .passos h3 { margin-top: 12px; }
+  }
+</style>

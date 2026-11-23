@@ -6,11 +6,12 @@ Bing indexam, de páginas com fatos claros e de quem cita a empresa. O kit cuida
 ## Toda página indexável
 - **Título** de 10 a 65 caracteres, com a busca principal e a marca (`Agente de IA no WhatsApp para empresas · StratAI`).
 - **Descrição** de 50 a 160 caracteres.
-- **Um H1**, com a busca principal. Título e H1 únicos no site (a CI barra repetido).
+- **Um H1**, com a busca principal. Título e H1 únicos entre as páginas indexáveis do site (a CI barra repetido). Variante
+  de teste A/B com noindex pode repetir a principal (WEB-48).
 - **Canonical** para a própria URL, com barra no fim e no domínio final (nunca `pages.dev`).
 - **Open Graph** com imagem absoluta.
 - **JSON-LD:** `Organization` ou `ProfessionalService` da marca (com `parentOrganization` "Grupo Strat", que liga as
-  marcas entre si, e `sameAs` só com os perfis da própria marca), `BreadcrumbList`, `FAQPage` quando houver FAQ (texto
+  marcas entre si, `sameAs` só com os perfis da própria marca e `logo` com o logotipo, não a imagem de compartilhamento), `BreadcrumbList`, `FAQPage` quando houver FAQ (texto
   idêntico ao visível), `Article` no blog.
   Post de blog segue o schema e o `checar-posts` de `docs/blog.md` (tamanho de título e descrição, H2, links internos).
 - **O kit faz tudo isso sozinho** (WEB-16): `<Layout>` põe título, descrição, canonical, robots, Open Graph e o JSON-LD
@@ -24,7 +25,7 @@ Bing indexam, de páginas com fatos claros e de quem cita a empresa. O kit cuida
 - `robots.txt` que libera os robôs de IA (GPTBot, OAI-SearchBot, ChatGPT-User, ClaudeBot, Claude-SearchBot,
   Claude-User, PerplexityBot, Perplexity-User, Google-Extended, Applebot-Extended, Bingbot) e aponta o sitemap.
 - `sitemap.xml` gerado no build, só com páginas indexáveis, com `lastmod` real.
-- `llms.txt` com o resumo da marca, o contato e as páginas principais.
+- `llms.txt` com o resumo da marca, o contato e as páginas principais, e só as outras marcas que já estão no ar.
 - **Os três o kit gera sozinho no build** (WEB-18), a partir do catálogo e de `packages/kit/src/marcas.js`. Como
   funciona e as regras: `padroes.md`, "sitemap.xml, robots.txt e llms.txt".
 - Página 404 de verdade: caminho que não existe responde 404 com a página da marca, nunca 200 com a home (soft 404).

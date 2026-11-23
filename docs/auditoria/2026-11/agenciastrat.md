@@ -35,6 +35,11 @@ cookies aceitos.
 DE INTERESSE). O time recebe só nome, telefone e e-mail. A jornada também registra "Enviou um formulário" duas vezes
 (uma tentativa recusada pela validação do nome e o envio aceito).
 
+> **Revisto em 12/11/2026 (WEB-71, revisão do Helbert no strat-lps#86):** a primeira parte do achado não vale. Os 6
+> campos (`instagram`, `faturamento`, `empresa`, `segmento`, `verba`, `servicos`) já chegavam ao banco em
+> `lead_custom_values`; só não apareciam na ficha que esta conferência leu. O que o WEB-71 corrige é o envio contado
+> duas vezes: a validação passou para o clique do botão, e a tentativa recusada não vira `submit`.
+
 **Dedup:** o navegador manda o `event_id` (`eid`); o MetricaaS com `data-pixel` usa o mesmo id na CAPI (padrão da
 tag). A contagem do dataset na Meta ainda não mostrava o evento uma hora depois (atraso normal das estatísticas):
 conferir em Gerenciador de Eventos › 1815630929780241 › LeadQualificado › "Desduplicado".

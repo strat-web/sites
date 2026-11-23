@@ -1,0 +1,28 @@
+---
+// Página de teste do kit para rota dinâmica (WEB-77): slug com ponto (/kit/gpt-4.1/), o `atualizado` que vira o
+// lastmod do sitemap (aqui só aparece no article:modified_time, porque a página é noindex) e o href do Breadcrumb com
+// a barra mesmo quando o caminho vem sem ela. Fica na Agência, que ainda não está no ar: fora do índice, sai antes de
+// o domínio virar (WEB-23), junto da /kit/lead/.
+import Layout from '@strat/kit/Layout.astro';
+import Breadcrumb from '@strat/kit/Breadcrumb.astro';
+
+export function getStaticPaths() {
+  return [{ params: { slug: 'gpt-4.1' }, props: { nome: 'GPT-4.1', atualizado: '2026-11-12' } }];
+}
+
+const { nome, atualizado } = Astro.props;
+---
+<Layout
+  marca="agencia"
+  titulo={`Teste do kit: rota dinâmica ${nome} · Agência Strat`}
+  descricao="Página de teste do kit para rota dinâmica com ponto no slug: lastmod pela data declarada e Breadcrumb com barra (WEB-77)."
+  indexar={false}
+  atualizado={atualizado}
+>
+  <Breadcrumb itens={[{ nome: 'Início', caminho: '/' }, { nome: 'Teste do kit', caminho: '/kit/lead' }, { nome, caminho: `/kit/${Astro.params.slug}` }]} />
+  <h1>Rota dinâmica com slug {nome}</h1>
+  <p>
+    Esta página sai de <code>src/pages/kit/[slug].astro</code>. O link "Teste do kit" foi escrito sem a barra
+    (<code>/kit/lead</code>) e sai com ela; o último item da trilha, no JSON-LD, sai como <code>/kit/{Astro.params.slug}/</code>. <a href="/kit/lead/">Voltar ao teste do kit</a>.
+  </p>
+</Layout>

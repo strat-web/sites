@@ -18,6 +18,7 @@ interface Props {
   tituloSocial?: string;
   descricaoSocial?: string;
   viewport?: string; // padrão: width=device-width, initial-scale=1 (ex.: o Raio-X usa viewport-fit=cover)
+  atualizado?: string | Date;
 }
 
 const { viewport = 'width=device-width, initial-scale=1', ...props } = Astro.props;

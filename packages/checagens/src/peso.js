@@ -6,8 +6,15 @@
 // (Rastro, MetricaaS, launcher da Hotmart e Umami): eles são obrigatórios em toda página, não mudam por PR e variam a
 // cada medição (a página de venda oscilou entre 89 e 93 só por eles, 11/11/2026). Qualquer outro script de terceiro
 // que a página puser continua medido. O custo do tracking e o número de manchete ficam com o PageSpeed em produção.
+//
+// Página que sai sozinha para outro domínio (a confirmação da comunidade e o grupo do bootcamp abrem o WhatsApp depois
+// de 1,8 s) faria o Lighthouse medir o destino: em 18/11/2026 a comunidade deu 79 e LCP 4,3 s com o
+// chat.whatsapp.com como página final, e 100 e 1,4 s medindo só ela. Por isso a navegação da aba principal para outra
+// origem recebe 204 (o navegador fica na página) e o log diz para onde ela tentou sair (WEB-48).
 import { createReadStream, existsSync, readFileSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
+import { pipeline } from 'node:stream';
+import { createGzip } from 'node:zlib';
 import { extname, join, normalize } from 'node:path';
 import { ehPaginaDeErro } from './contexto.js';
 import { enderecos } from './html.js';
@@ -81,7 +88,18 @@ const TIPOS = {
   '.webm': 'video/webm',
 };
 
-/** Servidor estático do dist/ (como o Pages: pasta → index.html). */
+const COMPRESSIVEIS = new Set(['.html', '.css', '.js', '.mjs', '.json', '.svg', '.txt', '.xml']);
+
+function aceitaGzip(cabecalho = '') {
+  const codificacoes = cabecalho.toLowerCase().split(',').map((parte) => {
+    const [nome, ...parametros] = parte.trim().split(';');
+    const q = parametros.find((p) => p.trim().startsWith('q='));
+    return { nome, qualidade: q ? Number(q.trim().slice(2)) : 1 };
+  });
+  return (codificacoes.find((c) => c.nome === 'gzip') ?? codificacoes.find((c) => c.nome === '*'))?.qualidade > 0;
+}
+
+/** Servidor estático do dist/ com gzip negociado, aproximando a transferência do Pages. */
 export function servirDist(dist) {
   const servidor = createServer((req, res) => {
     let p = decodeURIComponent(new URL(req.url, 'http://x').pathname);
@@ -91,27 +109,85 @@ export function servirDist(dist) {
       res.writeHead(404).end();
       return;
     }
-    res.writeHead(200, { 'content-type': TIPOS[extname(f).toLowerCase()] || 'application/octet-stream' });
-    createReadStream(f).pipe(res);
+    const extensao = extname(f).toLowerCase();
+    const compressivel = COMPRESSIVEIS.has(extensao);
+    const comprimir = compressivel && aceitaGzip(req.headers['accept-encoding']);
+    const cabecalhos = { 'content-type': TIPOS[extensao] || 'application/octet-stream' };
+    if (compressivel) cabecalhos.vary = 'Accept-Encoding';
+    if (comprimir) cabecalhos['content-encoding'] = 'gzip';
+    res.writeHead(200, cabecalhos);
+    if (req.method === 'HEAD') {
+      res.end();
+      return;
+    }
+    // Imagens, fontes e vídeos já comprimidos seguem intactos; o orçamento de bytes continua sem compressão.
+    const fluxos = [createReadStream(f), ...(comprimir ? [createGzip()] : []), res];
+    pipeline(...fluxos, (erro) => { if (erro) res.destroy(erro); });
   });
   return new Promise((ok) => servidor.listen(0, '127.0.0.1', () => ok({ servidor, porta: servidor.address().port })));
 }
 
-async function medirComLighthouse(url, porta) {
+/**
+ * A navegação da aba principal para outra origem não é a página: no Lighthouse ela recebe 204 e o navegador fica
+ * onde está (ver o topo do arquivo). Subrecurso de outro domínio e navegação dentro da página continuam normais.
+ */
+export function ehSaidaExterna(urlDaPagina, urlDoPedido, navegacaoPrincipal) {
+  if (!navegacaoPrincipal) return false;
+  try {
+    return new URL(urlDoPedido).origin !== new URL(urlDaPagina).origin;
+  } catch {
+    return false;
+  }
+}
+
+// A interceptação só liga quando a página sai sozinha: com ela, todo pedido passa pelo puppeteer, e o Lighthouse, que
+// estima o LCP pelo tempo de rede de cada origem, infla as imagens de fora (em 19/11 a home do MetricaaS, com quatro
+// miniaturas do YouTube, foi de 99 e 2,0 s para 91 e 3,5 s na CI). A página que não sai é medida como antes do WEB-48.
+async function medirComLighthouse(url, navegador, { interceptar = false } = {}) {
   const { default: lighthouse } = await import('lighthouse');
-  const { lhr } = await lighthouse(url, {
-    port: porta,
-    onlyCategories: ['performance'],
-    blockedUrlPatterns: BLOQUEADOS_NO_LIGHTHOUSE,
-    logLevel: 'error',
-    output: 'json',
-  });
-  if (lhr.runtimeError) throw new Error(lhr.runtimeError.message);
-  return {
-    performance: Math.round((lhr.categories.performance.score ?? 0) * 100),
-    lcpMs: Math.round(lhr.audits['largest-contentful-paint']?.numericValue ?? Infinity),
-    cls: Number((lhr.audits['cumulative-layout-shift']?.numericValue ?? Infinity).toFixed(3)),
-  };
+  const aba = await navegador.newPage();
+  const saidas = new Set();
+  try {
+    if (interceptar) {
+      await aba.setRequestInterception(true);
+      aba.on('request', (pedido) => {
+        if (pedido.isInterceptResolutionHandled()) return;
+        const principal = pedido.isNavigationRequest() && pedido.frame() === aba.mainFrame();
+        if (ehSaidaExterna(url, pedido.url(), principal)) {
+          saidas.add(new URL(pedido.url()).host);
+          pedido.respond({ status: 204, body: '' });
+        } else pedido.continue();
+      });
+    }
+    const { lhr } = await lighthouse(url, {
+      onlyCategories: ['performance'],
+      blockedUrlPatterns: BLOQUEADOS_NO_LIGHTHOUSE,
+      logLevel: 'error',
+      output: 'json',
+    }, undefined, aba);
+    if (lhr.runtimeError) throw new Error(lhr.runtimeError.message);
+    return {
+      performance: Math.round((lhr.categories.performance.score ?? 0) * 100),
+      lcpMs: Math.round(lhr.audits['largest-contentful-paint']?.numericValue ?? Infinity),
+      cls: Number((lhr.audits['cumulative-layout-shift']?.numericValue ?? Infinity).toFixed(3)),
+      saidas: [...saidas],
+      saiu: !interceptar && ehSaidaExterna(url, lhr.finalDisplayedUrl || lhr.finalUrl || url, true),
+    };
+  } finally {
+    await aba.close();
+  }
+}
+
+/** Mede sem interceptar; se a página saiu para outro domínio (ou o Lighthouse quebrou na saída), mede de novo com a
+ * saída presa na página. */
+async function medirPagina(url, navegador) {
+  let m;
+  try {
+    m = await medirComLighthouse(url, navegador);
+  } catch {
+    m = { saiu: true };
+  }
+  return m.saiu ? medirComLighthouse(url, navegador, { interceptar: true }) : m;
 }
 
 const dentro = (m, o) => m.performance >= o.performance && m.lcpMs <= o.lcpMs && m.cls <= o.cls;
@@ -144,8 +220,11 @@ export async function checarPeso(ctx, { semLighthouse = false, log = () => {} } 
   }
 
   const { launch } = await import('chrome-launcher');
+  const { default: puppeteer } = await import('puppeteer-core');
   const chrome = await launch({ chromeFlags: ['--headless=new', '--no-sandbox', '--disable-gpu'] });
+  let navegador;
   try {
+    navegador = await puppeteer.connect({ browserURL: `http://127.0.0.1:${chrome.port}` });
     for (const app of ctx.apps) {
       const { servidor, porta } = await servirDist(app.dist);
       try {
@@ -154,13 +233,14 @@ export async function checarPeso(ctx, { semLighthouse = false, log = () => {} } 
           const url = `http://127.0.0.1:${porta}${pagina.caminho}`;
           let m;
           try {
-            m = await medirComLighthouse(url, chrome.port);
-            if (julgarMedicao(pagina.url, m) !== 'ok') m = await medirComLighthouse(url, chrome.port); // uma segunda medição antes de barrar
+            m = await medirPagina(url, navegador);
+            if (julgarMedicao(pagina.url, m) !== 'ok') m = await medirPagina(url, navegador); // uma segunda medição antes de barrar
           } catch (e) {
             r.erro(pagina.url, `o Lighthouse não conseguiu medir: ${e.message}`);
             continue;
           }
-          const texto = `performance ${m.performance}, LCP ${(m.lcpMs / 1000).toFixed(1)} s, CLS ${m.cls}`;
+          const saida = m.saidas.length ? ` (a página sai para ${m.saidas.join(', ')}: medida sem o destino)` : '';
+          const texto = `performance ${m.performance}, LCP ${(m.lcpMs / 1000).toFixed(1)} s, CLS ${m.cls}${saida}`;
           const juizo = julgarMedicao(pagina.url, m);
           const exc = EXCECOES_LIGHTHOUSE[pagina.url];
           if (juizo === 'ok') log(`${pagina.url}: ${texto}`);
@@ -173,6 +253,7 @@ export async function checarPeso(ctx, { semLighthouse = false, log = () => {} } 
       }
     }
   } finally {
+    await navegador?.disconnect();
     await chrome.kill();
   }
   return r;

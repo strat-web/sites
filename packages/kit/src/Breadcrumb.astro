@@ -1,7 +1,8 @@
 ---
 // Trilha visível + BreadcrumbList, do início até a página atual: [{ nome, caminho }].
+// O href sai na forma canônica (barra no fim, inclusive slug com ponto), igual ao `item` do JSON-LD (WEB-77).
 import JsonLd from './JsonLd.astro';
-import { schemaBreadcrumb } from './schema.js';
+import { caminhoCanonico, schemaBreadcrumb } from './schema.js';
 
 interface Props {
   itens: { nome: string; caminho: string }[];
@@ -16,7 +17,7 @@ const dados = schemaBreadcrumb(itens, Astro.site);
     {itens.map((it, i) =>
       i === itens.length - 1
         ? <li aria-current="page">{it.nome}</li>
-        : <li><a href={it.caminho}>{it.nome}</a></li>
+        : <li><a href={caminhoCanonico(Astro.site, it.caminho)}>{it.nome}</a></li>
     )}
   </ol>
 </nav>
