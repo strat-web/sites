@@ -14,6 +14,8 @@ export const HOTMART_LAUNCHER = '//launcher.hotmart.com/launcher.js';
 // Umami pelo proxy do próprio domínio (plano do Strat Tracking): sem cookie, antes do aceite, nos três perfis.
 // O script padrão do Umami manda os eventos para a mesma pasta de onde veio, então basta o src.
 export const UMAMI = '/u/script.js';
+// id do <script> inline do Rastro por funil: é por ele que a checagem tracking da CI acha o script do kit.
+export const ID_POR_FUNIL = 'strat-rastro-por-funil';
 
 // Com Rastro, o consentimento do catálogo tem de ser o consentMode do produto no Rastro (regra do WEB-72, WEB-81):
 // banner = strict (o Rastro mostra o aviso dele e só liga pixel, GA4, Google Ads e PostHog depois do "aceitar"),
@@ -45,6 +47,8 @@ export function linhaDoCatalogo(catalogo, url) {
 //   outros casos. Com Rastro é sempre null: quem pede o aceite é o aviso do próprio Rastro (strict ou soft);
 // - banner: true quando aviso é "banner" (o mesmo de antes do WEB-84);
 // - consentMode: o que o produto no Rastro tem de ter (strict, soft ou off), ou null sem Rastro;
+// - porFunil: { chave do ?f=: slug do produto } nas linhas `por-funil`, ou null (o componente escreve o script
+//   rastro-por-funil.js com ele);
 // - avisos: o que o build deve mostrar sem quebrar.
 export function planoDeTracking({ catalogo, url, perfil }) {
   const linha = linhaDoCatalogo(catalogo, url);
@@ -54,14 +58,17 @@ export function planoDeTracking({ catalogo, url, perfil }) {
     throw erro(onde, `a página declara perfil "${perfil}", mas o catálogo diz "${linha.perfil}". Acerte um dos dois no mesmo PR`);
   }
 
-  const plano = { linha, scripts: [], hotmart: null, hotmartAposAceite: false, aviso: null, banner: false, consentMode: null, avisos: [] };
+  const plano = { linha, scripts: [], hotmart: null, hotmartAposAceite: false, aviso: null, banner: false, consentMode: null, porFunil: null, avisos: [] };
   if (linha.consentimento === 'sem-tracking') return plano;
-  // Na comunidade, o Rastro pertence ao funil do ?f= (T5); o Umami pertence ao host e já era injetado pelo
-  // servidor do strat-lps. Preservar esse contador sem ligar um produto/pixel fixo na migração (WEB-48).
+  // por-funil (T5, WEB-106): a página é de vários funis e o Rastro pertence ao funil do ?f=. O registro `funis` da
+  // linha diz o produto de cada chave; o script rastro-por-funil.js liga o /sa dele no navegador. Sem ?f= ou com
+  // chave fora do registro, nada. O Umami pertence ao host e entra sempre (o servidor do strat-lps já injetava).
   if (linha.consentimento === 'por-funil') {
+    plano.porFunil = Object.fromEntries(Object.entries(funisDaLinha(linha)).map(([chave, f]) => [chave, f.rastro_slug]));
     if (linha.umami_website_id) plano.scripts.push({ src: UMAMI, attrs: { 'data-website-id': linha.umami_website_id } });
     return plano;
   }
+  if (linha.funis != null) throw erro(onde, `"funis" só vale com consentimento "por-funil" (a linha diz "${linha.consentimento}")`);
 
   const rastro = linha.rastro_slug;
   const ws = linha.metricaas_ws;
@@ -130,6 +137,46 @@ export function planoDeTracking({ catalogo, url, perfil }) {
   }
 
   return plano;
+}
+
+// Chave do ?f=: minúsculas, números e hífen (o script do navegador põe o ?f= em minúsculas antes de procurar).
+const CHAVE_DE_FUNIL = /^[a-z0-9][a-z0-9-]*$/;
+
+/**
+ * Registro `funis` de uma linha `por-funil`, conferido: { chave: { rastro_slug, consentimento, meta_pixel, ga4,
+ * google_tag } }. Cada funil é como uma linha com Rastro: o consentimento tem par no Rastro (banner = strict, soft,
+ * off) e os ids são os que o produto injeta (a checagem tracking da CI compara com o /sa). A linha em si não tem
+ * rastro_slug: o produto é sempre o do funil.
+ */
+export function funisDaLinha(linha) {
+  const onde = linha.url;
+  if (linha.rastro_slug) {
+    throw erro(onde, 'por-funil não leva rastro_slug na linha: o produto do Rastro vem do funil do ?f= (campo "funis")');
+  }
+  const funis = linha.funis;
+  if (!funis || typeof funis !== 'object' || Array.isArray(funis) || !Object.keys(funis).length) {
+    throw erro(onde, 'por-funil precisa do registro "funis" no catálogo ({ "<chave do ?f=>": { "rastro_slug", "consentimento", ... } })');
+  }
+  for (const [chave, f] of Object.entries(funis)) {
+    if (!CHAVE_DE_FUNIL.test(chave)) throw erro(onde, `funil "${chave}": a chave do ?f= usa só minúsculas, números e hífen`);
+    if (!f || typeof f.rastro_slug !== 'string' || !f.rastro_slug) throw erro(onde, `funil "${chave}" sem rastro_slug`);
+    if (!consentModeEsperado(f.consentimento)) {
+      throw erro(
+        onde,
+        `funil "${chave}": consentimento "${f.consentimento}" não tem consentMode no Rastro. ` +
+          `Use ${Object.entries(CONSENT_MODE_DO_RASTRO).map(([c, m]) => `"${c}" (${m})`).join(', ')}`,
+      );
+    }
+  }
+  return funis;
+}
+
+// Texto do <script> inline do Rastro por funil (packages/kit/src/rastro-por-funil.js, lido como texto): a expressão de
+// função chamada com window, document e { rastro, funis }, como no banner. `<` nos dados vira <.
+export function scriptDoPorFunil(fonte, funis) {
+  const codigo = fonte.replace(/^[ \t]*\/\/.*\r?\n/gm, '').trim();
+  const opcoes = JSON.stringify({ rastro: RASTRO, funis }).replace(/</g, '\\u003c');
+  return `${codigo}(window, document, ${opcoes});`;
 }
 
 // Texto do <script> inline do banner de cookies (packages/kit/src/banner-cookies.js, lido como texto): a expressão de

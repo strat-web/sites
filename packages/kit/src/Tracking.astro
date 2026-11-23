@@ -4,9 +4,12 @@
 // A regra mora em tracking.js; aqui só se desenha o resultado.
 import catalogo from '../../../catalogo/sites.json';
 import { scriptDoRastroAposPintura } from './rastro-apos-pintura.js';
-import { planoDeTracking, scriptDoBanner, scriptDoLauncher } from './tracking.js';
+import { planoDeTracking, scriptDoBanner, scriptDoLauncher, scriptDoPorFunil, ID_POR_FUNIL } from './tracking.js';
 // Banner de cookies do kit: o script mora em banner-cookies.js (texto puro, testado em test/banner-cookies.test.js).
 import bannerCookies from './banner-cookies.js?raw';
+// Rastro por funil (consentimento "por-funil"): o ?f= escolhe o produto no navegador (rastro-por-funil.js, testado em
+// test/rastro-por-funil.test.js).
+import rastroPorFunil from './rastro-por-funil.js?raw';
 import { urlCanonica } from './schema.js';
 import { marca as dadosMarca } from './marcas.js';
 
@@ -33,10 +36,13 @@ if (plano.aviso) {
   // soft: o pixel mede na abertura e o "Recusar" corta (WEB-84).
   banner = scriptDoBanner(bannerCookies, privacidade, plano.aviso);
 }
+// por-funil (WEB-106): o produto do Rastro sai do registro `funis` do catálogo pela chave do ?f=; sem chave, nada.
+const porFunil = plano.porFunil && scriptDoPorFunil(rastroPorFunil, plano.porFunil);
 ---
 {plano.scripts.map((s) => s.aposPintura
   ? <script is:inline data-strat-rastro-apos-pintura={s.src} set:html={scriptDoRastroAposPintura()}></script>
   : <script is:inline defer src={s.src} {...s.attrs}></script>)}
+{porFunil && <script is:inline id={ID_POR_FUNIL} set:html={porFunil}></script>}
 {plano.hotmart && (
   <script is:inline id="hotmart_launcher_script" set:html={launcher}></script>
 )}

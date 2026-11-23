@@ -111,6 +111,6 @@ Um projeto por LP e por subdomínio, criado no WEB-48 (`lps/academy/<lp>/`), com
 | `academy-bootcamp` | https://academy-bootcamp.pages.dev | `@strat/bootcamp` (`lps/academy/bootcamp`) | 17/11/2026, pela API, ligado ao GitHub (WEB-48) | bootcamp.stratacademy.com.br, só com o "pode virar" do Helbert |
 
 Os seis projetos existem desde 17/11; o código de cada LP entra pelo PR dela (o WEB-48 foi dividido por LP).
-Preview só nas branches da própria LP: desde 18/11 cada projeto constrói `web-48-<lp>` (e `web-48-lps-academy`, o #47), porque toda branch do WEB-48 mexe no catálogo ou no lockfile e o projeto de uma LP falharia na branch de outra. Depois que as seis LPs estiverem na `main`, voltar o preview para todas as branches.
+Preview em todas as branches. De 18/11 a 19/11 cada projeto `academy-*` só construiu `web-48-<lp>` (e `web-48-lps-academy`, o #47), porque toda branch do WEB-48 mexia no catálogo ou no lockfile e o projeto de uma LP falharia na branch de outra; com as seis LPs na `main` (19/11), o preview voltou para todas as branches (pedido do Helbert no #62, WEB-106).
 O nome do projeto leva o prefixo `academy-` porque o endereço `*.pages.dev` vale para todas as contas da Cloudflare (o
 `claude.pages.dev` não estaria livre) e para separar as LPs dos apps na lista da conta.

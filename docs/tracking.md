@@ -35,7 +35,7 @@ A regra mora em `packages/kit/src/tracking.js` e tem teste (`pnpm --filter @stra
 | perfil `venda` | também o launcher da Hotmart com `hot('account', <hotmart_conta>)` escrito no HTML. Em `soft` e `off` ele carrega na abertura; em `banner`, só depois do "aceitar" do Rastro (WEB-85) |
 | `umami_website_id` | `/u/script.js` com `data-website-id`, pelo proxy `/u/` do próprio domínio (o proxy é do Strat Tracking) |
 | `consentimento: sem-tracking` | nada |
-| `consentimento: por-funil` | pelo kit, só o Umami do host, quando cadastrado (o servidor do strat-lps já injetava). O Rastro **não** passa pelo kit: o script da própria página lê o `?f=` no registro `FUNIS` e liga o produto do funil, com o consentimento dele; sem `?f=`, nenhum Rastro nem pixel. Hoje só a comunidade da Academy (T5), migrada assim no WEB-48, igual ao que está no ar. Levar o por-funil para o `<Tracking>` fica para o WEB-106 |
+| `consentimento: por-funil` | o Umami do host, quando cadastrado, e o script do Rastro por funil (`<script id="strat-rastro-por-funil">`, de `packages/kit/src/rastro-por-funil.js`): ele lê o `?f=` (minúsculas, sem espaço nas pontas), procura a chave no registro `funis` da linha do catálogo e liga o `/sa` do produto daquele funil, com o consentimento dele no Rastro, e dispara o `CompleteRegistration` (`{ product, funil }`) uma vez por sessão e por produto (`strat_cr_<produto>` no sessionStorage). Sem `?f=` ou com chave fora do registro, nenhum Rastro nem pixel. Hoje só a comunidade da Academy (T5); até o WEB-106 era o script da própria página |
 
 **Consentimento:** o campo `consentimento` de cada URL é a regra da página, e o componente obedece (regra do
 WEB-72, decisão do Helbert de 11/11/2026). É o que a página deve fazer, não um retrato de como ela pede aceite hoje:
@@ -43,7 +43,7 @@ WEB-72, decisão do Helbert de 11/11/2026). É o que a página deve fazer, não 
 - `soft`: mede desde a abertura, com aviso, e para quando a pessoa recusa. Com Rastro, o produto em `soft`.
 - `off`: mede sem aviso. Só como exceção registrada em `docs/decisoes.md`. Com Rastro, o produto em `off`.
 - `sem-tracking`: a página não carrega tracking.
-- `por-funil`: a página escolhe o produto do Rastro pelo `?f=`, com o consentimento dele, pelo próprio script (não pelo kit); sem `?f=`, nenhum Rastro nem pixel. O Umami do host é independente e vem do kit.
+- `por-funil`: o `<Tracking>` escolhe o produto do Rastro pelo `?f=`, no registro `funis` da linha (cada funil com `rastro_slug`, o `consentimento` do produto e os ids que ele injeta), com o consentimento dele; sem `?f=` ou com chave fora do registro, nenhum Rastro nem pixel. O Umami do host é independente e entra sempre. A página nunca monta o Rastro no próprio script: a checagem tracking barra.
 
 Página nova nasce em `soft` no perfil `venda` ou `lead` e em `banner` no perfil `conteudo`. Mudar o padrão muda o
 valor no catálogo, não o componente. Com Rastro, quem segura o pixel é o produto no Rastro, e a página não troca: por
@@ -192,13 +192,16 @@ O kit garante que o catálogo bate com o Rastro.
   que o produto, `off` = `off`, `soft` = `soft`, `banner` = `strict`.
 - **O que o código faz (WEB-81):** a checagem `tracking` da CI lê o `/sa?product=<slug>` de cada página dos apps e
   barra quando consentimento, pixel, GA4 ou Google Ads diferem da linha do catálogo. O consentimento segue o par
-  (`banner` = `strict`, `soft` = `soft`, `off` = `off`), e o `/sa` sem `consentMode` barra. O kit monta Rastro com
+  (`banner` = `strict`, `soft` = `soft`, `off` = `off`), e o `/sa` sem `consentMode` barra. Nas linhas `por-funil`, cada
+  produto do registro `funis` se confere do mesmo jeito, com o consentimento e os ids do funil (WEB-106); a página tem
+  de levar o script do Rastro por funil com o mesmo registro, e Rastro montado pelo script da própria página
+  (`createElement` com o `/sa`) barra em qualquer linha. O kit monta Rastro com
   `banner` sem o banner de cookies dele (o aviso é o do Rastro); no perfil `venda`, o launcher da Hotmart espera o
   "aceitar" do Rastro (WEB-85).
 - **Sem Rastro** (hoje só a Agência), `banner` e `soft` são o banner de cookies do kit (modo `banner` ou `soft`,
   WEB-84), e o pixel vem pelo `m.js` do MetricaaS. O clique no WhatsApp não vira `Contact` no navegador (o `Contact`
   no clique é do Rastro; ver "Antes de publicar").
-- Outros valores do campo: `por-funil` (a própria página liga o Rastro do funil pelo `?f=`, fora do kit; hoje só a comunidade da Academy)
+- Outros valores do campo: `por-funil` (o `<Tracking>` liga o Rastro do funil do `?f=` pelo registro `funis`; hoje só a comunidade da Academy)
   e `sem-tracking`.
 
 O que cada modo faz (conferido na auditoria de 2026-11, `docs/auditoria/2026-11/`):

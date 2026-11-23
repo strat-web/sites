@@ -13,6 +13,7 @@ import { checarSeo } from '../src/seo.js';
 import { bannerDoKit, checarTracking, diferencasDoRastro, launcherAposAceite, lerRastro, slugConhecido } from '../src/tracking.js';
 import { scriptDoRastroAposPintura } from '../../kit/src/rastro-apos-pintura.js';
 import { EXCECOES_LIGHTHOUSE } from '../src/excecoes-peso.js';
+import { scriptDoPorFunil } from '@strat/kit';
 
 const SITE = 'https://stratai.com.br';
 const linha = (extra = {}) => ({
@@ -691,4 +692,63 @@ test('peso: só a navegação principal para outra origem é saída externa', ()
   assert.equal(ehSaidaExterna(pag, 'https://chat.whatsapp.com/abc', false), false);
   assert.equal(ehSaidaExterna(pag, 'https://fonts.example.com/x.woff2', false), false);
   assert.equal(ehSaidaExterna(pag, 'nao é url', true), false);
+});
+
+// WEB-106: por-funil pelo <Tracking>. A página de vários funis leva o script do kit (id strat-rastro-por-funil) com o
+// registro "funis" do catálogo; Rastro montado pelo script da própria página barra; cada produto do registro se confere
+// no Rastro como uma linha.
+const FONTE_POR_FUNIL = readFileSync(new URL('../../kit/src/rastro-por-funil.js', import.meta.url), 'utf8');
+const FUNIS = {
+  vibecode: { rastro_slug: 'aula-claude-code', consentimento: 'soft', meta_pixel: '860', ga4: 'G-1', google_tag: 'AW-1' },
+  'bootcamp-0808': { rastro_slug: 'bootcamp-0808', consentimento: 'off', meta_pixel: '860', ga4: 'G-1', google_tag: 'AW-1' },
+};
+const linhaPorFunil = (extra = {}) =>
+  linha({ perfil: 'conteudo', rastro_slug: null, metricaas_ws: null, meta_pixel: null, consentimento: 'por-funil', funis: FUNIS, ...extra });
+const mapa = (funis) => Object.fromEntries(Object.entries(funis).map(([c, f]) => [c, f.rastro_slug]));
+const scriptPorFunil = (funis = FUNIS) => `<script id="strat-rastro-por-funil">${scriptDoPorFunil(FONTE_POR_FUNIL, mapa(funis))}</script>`;
+// Rastro de mentira com um CFG por produto.
+const rastroPorProduto = (cfgs) => async (url) => {
+  const cfg = cfgs[new URL(url).searchParams.get('product')] ?? { known: false };
+  return { ok: true, status: 200, text: async () => `var CFG=${JSON.stringify(cfg)};` };
+};
+const CFG_FUNIS = {
+  'aula-claude-code': { known: true, consentMode: 'soft', metaPixelId: '860', ga4Id: 'G-1', googleAdsId: 'AW-1', googleTagId: '' },
+  'bootcamp-0808': { known: true, consentMode: 'off', metaPixelId: '860', ga4Id: 'G-1', googleAdsId: 'AW-1', googleTagId: '' },
+};
+
+test('tracking por-funil: o script do kit com o registro do catálogo passa, e cada produto é conferido no Rastro', async () => {
+  const consultados = [];
+  const buscar = async (url) => (consultados.push(new URL(url).searchParams.get('product')), rastroPorProduto(CFG_FUNIS)(url));
+  const r = await checarTracking(ctx([pagina({ head: scriptPorFunil() })], { linhas: [linhaPorFunil()] }), { buscar });
+  assert.deepEqual(r.erros, []);
+  assert.deepEqual(consultados.sort(), ['aula-claude-code', 'bootcamp-0808']);
+});
+
+test('tracking por-funil: sem o script do kit, ou com outro registro, barra', async () => {
+  const opcoes = { semRede: true };
+  const sem = await checarTracking(ctx([pagina({ head: '' })], { linhas: [linhaPorFunil()] }), opcoes);
+  assert.match(msgs(sem), /por-funil sem o script do Rastro por funil/);
+  const outro = { vibecode: { ...FUNIS.vibecode, rastro_slug: 'imersao-claude-code' } };
+  const trocado = await checarTracking(ctx([pagina({ head: scriptPorFunil(outro) })], { linhas: [linhaPorFunil()] }), opcoes);
+  assert.match(msgs(trocado), /não leva o registro "funis" do catálogo/);
+  // O script do por-funil numa página que não é por-funil sobra.
+  const sobra = await checarTracking(ctx([pagina({ head: TRACKING_OK + scriptPorFunil() })]), opcoes);
+  assert.match(msgs(sobra), /que o catálogo não pede.*strat-rastro-por-funil/);
+});
+
+test('tracking: Rastro montado pelo script da página barra (era o caso da comunidade até o WEB-106)', async () => {
+  const proprio = "<script>var s=document.createElement('script');s.src='https://tracking.stratacademy.com.br/sa?product='+p;document.head.appendChild(s)</script>";
+  const r = await checarTracking(ctx([pagina({ head: scriptPorFunil(), corpo: proprio })], { linhas: [linhaPorFunil()] }), { semRede: true });
+  assert.match(msgs(r), /Rastro montado pelo script da página/);
+  const naLead = await checarTracking(ctx([pagina({ corpo: proprio })]), { semRede: true });
+  assert.match(msgs(naLead), /Rastro montado pelo script da página/);
+});
+
+test('tracking por-funil: produto do funil desconhecido ou com consentMode diferente no Rastro barra', async () => {
+  const pag = () => ctx([pagina({ head: scriptPorFunil() })], { linhas: [linhaPorFunil()] });
+  const desconhecido = await checarTracking(pag(), { buscar: rastroPorProduto({ 'aula-claude-code': CFG_FUNIS['aula-claude-code'] }) });
+  assert.match(msgs(desconhecido), /não conhece o produto "bootcamp-0808"/);
+  const strict = { ...CFG_FUNIS, 'aula-claude-code': { ...CFG_FUNIS['aula-claude-code'], consentMode: 'strict' } };
+  const r = await checarTracking(pag(), { buscar: rastroPorProduto(strict) });
+  assert.match(msgs(r), /produto "aula-claude-code" no Rastro × catálogo, consentimento: o produto está em consentMode "strict", o catálogo diz "soft"/);
 });
