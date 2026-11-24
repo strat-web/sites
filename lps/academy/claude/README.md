@@ -48,6 +48,13 @@ Bold, que têm as mesmas medidas) com `size-adjust` 95,25% (600) e 94,67% (700) 
 Clash (890/250/90 por 1000), medidos com fontTools sobre o texto do H1. Com a Clash carregada, nada muda na tela; a
 v4 usa outras famílias e ficou como estava. Medições no PR.
 
+**Reserva do Android (23/11/2026).** No Android, Arial, Liberation e Arimo podem não existir (revisão do Helbert de
+23/11 no WEB-48), e a pilha caía na Roboto sem calibrar. Depois da `'Clash Grotesk Reserva'` vem a
+`'Clash Grotesk Reserva Android'`: Roboto Bold local com `size-adjust` 101,69% (600) e 101,21% (700), medidos com o
+mesmo método (fontTools, média dos títulos da home e da v1), e as métricas da Clash divididas pelo `size-adjust`.
+Altura do H1 e topo do `.hero-art` a 360, 375, 390, 412 e 430 px na home, v1 e v3: iguais aos da Clash nos 15 casos;
+com a Roboto sem calibrar, a v1 a 412 px (a largura do PageSpeed) perdia uma linha e o topo subia 32 px.
+
 ## Fontes locais (WEB-48)
 
 As mesmas famílias e pesos da origem são servidos pelo Pages, sem CSS de fonts.googleapis.com na primeira pintura. Na Mentoria V2, o arquivo Material Symbols foi reduzido aos ícones usados, preservando as ligaturas e variações. Esta mudança reduz bloqueio de renderização e trocas de tamanho do texto sem alterar a tipografia.
