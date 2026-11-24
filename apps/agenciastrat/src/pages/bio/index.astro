@@ -1,0 +1,23 @@
+---
+// Link na bio do @agencia.strat, migrado do strat-lps (lps/bio-stratai/agencia/index.html, com a correção do WEB-82:
+// strat-lps#89) sem mudar texto, layout nem tracking (WEB-25). Antes em bio.stratai.com.br/agencia/, que passa a dar 301
+// para cá (regra na zona stratai.com.br, ver docs/dominios.md). Tracking pelo kit: MetricaaS strat-marketing com o pixel
+// PX-001 atrás do banner de cookies (linha "agenciastrat-bio" do catálogo). Bio fica fora da busca: quem procura a
+// Agência cai no site.
+import Layout from '@strat/kit/Layout.astro';
+import head from '../../html/bio.head.html?raw';
+import corpo from '../../html/bio.corpo.html?raw';
+---
+<Layout
+  marca="agencia"
+  perfil="lead"
+  indexar={false}
+  titulo="Agência Strat · Tráfego que vira venda"
+  descricao="Tráfego pago, social media, criativos e IA no atendimento. Agência Strat, Joinville/SC."
+  descricaoSocial="Faça o Raio-X grátis do seu marketing em 1 minuto."
+  imagem="/midia/bio/avatar.png"
+  viewport="width=device-width,initial-scale=1,viewport-fit=cover"
+>
+  <Fragment slot="head" set:html={head} />
+  <Fragment set:html={corpo} />
+</Layout>

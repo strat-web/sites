@@ -2,6 +2,20 @@
 
 Uma entrada por decisão, com data e quem decidiu. A mais nova em cima.
 
+## 2026-11-23 · Topo da home da Agência parado desde o 1º quadro (Helbert no WEB-112, feito por Jhonathan)
+O WEB-23 entrou com a ressalva do D1: no PageSpeed do celular a home dava 80 a 88, com o LCP no H1 (3,3 s) e CLS de
+até 0,218 no `.mesh`. Decisão do Helbert no item (23/11): o H1 aparece desde o 1º quadro, sem o `rise`.
+- **A subida palavra por palavra também saiu do H1.** O `js/agencia.js` quebrava o título em `.w` depois do `defer`
+  e cada palavra começava 110% para baixo: o título sumia e voltava, e o LCP esperava a animação. Pior: a quebra
+  deixava as linhas mais altas, o topo crescia (1171 → 1204 px a 390, 909 → 969 px a 1440) e o `.mesh`, que tem
+  altura proporcional ao topo, era o que o CLS somava. As palavras agora vêm em `.w` no próprio HTML, paradas
+  (`h1.parado`): a altura é a de antes desde o 1º quadro e o `.mesh` não se mexe.
+- **O `.mesh` continua proporcional ao topo**, e não com altura fixa como o item sugeria: com o topo estável ele não
+  salta, e uma altura fixa mudaria a posição das manchas de cor em cada largura.
+- **Os outros `rise` do topo ficam** (texto de apoio, botões e selos): o item pede só o do H1.
+- **Vídeos com `preload="none"`:** o script já toca cada um quando entra na tela; o pôster continua.
+- **Cache na borda dos `.mp4`** de `assets.agenciastrat.com.br` é regra da zona na Cloudflare, com o Helbert.
+
 ## 2026-11-23 · Blog da Academy no orçamento do peso sem mudar o visual (Jhonathan, WEB-49)
 O site veio do horus com 17 páginas fora do orçamento no celular (blog com LCP de 3,5 a 4,1 s). Quatro causas, todas
 corrigidas sem mexer em texto, layout nem tracking:
