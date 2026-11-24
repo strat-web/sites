@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- fix(academy): LP claude sem salto do título no desktop: reserva da Clash recalibrada no Chrome (size-adjust 97,65% no 600 e 98% no 700, com kerning), igual à Clash de 360 a 1920 px na home, v1 e v3 (35 de 36 larguras; a v1 a 768 px já diferia); PageSpeed desktop dava CLS de 0,14 a 0,19 na / e na v3 (WEB-113)
 - fix(academy): LP claude com uma segunda fonte reserva para o Android (Roboto Bold calibrada com as métricas da Clash, depois da reserva Arial) na home, v1 e v3; altura do título igual à da Clash de 360 a 430 px; sem ela, a v1 a 412 px perdia uma linha (WEB-48)
 - fix(academy): LP claude sem salto do título no celular: fonte reserva da Clash Grotesk com as métricas dela (size-adjust e overrides) na home, v1 e v3; CLS da / de 0,177 para 0 nas 5 rodadas do PageSpeed na prévia (WEB-48)
 - feat(agenciastrat): home e política migradas de agencia.stratai.com.br (strat-lps 05ca028, com o formulário da WEB-71) para apps/agenciastrat sem mudar texto, layout nem tracking (Layout e Tracking do kit, MetricaaS strat-marketing com o pixel); os três vídeos da home servidos do R2 em assets.agenciastrat.com.br, decisão do Helbert de 19/11; 301 locais da política sem barra e .html; as páginas de teste /kit/ continuam (WEB-23)
