@@ -82,6 +82,8 @@ p{margin:0}
 .hero h1 .w{display:inline-block;overflow:hidden;vertical-align:baseline;padding-bottom:.18em;margin-bottom:-.18em}
 .hero h1 .w>span{display:inline-block;transform:translateY(110%);animation:wUp .8s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:calc(var(--i) * 55ms + 120ms)}
 @keyframes wUp{to{transform:none}}
+/* WEB-112: título parado (palavras já em .w no HTML), visível desde o 1º quadro */
+.hero h1.parado .w>span{transform:none;animation:none}
 /* palavra que gira (4 palavras empilhadas na mesma célula) */
 .rot{display:inline-grid;vertical-align:baseline;text-align:left;margin-left:.3em}
 .rot span{grid-area:1/1;justify-self:start;display:inline-block;padding:0 .18em;color:#fff;background:var(--dark);box-shadow:var(--stack-sm);opacity:0;animation:rot 12s ease-in-out infinite;animation-delay:calc(var(--k) * 3s)}
