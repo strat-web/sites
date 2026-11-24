@@ -1,0 +1,17 @@
+---
+import CapaPost from './CapaPost.astro';
+import { fotoDaCapa } from '../lib/capa';
+import type { CollectionEntry } from 'astro:content';
+interface Props { post: CollectionEntry<'blog'> }
+const { post } = Astro.props;
+const fmt = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' });
+---
+<a href={`/blog/${post.id}/`} class="card card-post">
+  <span class="capa-quadro">
+    <CapaPost titulo={post.data.title} tags={post.data.tags} slug={post.id} foto={fotoDaCapa(post.data.cover)} />
+  </span>
+  <span class="pill" style="align-self:start">{fmt.format(post.data.pubDate)}</span>
+  <h3>{post.data.title}</h3>
+  <p>{post.data.description}</p>
+  <span class="ver">Ler o artigo →</span>
+</a>

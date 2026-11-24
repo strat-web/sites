@@ -1,0 +1,189 @@
+---
+import RubikLayout from '../layouts/RubikLayout.astro';
+import { SITE, CANAIS } from '../consts';
+// WhatsApp comercial da Strat Ai, com mensagem que identifica a origem no site.
+const FALAR = CANAIS.whatsappB2B;
+
+const sintomas = [
+  { title: 'Alguém copia dado de um sistema para outro', desc: 'Todo dia, na mão. É o sintoma mais comum e quase sempre o mais barato de resolver.' },
+  { title: 'A resposta ao cliente depende de alguém estar disponível', desc: 'O pedido chega fora do horário e fica parado até o time voltar.' },
+  { title: 'Erro que só aparece no fim do mês', desc: 'Planilha desencontrada, cobrança errada, relatório que ninguém confia.' },
+  { title: 'Cresceu a demanda, cresceu o time na mesma proporção', desc: 'Se para atender o dobro você precisa do dobro de gente, tem processo para automatizar.' },
+];
+
+const servicos = [
+  {
+    tag: 'Sob medida',
+    title: 'Automação de processos',
+    desc: 'A gente mapeia onde o trabalho trava, desenha o fluxo e constrói a automação que conecta os sistemas que a empresa já usa. Entrega funcionando, com documentação e o time sabendo operar.',
+    itens: [
+      'Diagnóstico do processo antes de propor qualquer ferramenta',
+      'Integração com o que já existe — CRM, ERP, WhatsApp, planilhas',
+      'Agentes de IA onde há decisão repetitiva, não onde há hype',
+      'Documentação e passagem de bastão para o time interno',
+    ],
+  },
+  {
+    tag: 'Presencial',
+    title: 'Imersão de IA in loco',
+    desc: 'Nossa equipe vai até a sua empresa e treina o seu time no contexto de vocês, com os processos de vocês. Não é palestra motivacional sobre o futuro da IA — é o time saindo com coisa construída.',
+    itens: [
+      'Conteúdo montado a partir da operação real da empresa',
+      'Mão na massa: o time constrói durante a imersão',
+      'Foco nas ferramentas que fazem sentido para o setor de vocês',
+      'Plano do que continuar fazendo depois que a gente sai',
+    ],
+  },
+];
+
+const comoTrabalhamos = [
+  { n: '01', title: 'Conversa de diagnóstico', desc: 'Sem compromisso e sem apresentação de slides. A gente entende o processo e diz honestamente se dá para ajudar.' },
+  { n: '02', title: 'Escopo e proposta', desc: 'O que será feito, em quanto tempo, o que fica com a gente e o que fica com o time de vocês. Preço fechado, sem surpresa.' },
+  { n: '03', title: 'Construção', desc: 'A gente constrói e mostra funcionando em partes, não só na entrega final.' },
+  { n: '04', title: 'Passagem de bastão', desc: 'O time aprende a operar e a ajustar. Automação que só nós entendemos é problema seu no futuro.' },
+];
+
+const precisamos = [
+  'Qual processo está doendo hoje e há quanto tempo',
+  'Quantas pessoas encostam nesse processo e quanto tempo gastam',
+  'Quais sistemas estão envolvidos (mesmo que seja planilha e WhatsApp)',
+  'O que já tentaram antes e por que não funcionou',
+];
+
+const faq = [
+  { q: 'Quanto custa?', a: 'Depende do escopo, e por isso não publicamos tabela. Automação de um processo pontual e imersão para um time inteiro são projetos muito diferentes. A conversa de diagnóstico é gratuita e termina com um número, não com um "vamos ver".' },
+  { q: 'Vocês atendem empresa de qualquer porte?', a: 'Atendemos de operação pequena e enxuta a time estruturado. O que importa mais que o porte é existir um processo repetitivo com volume — sem isso, automatizar não paga.' },
+  { q: 'Precisamos ter equipe técnica?', a: 'Não. A gente constrói e entrega funcionando. Ter alguém curioso do lado de vocês ajuda na manutenção depois, mas não é pré-requisito para começar.' },
+  { q: 'A imersão in loco funciona remoto?', a: 'A imersão in loco é presencial por definição — o ganho vem de estar na sala com o time, olhando a operação. Para formato remoto, o caminho é o time acessar as trilhas do Strat Hub.' },
+  { q: 'Vocês usam IA em tudo?', a: 'Não. Boa parte do que trava uma operação se resolve com automação simples e bem feita. IA entra onde existe decisão ou linguagem envolvida. Vender IA onde não precisa é caro para você e ruim para nós.' },
+  { q: 'Isso é a mesma coisa que os cursos?', a: 'Não. Os cursos e a assinatura são para a pessoa aprender por conta. Aqui a Strat Ai faz por você ou treina o seu time presencialmente — outro tipo de trabalho e outro tipo de contrato.' },
+];
+---
+<RubikLayout
+  title={`Strat Ai — automação e imersão de IA para empresas — ${SITE.name}`}
+  description="Automação de processos sob medida e imersão de IA presencial no seu time. Diagnóstico gratuito: a gente entende a operação e diz honestamente se dá para ajudar."
+  faq={faq}
+  breadcrumb={[{ name: 'Início', url: '/' }, { name: 'Empresas', url: '/empresas/' }]}
+>
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="hero wrap" data-gatilho>
+      <p class="kicker rise d1">Strat Ai · para empresas</p>
+      <h1 class="rise d2">Sua equipe passa o dia fazendo o que um fluxo faria sozinho</h1>
+      <p class="lead rise d3">
+        A Strat Ai é o braço que constrói. A gente entra na operação, encontra o que trava,
+        e entrega automação funcionando — ou treina o seu time presencialmente para fazer
+        isso por conta.
+      </p>
+      <div class="cta-row rise d4">
+        <a href={FALAR} target="_blank" rel="noopener" data-evento="Contact" data-evento-local="empresas" class="btn btn-primario">Agendar diagnóstico</a>
+        <a href="#servicos" class="btn btn-secundario">Ver o que fazemos</a>
+      </div>
+      <p class="hero-nota rise d4">
+        Diagnóstico gratuito · sem apresentação comercial · resposta honesta se não der para ajudar
+      </p>
+    </section>
+  </div>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Reconhece algum?</p>
+      <h2>Os sinais de que existe processo para automatizar</h2>
+      <p class="lead">Se dois ou mais desses acontecem na sua operação, quase sempre há retorno rápido em automatizar.</p>
+    </div>
+    <div class="grade">
+      {sintomas.map((s) => (
+        <div class="card"><h3>{s.title}</h3><p>{s.desc}</p></div>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap secao" id="servicos">
+    <div class="sec-head">
+      <p class="kicker">O que fazemos</p>
+      <h2>Dois jeitos de trabalhar com a gente</h2>
+    </div>
+    <div class="grade grade-2">
+      {servicos.map((s) => (
+        <div class="card card-largo">
+          <span class="pill" style="align-self:start">{s.tag}</span>
+          <h3>{s.title}</h3>
+          <p>{s.desc}</p>
+          <ul class="card-lista">{s.itens.map((i) => <li>{i}</li>)}</ul>
+          <a href={FALAR} target="_blank" rel="noopener" data-evento="Contact" data-evento-local="empresas" class="ver">Conversar sobre isso →</a>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Como trabalhamos</p>
+      <h2>Do primeiro contato à entrega</h2>
+    </div>
+    <div class="passos">
+      {comoTrabalhamos.map((p) => (
+        <div class="passo">
+          <span class="passo-num">{p.n}</span>
+          <div><h3>{p.title}</h3><p>{p.desc}</p></div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Antes da conversa</p>
+      <h2>O que ajuda a gente a te dar um número rápido</h2>
+    </div>
+    <div class="grade grade-2">
+      <div class="card card-largo">
+        <ul class="card-lista">{precisamos.map((p) => <li>{p}</li>)}</ul>
+        <p>
+          Não precisa ter tudo pronto. Se você só sabe que "está travado em algum lugar",
+          a conversa serve exatamente para descobrir onde.
+        </p>
+      </div>
+      <div class="preco">
+        <p class="rotulo">Próximo passo</p>
+        <p class="valor" style="font-size: clamp(1.8rem, 4vw, 2.4rem)">Uma conversa de 30 minutos</p>
+        <p>
+          Sem custo e sem compromisso. Se a gente achar que automação não é a resposta para
+          o seu caso, vamos falar isso na hora em vez de vender um projeto.
+        </p>
+        <a href={FALAR} target="_blank" rel="noopener" data-evento="Contact" data-evento-local="empresas" class="btn btn-branco">Agendar diagnóstico</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Outro caminho</p>
+      <h2>Ou o time aprende por conta</h2>
+    </div>
+    <div class="card card-largo">
+      <h3>Strat Academy 2.0 para o seu time</h3>
+      <p>
+        Se o objetivo é capacitar sem projeto de consultoria, as trilhas do Strat Hub cobrem
+        as ferramentas que a gente usa aqui dentro. A conta é gratuita — dá para o time
+        experimentar antes de qualquer decisão.
+      </p>
+      <a href="/assinatura/" class="ver">Ver a assinatura →</a>
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Dúvidas</p>
+      <h2>Dúvidas de quem contrata</h2>
+    </div>
+    <div class="faq">
+      {faq.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
+    </div>
+  </section>
+
+  <div class="barra-fixa">
+    <div class="info"><b>Strat Ai</b><span>Diagnóstico gratuito · 30 min</span></div>
+    <a href={FALAR} target="_blank" rel="noopener" data-evento="Contact" data-evento-local="empresas" class="btn btn-primario">Falar com a gente</a>
+  </div>
+</RubikLayout>

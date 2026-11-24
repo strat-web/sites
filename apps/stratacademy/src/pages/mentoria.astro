@@ -1,0 +1,263 @@
+---
+// Mentoria — mesma oferta da LP em mentoria.stratacademy.com.br, na linguagem do site.
+// A LP do subdomínio continua no ar e isolada; esta página existe para quem chega
+// pelo site e não deveria ser jogado para fora do domínio para entender a oferta.
+// Fonte dos dados: a própria LP (planos, ofertas Hotmart e depoimentos).
+import RubikLayout from '../layouts/RubikLayout.astro';
+import VideoShort from '../components/VideoShort.astro';
+import BrandLogo from '../components/BrandLogo.astro';
+import { SITE } from '../consts';
+
+const LP = 'https://mentoria.stratacademy.com.br';
+const checkout = (oferta: string) => `https://pay.hotmart.com/S99990328Q?off=${oferta}`;
+
+const planos = [
+  {
+    nome: 'Start',
+    calls: '3 calls',
+    preco: 'R$ 1.997',
+    nota: 'acesso imediato',
+    oferta: 'e7rrc4yj',
+    destaque: false,
+    itens: ['3 sessões individuais', 'Diagnóstico + direcionamento', 'Acesso à Strat Academy'],
+  },
+  {
+    nome: 'Aceleração',
+    calls: '6 calls',
+    preco: 'R$ 3.497',
+    nota: 'ou 12x · acesso imediato',
+    oferta: 'jycwjai3',
+    destaque: true,
+    itens: ['6 sessões individuais', 'Suporte no grupo', 'Acesso à Strat Academy', 'Acesso ao Strat Hub'],
+  },
+  {
+    nome: 'Premium',
+    calls: '12 calls',
+    preco: 'R$ 5.997',
+    nota: 'ou 12x · acesso imediato',
+    oferta: 'zpzw0xqq',
+    destaque: false,
+    itens: [
+      'Construção do seu SaaS, feito com você',
+      'Acesso ao Strat Hub',
+      'Ingresso para a imersão presencial',
+      'Suporte exclusivo no grupo',
+      'Acesso comercial interno',
+    ],
+  },
+];
+
+const depoimentos = [
+  { id: 'ZAUCnLioi3E', titulo: 'Depoimento de aluno · 01' },
+  { id: 'ytjK1vNtTbU', titulo: 'Depoimento de aluno · 02' },
+  { id: 'AlD5y7HrrwU', titulo: 'Depoimento de aluno · 03' },
+];
+
+const stack = [
+  { mark: 'claude-code', nome: 'Claude Code', desc: 'O agente que trabalha no projeto inteiro pelo terminal.' },
+  { mark: 'cursor', nome: 'Cursor', desc: 'O editor com IA para a edição do dia a dia.' },
+  { mark: 'n8n', nome: 'N8N', desc: 'A automação que conecta tudo e roda sozinha.' },
+  { mark: 'github', nome: 'Supabase e GitHub', desc: 'Banco, autenticação e versionamento do que você constrói.' },
+];
+
+const paraQuem = [
+  { title: 'Dono de agência de IA', desc: 'Já vende serviço e precisa entregar mais rápido, com processo que não depende só de você.' },
+  { title: 'Freelancer técnico', desc: 'Sabe construir, mas quer estruturar oferta e entrega para cobrar por projeto, não por hora.' },
+  { title: 'Consultor', desc: 'Vende conhecimento e quer transformar método em produto que roda sem a sua presença.' },
+  { title: 'Criador e infoprodutor', desc: 'Tem audiência e quer um produto próprio de software em vez de só mais um curso.' },
+];
+
+const diferenca = [
+  { title: 'Curso é para muitos', desc: 'O conteúdo é o mesmo para todo mundo e você adapta sozinho ao seu caso. Funciona — e é por isso que a plataforma existe.' },
+  { title: 'Mentoria é para o seu caso', desc: 'A call olha o seu projeto, o seu código e a sua oferta. O que sai da sessão é decisão tomada, não conteúdo para assistir depois.' },
+];
+
+const passos = [
+  { n: '01', title: 'Escolha seu plano', desc: 'Start, Aceleração ou Premium — conforme o seu momento e o nível de aceleração que você quer.' },
+  { n: '02', title: 'Agende suas calls', desc: 'Sessões individuais 1:1 para diagnóstico, direção e construção junto com você.' },
+  { n: '03', title: 'Construa e coloque no ar', desc: 'Do protótipo ao produto gerando receita, com o método da operação real.' },
+];
+
+const faq = [
+  { q: 'Preciso já saber programar?', a: 'Ajuda muito, mas o que mais pesa é ter um projeto ou uma operação de verdade para trabalhar em cima. A mentoria é sobre o seu caso — sem caso, sobra pouco para acelerar.' },
+  { q: 'Como funcionam as calls?', a: 'São sessões individuais, ao vivo, agendadas conforme a sua disponibilidade. Cada plano tem uma quantidade: 3, 6 ou 12.' },
+  { q: 'Tem garantia?', a: 'Toda compra pela Hotmart tem 7 dias de garantia legal — o direito de arrependimento previsto no Código de Defesa do Consumidor.' },
+  { q: 'Dá para parcelar?', a: 'Sim, em até 12x nos planos Aceleração e Premium. O pagamento é processado pela Hotmart.' },
+  { q: 'Qual a diferença para a assinatura do Strat Hub?', a: 'A assinatura é a plataforma: você aprende sozinho, no seu ritmo, por R$ 67/mês. A mentoria é acompanhamento individual ao vivo, olhando o seu projeto. Os planos Aceleração e Premium já incluem o acesso ao Hub.' },
+  { q: 'Ainda estou em dúvida se é para mim.', a: 'Então fale com a gente antes de entrar. É melhor descobrir numa conversa do que descobrir depois de pagar.' },
+];
+---
+<RubikLayout
+  title={`Mentoria individual de IA aplicada a negócios — ${SITE.name}`}
+  description="Mentoria 1:1 para construir agentes de IA e SaaS que geram receita. Claude Code, Cursor, Supabase e n8n — do protótipo ao produto no ar, com quem faz isso na operação real."
+  faq={faq}
+  breadcrumb={[{ name: 'Início', url: '/' }, { name: 'Mentoria', url: '/mentoria/' }]}
+>
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="hero wrap" data-gatilho>
+      <p class="kicker rise d1">Mentoria individual</p>
+      <h1 class="rise d2">Do protótipo ao sistema no ar, com alguém olhando o seu projeto</h1>
+      <p class="lead rise d3">
+        Sessões 1:1 para construir agentes de IA e SaaS que geram receita — com a stack
+        que a gente usa na operação real: Claude Code, Cursor, Supabase e N8N.
+      </p>
+      <div class="cta-row rise d4">
+        <a href="#planos" class="btn btn-primario">Ver os planos</a>
+        <a href={LP} target="_blank" rel="noopener" data-evento="ViewContent" data-evento-local="mentoria-lp" class="btn btn-secundario">Ver a página completa</a>
+      </div>
+      <p class="hero-nota rise d4">3, 6 ou 12 sessões · 7 dias de garantia legal · parcelamento em até 12x</p>
+    </section>
+  </div>
+
+  <!-- Prova social em vídeo — os depoimentos gravados pelos alunos -->
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Quem já passou</p>
+      <h2>Depoimentos de quem fez a mentoria</h2>
+      <p class="lead">Gravados pelos próprios alunos. Clique para assistir — o vídeo só carrega quando você pede.</p>
+    </div>
+    <div class="grade grade-3 videos">
+      {depoimentos.map((d) => <VideoShort id={d.id} titulo={d.titulo} />)}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Por que individual</p>
+      <h2>Curso genérico e mentoria resolvem coisas diferentes</h2>
+    </div>
+    <div class="grade grade-2">
+      {diferenca.map((d) => <div class="card card-largo"><h3>{d.title}</h3><p>{d.desc}</p></div>)}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Para quem é</p>
+      <h2>Feita para quem já constrói e quer acelerar</h2>
+    </div>
+    <div class="grade">
+      {paraQuem.map((p) => <div class="card"><h3>{p.title}</h3><p>{p.desc}</p></div>)}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">A stack</p>
+      <h2>As ferramentas que você vai dominar</h2>
+      <p class="lead">Não é teoria sobre IA. É a stack que roda na nossa operação e nos projetos que entregamos.</p>
+    </div>
+    <div class="grade">
+      {stack.map((s) => (
+        <div class="card">
+          <span class="chip-logo"><BrandLogo mark={s.mark} size={26} /></span>
+          <h3>{s.nome}</h3>
+          <p>{s.desc}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Como funciona</p>
+      <h2>Três passos, sem enrolação</h2>
+    </div>
+    <div class="passos">
+      {passos.map((p) => (
+        <div class="passo">
+          <span class="passo-num">{p.n}</span>
+          <div><h3>{p.title}</h3><p>{p.desc}</p></div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap secao" id="planos">
+    <div class="sec-head">
+      <p class="kicker">Investimento</p>
+      <h2>Escolha o seu nível de aceleração</h2>
+      <p class="lead">O plano ideal depende do seu momento — de um diagnóstico pontual a construir o produto junto.</p>
+    </div>
+    <div class="grade grade-3">
+      {planos.map((p) => (
+        <div class={p.destaque ? 'card card-largo plano plano-destaque' : 'card card-largo plano'}>
+          <div class="card-topo">
+            <span class={p.destaque ? 'pill pill-acento' : 'pill'}>{p.calls}</span>
+            {p.destaque && <span class="pill pill-acento">mais escolhido</span>}
+          </div>
+          <h3>{p.nome}</h3>
+          <p class="plano-preco">{p.preco}</p>
+          <p class="plano-nota">{p.nota}</p>
+          <ul class="card-lista">{p.itens.map((i) => <li>{i}</li>)}</ul>
+          <a
+            href={checkout(p.oferta)}
+            target="_blank"
+            rel="noopener"
+            data-evento="InitiateCheckout"
+            data-evento-local={`mentoria-${p.nome.toLowerCase()}`}
+            class={p.destaque ? 'btn btn-primario' : 'btn btn-secundario'}
+          >Escolher {p.nome}</a>
+        </div>
+      ))}
+    </div>
+    <p class="hero-nota" style="margin-top: var(--s3)">
+      Pagamento seguro via Hotmart · parcelamento em até 12x nos planos Aceleração e Premium ·
+      7 dias de garantia legal (CDC).
+    </p>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Quem conduz</p>
+      <h2>Helbert Paranhos</h2>
+    </div>
+    <div class="card card-largo" style="max-width: var(--max-texto)">
+      <p>
+        Engenheiro de automação, fundador da Strat Academy e dono de uma agência de IA.
+        As calls são com quem entrega projeto de automação e IA para empresa de verdade —
+        o método que você recebe é o que roda na operação, não um framework de slide.
+      </p>
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Dúvidas</p>
+      <h2>Perguntas frequentes</h2>
+    </div>
+    <div class="faq">
+      {faq.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="cta">
+      <p class="kicker">Ainda em dúvida?</p>
+      <h2>Comece pelo Hub e volte quando fizer sentido.</h2>
+      <p class="lead">
+        A conta no Strat Hub é gratuita e já libera as Masterclasses de N8N e Claude Code
+        completas. Quem chega na mentoria tendo feito as trilhas aproveita muito mais as calls.
+      </p>
+      <a href="https://hub.stratacademy.com.br/cadastro" data-evento="SignUpIntent" data-evento-local="mentoria" class="btn btn-primario">Criar conta grátis</a>
+    </div>
+  </section>
+
+  <div class="barra-fixa">
+    <div class="info"><b>Mentoria individual</b><span>A partir de R$ 1.997 · 7 dias de garantia</span></div>
+    <a href="#planos" class="btn btn-primario">Ver planos</a>
+  </div>
+</RubikLayout>
+
+<style>
+  .videos { align-items: start; }
+  .plano { gap: var(--s2); }
+  .plano-destaque { outline: 2px solid var(--acento); outline-offset: -2px; }
+  .plano-preco {
+    font-size: var(--t-h2); font-weight: var(--w-bold); color: var(--acento);
+    letter-spacing: var(--tr-h2); font-variant-numeric: tabular-nums;
+  }
+  .plano-nota { font-size: var(--t-meta); color: var(--txt-2); }
+  .plano .btn { margin-top: auto; }
+</style>

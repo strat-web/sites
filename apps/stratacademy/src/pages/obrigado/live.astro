@@ -1,0 +1,18 @@
+---
+import RubikLayout from '../../layouts/RubikLayout.astro';
+import { SITE } from '../../consts';
+---
+<RubikLayout noindex title={`Inscrição confirmada na live — ${SITE.name}`} description="Sua inscrição na live semanal foi confirmada.">
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="wrap aviso">
+      <p class="simbolo" aria-hidden="true">✓</p>
+      <h1>Você está dentro!</h1>
+      <p class="lead">Sua inscrição na live semanal foi confirmada. O link de cada edição chega no seu e-mail.</p>
+      <div class="cta-row" style="justify-content:center">
+        <a href="https://www.youtube.com/@strat_ai" target="_blank" rel="noopener" class="btn btn-primario">Inscrever no YouTube</a>
+        <a href="/blog/" class="btn btn-secundario">Ler o blog</a>
+      </div>
+    </section>
+  </div>
+</RubikLayout>

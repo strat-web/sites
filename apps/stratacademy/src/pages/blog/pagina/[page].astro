@@ -1,0 +1,72 @@
+---
+import RubikLayout from '../../../layouts/RubikLayout.astro';
+import PostCardRubik from '../../../components/PostCardRubik.astro';
+import { getCollection } from 'astro:content';
+import { getCategories } from '../../../lib/tags';
+import { SITE, PAGE_SIZE } from '../../../consts';
+import { naListagem } from '@strat/conteudo';
+
+export async function getStaticPaths() {
+  const posts = (await getCollection('blog', ({ data }) => naListagem(data))).sort(
+    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+  );
+  const lastPage = Math.max(1, Math.ceil(posts.length / PAGE_SIZE));
+  const paths = [];
+  // Página 1 fica em /blog; aqui geramos apenas 2..N.
+  for (let n = 2; n <= lastPage; n++) {
+    paths.push({
+      params: { page: String(n) },
+      props: { pageNum: n, items: posts.slice((n - 1) * PAGE_SIZE, n * PAGE_SIZE), lastPage },
+    });
+  }
+  return paths;
+}
+
+const { pageNum, items, lastPage } = Astro.props;
+const categories = await getCategories();
+---
+<RubikLayout
+  title={`Artigos — página ${pageNum} — ${SITE.name}`}
+  description={`Página ${pageNum} dos artigos de ${SITE.name} sobre IA, automação e N8N.`}
+  breadcrumb={[
+    { name: 'Início', url: '/' },
+    { name: 'Blog', url: '/blog/' },
+    { name: `Página ${pageNum}`, url: `/blog/pagina/${pageNum}/` },
+  ]}
+>
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="hero wrap blog-hero">
+      <nav class="migalhas"><a href="/">Início</a><span>/</span><a href="/blog/">Blog</a><span>/</span>Página {pageNum}</nav>
+      <p class="kicker">Blog</p>
+      <h1>Artigos — página {pageNum}</h1>
+    </section>
+  </div>
+
+  <section class="wrap secao">
+    <div class="chips-cat">
+      <a href="/blog/"><span class="pill">Todos</span></a>
+      {categories.map((c) => <a href={`/blog/categoria/${c.slug}/`}><span class="pill">{c.label}</span></a>)}
+    </div>
+  </section>
+
+  <section class="wrap" style="padding-bottom: var(--s6)">
+    <div class="grade grade-3">
+      {items.map((p) => <PostCardRubik post={p} />)}
+    </div>
+
+    <nav class="paginacao" aria-label="Paginação">
+      <a href={pageNum === 2 ? '/blog/' : `/blog/pagina/${pageNum - 1}/`}>← Anterior</a>
+      <a href="/blog/">1</a>
+      {Array.from({ length: lastPage - 1 }, (_, i) => i + 2).map((n) =>
+        n === pageNum ? <span class="atual">{n}</span> : <a href={`/blog/pagina/${n}/`}>{n}</a>
+      )}
+      {pageNum < lastPage && <a href={`/blog/pagina/${pageNum + 1}/`}>Próxima →</a>}
+    </nav>
+  </section>
+</RubikLayout>
+
+<style>
+  .blog-hero { padding-block: var(--s6) var(--s5); }
+  .blog-hero h1 { font-size: clamp(2rem, 4.6vw, 3.2rem); }
+</style>

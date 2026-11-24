@@ -1,0 +1,116 @@
+---
+import RubikLayout from '../../layouts/RubikLayout.astro';
+import { SITE } from '../../consts';
+
+const q = Astro.url.searchParams.get('q') ?? '';
+---
+<RubikLayout
+  title={`Buscar — ${SITE.name}`}
+  description={`Busque artigos em ${SITE.name}.`}
+  breadcrumb={[{ name: 'Início', url: '/' }, { name: 'Blog', url: '/blog/' }, { name: 'Buscar', url: '/blog/buscar/' }]}
+>
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="hero wrap blog-hero">
+      <nav class="migalhas"><a href="/">Início</a><span>/</span><a href="/blog/">Blog</a><span>/</span>Buscar</nav>
+      <p class="kicker">Busca</p>
+      <h1>Buscar artigos</h1>
+      <form id="search-form" class="busca" role="search" style="margin-top: var(--s4)">
+        <input
+          id="search-input" name="q" value={q} type="search" autocomplete="off"
+          placeholder="Digite um termo, tag ou autor…" aria-label="Buscar artigos"
+        />
+        <button type="submit" class="btn btn-primario">Buscar</button>
+      </form>
+      <p id="search-status" class="hero-nota" aria-live="polite"></p>
+    </section>
+  </div>
+
+  <section class="wrap" style="padding-block: var(--s4) var(--s6)">
+    <div id="search-results" class="grade grade-3"></div>
+  </section>
+</RubikLayout>
+
+<style>
+  .blog-hero { padding-block: var(--s6) var(--s5); }
+  .blog-hero h1 { font-size: clamp(2rem, 4.6vw, 3.2rem); }
+</style>
+
+<script is:inline>
+  (function () {
+    const input = document.getElementById('search-input');
+    const results = document.getElementById('search-results');
+    const status = document.getElementById('search-status');
+    const form = document.getElementById('search-form');
+    if (!input || !results || !status || !form) return;
+
+    form.addEventListener('submit', (e) => e.preventDefault());
+
+    const norm = (s) => (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+    const escapar = (s) =>
+      String(s ?? '').replace(/[&<>"']/g, (c) =>
+        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]
+      );
+
+    const inicial = new URLSearchParams(window.location.search).get('q') || input.value || '';
+    input.value = inicial;
+
+    let data = [];
+    const fmt = (iso) =>
+      new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' })
+        .format(new Date(iso));
+
+    function render(query) {
+      const nq = norm(query.trim());
+      const url = new URL(window.location.href);
+      if (query) url.searchParams.set('q', query);
+      else url.searchParams.delete('q');
+      window.history.replaceState({}, '', url);
+
+      if (!nq) {
+        results.innerHTML = '';
+        status.textContent = 'Digite algo para buscar entre os artigos.';
+        return;
+      }
+      const terms = nq.split(/\s+/);
+      const hits = data
+        .map((p) => {
+          const hay = norm([p.title, p.description, p.author, (p.tags || []).join(' '), p.body].join(' '));
+          const score = terms.reduce((s, t) => s + (hay.includes(t) ? 1 : 0), 0);
+          return { p, score, all: terms.every((t) => hay.includes(t)) };
+        })
+        .filter((r) => r.all)
+        .sort((a, b) => b.score - a.score);
+
+      status.textContent = hits.length
+        ? `${hits.length} ${hits.length === 1 ? 'resultado' : 'resultados'} para "${query}"`
+        : `Nenhum resultado para "${query}".`;
+
+      results.innerHTML = hits
+        .map(({ p }) => `
+          <a href="/blog/${encodeURIComponent(p.id)}/" class="card">
+            <span class="pill" style="align-self:start">${escapar(fmt(p.date))}</span>
+            <h3>${escapar(p.title)}</h3>
+            <p>${escapar(p.description)}</p>
+            <span class="ver">Por ${escapar(p.author)} →</span>
+          </a>`)
+        .join('');
+    }
+
+    status.textContent = 'Carregando índice…';
+    fetch('/search.json')
+      .then((r) => r.json())
+      .then((json) => {
+        data = json;
+        render(input.value || '');
+        input.focus();
+      })
+      .catch(() => (status.textContent = 'Não foi possível carregar o índice de busca.'));
+
+    let t;
+    input.addEventListener('input', () => {
+      clearTimeout(t);
+      t = setTimeout(() => render(input.value), 120);
+    });
+  })();
+</script>

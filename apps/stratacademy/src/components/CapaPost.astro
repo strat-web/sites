@@ -1,0 +1,219 @@
+---
+/**
+ * Capa editorial do post.
+ *
+ * É SVG **inline**, não <img>: assim herda a Rubik e os tokens da página. Como
+ * <img> o SVG renderiza isolado, sem acesso às fontes do site — foi por isso que
+ * a primeira versão saiu sem tipografia e ficou genérica.
+ *
+ * A composição é orientada ao conteúdo, não decorativa: quando o post é sobre uma
+ * ferramenta, o logo real dela é o elemento principal. É o que o leitor reconhece
+ * antes de ler o título.
+ *
+ * Com `foto` (o `cover` do frontmatter), a foto do post vira o fundo e o texto
+ * da casa fica por cima, sobre um degradê escuro do lado esquerdo. O texto
+ * continua sendo SVG com a Rubik; a foto não leva escrita gravada.
+ */
+import { MARCAS_REAIS } from '../data/marcas';
+import { CURSOS } from '../data/catalogo';
+import { getImage } from 'astro:assets';
+
+interface Props {
+  titulo: string;
+  tags: readonly string[];
+  slug: string;
+  /** 'card' (16:9) ou 'destaque' (21:9, mais largo). */
+  formato?: 'card' | 'destaque';
+  /** URL da foto de capa (o `cover.src` do post). Sem ela, a capa geométrica. */
+  foto?: string;
+}
+const { titulo, tags, slug, formato = 'card', foto } = Astro.props;
+
+// ---- Qual ferramenta este post trata? ------------------------------------
+// Ordem: slug > tags > título. A primeira que casar ganha.
+const APELIDOS: { mark: string; nome: string; termos: string[] }[] = [
+  { mark: 'claude-code', nome: 'Claude Code', termos: ['claude-code', 'claude code', 'claudemd', 'claude.md', 'mcp', 'subagente', 'skills'] },
+  { mark: 'n8n', nome: 'N8N', termos: ['n8n'] },
+  { mark: 'cursor', nome: 'Cursor', termos: ['cursor'] },
+  { mark: 'lovable', nome: 'Lovable', termos: ['lovable'] },
+  { mark: 'github', nome: 'GitHub', termos: ['github', 'copilot'] },
+  { mark: 'ai-studio', nome: 'Google AI Studio', termos: ['ai studio', 'gemini', 'pomelli'] },
+  { mark: 'nano-banana', nome: 'Nano Banana', termos: ['nano banana', 'nanobanana'] },
+  { mark: 'kling', nome: 'Kling AI', termos: ['kling'] },
+  { mark: 'heygen', nome: 'HeyGen', termos: ['heygen'] },
+  { mark: 'higgsfield', nome: 'Higgsfield', termos: ['higgsfield'] },
+];
+
+const normal = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const feno = normal([slug, tags.join(' '), titulo].join(' '));
+const achado = APELIDOS.find((a) => a.termos.some((t) => feno.includes(normal(t))));
+
+const marcaReal = achado ? MARCAS_REAIS[achado.mark] : undefined;
+const curso = achado ? CURSOS.find((c) => c.mark === achado.mark) : undefined;
+
+// Rótulo do canto: nome da ferramenta, ou a categoria do post.
+const rotulo = achado?.nome ?? (tags[0] ?? 'Strat Academy');
+
+// ---- Composição de fundo -------------------------------------------------
+// Determinística pelo slug, para o mesmo post ter sempre a mesma capa.
+function hash(s: string) {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return Math.abs(h);
+}
+const h = hash(slug);
+const variante = h % 4;
+
+const L = 1200;
+const A = formato === 'destaque' ? 515 : 675;
+const cy = A / 2;
+
+// Posição e escala do logo (as marcas reais vêm em viewBox 24×24).
+const escala = formato === 'destaque' ? 12 : 15;
+const logoX = 780;
+const logoY = cy - (24 * escala) / 2;
+const id = `capa-${slug}`;
+
+// A foto do R2 vem em tamanho cheio; o <image> do SVG não aceita loading="lazy", então ela sai do build no tamanho da
+// capa (o dobro da largura em que o card aparece no celular), em webp, servida pelo site (WEB-49).
+const fotoNoTamanho = foto
+  ? (await getImage({ src: foto, inferSize: true, width: formato === 'destaque' ? 1200 : 800, format: 'webp', quality: 72 })).src
+  : undefined;
+---
+<svg
+  class={`capa capa-${formato}${foto ? ' capa-foto' : ''}`}
+  viewBox={`0 0 ${L} ${A}`}
+  role="img"
+  aria-label={foto ? `Foto do artigo: ${titulo}` : achado ? `Ilustração: ${achado.nome}` : 'Ilustração do artigo'}
+  preserveAspectRatio="xMidYMid slice"
+>
+  <defs>
+    <linearGradient id={`${id}-ground`} x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="var(--bg-2)" />
+      <stop offset="100%" stop-color="var(--bg)" />
+    </linearGradient>
+    <radialGradient id={`${id}-aura`} cx="72%" cy="18%" r="70%">
+      <stop offset="0%" stop-color="var(--acento-vivo)" stop-opacity=".26" />
+      <stop offset="70%" stop-color="var(--acento-vivo)" stop-opacity="0" />
+    </radialGradient>
+    <clipPath id={`${id}-quadro`}><rect width={L} height={A} rx="0" /></clipPath>
+    <linearGradient id={`${id}-veu`} x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0F1115" stop-opacity=".82" />
+      <stop offset="45%" stop-color="#0F1115" stop-opacity=".5" />
+      <stop offset="75%" stop-color="#0F1115" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+
+  <g clip-path={`url(#${id}-quadro)`}>
+  {foto ? (
+    <>
+      <image href={fotoNoTamanho} x="0" y="0" width={L} height={A} preserveAspectRatio="xMidYMid slice" />
+      <rect width={L} height={A} fill={`url(#${id}-veu)`} />
+    </>
+  ) : (
+  <>
+    <rect width={L} height={A} fill={`url(#${id}-ground)`} />
+
+    {/* campo geométrico — quatro variantes, sempre discretas */}
+    {variante === 0 && (
+      <g fill="none" stroke="var(--acento-vivo)" stroke-opacity=".16" stroke-width="2">
+        {[0, 1, 2, 3, 4, 5].map((i) => <circle cx={logoX + 180} cy={cy} r={140 + i * 86} />)}
+      </g>
+    )}
+    {variante === 1 && (
+      <g fill="var(--acento-vivo)" fill-opacity=".14">
+        {Array.from({ length: 6 }, (_, y) =>
+          Array.from({ length: 14 }, (_, x) => (
+            <circle cx={60 + x * 84} cy={70 + y * ((A - 140) / 5)} r="7" />
+          ))
+        )}
+      </g>
+    )}
+    {variante === 2 && (
+      <g stroke="var(--acento-vivo)" stroke-opacity=".16" stroke-width="2" fill="none">
+        {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+          <path d={`M${-120 + i * 190} ${A} L${120 + i * 190} 0`} />
+        ))}
+      </g>
+    )}
+    {variante === 3 && (
+      <g fill="none" stroke="var(--acento-vivo)" stroke-opacity=".18" stroke-width="2">
+        <path d={`M0 ${cy + 90} C 300 ${cy - 60}, 600 ${cy + 160}, 1200 ${cy - 40}`} />
+        <path d={`M0 ${cy + 150} C 320 ${cy + 20}, 640 ${cy + 220}, 1200 ${cy + 20}`} />
+        <path d={`M0 ${cy + 30} C 280 ${cy - 130}, 620 ${cy + 90}, 1200 ${cy - 110}`} />
+      </g>
+    )}
+
+    <rect width={L} height={A} fill={`url(#${id}-aura)`} />
+
+    {/* halo atrás do logo */}
+    <circle cx={logoX + 180} cy={cy} r={formato === 'destaque' ? 170 : 210} fill="var(--surf)" opacity=".72" />
+
+    {/* o logo real da ferramenta, quando existe */}
+    {marcaReal ? (
+      <g transform={`translate(${logoX} ${logoY}) scale(${escala})`}>
+        <path d={marcaReal.path} fill={marcaReal.hex} />
+      </g>
+    ) : (
+      <g transform={`translate(${logoX + 60} ${cy - 120}) scale(${formato === 'destaque' ? 3.4 : 3.8})`}
+         fill="none" stroke="var(--acento)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="6" y="12" width="52" height="40" rx="2" />
+        <path d="M6 22h52" />
+        <path d="M16 32l7 6-7 6M27 44h13" />
+      </g>
+    )}
+  </>
+  )}
+
+    {/* barra de marca à esquerda */}
+    <rect x="0" y="0" width="10" height={A} fill="var(--acento)" />
+
+    {/* selo da casa */}
+    <g transform="translate(58 54)">
+      <rect x="0" y="0" width="13" height="13" rx="3" fill="var(--acento)" />
+      <text x="26" y="12" class="capa-selo">Strat Academy</text>
+    </g>
+
+    {/* rótulo do conteúdo */}
+    <g transform={`translate(58 ${A - 96})`}>
+      <rect x="0" y="-52" width="46" height="5" rx="2.5" fill="var(--acento)" />
+      <text x="0" y="14" class="capa-rotulo">{rotulo}</text>
+      {curso && <text x="0" y="52" class="capa-sub">trilha no Strat Hub</text>}
+    </g>
+  </g>
+</svg>
+
+<style>
+  .capa {
+    display: block;
+    width: 100%;
+    background: var(--bg-2);
+  }
+  .capa-card { aspect-ratio: 16 / 9; }
+  .capa-destaque { aspect-ratio: 21 / 9; }
+
+  .capa-selo {
+    font-family: var(--fonte);
+    font-size: 21px;
+    font-weight: var(--w-semi);
+    fill: var(--txt-2);
+    letter-spacing: .01em;
+  }
+  .capa-rotulo {
+    font-family: var(--fonte);
+    font-size: 54px;
+    font-weight: var(--w-bold);
+    fill: var(--txt);
+    letter-spacing: -.03em;
+  }
+  .capa-foto .capa-selo { fill: rgba(255, 255, 255, .86); }
+  .capa-foto .capa-rotulo { fill: #fff; }
+  .capa-foto .capa-sub { fill: var(--acento-vivo); }
+  /* Sobre a foto o texto é sempre claro, nos dois temas: por isso o branco e o véu (#0F1115, a tinta do tema claro) são fixos. */
+  .capa-sub {
+    font-family: var(--fonte);
+    font-size: 24px;
+    font-weight: var(--w-medio);
+    fill: var(--acento);
+  }
+</style>

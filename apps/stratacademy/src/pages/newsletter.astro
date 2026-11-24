@@ -1,0 +1,103 @@
+---
+import RubikLayout from '../layouts/RubikLayout.astro';
+import NewsletterRubik from '../components/NewsletterRubik.astro';
+import { SITE } from '../consts';
+import { PLANO, HUB } from '../data/catalogo';
+
+const oQueRecebe = [
+  { title: 'Tutoriais de N8N', desc: 'Fluxos prontos e passo a passo para automatizar tarefas repetitivas do seu negócio sem escrever código do zero.' },
+  { title: 'Novidades de IA & Claude Code', desc: 'O que mudou de verdade em modelos, agentes e ferramentas — filtrado do hype, com foco no que dá pra aplicar hoje.' },
+  { title: 'Casos práticos', desc: 'Como automação e IA resolvem problemas reais de operação, atendimento e vendas em negócios de verdade.' },
+  { title: 'Ferramentas testadas', desc: 'Seleções curtas de ferramentas, integrações e prompts que valem seu tempo — sem lista genérica de mil links.' },
+];
+
+const paraQuem = [
+  { title: 'Quem toca um negócio', desc: 'Donos e gestores que querem enxugar processos e ganhar tempo com automação e IA.' },
+  { title: 'Quem implementa', desc: 'Freelancers e profissionais de automação que vivem de montar fluxos e agentes para clientes.' },
+  { title: 'Quem está começando', desc: 'Pessoas curiosas sobre IA aplicada que querem aprender de forma prática, sem enrolação técnica.' },
+];
+
+const stats = [
+  { number: '+800', label: 'alunos na Academy' },
+  { number: '5★', label: 'nota dos alunos' },
+  { number: '3.000+', label: 'prompts na biblioteca' },
+];
+
+const faq = [
+  { q: 'Com que frequência a newsletter chega?', a: 'Toda semana. É uma edição enxuta, feita para você ler rápido e sair com algo aplicável — não uma avalanche de e-mails.' },
+  { q: 'Preciso saber programar para aproveitar?', a: 'Não. O conteúdo é pensado para ser aplicado por qualquer pessoa que trabalha com negócios. Quando há algo técnico de N8N ou Claude Code, vem explicado passo a passo.' },
+  { q: 'Vou receber propaganda o tempo todo?', a: 'Não. O foco é conteúdo útil. Quando há algo nosso para oferecer, isso vem no fim e de forma clara — nunca disfarçado de dica.' },
+  { q: 'Como eu saio da lista?', a: 'Todo e-mail tem link de cancelamento no rodapé. Um clique e você sai, sem precisar responder nada.' },
+];
+---
+<RubikLayout
+  title={`Newsletter de IA e automação — ${SITE.name}`}
+  description="Uma edição por semana com tutoriais de N8N, novidades de IA e casos práticos aplicáveis ao seu negócio."
+  faq={faq}
+  breadcrumb={[{ name: 'Início', url: '/' }, { name: 'Newsletter', url: '/newsletter/' }]}
+>
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="hero wrap">
+      <p class="kicker rise d1">Newsletter</p>
+      <h1 class="rise d2">Insights de IA e automação, toda semana</h1>
+      <p class="lead rise d3">
+        Conteúdo que você usa na segunda de manhã: um fluxo para copiar, uma ferramenta
+        testada, uma novidade que muda alguma coisa de verdade.
+      </p>
+    </section>
+  </div>
+
+  <section class="wrap">
+    <div class="numeros" style="grid-template-columns: repeat(3, minmax(0, 1fr))">
+      {stats.map((s) => <div><b>{s.number}</b><span>{s.label}</span></div>)}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">O que chega</p>
+      <h2>Conteúdo que você usa na segunda de manhã</h2>
+    </div>
+    <div class="grade">
+      {oQueRecebe.map((o) => <div class="card"><h3>{o.title}</h3><p>{o.desc}</p></div>)}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Para quem é</p>
+      <h2>Feita para quem quer aplicar IA no negócio</h2>
+    </div>
+    <div class="grade grade-3">
+      {paraQuem.map((p) => <div class="card"><h3>{p.title}</h3><p>{p.desc}</p></div>)}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Dúvidas</p>
+      <h2>Antes de assinar</h2>
+    </div>
+    <div class="faq">
+      {faq.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
+    </div>
+  </section>
+
+  <section class="wrap">
+    <NewsletterRubik
+      origem="newsletter"
+      redirect="/obrigado"
+      titulo="Comece a receber esta semana"
+      texto="Uma edição enxuta por semana, com o que dá para aplicar já. Sem spam e você sai quando quiser."
+    />
+  </section>
+
+  <section class="wrap secao">
+    <div class="card card-largo" style="text-align:center; display:grid; justify-items:center; gap: var(--s2)">
+      <h3>Prefere começar fazendo?</h3>
+      <p>A conta no Strat Hub é gratuita e já libera as Masterclasses de N8N e Claude Code completas.</p>
+      <a href={HUB} data-evento="SignUpIntent" data-evento-local="newsletter" class="btn btn-secundario" style="margin-top: var(--s2)">{PLANO.chamada}</a>
+    </div>
+  </section>
+</RubikLayout>

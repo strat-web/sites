@@ -1,0 +1,238 @@
+---
+// Página de um modelo do Criador de Funil de Vendas.
+//
+// É daqui que vem o tráfego: a folha da ferramenta disputa um termo curto e
+// concorrido ("criador de funil de vendas"); cada modelo persegue um termo
+// específico ("funil de lançamento", "funil de webinário").
+//
+// O conteúdo é o MESMO que a ferramenta usa por dentro: os modelos vêm do pacote
+// @strat-ai-horus-os/funil-nucleo, publicado pela oficina. Não existe uma
+// segunda cópia do texto aqui — duas cópias do mesmo parágrafo divergem.
+//
+// O funil sai desenhado em SVG no build: quem lê sem JavaScript (robô de IA,
+// leitor de tela, conexão ruim) vê o funil inteiro e os nomes das etapas.
+import RubikLayout from '../../../../layouts/RubikLayout.astro';
+import { SITE } from '../../../../consts';
+import { absUrl } from '@horus/seo';
+import { PLANO, HUB } from '../../../../data/catalogo';
+import { buscarFerramenta, rotaFerramenta, MODELOS_CONSTRUTOR } from '../../../../data/ferramentas';
+import { renderFunilSVG, resumirModelo, NODE_TYPES } from '@strat-ai-horus-os/funil-nucleo';
+
+export function getStaticPaths() {
+  return MODELOS_CONSTRUTOR.map((modelo) => ({ params: { slug: modelo.slug }, props: { modelo } }));
+}
+
+type Modelo = (typeof MODELOS_CONSTRUTOR)[number];
+const { modelo } = Astro.props as { modelo: Modelo };
+
+const f = buscarFerramenta('criador-de-funil-de-vendas')!;
+const url = rotaFerramenta(f.slug);
+const rota = `${url}/modelos/${modelo.slug}`;
+const abrirNoEditor = `${url}?modelo=${modelo.slug}`;
+
+const resumo = resumirModelo(modelo);
+const desenho = renderFunilSVG(modelo.documento, {
+  fundo: 'transparent',
+  descricao: `${modelo.nome}: ${modelo.resumo}`,
+});
+
+// As etapas em texto, na ordem do desenho. É o que um robô de IA consegue ler.
+const etapas = modelo.documento.nodes.map((n) => ({
+  nome: String(n.data.label ?? ''),
+  tipo: NODE_TYPES[n.data.type]?.label ?? n.data.type,
+  descricao: String(n.data.description ?? ''),
+}));
+
+const outros = MODELOS_CONSTRUTOR.filter((m) => m.slug !== modelo.slug);
+
+const howTo = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name: `Como montar um ${modelo.termoDeBusca}`,
+  description: modelo.resumo,
+  totalTime: 'PT30M',
+  tool: [{ '@type': 'HowToTool', name: f.nome }],
+  step: etapas.map((e, i) => ({
+    '@type': 'HowToStep',
+    position: i + 1,
+    name: e.nome,
+    text: e.descricao || `${e.tipo} no ${modelo.nome.toLowerCase()}.`,
+    url: `${SITE.url}${rota}/#etapas`,
+  })),
+};
+---
+
+<RubikLayout
+  perfil="lead"
+  title={`${modelo.nome}: modelo pronto para copiar — ${SITE.name}`}
+  description={modelo.resumo}
+  faq={modelo.perguntas.map((p) => ({ q: p.pergunta, a: p.resposta }))}
+  image={absUrl(`/og/criador-${modelo.slug}.png`)}
+  breadcrumb={[
+    { name: 'Início', url: '/' },
+    { name: 'Ferramentas', url: '/ferramentas' },
+    { name: f.nome, url },
+    { name: modelo.nome, url: rota },
+  ]}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(howTo)} />
+
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="hero wrap">
+      <nav class="migalhas rise d1" aria-label="Você está em">
+        <a href="/">Início</a><span>/</span><a href="/ferramentas">Ferramentas</a><span>/</span>
+        <a href={url}>{f.nome}</a><span>/</span>{modelo.nome}
+      </nav>
+      <p class="kicker rise d1">Modelo pronto · grátis e sem cadastro</p>
+      <h1 class="rise d2">{modelo.nome}</h1>
+      <p class="lead rise d3">{modelo.resumo}</p>
+
+      <div class="acoes rise d3">
+        <a
+          href={abrirNoEditor}
+          class="btn btn-primario"
+          data-evento="modelo_aberto"
+          data-evento-local={`modelo-${modelo.slug}`}
+        >
+          Abrir este modelo no editor
+        </a>
+        <span class="meta">
+          {resumo.etapas} etapas · {resumo.conexoes} passagens · monta em {modelo.tempoDeMontagem}
+        </span>
+      </div>
+    </section>
+  </div>
+
+  <!-- O funil desenhado, no HTML do build -->
+  <section class="wrap secao secao-topo">
+    <figure class="desenho">
+      <div class="desenho-rola" set:html={desenho} />
+      <figcaption>
+        {modelo.nome} — {resumo.etapas} etapas, da origem do tráfego até o pós-venda.
+        Abra no editor para trocar pelos nomes e pelas etapas do seu negócio.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section class="wrap secao">
+    <div class="colunas">
+      <div>
+        <h2>Quando usar este modelo</h2>
+        <p>{modelo.quandoUsar}</p>
+        <p class="para-quem"><b>Para quem é:</b> {modelo.publico}</p>
+      </div>
+      <div>
+        <h2>O que observar</h2>
+        <p>{modelo.oQueObservar}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- As etapas em texto: é o que um robô de IA lê, e o que o desenho mostra -->
+  <section class="wrap secao" id="etapas">
+    <div class="sec-head">
+      <p class="kicker">Passo a passo</p>
+      <h2>As etapas deste funil, na ordem</h2>
+      <p class="lead">
+        São as mesmas etapas do desenho acima. Use como lista de conferência ao montar o seu: o que
+        não existe no seu negócio, apague; o que existe e não está aqui, acrescente.
+      </p>
+    </div>
+    <ol class="etapas">
+      {etapas.map((e, i) => (
+        <li>
+          <span class="etapa-num">{i + 1}</span>
+          <div>
+            <h3>{e.nome}</h3>
+            <p><span class="pill">{e.tipo}</span>{e.descricao ? ` ${e.descricao}` : ''}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="wrap secao" id="duvidas">
+    <div class="sec-head">
+      <p class="kicker">Dúvidas</p>
+      <h2>Perguntas sobre este funil</h2>
+    </div>
+    <div class="faq">
+      {modelo.perguntas.map((p) => <details><summary>{p.pergunta}</summary><p>{p.resposta}</p></details>)}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Outros modelos</p>
+      <h2>Se não for este, é um destes</h2>
+    </div>
+    <div class="grade grade-2">
+      {outros.map((m) => (
+        <a href={`${url}/modelos/${m.slug}`} class="card card-largo">
+          <div class="card-topo">
+            <h3>{m.nome}</h3>
+            <span class="pill">{resumirModelo(m).etapas} etapas</span>
+          </div>
+          <p>{m.resumo}</p>
+          <span class="ver">Abrir modelo →</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="cta">
+      <p class="kicker">Strat Hub</p>
+      <h2>O desenho mostra o caminho. O Hub ensina a fazer ele rodar.</h2>
+      <p class="lead">
+        Cada seta deste funil é uma automação possível: o e-mail que sai sozinho, o lembrete no
+        WhatsApp, a recuperação de quem abandonou. É isso que as Masterclasses de N8N e Claude Code
+        ensinam, liberadas por inteiro na conta gratuita. Sem cartão.
+      </p>
+      <a href={HUB} data-evento="SignUpIntent" data-evento-local={`modelo-${modelo.slug}`} class="btn btn-primario">
+        {PLANO.chamada}
+      </a>
+      <p class="nota">{PLANO.nome} · {PLANO.preco}{PLANO.periodo} quando quiser assinar · cancela quando quiser</p>
+    </div>
+  </section>
+</RubikLayout>
+
+<style>
+  .secao-topo { padding-top: var(--s3); }
+  .acoes { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3); margin-top: var(--s4); }
+  .acoes .meta { font-size: var(--t-meta); color: var(--txt-2); }
+
+  .desenho {
+    margin: 0; background: var(--surf); border-radius: var(--raio-g);
+    box-shadow: var(--sombra-card); padding: var(--s4);
+  }
+  /* Funil é largo: no celular, rola na horizontal em vez de encolher até sumir. */
+  .desenho-rola { overflow-x: auto; }
+  .desenho :global(svg) { display: block; width: 100%; height: auto; min-width: 680px; }
+  .desenho figcaption {
+    margin-top: var(--s3); font-size: var(--t-meta);
+    color: var(--txt-2); max-width: var(--leitura);
+  }
+
+  .colunas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s5); }
+  .colunas h2 { font-size: var(--t-h3); font-weight: var(--w-semi); }
+  .colunas p { color: var(--txt-2); margin-top: var(--s3); max-width: var(--leitura); }
+  .para-quem b { color: var(--txt); }
+
+  .etapas { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s3); }
+  .etapas li { display: flex; gap: var(--s3); align-items: flex-start; }
+  .etapa-num {
+    flex: none; width: 1.75rem; height: 1.75rem; border-radius: 50%;
+    display: grid; place-items: center; background: var(--surf-2, var(--surf));
+    font-size: var(--t-meta); font-weight: var(--w-semi); box-shadow: var(--sombra-card);
+  }
+  .etapas h3 { font-size: var(--t-base); font-weight: var(--w-semi); }
+  .etapas p { color: var(--txt-2); font-size: var(--t-peq); margin-top: .2rem; }
+  .etapas .pill { margin-right: .4rem; }
+
+  @media (max-width: 780px) {
+    .colunas { grid-template-columns: minmax(0, 1fr); }
+    .desenho { padding: var(--s3); }
+  }
+</style>

@@ -1,0 +1,108 @@
+/* ============================================================
+   STRAT ACADEMY — DESIGN TOKENS
+   Direção: Marca-d'água · Paleta Alvorada · Tipografia Rubik
+   Versão 1.0 — fonte única da verdade. Não hardcode valores fora daqui.
+   ============================================================ */
+
+:root{
+  /* ---------- COR: base ---------- */
+  --bg:            #F5F3EE;   /* fundo da página */
+  --surf:          #FFFFFF;   /* cards, CTA, superfícies elevadas */
+  --bg-2:          #EFECE5;   /* faixas alternadas, inputs em superfície branca */
+  --txt:           #14161B;   /* texto principal */
+  --txt-2:         #63615C;   /* texto secundário, meta, lead */
+  --linha:         rgba(15,17,21,.13);
+
+  /* ---------- COR: acento ---------- */
+  --acento:        #A8572E;   /* TEXTO e CTA — AA: 4,66:1 sobre --bg, 5,16:1 sobre --surf e com texto branco */
+  --acento-vivo:   #D97A4A;   /* laranja Claude — SÓ fundos, blocos, marca-d'água */
+  --acento-suave:  rgba(217,122,74,.14);  /* marca-d'água, halos */
+  --sideral:       #6E63D4;   /* uso restrito: aura decorativa, contexto admin */
+
+  /* ---------- COR: escuro (nav mobile, rodapé opcional, code block) ---------- */
+  --escuro:        #14161B;
+  --escuro-2:      #22252C;
+  --escuro-linha:  #343841;
+  --sobre-escuro:  #EDEBE6;
+  --sobre-escuro-2:#A9A7A1;
+
+  /* ---------- COR: semântica ---------- */
+  --ok:#2F7D57; --alerta:#9A6B14; --erro:#B3392A;
+
+  /* ---------- TIPOGRAFIA ---------- */
+  --fonte: 'Rubik', system-ui, -apple-system, sans-serif;
+  /* Rubik é família única: display e corpo. Não introduzir segunda família. */
+
+  --w-regular:400; --w-medio:500; --w-semi:600; --w-bold:700;
+
+  --t-h1:   clamp(2.3rem, 5.6vw, 4.2rem);
+  --t-h2:   clamp(1.5rem, 3vw, 2.1rem);
+  --t-h3:   1.5rem;    /* título de card de trilha */
+  --t-h4:   1.18rem;   /* título de card de post */
+  --t-corpo:1.06rem;
+  --t-peq:  .92rem;
+  --t-meta: .8rem;
+  --t-micro:.72rem;
+
+  --lh-titulo:1.08; --lh-corpo:1.7; --lh-compacto:1.25;
+  --tr-h1:-.04em; --tr-h2:-.03em; --tr-h3:-.01em;
+  --leitura:76ch;   /* largura máxima de texto corrido (era 68ch; 2026-11-09: sobrava espaço a 100% de zoom) */
+
+  /* ---------- ESPAÇO (escala 8pt) ---------- */
+  --s1:.25rem; --s2:.5rem; --s3:1rem; --s4:1.5rem;
+  --s5:2.5rem; --s6:4.5rem; --s7:7rem;
+  --max:1320px;         /* container padrão (era 1140px; 2026-11-09) */
+  --max-texto:840px;    /* container de artigo (era 760px; 2026-11-09) */
+
+  /* ---------- FORMA ---------- */
+  --raio:20px;          /* cards de trilha e post */
+  --raio-g:28px;        /* CTA, blocos grandes */
+  --raio-p:12px;        /* thumbs, code blocks, imagens inline */
+  --raio-pill:999px;    /* botões, pills, inputs */
+  --borda:1.5px;        /* espessura padrão de borda visível */
+
+  /* ---------- SOMBRA (difusa, nunca dura) ---------- */
+  --sombra-card:      0 18px 46px -32px rgba(20,22,27,.45);
+  --sombra-card-hover:0 30px 64px -32px rgba(20,22,27,.5);
+  --sombra-post:      0 14px 38px -28px rgba(20,22,27,.4);
+  --sombra-post-hover:0 26px 56px -28px rgba(20,22,27,.45);
+  --sombra-cta:       0 26px 64px -36px rgba(20,22,27,.45);
+  --sombra-btn:       0 14px 30px -16px rgba(168,87,46,.85);
+  --sombra-flutuante: 0 18px 42px -20px rgba(20,22,27,.4);
+
+  /* ---------- MOVIMENTO ---------- */
+  --ease:cubic-bezier(.2,.7,.3,1);
+  --dur-rapida:.25s; --dur:.35s; --dur-lenta:.9s;
+  --sobe:-5px;      /* deslocamento de hover em card */
+  --sobe-post:-6px;
+
+  /* ---------- CAMADAS ---------- */
+  --z-aura:0; --z-conteudo:2; --z-header:60; --z-modal:90;
+}
+
+/* ---------- ATMOSFERA ALVORADA ----------
+   Gradiente quente no topo da página. Uma vez por página, no topo.
+   Nunca repetir em seções internas.                              */
+.aura{
+  position:absolute; inset:0 0 auto; height:82vh; z-index:var(--z-aura); pointer-events:none;
+  background:
+    radial-gradient(760px 420px at 78% 0%, rgba(217,122,74,.16), transparent 64%),
+    radial-gradient(520px 320px at 10% 16%, rgba(110,99,212,.06), transparent 70%);
+}
+
+/* ---------- MODO ESCURO (opcional, fase 2) ----------
+   Se implementado, inverter apenas base e superfície. Acento vira o vivo. */
+@media (prefers-color-scheme: dark){
+  :root[data-tema="auto"]{
+    --bg:#0F1115; --surf:#1A1D24; --bg-2:#161920;
+    --txt:#F5F3EE; --txt-2:#8E939E; --linha:rgba(255,255,255,.10);
+    --acento:#E08A52; --acento-vivo:#D97A4A;
+  }
+}
+
+/* ---------- ACESSIBILIDADE ---------- */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;scroll-behavior:auto !important}
+}
+:focus-visible{outline:2px solid var(--acento);outline-offset:3px;border-radius:4px}

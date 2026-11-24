@@ -1,0 +1,224 @@
+---
+// Central de ferramentas gratuitas — hub. Conversão C1.
+//
+// Esta slug era a "Benefícios Strat" (links de afiliado), que mudou para
+// /parceiros em 2026-09-06. O ranking acumulado de /ferramentas passa a servir a
+// central, que é o que as pessoas de fato procuram com essa palavra.
+//
+// Fonte de verdade: src/data/ferramentas.ts. Não criar card fora dela.
+import RubikLayout from '../../layouts/RubikLayout.astro';
+import Selo from '../../components/Selo.astro';
+import { SITE } from '../../consts';
+import { absUrl } from '@horus/seo';
+import { PLANO, HUB, HUB_INCLUI, MASTERCLASSES } from '../../data/catalogo';
+import { FERRAMENTAS, rotaFerramenta } from '../../data/ferramentas';
+
+const noAr = FERRAMENTAS.filter((f) => f.status === 'no-ar');
+const vindo = FERRAMENTAS.filter((f) => f.status !== 'no-ar');
+
+const faq = [
+  {
+    q: 'As ferramentas são gratuitas de verdade?',
+    a: 'São. Todas rodam sem cadastro, sem limite de uso e sem versão paga escondida. Não pedimos e-mail para liberar resultado nem guardamos o que você digita.',
+  },
+  {
+    q: 'Por que vocês publicam ferramenta de graça?',
+    a: 'Porque é a melhor demonstração do que ensinamos. Cada ferramenta aqui foi construída com as mesmas técnicas das trilhas do Strat Hub, e cada folha tem um bloco contando como foi feita. Quem gosta do resultado costuma querer aprender a construir o seu.',
+  },
+  {
+    q: 'Onde ficam os meus dados?',
+    a: 'No seu navegador, enquanto você usa. As ferramentas calculam localmente, e o link de compartilhamento leva os dados codificados na própria URL, sem passar por nós. A exceção é pedir o diagnóstico por e-mail: aí enviamos o seu contato e os números do funil, porque é o que permite escrever a leitura e mandar para você. O detalhe está na política de privacidade.',
+  },
+  {
+    q: 'Posso usar em cliente ou dentro da minha empresa?',
+    a: 'Pode, inclusive comercialmente e em trabalho de cliente. Não pedimos atribuição e não há limite de uso. O que você exporta — imagem, CSV, JSON — é seu.',
+  },
+];
+---
+
+<RubikLayout
+  title={`Ferramentas gratuitas para o seu negócio — ${SITE.name}`}
+  description="Ferramentas online e gratuitas para vender e operar melhor: calculadora de funil de vendas e mais. Sem cadastro, sem limite de uso e sem enviar os seus números para lugar nenhum."
+  faq={faq}
+  image={absUrl('/og/ferramentas.png')}
+  breadcrumb={[
+    { name: 'Início', url: '/' },
+    { name: 'Ferramentas', url: '/ferramentas/' },
+  ]}
+>
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="hero wrap">
+      <nav class="migalhas rise d1" aria-label="Você está em">
+        <a href="/">Início</a><span>/</span>Ferramentas
+      </nav>
+      <p class="kicker rise d1">Ferramentas gratuitas</p>
+      <h1 class="rise d2">Ferramentas gratuitas para o seu negócio</h1>
+      <p class="lead rise d3">
+        Ferramentas que resolvem uma tarefa específica e devolvem a resposta na hora.
+        <strong>Todas gratuitas, todas sem cadastro</strong> — você abre, usa e vai embora, sem
+        deixar e-mail e sem limite de uso. Tudo é calculado <strong>dentro do seu navegador</strong> —
+        e isso você confere sozinho, na aba Rede do F12: enquanto você digita, nenhuma requisição sai.
+        </p>
+        <p class="lead rise d3">
+        Se em algum momento você pedir o diagnóstico por e-mail, aí sim os seus números são enviados
+        junto com o contato — é o que permite escrever a leitura e mandar para você. Fora isso, eles
+        ficam na sua máquina, e a ferramenta funciona inteira sem que você envie nada.
+      </p>
+    </section>
+  </div>
+
+  <section class="wrap secao" id="lista">
+    <div class="sec-head">
+      <p class="kicker">Disponíveis agora</p>
+      <h2>O que dá para resolver aqui</h2>
+    </div>
+
+    <div class="grade grade-3">
+      {noAr.map((f) => (
+        <a href={rotaFerramenta(f.slug)} class="card card-largo">
+          <div class="card-topo">
+            <h3>{f.nome}</h3>
+            <span class="pill pill-acento">Grátis</span>
+          </div>
+          <p>{f.resumo}</p>
+          <ul class="card-lista">
+            <li>Sem cadastro e sem limite de uso</li>
+            <li>Calcula no seu navegador, sem enviar nada</li>
+            <li>Construída com Claude Code</li>
+          </ul>
+          <span class="ver">Abrir ferramenta →</span>
+        </a>
+      ))}
+    </div>
+
+    {vindo.length > 0 && (
+      <div class="vindo">
+        <p class="kicker">Em construção</p>
+        <ul>
+          {vindo.map((f) => (
+            <li><b>{f.nome}</b> — {f.resumo}</li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Como funciona</p>
+      <h2>Por que é de graça</h2>
+    </div>
+    <div class="grade grade-3">
+      <div class="card">
+        <h3>Resolve antes de pedir algo</h3>
+        <p>
+          A ferramenta entrega a resposta completa na tela, sem pedir e-mail para mostrar o resultado.
+          Se você nunca criar conta no Strat Hub, ela continua funcionando igual.
+        </p>
+      </div>
+      <div class="card">
+        <h3>Usar não custa um dado seu</h3>
+        <p>
+          Enquanto você usa, não há requisição nenhuma: a conta inteira acontece na sua máquina, e
+          dá para conferir na aba Rede do navegador sem acreditar na nossa palavra. Só se você
+          <b>pedir o diagnóstico por e-mail</b> os seus números vêm para nós — e aí você sabe
+          exatamente quando, porque foi você que clicou.
+        </p>
+      </div>
+      <div class="card">
+        <h3>Foi construída como a gente ensina</h3>
+        <p>
+          Todas saíram das mesmas técnicas das trilhas do Hub. Cada folha tem um bloco contando como
+          foi feita — a mesma técnica que você aprende lá dentro.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Dúvidas</p>
+      <h2>Perguntas frequentes</h2>
+    </div>
+    <div class="faq">
+      {faq.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="cta">
+      <p class="kicker">Strat Hub</p>
+      <h2>Gostou da ferramenta? Aprenda a construir a sua.</h2>
+      <p class="lead">
+        Estas ferramentas foram feitas com Claude Code e N8N — as mesmas duas Masterclasses que a
+        conta gratuita do Strat Hub já libera por inteiro. Criar conta não custa nada e não pede cartão.
+      </p>
+      <a href={HUB} data-evento="SignUpIntent" data-evento-local="ferramentas-hub" class="btn btn-primario">{PLANO.chamada}</a>
+      <p class="nota">{PLANO.nome} · {PLANO.preco}{PLANO.periodo} quando quiser assinar · cancela quando quiser</p>
+    </div>
+  </section>
+
+  <!-- Conversão C1: a central é topo de funil e o tráfego dela vai para o Hub.
+       O que o Hub entrega vem de HUB_INCLUI/MASTERCLASSES, o mesmo dado que
+       /assinatura e /cursos mostram — sem promessa nova inventada aqui. -->
+  <section class="wrap secao" id="hub">
+    <div class="sec-head">
+      <p class="kicker">Strat Hub</p>
+      <h2>Estas ferramentas saíram de um lugar. Ele é gratuito para entrar.</h2>
+      <p class="lead">
+        Criar conta no Strat Hub não custa nada e não pede cartão. Ela já libera as duas
+        Masterclasses completas — as mesmas técnicas que construíram a calculadora desta página.
+      </p>
+    </div>
+
+    <div class="grade grade-2">
+      {MASTERCLASSES.filter((m) => m.acesso === 'Gratuito').map((m) => (
+        <div class="card card-largo">
+          <div class="card-topo">
+            <h3>{m.nome}</h3>
+            <span class="pill pill-acento">{m.acesso}</span>
+          </div>
+          <p>{m.desc}</p>
+          {m.aulas && <span class="ver">{m.aulas} aulas</span>}
+        </div>
+      ))}
+    </div>
+
+    <div class="hub-inclui">
+      <p class="kicker">E o que mais tem lá dentro</p>
+      <ul>
+        {HUB_INCLUI.map((h) => (
+          <li><b>{h.title}</b> — {h.desc}</li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="hub-selo">
+      <Selo slug="calculadora-de-funil-de-vendas" variante="compacto" />
+    </div>
+  </section>
+</RubikLayout>
+
+<style>
+  .hero .lead + .lead { margin-top: var(--s3); }
+
+  .vindo {
+    margin-top: var(--s4); padding-top: var(--s3);
+    border-top: 1px solid var(--linha);
+  }
+  .vindo ul { list-style: none; margin: var(--s2) 0 0; padding: 0; display: grid; gap: var(--s2); }
+  .vindo li { font-size: var(--t-peq); color: var(--txt-2); }
+
+  .hub-inclui { margin-top: var(--s4); }
+  .hub-inclui ul {
+    list-style: none; margin: var(--s3) 0 0; padding: 0;
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s2) var(--s4);
+  }
+  .hub-inclui li { font-size: var(--t-peq); color: var(--txt-2); }
+  .hub-inclui li b { color: var(--txt); }
+  @media (max-width: 640px) { .hub-inclui ul { grid-template-columns: minmax(0, 1fr); } }
+
+</style>

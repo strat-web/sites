@@ -1,21 +1,18 @@
 ---
-// Página 404 da Strat Academy (WEB-75). O Pages serve o 404.html com status 404 em todo caminho que não existe.
-// Os cursos moram em subdomínios (lps/academy): os links são absolutos. O bootcamp está pausado e fica de fora.
-import PaginaNaoEncontrada from '@strat/kit/PaginaNaoEncontrada.astro';
+import RubikLayout from '../layouts/RubikLayout.astro';
+import { SITE } from '../consts';
 ---
-<PaginaNaoEncontrada
-  marca="academy"
-  titulo="Página não encontrada · Strat Academy"
-  descricao="Este endereço não leva a nenhuma página da Strat Academy. Volte para o início ou siga para um dos cursos de IA e Claude Code."
-  h1="Esta página não existe"
-  inicio="Voltar para o início"
-  links={[
-    { nome: 'Aula gratuita de Claude Code', caminho: 'https://vibecode.stratacademy.com.br/' },
-    { nome: 'Curso Claude Code para Negócios', caminho: 'https://claude.stratacademy.com.br/' },
-    { nome: '+500 skills para o Claude', caminho: 'https://skills.stratacademy.com.br/' },
-    { nome: 'Mentoria de IA aplicada a negócios', caminho: 'https://mentoria.stratacademy.com.br/' },
-  ]}
->
-  <p>O endereço que você abriu não leva a nenhuma página da Strat Academy. Pode ter mudado de lugar ou ter sido digitado diferente.</p>
-  <p>Se você veio aprender IA pra usar no seu negócio, os caminhos estão aqui embaixo.</p>
-</PaginaNaoEncontrada>
+<RubikLayout perfil={null} noindex title={`Página não encontrada — ${SITE.name}`} description="A página que você procura não existe ou foi movida.">
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="wrap aviso">
+      <p class="simbolo" aria-hidden="true">404</p>
+      <h1>Página não encontrada</h1>
+      <p class="lead">O link pode estar quebrado ou a página foi movida. Que tal voltar e explorar os artigos?</p>
+      <div class="cta-row" style="justify-content:center">
+        <a href="/" class="btn btn-primario">Ir para a home</a>
+        <a href="/blog/" class="btn btn-secundario">Ver artigos</a>
+      </div>
+    </section>
+  </div>
+</RubikLayout>

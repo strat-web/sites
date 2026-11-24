@@ -149,11 +149,11 @@ export function problemasDoMjs(mjs, scripts, fimDoHead = Infinity) {
 }
 
 /** Compara o HTML de uma página com o plano do catálogo. Devolve [{ slug, linha }] do Rastro usado. */
-export function checarPaginaTracking(pagina, catalogo, r) {
+export function checarPaginaTracking(pagina, catalogo, r, esqueletos = ESQUELETOS) {
   const onde = pagina.url;
   const { scripts, noindex, noscripts, fimDoHead } = lerPagina(pagina.html);
   const linhaDaPagina = (catalogo.urls || []).find((l) => l.url === onde);
-  const banner = ESQUELETOS[onde] ? null : bannerDoKit(catalogo, linhaDaPagina);
+  const banner = esqueletos[onde] ? null : bannerDoKit(catalogo, linhaDaPagina);
   const ehBanner = (s) => banner !== null && !s.attrs.src && s.conteudo.trim() === banner;
 
   const comPixelDoKit = pixelDoKit(scripts);
@@ -192,8 +192,8 @@ export function checarPaginaTracking(pagina, catalogo, r) {
 
   const reais = scripts.filter(ehScriptDeTracking);
 
-  if (ESQUELETOS[onde]) {
-    const item = ESQUELETOS[onde];
+  if (esqueletos[onde]) {
+    const item = esqueletos[onde];
     if (reais.length) r.erro(onde, `já carrega tracking: a migração (${item}) tem de tirar a URL de packages/checagens/src/esqueletos.js`);
     else if (!noindex) r.erro(onde, `esqueleto (até o ${item}) precisa de noindex: a página real ainda está na hospedagem antiga`);
     return [];
@@ -397,14 +397,15 @@ export function checarJsDoBuild(app, r) {
   }
 }
 
-export async function checarTracking(ctx, { semRede = false, buscar = fetch, tentativas = TENTATIVAS_DO_RASTRO, pausas, esperar } = {}) {
+// `esqueletos` existe para o teste: com a lista real vazia (todos os apps migrados), ele passa uma lista própria.
+export async function checarTracking(ctx, { semRede = false, buscar = fetch, tentativas = TENTATIVAS_DO_RASTRO, pausas, esperar, esqueletos = ESQUELETOS } = {}) {
   const r = resultado();
   const slugs = new Map();
   for (const app of ctx.apps) {
     checarJsDoBuild(app, r);
     for (const pagina of app.paginas) {
       if (ehPaginaDeErro(pagina)) continue;
-      for (const { slug, linha } of checarPaginaTracking(pagina, ctx.catalogo, r)) {
+      for (const { slug, linha } of checarPaginaTracking(pagina, ctx.catalogo, r, esqueletos)) {
         if (!slugs.has(slug)) slugs.set(slug, []);
         slugs.get(slug).push({ url: pagina.url, linha });
       }

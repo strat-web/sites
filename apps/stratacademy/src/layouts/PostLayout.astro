@@ -1,0 +1,228 @@
+---
+// Artigo — padrão §3 da spec: corpo em 760px, TOC lateral sticky a partir de
+// 1100px, barra de progresso, bloco de autor no fim e 3 relacionados.
+import RubikLayout from './RubikLayout.astro';
+import PostCardRubik from '../components/PostCardRubik.astro';
+import { SITE, AUTHORS, AUTOR_FOTO } from '../consts';
+import { slugifyTag } from '../lib/tags';
+import { absUrl } from '@horus/seo';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  entry: CollectionEntry<'blog'>;
+  headings?: { depth: number; slug: string; text: string }[];
+  related?: CollectionEntry<'blog'>[];
+  prev?: { id: string; title: string } | null;
+  next?: { id: string; title: string } | null;
+}
+
+const { entry, headings = [], related = [], prev = null, next = null } = Astro.props;
+const { title, description, pubDate, updatedDate, author, tags, faq } = entry.data;
+
+const ogImage = absUrl(`/og/${entry.id}.png`);
+const fmt = (d: Date) => new Intl.DateTimeFormat('pt-BR', { dateStyle: 'long', timeZone: 'UTC' }).format(d);
+const category = tags[0];
+const autor = AUTHORS[author];
+const authorHref = `/blog/autor/${slugifyTag(author)}/`;
+const toc = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+const foto = AUTOR_FOTO[author];
+
+const breadcrumb = [
+  { name: 'Início', url: '/' },
+  { name: 'Blog', url: '/blog/' },
+  ...(category ? [{ name: category, url: `/blog/categoria/${slugifyTag(category)}/` }] : []),
+  { name: title, url: `/blog/${entry.id}/` },
+];
+
+const postUrl = absUrl(`/blog/${entry.id}/`);
+const shareX = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(postUrl)}`;
+const shareLinkedIn = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(postUrl)}`;
+---
+<RubikLayout
+  title={`${title} — ${SITE.name}`}
+  headline={title}
+  description={description}
+  type="article"
+  image={ogImage}
+  publishedTime={pubDate}
+  modifiedTime={updatedDate}
+  author={author}
+  tags={tags}
+  breadcrumb={breadcrumb}
+  faq={faq}
+>
+  <div class="progresso"></div>
+
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <header class="hero wrap artigo-topo">
+      <nav class="migalhas" aria-label="Você está em">
+        <a href="/">Início</a><span>/</span><a href="/blog/">Blog</a>
+        {category && <><span>/</span><a href={`/blog/categoria/${slugifyTag(category)}/`}>{category}</a></>}
+      </nav>
+
+      <div class="marcadores">
+        {tags.map((t) => (
+          <a href={`/blog/categoria/${slugifyTag(t)}/`}><span class="pill">{t}</span></a>
+        ))}
+      </div>
+
+      <h1>{title}</h1>
+      <p class="lead">{description}</p>
+
+      <div class="artigo-meta">
+        <a href={authorHref}>Por {author}{autor?.role ? ` · ${autor.role}` : ''}</a>
+        <span class="pill">{fmt(pubDate)}</span>
+        {updatedDate && <span class="pill">atualizado em {fmt(updatedDate)}</span>}
+      </div>
+
+      <div class="compartilhar">
+        <span>Compartilhar:</span>
+        <a href={shareX} target="_blank" rel="noopener">X</a>
+        <a href={shareLinkedIn} target="_blank" rel="noopener">LinkedIn</a>
+        <button type="button" data-copiar><span data-copiar-texto>Copiar link</span></button>
+      </div>
+    </header>
+  </div>
+
+  <div class="wrap secao">
+    <div class="artigo-grade">
+      <article data-progresso-alvo class="prose">
+        <slot />
+
+        {faq && faq.length > 0 && (
+          <section class="artigo-faq">
+            <h2>Perguntas frequentes</h2>
+            <div class="faq">
+              {faq.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
+            </div>
+          </section>
+        )}
+
+        {(prev || next) && (
+          <nav class="vizinhos" aria-label="Outros artigos">
+            {prev ? (
+              <a href={`/blog/${prev.id}/`} class="card vizinho">
+                <span>← Anterior</span><b>{prev.title}</b>
+              </a>
+            ) : <span></span>}
+            {next && (
+              <a href={`/blog/${next.id}/`} class="card vizinho vizinho-prox">
+                <span>Próximo →</span><b>{next.title}</b>
+              </a>
+            )}
+          </nav>
+        )}
+
+        {autor && (
+          <aside class="autor-bloco">
+            {foto
+              ? <img class="autor-foto" src={foto} alt={`Foto de ${author}`} width="56" height="56" loading="lazy" decoding="async" />
+              : <span class="autor-inicial" aria-hidden="true">{author.charAt(0)}</span>}
+            <div>
+              <h3><a href={authorHref} style="text-decoration:none">{author}</a></h3>
+              <p>{autor.bio}</p>
+            </div>
+          </aside>
+        )}
+      </article>
+
+      {toc.length > 0 && (
+        <aside class="toc" aria-label="Neste artigo">
+          <p>Neste artigo</p>
+          <ul>
+            {toc.map((h) => (
+              <li><a href={`#${h.slug}`} class={h.depth === 3 ? 'nivel-3' : ''}>{h.text}</a></li>
+            ))}
+          </ul>
+        </aside>
+      )}
+    </div>
+  </div>
+
+  {related.length > 0 && (
+    <section class="wrap secao">
+      <div class="sec-head">
+        <p class="kicker">Continue lendo</p>
+        <h2>Artigos relacionados</h2>
+      </div>
+      <div class="grade grade-3">
+        {related.slice(0, 3).map((p) => <PostCardRubik post={p} />)}
+      </div>
+    </section>
+  )}
+
+  <section class="wrap">
+    <div class="cta">
+      <p class="kicker">Strat Hub</p>
+      <h2>Gostou? Tem muito mais lá dentro.</h2>
+      <p class="lead">
+        Criar conta no Strat Hub é grátis e já libera as Masterclasses de N8N e Claude Code
+        completas — o passo natural depois de ler.
+      </p>
+      <a href="https://hub.stratacademy.com.br/cadastro" data-evento="SignUpIntent" data-evento-local="post" class="btn btn-primario">Criar conta grátis</a>
+    </div>
+  </section>
+</RubikLayout>
+
+<style>
+  /* o cabeçalho começa na mesma margem do texto (2026-11-09: estava numa caixa de 840 px centralizada e o título
+     ficava ~130 px à direita do corpo). Até 1100 px: a largura do .wrap, como o corpo. Daí para cima: a largura do
+     conjunto texto (50rem) + vão + sumário (280 px), centralizado igual à .artigo-grade do RubikLayout. */
+  .artigo-topo { padding-block: var(--s6) var(--s5); }
+  .artigo-topo .lead { max-width: var(--leitura); }
+  @media (min-width: 1100px) {
+    .artigo-topo { max-width: calc(50rem + var(--s6) + 280px + 2 * var(--s3)); }
+  }
+  .artigo-topo h1 {
+    font-size: clamp(2rem, 4.4vw, 3.1rem); font-weight: var(--w-bold);
+    letter-spacing: var(--tr-h1); max-width: 24ch; margin-bottom: var(--s3);
+  }
+  .marcadores { display: flex; flex-wrap: wrap; gap: var(--s2); margin-bottom: var(--s3); }
+  .marcadores a { text-decoration: none; }
+  .artigo-meta {
+    display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2);
+    margin-top: var(--s4); font-size: var(--t-peq);
+  }
+  .artigo-meta > a { color: var(--acento); font-weight: var(--w-semi); text-decoration: none; }
+  .artigo-meta > a:hover { text-decoration: underline; }
+  .compartilhar {
+    display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3);
+    margin-top: var(--s3); font-size: var(--t-meta); color: var(--txt-2);
+  }
+  .compartilhar a, .compartilhar button {
+    font-family: var(--fonte); font-size: var(--t-meta); font-weight: var(--w-semi);
+    color: var(--txt-2); background: none; border: 0; padding: 0; cursor: pointer;
+    text-decoration: none;
+  }
+  .compartilhar a:hover, .compartilhar button:hover { color: var(--acento); }
+  .artigo-faq { margin-top: var(--s6); }
+  .artigo-faq h2 { margin-bottom: var(--s3); }
+  .artigo-faq .faq { max-width: none; }
+  .vizinho { text-decoration: none; }
+</style>
+
+<script>
+  // Barra de progresso de leitura
+  function progresso() {
+    const barra = document.querySelector<HTMLElement>('.progresso');
+    const artigo = document.querySelector<HTMLElement>('[data-progresso-alvo]');
+    if (!barra || !artigo) return;
+    const total = artigo.offsetHeight - window.innerHeight;
+    const lido = Math.min(Math.max(-artigo.getBoundingClientRect().top, 0), Math.max(total, 0));
+    barra.style.width = (total > 0 ? (lido / total) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', progresso, { passive: true });
+  window.addEventListener('resize', progresso, { passive: true });
+  progresso();
+
+  // Copiar link
+  document.querySelector('[data-copiar]')?.addEventListener('click', (e) => {
+    navigator.clipboard?.writeText(window.location.href);
+    const alvo = (e.currentTarget as HTMLElement).querySelector('[data-copiar-texto]');
+    if (!alvo) return;
+    const antes = alvo.textContent;
+    alvo.textContent = 'Copiado!';
+    setTimeout(() => (alvo.textContent = antes), 1500);
+  });
+</script>

@@ -1,0 +1,146 @@
+---
+// Um cenário por página. Cada uma persegue uma busca própria ("custo whatsapp
+// api clinica", "custo código de verificação whatsapp") e entrega a calculadora
+// já preenchida com a operação daquele tipo de negócio.
+//
+// O texto (quandoUsar, oQueObservar, perguntas) vem do pacote da oficina — é a
+// mesma fonte que a ferramenta usa. A conta inteira sai no HTML do build.
+import RubikLayout from '../../../../layouts/RubikLayout.astro';
+import WhatsappTool from '../../../../components/WhatsappTool.astro';
+import Selo from '../../../../components/Selo.astro';
+import { SITE } from '../../../../consts';
+import { absUrl } from '@horus/seo';
+import { PLANO, HUB } from '../../../../data/catalogo';
+import { MODELOS_WHATSAPP, buscarFerramenta, rotaFerramenta } from '../../../../data/ferramentas';
+import { calcularMes, type ModeloWhatsapp } from '@strat-ai-horus-os/whatsapp-nucleo';
+import { fmtMoeda, fmtNum, VIGENCIA_TEXTO } from '../../../../lib/whatsapp';
+
+export function getStaticPaths() {
+  return MODELOS_WHATSAPP.map((m) => ({ params: { slug: m.slug }, props: { modelo: m } }));
+}
+
+interface Props { modelo: ModeloWhatsapp }
+const { modelo } = Astro.props;
+
+const f = buscarFerramenta('calculadora-de-custo-whatsapp-api')!;
+const base = rotaFerramenta(f.slug);
+const url = `${base}/modelos/${modelo.slug}`;
+const r = calcularMes(modelo.simulacao);
+const outros = MODELOS_WHATSAPP.filter((m) => m.slug !== modelo.slug);
+const maior = [...r.linhas].sort((a, b) => b.custo - a.custo)[0];
+
+const faq = [
+  ...modelo.perguntas,
+  {
+    q: 'Estes volumes são de uma empresa real?',
+    a: 'Não. São volumes plausíveis para esse tipo de operação, escolhidos para o cenário servir de ponto de partida. Os preços, esses sim, são os da tabela oficial da Meta. Troque pelos volumes do seu último mês.',
+  },
+];
+---
+
+<RubikLayout
+  perfil="lead"
+  title={`${modelo.titulo} — ${SITE.name}`}
+  description={`${modelo.resumo}`.slice(0, 160)}
+  faq={faq}
+  image={absUrl(`/og/whatsapp-${modelo.slug}.png`)}
+  breadcrumb={[
+    { name: 'Início', url: '/' },
+    { name: 'Ferramentas', url: '/ferramentas' },
+    { name: f.nome, url: base },
+    { name: modelo.nome, url },
+  ]}
+>
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="hero wrap">
+      <nav class="migalhas rise d1" aria-label="Você está em">
+        <a href="/">Início</a><span>/</span><a href="/ferramentas">Ferramentas</a><span>/</span><a href={base}>{f.nome}</a><span>/</span>{modelo.nome}
+      </nav>
+      <p class="kicker rise d1">Cenário pronto · {modelo.tempoDeMontagem}</p>
+      <h1 class="rise d2">{modelo.titulo}</h1>
+      <p class="lead rise d3">
+        {modelo.resumo} Pela tabela da Meta em vigor desde {VIGENCIA_TEXTO}, a conta fecha em
+        <b>{fmtMoeda(r.meta, 'BRL')} por mês</b> só de Meta, para {fmtNum(r.mensagensEnviadas)} mensagens.
+      </p>
+    </section>
+  </div>
+
+  <section class="wrap secao secao-topo">
+    <WhatsappTool
+      simulacao={modelo.simulacao}
+      titulo={`Cenário: ${modelo.nome}`}
+      intro="O cenário abre preenchido. Troque pelos volumes da sua operação — a conta é refeita na hora, no seu navegador."
+      local={`modelo-${modelo.slug}`}
+    />
+  </section>
+
+  <section class="wrap secao">
+    <div class="texto-modelo">
+      <h2>Para quem é</h2>
+      <p>{modelo.publico}</p>
+
+      <h2>Quando este cenário descreve a sua operação</h2>
+      <p>{modelo.quandoUsar}</p>
+
+      <h2>O que observar na conta</h2>
+      <p>{modelo.oQueObservar}</p>
+      <p>
+        Neste cenário, a linha mais cara é <b>{maior.rotulo.toLowerCase()}</b>, com
+        {' '}{fmtMoeda(maior.custo, 'BRL')} dos {fmtMoeda(r.meta, 'BRL')} do mês. A mudança de 1º de
+        outubro de 2026 acrescentou {fmtMoeda(r.efeitoDaMudanca, 'BRL')} a esta conta.
+      </p>
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Outros cenários</p>
+      <h2>Compare com outros tipos de operação</h2>
+    </div>
+    <div class="grade grade-3">
+      {outros.map((m) => (
+        <a href={`${base}/modelos/${m.slug}`} class="card card-largo">
+          <h3>{m.nome}</h3>
+          <p>{m.resumo}</p>
+          <span class="ver">Abrir cenário →</span>
+        </a>
+      ))}
+    </div>
+    <p class="volta"><a href={base}>← Voltar para a calculadora em branco e a tabela completa de preços</a></p>
+  </section>
+
+  <section class="wrap secao" id="duvidas">
+    <div class="sec-head">
+      <p class="kicker">Dúvidas</p>
+      <h2>Perguntas frequentes</h2>
+    </div>
+    <div class="faq">
+      {faq.map((q) => <details><summary>{q.q}</summary><p>{q.a}</p></details>)}
+    </div>
+    <Selo ferramenta={f} variante="compacto" />
+  </section>
+
+  <section class="wrap secao">
+    <div class="cta">
+      <p class="kicker">Strat Hub</p>
+      <h2>Cada mensagem agora tem preço. Automatize com critério.</h2>
+      <p class="lead">
+        As Masterclasses de N8N e Claude Code ensinam a montar o fluxo de WhatsApp que manda só o que
+        precisa ser mandado — liberadas por inteiro na conta gratuita do Strat Hub.
+      </p>
+      <a href={HUB} data-evento="SignUpIntent" data-evento-local={`modelo-whatsapp-${modelo.slug}`} class="btn btn-primario">{PLANO.chamada}</a>
+    </div>
+  </section>
+</RubikLayout>
+
+<style>
+  .secao-topo { padding-top: var(--s3); }
+  .texto-modelo { max-width: var(--leitura); }
+  .texto-modelo h2 { font-size: var(--t-h3); font-weight: var(--w-semi); margin-top: var(--s5); }
+  .texto-modelo h2:first-child { margin-top: 0; }
+  .texto-modelo p { color: var(--txt-2); margin-top: var(--s2); }
+  .texto-modelo b { color: var(--txt); }
+  .volta { margin-top: var(--s4); font-size: var(--t-peq); }
+  #duvidas :global(.selo-strat) { margin-top: var(--s4); }
+</style>
