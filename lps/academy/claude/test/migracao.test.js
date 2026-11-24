@@ -59,9 +59,17 @@ test('a Clash Grotesk tem reserva com as métricas dela na home, na v1 e na v3 (
   // linhas e empurra o .hero-art quando a fonte troca (CLS 0,177). A reserva calibrada ocupa o mesmo espaço.
   for (const p of ['home', 'v1', 'v3']) {
     const head = ler(`${p}.head.html`);
-    assert.match(head, /--font-display:\s*'Clash Grotesk', 'Clash Grotesk Reserva',/, `${p}: pilha da fonte`);
+    assert.match(head, /--font-display:\s*'Clash Grotesk', 'Clash Grotesk Reserva', 'Clash Grotesk Reserva Android',/, `${p}: pilha da fonte`);
     const faces = head.match(/@font-face\{font-family:'Clash Grotesk Reserva';[^}]+\}/g) || [];
     assert.equal(faces.length, 2, `${p}: reserva 600 e 700`);
     for (const f of faces) assert.match(f, /size-adjust:[\d.]+%;ascent-override:[\d.]+%;descent-override:[\d.]+%;line-gap-override:[\d.]+%/, `${p}: métricas`);
+    // Android: Arial, Liberation e Arimo podem não existir; a segunda reserva é a Roboto Bold calibrada (revisão do
+    // Helbert de 23/11 no WEB-48).
+    const android = head.match(/@font-face\{font-family:'Clash Grotesk Reserva Android';[^}]+\}/g) || [];
+    assert.equal(android.length, 2, `${p}: reserva Android 600 e 700`);
+    for (const f of android) {
+      assert.match(f, /src:local\('Roboto Bold'\),local\('Roboto-Bold'\);/, `${p}: Roboto local`);
+      assert.match(f, /size-adjust:[\d.]+%;ascent-override:[\d.]+%;descent-override:[\d.]+%;line-gap-override:[\d.]+%/, `${p}: métricas Android`);
+    }
   }
 });
