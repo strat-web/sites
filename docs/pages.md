@@ -9,7 +9,7 @@ app. Conta "Strat Academy" (`6258e000cf06b29a9f3fa797f8592171`); mexer só com o
 
 | Projeto | Endereço `.pages.dev` | Comando de build | Saída | Caminho observado (inclui) | Domínio entra no |
 |---|---|---|---|---|---|
-| `agenciastrat` | https://agenciastrat.pages.dev | `pnpm --filter @strat/agenciastrat build` | `apps/agenciastrat/dist` | `apps/agenciastrat/*`, `packages/*`, `catalogo/*`, `functions/*`, `pnpm-lock.yaml`, `package.json`, `pnpm-workspace.yaml`, `.npmrc`, `.nvmrc` | WEB-26 |
+| `agenciastrat` | https://agenciastrat.pages.dev | `pnpm --filter @strat/agenciastrat build` | `apps/agenciastrat/dist` | `apps/agenciastrat/*`, `packages/*`, `catalogo/*`, `functions/*`, `pnpm-lock.yaml`, `package.json`, `pnpm-workspace.yaml`, `.npmrc`, `.nvmrc` | WEB-26 (agenciastrat.com.br e www ligados em 24/11/2026) |
 | `stratai` | https://stratai-ti7.pages.dev | `pnpm --filter @strat/stratai build` | `apps/stratai/dist` | `apps/stratai/*`, `packages/*`, `catalogo/*`, `functions/*`, `pnpm-lock.yaml`, `package.json`, `pnpm-workspace.yaml`, `.npmrc`, `.nvmrc` | WEB-32 |
 | `metricaas` | https://metricaas.pages.dev | `pnpm --filter @strat/metricaas build` | `apps/metricaas/dist` | `apps/metricaas/*`, `packages/*`, `catalogo/*`, `functions/*`, `pnpm-lock.yaml`, `package.json`, `pnpm-workspace.yaml`, `.npmrc`, `.nvmrc` | WEB-36 |
 | `sites-stratacademy` | https://sites-stratacademy.pages.dev | `pnpm --filter @strat/stratacademy build` | `apps/stratacademy/dist` | `apps/stratacademy/*`, `packages/*`, `catalogo/*`, `functions/*`, `pnpm-lock.yaml`, `package.json`, `pnpm-workspace.yaml`, `.npmrc`, `.nvmrc` | WEB-49 |

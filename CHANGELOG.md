@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- docs(dominios): virada da Agência em 24/11: agenciastrat.com.br e www no Pages agenciastrat (WEB-26), agencia.stratai.com.br em 301 por caminho com a query, menos /lp-express/ (WEB-29), bio.stratai.com.br/agencia/ em 301 para /bio/ (WEB-25) e o domínio liberado no MetricaaS strat-marketing (WEB-28); catálogo, dominios.md e pages.md
 - docs(catalogo): stratai-parcerias no ar desde 17/11 e conferida em 19/11, com a observação só sobre a página; home, /raio-x/ e política da StratAI com a hospedagem de hoje (Pages stratai desde a virada de 17/11) no catálogo e em docs/dominios.md (WEB-74)
 - feat(agenciastrat): /bio/ migrada de bio.stratai.com.br/agencia/ (strat-lps, com a correção do WEB-82) sem mudar texto, layout nem tracking: tag do MetricaaS strat-marketing com o PX-001 atrás do banner pelo <Tracking>, banner próprio trocado pelo do kit (mesmo texto e mesma chave), fontes do app no lugar do Google Fonts, links do WhatsApp e das redes escritos no HTML, noindex; Umami passa a ser o da Agência; test/bio.test.js (WEB-25)
 - docs(dominios): virada da LP claude em 23/11 no catálogo, em dominios.md e em pages.md: claude e www.claude no projeto academy-claude do Pages, com a ressalva do LCP e do CLS no Android (WEB-48)
