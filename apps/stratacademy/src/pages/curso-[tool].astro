@@ -1,0 +1,201 @@
+---
+import RubikLayout from '../layouts/RubikLayout.astro';
+import BrandLogo from '../components/BrandLogo.astro';
+import { getCollection } from 'astro:content';
+import { slugifyTag } from '../lib/tags';
+import { SITE } from '../consts';
+import { PLANO, HUB, HUB_INCLUI, CURSOS } from '../data/catalogo';
+import { DETALHES } from '../data/cursos-detalhe';
+import { naListagem } from '@strat/conteudo';
+
+export function getStaticPaths() {
+  return CURSOS.filter((c) => DETALHES[c.slug]).map((c) => ({
+    params: { tool: c.slug },
+    props: { curso: c },
+  }));
+}
+
+const { curso } = Astro.props;
+const d = DETALHES[curso.slug];
+
+// Posts reais da tag — é isso que liga a folha ao cluster do blog.
+const posts = (await getCollection('blog', ({ data }) => naListagem(data)))
+  .filter((p) => p.data.tags.some((t) => slugifyTag(t) === d.tagBlog))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+
+const irmaos = CURSOS.filter((c) => c.grupo === curso.grupo && c.slug !== curso.slug).slice(0, 4);
+const publicados = new Set(Object.keys(DETALHES));
+const url = `/curso-${curso.slug}`;
+const gratis = curso.acesso === 'gratuito';
+const fmt = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+---
+<RubikLayout
+  title={`${d.busca} — ${PLANO.nome} — ${SITE.name}`}
+  description={d.lead}
+  faq={d.faq}
+  breadcrumb={[
+    { name: 'Início', url: '/' },
+    { name: 'Cursos', url: '/cursos/' },
+    { name: curso.nome, url },
+  ]}
+>
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="hero wrap" data-gatilho>
+      <nav class="migalhas rise d1" aria-label="Você está em">
+        <a href="/">Início</a><span>/</span><a href="/cursos/">Cursos</a><span>/</span>{curso.nome}
+      </nav>
+      <div class="hero-duplo">
+        <div>
+          <p class="kicker rise d1">{curso.nome}</p>
+          <h1 class="rise d2">{d.h1}</h1>
+          <p class="lead rise d3">{d.lead}</p>
+          <div class="cta-row rise d4">
+            <a href={HUB} data-evento="SignUpIntent" data-evento-local="curso-[tool]" class="btn btn-primario">{PLANO.chamada}</a>
+            <a href="#o-que-da" class="btn btn-secundario">O que você vai fazer</a>
+          </div>
+          <p class="hero-nota rise d4">
+            {gratis
+              ? 'Trilha liberada na conta gratuita · sem cartão'
+              : `Conta grátis · trilha inclusa em ${PLANO.nome} por ${PLANO.preco}${PLANO.periodo}`}
+          </p>
+        </div>
+        <div class="marca-hero rise d4" aria-hidden="true">
+          <BrandLogo mark={curso.mark} size={96} />
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Para quem é</p>
+      <h2>Quem tira proveito do {curso.nome}</h2>
+    </div>
+    <div class="grade">
+      {d.paraQuem.map((p) => (
+        <div class="card"><h3>{p.title}</h3><p>{p.desc}</p></div>
+      ))}
+    </div>
+    <div class="card card-largo" style="margin-top: var(--s3); max-width: var(--max-texto)">
+      <h3>Quando não é o melhor começo</h3>
+      <p>{d.naoEh}</p>
+    </div>
+  </section>
+
+  <section class="wrap secao" id="o-que-da">
+    <div class="sec-head">
+      <p class="kicker">Na prática</p>
+      <h2>O que você vai conseguir fazer</h2>
+      <p class="lead">
+        As frentes que a trilha de {curso.nome} cobre — cada uma com exercício, material e
+        template dentro do Hub.
+      </p>
+    </div>
+    <div class="grade grade-3">
+      {d.fazer.map((f, i) => (
+        <div class="card">
+          <span class="pill" style="align-self:start">{String(i + 1).padStart(2, '0')}</span>
+          <h3>{f.title}</h3>
+          <p>{f.desc}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">O que vem junto</p>
+      <h2>Não é só a videoaula</h2>
+    </div>
+    <div class="grade">
+      {HUB_INCLUI.slice(0, 4).map((i) => (
+        <div class="card"><h3>{i.title}</h3><p>{i.desc}</p></div>
+      ))}
+    </div>
+  </section>
+
+  {posts.length > 0 && (
+    <section class="wrap secao">
+      <div class="sec-head linha">
+        <div>
+          <p class="kicker">Leia antes de decidir</p>
+          <h2>O que já escrevemos sobre {curso.nome}</h2>
+        </div>
+        <a href="/blog/" class="btn btn-ghost">Ver todos os artigos →</a>
+      </div>
+      <div class="grade grade-3">
+        {posts.map((post) => (
+          <a href={`/blog/${post.id}/`} class="card">
+            <span class="pill" style="align-self:start">{fmt.format(post.data.pubDate)}</span>
+            <h3>{post.data.title}</h3>
+            <p>{post.data.description}</p>
+            <span class="ver">Ler o artigo →</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Dúvidas</p>
+      <h2>Dúvidas sobre a trilha de {curso.nome}</h2>
+    </div>
+    <div class="faq">
+      {d.faq.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Também no Hub</p>
+      <h2>Outras trilhas do mesmo caminho</h2>
+    </div>
+    <div class="grade">
+      {irmaos.map((c) => (
+        <a href={publicados.has(c.slug) ? `/curso-${c.slug}/` : '/cursos/'} class="card">
+          <div class="card-topo">
+            <span class="chip-logo"><BrandLogo mark={c.mark} size={26} /></span>
+            <span class={c.acesso === 'gratuito' ? 'pill pill-acento' : 'pill'}>
+              {c.acesso === 'gratuito' ? 'grátis' : 'assinatura'}
+            </span>
+          </div>
+          <h3>{c.nome}</h3>
+          <p>{c.tagline}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="cta">
+      <p class="kicker">Strat Hub</p>
+      <h2>Comece pelo {curso.nome} hoje.</h2>
+      <p class="lead">
+        A conta é gratuita, não pede cartão e as masterclasses de N8N e Claude Code já entram liberadas.
+      </p>
+      <a href={HUB} data-evento="SignUpIntent" data-evento-local="curso-[tool]" class="btn btn-primario">{PLANO.chamada}</a>
+      <p class="nota">{PLANO.nome} · {PLANO.preco}{PLANO.periodo} quando quiser assinar</p>
+    </div>
+  </section>
+
+  <div class="barra-fixa">
+    <div class="info">
+      <b>{curso.nome}</b>
+      <span>{gratis ? 'Trilha grátis · sem cartão' : `Grátis · ${PLANO.preco}${PLANO.periodo} para assinar`}</span>
+    </div>
+    <a href={HUB} data-evento="SignUpIntent" data-evento-local="curso-[tool]" class="btn btn-primario">{PLANO.chamada}</a>
+  </div>
+</RubikLayout>
+
+<style>
+  .marca-hero {
+    display: grid; place-items: center;
+    background: var(--surf); border-radius: var(--raio-g);
+    box-shadow: var(--sombra-card); padding: var(--s5);
+    animation: flutuar 7s var(--ease) infinite;
+  }
+  @media (max-width: 980px) { .marca-hero { display: none; } }
+</style>

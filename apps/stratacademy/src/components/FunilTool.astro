@@ -1,0 +1,657 @@
+---
+// A ferramenta — UM BLOCO da página, nunca a página inteira.
+//
+// Tudo aqui é renderizado no build: as etapas, os números, as taxas e o gargalo
+// saem prontos no HTML. GPTBot, ClaudeBot e PerplexityBot não executam JS, e
+// quem chega sem JS também usa o bloco como tabela.
+//
+// A interatividade vive em src/scripts/funil.ts e entra por cima disto: ela
+// reaproveita este markup em vez de substituí-lo. Sem o script, o que está aqui
+// continua sendo uma tabela correta e legível — não um esqueleto vazio.
+import { calcularFunil, fmtNum, fmtReal, fmtTaxa, type EntradaEtapa } from '../lib/funil';
+import { diagnosticar } from '../lib/funil-diagnostico';
+import { REFERENCIA_MODELOS } from '../lib/funil-referencia';
+import { PLANO, HUB } from '../data/catalogo';
+import { ENDPOINT_LEAD } from '../lib/captacao';
+
+interface Props {
+  /** Etapas iniciais já preenchidas. */
+  etapas: EntradaEtapa[];
+  ticket: number;
+  /** Título do bloco. A folha usa h2; as páginas de modelo usam h2 também. */
+  titulo?: string;
+  /** Texto curto acima do quadro. */
+  intro?: string;
+  /** Onde o evento de uso é registrado. */
+  local?: string;
+}
+
+const {
+  etapas,
+  ticket,
+  titulo = 'Monte o seu funil',
+  intro = 'Os campos já vêm com um exemplo. Troque pelos seus números — o cálculo é refeito na hora, dentro do seu navegador.',
+  local = 'funil',
+} = Astro.props;
+
+const funil = calcularFunil(etapas, ticket);
+const diag = diagnosticar(etapas, ticket, REFERENCIA_MODELOS);
+// As faixas viajam no JSON junto do estado: são 8 números, e evitam que o script
+// precise importar (e embarcar) os modelos inteiros só para recalcular o texto.
+const dados = JSON.stringify({ etapas, ticket, referencia: REFERENCIA_MODELOS });
+
+// O destino é uma rota do próprio site (`/api/lead`, uma Pages Function), então
+// não há mais variável de ambiente que possa faltar no cliente. Se a Function
+// não estiver publicada, o envio falha em runtime e o relatório é revelado
+// assim mesmo — a pessoa não fica sem o que veio buscar.
+const temCaptura = !!ENDPOINT_LEAD;
+---
+
+<div class="ferramenta" data-funil data-local={local}>
+  <div class="ferramenta-head">
+    <h2 id="ferramenta">{titulo}</h2>
+    <p class="lead">{intro}</p>
+  </div>
+
+  <div class="ferramenta-corpo">
+    <!-- Entrada: um campo por etapa. Sem JS, continua sendo uma lista legível. -->
+    <form class="funil-form" data-funil-form>
+      <p class="funil-rotulo">Etapas do funil</p>
+
+      <ol class="funil-campos" data-funil-campos>
+        {funil.etapas.map((e, i) => (
+          <li class="funil-campo">
+            <label>
+              <span class="funil-campo-nome">
+                <input
+                  type="text"
+                  name={`nome-${i}`}
+                  value={e.nome}
+                  data-funil-nome
+                  aria-label={`Nome da etapa ${i + 1}`}
+                />
+              </span>
+              <input
+                type="number"
+                name={`valor-${i}`}
+                value={e.valor}
+                min="0"
+                step="1"
+                inputmode="numeric"
+                data-funil-valor
+                aria-label={`Quantidade em ${e.nome}`}
+              />
+            </label>
+            {e.nota && <p class="funil-campo-nota">{e.nota}</p>}
+          </li>
+        ))}
+      </ol>
+
+      <div class="funil-ticket">
+        <label>
+          <span>Ticket médio</span>
+          <input
+            type="number"
+            name="ticket"
+            value={ticket}
+            min="0"
+            step="1"
+            inputmode="numeric"
+            data-funil-ticket
+          />
+        </label>
+        <p class="funil-campo-nota">Quanto entra, em média, por cliente fechado. Usado para calcular quanto vale um ponto percentual.</p>
+      </div>
+
+      <div class="funil-acoes" data-funil-acoes hidden>
+        <!-- Preenchido pelo script: adicionar etapa, exportar PNG/CSV/JSON, copiar link. -->
+      </div>
+    </form>
+
+    <!-- Saída: o funil desenhado + a leitura dos números. -->
+    <div class="funil-saida">
+      <ol class="funil-barras" data-funil-barras>
+        {funil.etapas.map((e) => (
+          <li class:list={['funil-barra', e.gargalo && 'e-gargalo']}>
+            <div class="funil-barra-topo">
+              <span class="funil-barra-nome">{e.nome}</span>
+              <span class="funil-barra-valor">{fmtNum(e.valor)}</span>
+            </div>
+            <div class="funil-barra-trilho">
+              <div class="funil-barra-preenche" style={`width:${e.largura}%`}></div>
+            </div>
+            <p class="funil-barra-taxa">
+              {e.taxaPassagem === null ? (
+                <span>topo do funil · 100% da base</span>
+              ) : (
+                <>
+                  <b>{fmtTaxa(e.taxaPassagem)}</b> da etapa anterior
+                  <span class="funil-sep">·</span>
+                  {fmtTaxa(e.taxaAcumulada)} do topo
+                  <span class="funil-sep">·</span>
+                  perdeu {fmtNum(e.perda ?? 0)}
+                  {e.gargalo && <span class="funil-selo">gargalo</span>}
+                </>
+              )}
+            </p>
+          </li>
+        ))}
+      </ol>
+
+      <dl class="funil-leitura" data-funil-leitura>
+        <div>
+          <dt>Conversão geral</dt>
+          <dd>{fmtTaxa(funil.taxaGeral)}</dd>
+          <p>Do topo até a venda.</p>
+        </div>
+        <div>
+          <dt>Gargalo</dt>
+          <dd>{funil.gargalo ? funil.gargalo.nome : '—'}</dd>
+          <p>{funil.gargalo ? `A pior passagem, com ${fmtTaxa(funil.gargalo.taxaPassagem ?? 0)}. É onde está o dinheiro.` : 'Preencha ao menos duas etapas.'}</p>
+        </div>
+        <div>
+          <dt>Receita do funil</dt>
+          <dd>{fmtReal(funil.receita)}</dd>
+          <p>Clientes × ticket médio, no período medido.</p>
+        </div>
+        <div>
+          <dt>Vale 1 ponto no gargalo</dt>
+          <dd>{fmtReal(funil.ganhoPorPonto)}</dd>
+          <p>Quanto entra a mais se a taxa do gargalo subir um ponto percentual.</p>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <!-- O relatório: renderizado no BUILD e escondido. Não é um segundo desenho dos
+       mesmos números — é a leitura escrita de cada passagem. Fica no HTML porque
+       os bots leem sem JS, e porque revelar é só tirar um atributo. -->
+  <div class="funil-relatorio" data-funil-relatorio hidden>
+    <div class="relatorio-head">
+      <p class="kicker">Diagnóstico do funil</p>
+      <h3>O que estes números dizem</h3>
+      <p class="lead" data-relatorio-resumo>{diag.resumo}</p>
+    </div>
+
+    <div data-relatorio-inconsistencia hidden={!diag.inconsistencia}>
+      {diag.inconsistencia && <p class="relatorio-alerta">{diag.inconsistencia}</p>}
+    </div>
+
+    <ol class="relatorio-lista" data-relatorio-lista>
+      {diag.passagens.map((p) => (
+        <li class:list={['relatorio-item', p.gargalo && 'e-gargalo']}>
+          <div class="relatorio-item-topo">
+            <h4>{p.de} → {p.nome}</h4>
+            <span class:list={['relatorio-pos', `pos-${p.posicao}`]}>
+              {fmtTaxa(p.taxa)} · {p.posicao === 'dentro' ? 'na faixa' : p.posicao === 'acima' ? 'acima da faixa' : 'abaixo da faixa'}
+            </span>
+          </div>
+          <p>{p.significado}</p>
+          <p class="relatorio-olhar"><b>Onde olhar primeiro:</b> {p.ondeOlhar}</p>
+        </li>
+      ))}
+    </ol>
+
+    <div class="relatorio-gargalo" data-relatorio-gargalo>
+      {diag.gargalo && (
+        <>
+          <p class="kicker">O gargalo</p>
+          <h4>{diag.gargalo.de} → {diag.gargalo.nome}</h4>
+          <p>{diag.gargalo.texto}</p>
+        </>
+      )}
+    </div>
+
+    <p class="relatorio-fonte">
+      As faixas de referência vêm dos quatro modelos desta central (e-commerce, serviços B2B,
+      infoproduto e SaaS) — não são média de setor, que é um número que ninguém tem de forma
+      honesta. Servem para dizer se a sua taxa está dentro do que esses quatro tipos de negócio
+      mostram naquela altura do funil.
+    </p>
+
+    <!-- O CTA vem DEPOIS do relatório e liga o que a pessoa acabou de descobrir
+         ao que ela pode aprender. Fora daqui viraria banner solto. -->
+    <div class="relatorio-cta">
+      <h4>Achou o gargalo. O próximo passo é automatizar o que sobrou.</h4>
+      <p>
+        Diagnóstico é metade. A outra é montar o fluxo que resolve — e é isso que as Masterclasses
+        de N8N e Claude Code ensinam, liberadas por inteiro na conta gratuita do Strat Hub.
+      </p>
+      <a href={HUB} data-evento="SignUpIntent" data-evento-local={`relatorio-${local}`} class="btn btn-primario">
+        {PLANO.chamada}
+      </a>
+      <span class="relatorio-cta-nota">Sem cartão · {PLANO.nome} por {PLANO.preco}{PLANO.periodo} quando quiser</span>
+    </div>
+  </div>
+
+  <!-- A captura. Fica DEPOIS da ferramenta funcionando inteira de propósito:
+         calcular, editar, copiar link e baixar a imagem seguem livres. Os dados
+         compram uma coisa só — o relatório escrito acima. -->
+  {temCaptura && (
+    <div class="funil-captura" data-funil-captura hidden>
+      <button
+        type="button"
+        class="btn btn-primario"
+        data-funil-pedir
+        data-evento="relatorio_solicitado"
+        data-evento-local={local}
+      >
+        Receber o diagnóstico completo
+      </button>
+      <p class="captura-nota">
+        A leitura escrita de cada passagem do seu funil, o gargalo e quanto vale um ponto
+        percentual nele. Aparece aqui na tela assim que você enviar. Você também entra na
+        lista da Strat, e sai quando quiser.
+      </p>
+    </div>
+  )}
+
+  <!-- O popup só abre pelo clique no botão acima — nunca sozinho, nunca por
+         tempo ou por intenção de saída. Sem JavaScript ele é inerte: nasce
+         `hidden`, e quem o revela é o script. -->
+  {temCaptura && (
+    <div class="funil-popup" data-funil-popup hidden>
+      <div class="funil-popup-fundo" data-funil-popup-fundo></div>
+      <div
+        class="funil-popup-caixa"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={`popup-titulo-${local}`}
+        aria-describedby={`popup-texto-${local}`}
+      >
+        <button type="button" class="funil-popup-fechar" data-funil-popup-fechar aria-label="Fechar">
+          &times;
+        </button>
+
+        <p class="kicker">Diagnóstico do funil</p>
+        <h3 id={`popup-titulo-${local}`}>Para onde mandamos o seu diagnóstico?</h3>
+        <p class="popup-texto" id={`popup-texto-${local}`}>
+          Você recebe a leitura escrita de cada passagem do seu funil, o gargalo apontado e quanto
+          vale um ponto percentual nele. <b>Aparece aqui na tela assim que você enviar.</b> Você
+          também entra na lista da Strat — mandamos o que a gente aprende sobre funil e automação.
+          Sai quando quiser, com um clique no rodapé de qualquer mensagem, e não repassamos o seu
+          contato para ninguém.
+        </p>
+
+        <form class="popup-form" data-funil-form-lead>
+          <div class="popup-campo">
+            <label for={`funil-nome-${local}`}>Nome</label>
+            <input
+              id={`funil-nome-${local}`}
+              type="text"
+              name="nome"
+              required
+              maxlength="80"
+              autocomplete="given-name"
+              placeholder="Como te chamamos"
+              data-funil-nome-lead
+            />
+          </div>
+
+          <div class="popup-campo">
+            <label for={`funil-tel-${local}`}>
+              Telefone <span class="popup-opcional">opcional</span>
+            </label>
+            <input
+              id={`funil-tel-${local}`}
+              type="tel"
+              name="telefone"
+              inputmode="tel"
+              autocomplete="tel"
+              placeholder="(11) 91234-5678"
+              maxlength="15"
+              data-funil-telefone
+            />
+          </div>
+
+          <div class="popup-campo">
+            <label for={`funil-email-${local}`}>E-mail</label>
+            <input
+              id={`funil-email-${local}`}
+              type="email"
+              name="email"
+              required
+              autocomplete="email"
+              placeholder="seu@email.com"
+              data-funil-email
+            />
+          </div>
+
+          <!-- Ponto de montagem do Turnstile. Nasce vazio: o script da
+               Cloudflare só é baixado quando o popup abre, nunca no
+               carregamento da página. Em `interaction-only` ele fica
+               invisível e só aparece se o desafio precisar de um humano —
+               por isso o contêiner não reserva altura. -->
+          <div class="popup-turnstile" data-funil-turnstile></div>
+
+          <button type="submit" class="btn btn-primario">Ver o diagnóstico</button>
+          <p class="captura-aviso" data-funil-aviso role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+  )}
+
+  <p class="ferramenta-rodape">
+    O cálculo roda no seu navegador: enquanto você edita o funil, nada é enviado para nós. Se
+    você pedir o diagnóstico por e-mail, aí os seus números vão junto com o contato — é o que
+    permite escrever a leitura e enviar. O que fazemos com eles está na
+    <a href="/politica-de-privacidade/">política de privacidade</a>.
+  </p>
+
+  <!-- Estado inicial para o script reidratar sem reparsear o DOM. -->
+  <script type="application/json" data-funil-dados set:html={dados} />
+</div>
+
+<!-- Astro compila e serve isto como <script type="module"> com hash no nome.
+     Sem `is:inline` de propósito: assim o módulo importa lib/funil.ts e usa a
+     MESMA função de cálculo que este componente usou no build. -->
+<script>
+  import '../scripts/funil';
+</script>
+
+<!-- `is:global` NÃO é preguiça: o script re-renderiza [data-funil-barras],
+     [data-funil-leitura] e [data-funil-campos] com innerHTML, e elemento criado
+     em runtime não carrega o atributo data-astro-cid que o Astro usa para
+     escopar. Com estilo escopado, o bloco inteiro perderia o visual no primeiro
+     caractere digitado. Todos os seletores abaixo já são exclusivos deste
+     componente (.ferramenta / .funil-*), então não há vazamento. -->
+<style is:global>
+  .ferramenta {
+    background: var(--surf);
+    border-radius: var(--raio-g);
+    box-shadow: var(--sombra-cta);
+    padding: var(--s5);
+  }
+  .ferramenta-head h2 { font-size: var(--t-h2); font-weight: var(--w-semi); letter-spacing: var(--tr-h2); }
+  .ferramenta-head .lead { margin-top: var(--s2); }
+  .ferramenta-corpo {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--s5);
+    margin-top: var(--s4);
+    align-items: start;
+  }
+
+  .funil-rotulo {
+    font-size: var(--t-meta);
+    font-weight: var(--w-semi);
+    color: var(--txt-2);
+    margin-bottom: var(--s2);
+  }
+  .funil-campos { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s2); }
+  .funil-campo label { display: flex; gap: var(--s2); align-items: center; }
+  .funil-campo-nome { flex: 1; min-width: 0; }
+  .funil-campo input {
+    font: inherit;
+    color: var(--txt);
+    background: var(--bg);
+    border: 1px solid var(--linha);
+    border-radius: var(--raio-p);
+    padding: .55rem .7rem;
+    width: 100%;
+  }
+  .funil-campo input[type='number'] { width: 7.5rem; flex: none; text-align: right; font-variant-numeric: tabular-nums; }
+  .funil-campo input:focus-visible { outline: 2px solid var(--acento); outline-offset: 1px; }
+  .funil-campo-nota { font-size: var(--t-meta); color: var(--txt-2); margin-top: .3rem; }
+
+  .funil-ticket { margin-top: var(--s3); padding-top: var(--s3); border-top: 1px solid var(--linha); }
+  .funil-ticket label { display: flex; gap: var(--s2); align-items: center; justify-content: space-between; }
+  .funil-ticket span { font-weight: var(--w-semi); font-size: var(--t-peq); }
+  .funil-ticket input {
+    font: inherit; color: var(--txt); background: var(--bg);
+    border: 1px solid var(--linha); border-radius: var(--raio-p);
+    padding: .55rem .7rem; width: 7.5rem; text-align: right; font-variant-numeric: tabular-nums;
+  }
+  .funil-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); margin-top: var(--s3); }
+  /* Sem isto o `display:flex` acima venceria o [hidden] do navegador e a área
+     de botões ocuparia espaço mesmo com o JavaScript desligado. */
+  .funil-acoes[hidden] { display: none; }
+  .funil-acoes .btn { min-height: 2.4rem; padding-inline: var(--s3); font-size: var(--t-peq); }
+  .funil-acoes .btn:disabled { opacity: .45; cursor: not-allowed; }
+
+  .funil-salvo {
+    font-size: var(--t-meta); color: var(--txt-2);
+    display: inline-flex; align-items: center; gap: .35rem;
+  }
+  .funil-salvo::before {
+    content: ''; width: .4rem; height: .4rem; border-radius: 50%;
+    background: var(--ok, #2f855a); flex: none;
+  }
+
+  .funil-remover {
+    flex: none; width: 1.9rem; height: 1.9rem;
+    border: 1px solid var(--linha); border-radius: var(--raio-p);
+    background: transparent; color: var(--txt-2);
+    font-size: 1.1rem; line-height: 1; cursor: pointer;
+    transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+  }
+  .funil-remover:hover { color: var(--acento); border-color: var(--acento); }
+  .funil-remover:focus-visible { outline: 2px solid var(--acento); outline-offset: 1px; }
+
+  .funil-barras { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s3); }
+  .funil-barra-topo { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s2); }
+  .funil-barra-nome { font-weight: var(--w-semi); font-size: var(--t-peq); }
+  .funil-barra-valor { font-variant-numeric: tabular-nums; font-weight: var(--w-bold); }
+  .funil-barra-trilho {
+    background: var(--bg); border-radius: var(--raio-p);
+    height: .75rem; margin-top: .4rem; overflow: hidden;
+  }
+  .funil-barra-preenche {
+    height: 100%; background: var(--acento); opacity: .55;
+    border-radius: var(--raio-p);
+  }
+  .funil-barra.e-gargalo .funil-barra-preenche { opacity: 1; }
+  .funil-barra-taxa { font-size: var(--t-meta); color: var(--txt-2); margin-top: .4rem; }
+  .funil-barra-taxa b { color: var(--txt); }
+  .funil-sep { margin-inline: .4rem; opacity: .5; }
+  .funil-selo {
+    display: inline-block; margin-left: .5rem;
+    background: var(--acento); color: #fff;
+    font-size: .68rem; font-weight: var(--w-bold);
+    padding: .1rem .45rem; border-radius: 999px;
+    text-transform: uppercase; letter-spacing: .04em;
+  }
+
+  .funil-leitura {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s3); margin: var(--s4) 0 0;
+    padding-top: var(--s3); border-top: 1px solid var(--linha);
+  }
+  .funil-leitura dt { font-size: var(--t-meta); color: var(--txt-2); font-weight: var(--w-semi); }
+  .funil-leitura dd {
+    margin: .2rem 0 0; font-size: var(--t-h3);
+    font-weight: var(--w-bold); font-variant-numeric: tabular-nums;
+  }
+  .funil-leitura p { font-size: var(--t-meta); color: var(--txt-2); margin-top: .2rem; }
+
+  .ferramenta-rodape {
+    font-size: var(--t-meta); color: var(--txt-2);
+    margin-top: var(--s4); padding-top: var(--s3);
+    border-top: 1px solid var(--linha);
+  }
+
+  /* ---------- Relatório escrito ---------- */
+  .funil-relatorio {
+    margin-top: var(--s5); padding-top: var(--s4);
+    border-top: 1px solid var(--linha);
+  }
+  .funil-relatorio[hidden] { display: none; }
+  .relatorio-head h3 { font-size: var(--t-h3); font-weight: var(--w-semi); margin-top: .2rem; }
+  .relatorio-head .lead { margin-top: var(--s2); }
+
+  .relatorio-alerta {
+    background: var(--bg-2); border-left: 3px solid var(--acento);
+    padding: var(--s3); border-radius: var(--raio-p);
+    font-size: var(--t-peq); color: var(--txt); margin-top: var(--s3);
+  }
+
+  .relatorio-lista { list-style: none; margin: var(--s4) 0 0; padding: 0; display: grid; gap: var(--s3); }
+  .relatorio-item {
+    background: var(--bg); border-radius: var(--raio-p);
+    padding: var(--s3); border: 1px solid var(--linha);
+  }
+  .relatorio-item.e-gargalo { border-color: var(--acento); }
+  .relatorio-item-topo {
+    display: flex; flex-wrap: wrap; gap: var(--s2);
+    align-items: baseline; justify-content: space-between;
+  }
+  .relatorio-item h4 { font-size: var(--t-peq); font-weight: var(--w-semi); }
+  .relatorio-item p { font-size: var(--t-peq); color: var(--txt-2); margin-top: var(--s2); }
+  .relatorio-olhar b { color: var(--txt); }
+  .relatorio-pos { font-size: var(--t-meta); font-weight: var(--w-semi); white-space: nowrap; }
+  .relatorio-pos.pos-dentro { color: var(--txt-2); }
+  .relatorio-pos.pos-abaixo { color: var(--acento); }
+  .relatorio-pos.pos-acima { color: var(--ok, #2f855a); }
+
+  .relatorio-gargalo {
+    margin-top: var(--s4); padding: var(--s4);
+    background: var(--bg-2); border-radius: var(--raio-p);
+  }
+  .relatorio-gargalo h4 { font-size: var(--t-h4); font-weight: var(--w-semi); margin: .2rem 0 var(--s2); }
+  .relatorio-gargalo p { color: var(--txt-2); font-size: var(--t-peq); }
+  .relatorio-fonte { font-size: var(--t-meta); color: var(--txt-2); margin-top: var(--s3); }
+
+  .relatorio-cta {
+    margin-top: var(--s4); padding-top: var(--s4);
+    border-top: 1px solid var(--linha);
+    display: grid; gap: var(--s2); justify-items: start;
+  }
+  .relatorio-cta h4 { font-size: var(--t-h4); font-weight: var(--w-semi); }
+  .relatorio-cta p { color: var(--txt-2); font-size: var(--t-peq); max-width: var(--leitura); }
+  .relatorio-cta-nota { font-size: var(--t-meta); color: var(--txt-2); }
+
+  /* ---------- Captura ---------- */
+  .funil-captura {
+    margin-top: var(--s4); padding-top: var(--s4);
+    border-top: 1px solid var(--linha);
+    display: grid; gap: var(--s2); justify-items: start;
+  }
+  .funil-captura[hidden] { display: none; }
+  .captura-nota { font-size: var(--t-meta); color: var(--txt-2); max-width: 62ch; }
+
+  /* ---------- Popup ---------- */
+  .funil-popup {
+    position: fixed; inset: 0; z-index: 100;
+    display: grid; place-items: center; padding: var(--s3);
+  }
+  .funil-popup[hidden] { display: none; }
+  .funil-popup-fundo { position: absolute; inset: 0; background: rgba(15, 17, 21, .55); }
+  .funil-popup-caixa {
+    position: relative; z-index: 1;
+    width: min(30rem, 100%); max-height: 90vh; overflow-y: auto;
+    background: var(--surf); border-radius: var(--raio-g);
+    box-shadow: var(--sombra-flutuante); padding: var(--s5);
+  }
+  .funil-popup-caixa h3 { font-size: var(--t-h3); font-weight: var(--w-semi); margin-top: .2rem; }
+  .popup-texto { color: var(--txt-2); font-size: var(--t-peq); margin-top: var(--s2); }
+  .popup-texto b { color: var(--txt); }
+
+  .funil-popup-fechar {
+    position: absolute; top: var(--s3); right: var(--s3);
+    width: 2rem; height: 2rem; border: 0; background: transparent;
+    color: var(--txt-2); font-size: 1.5rem; line-height: 1; cursor: pointer;
+    border-radius: var(--raio-p);
+  }
+  .funil-popup-fechar:hover { color: var(--txt); background: var(--bg-2); }
+  .funil-popup-fechar:focus-visible { outline: 2px solid var(--acento); outline-offset: 1px; }
+
+  .popup-form { display: grid; gap: var(--s3); margin-top: var(--s4); }
+  .popup-campo { display: grid; gap: .35rem; }
+  .popup-campo label { font-size: var(--t-meta); font-weight: var(--w-semi); color: var(--txt); }
+  .popup-opcional {
+    font-weight: var(--w-regular); color: var(--txt-2);
+    font-size: .95em; margin-left: .2rem;
+  }
+  .popup-campo input {
+    font: inherit; color: var(--txt); background: var(--bg);
+    border: 1px solid var(--linha); border-radius: var(--raio-p);
+    padding: .6rem .8rem; width: 100%;
+  }
+  .popup-campo input:focus-visible { outline: 2px solid var(--acento); outline-offset: 1px; }
+  .popup-campo input[aria-invalid='true'] { border-color: var(--erro, #c53030); }
+  .popup-form[aria-busy='true'] { opacity: .6; pointer-events: none; }
+
+  /* Sem altura fixa: vazio ele não ocupa espaço, e quando o desafio aparece
+     o layout cresce sozinho em vez de deixar um buraco no formulário. */
+  .popup-turnstile:empty { display: none; }
+  .popup-turnstile { display: flex; justify-content: center; }
+
+  .captura-aviso { font-size: var(--t-meta); color: var(--txt-2); }
+  .captura-aviso.e-erro { color: var(--erro, #c53030); }
+  .captura-aviso.e-ok { color: var(--ok, #2f855a); }
+
+
+  @media (max-width: 900px) {
+    .ferramenta-corpo { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .ferramenta { padding: var(--s4) var(--s3); }
+    .funil-leitura { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  /* ============================================================
+     IMPRESSÃO — a página vira um relatório de uma folha.
+     Sem biblioteca de PDF: o navegador já sabe gerar um, e jsPDF pesaria
+     dez vezes o JavaScript inteiro da ferramenta.
+     ============================================================ */
+  @media print {
+    /* Fora tudo que não é o relatório. */
+    .cabecalho, .rodape, .barra-fixa, .menu-movel, .aura, .pular,
+    .funil-form, .funil-acoes, .funil-captura, .funil-popup, .relatorio-cta,
+    .migalhas, .cta, .faq,
+    /* O banner de LGPD é #strat-consent (Tailwind). Antes estava escrito
+       `.consent-banner`, classe que não existe — ele entrava no PDF. */
+    #strat-consent { display: none !important; }
+
+    /* Só o bloco da ferramenta sobrevive na página da folha. */
+    body > * { display: none !important; }
+    body > main { display: block !important; }
+    main > *:not(.secao-topo):not(.topo) { display: none !important; }
+    .topo > .hero { display: block !important; }
+    .topo > .hero > *:not(h1) { display: none !important; }
+
+    /* O relatório é revelado na impressão mesmo que não tenha sido pedido —
+       quem imprime está pedindo o documento. */
+    .funil-relatorio, .funil-relatorio[hidden] { display: block !important; }
+
+    @page { size: A4; margin: 14mm; }
+
+    html, body { background: #fff !important; color: #000 !important; }
+    .ferramenta {
+      box-shadow: none !important; padding: 0 !important;
+      background: #fff !important; border-radius: 0 !important;
+    }
+    .ferramenta-corpo { display: block !important; }
+    .funil-saida { margin-top: 6mm; }
+
+    /* Cabeçalho de marca, só na impressão. */
+    .ferramenta-head::before {
+      content: 'Strat Academy · Calculadora de funil de vendas';
+      display: block; font-size: 9pt; font-weight: 700;
+      letter-spacing: .04em; text-transform: uppercase;
+      border-bottom: 1pt solid #000; padding-bottom: 2mm; margin-bottom: 4mm;
+    }
+    /* Endereço da ferramenta no rodapé do documento. */
+    .funil-relatorio::after {
+      content: 'stratacademy.com.br/ferramentas/calculadora-de-funil-de-vendas';
+      display: block; margin-top: 6mm; padding-top: 2mm;
+      border-top: 1pt solid #999; font-size: 8.5pt; color: #444;
+    }
+
+    /* Tinta: barra vira contorno, nada de fundo chapado. */
+    .funil-barra-trilho { border: .5pt solid #999; background: #fff !important; height: 4mm; }
+    .funil-barra-preenche { background: #999 !important; opacity: 1 !important; }
+    .funil-barra.e-gargalo .funil-barra-preenche { background: #000 !important; }
+    .funil-selo { background: #000 !important; color: #fff !important; }
+    .relatorio-item, .relatorio-gargalo {
+      background: #fff !important; border: .5pt solid #bbb;
+      break-inside: avoid; page-break-inside: avoid;
+    }
+    .relatorio-item.e-gargalo { border: 1.5pt solid #000; }
+    .funil-leitura { border-top: .5pt solid #999; }
+    h1 { font-size: 16pt !important; }
+    h3, h4 { font-size: 11pt !important; }
+    p, li, dd, dt { font-size: 9.5pt !important; color: #000 !important; }
+    a { text-decoration: none !important; color: #000 !important; }
+  }
+</style>

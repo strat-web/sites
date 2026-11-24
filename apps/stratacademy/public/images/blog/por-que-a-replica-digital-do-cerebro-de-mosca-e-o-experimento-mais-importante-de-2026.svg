@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" role="img" aria-hidden="true">
+  <defs>
+    <radialGradient id="aura" cx="78%" cy="0%" r="82%">
+      <stop offset="0%" stop-color="#D97A4A" stop-opacity=".16"/>
+      <stop offset="64%" stop-color="#D97A4A" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="quadro"><rect width="1200" height="675"/></clipPath>
+  </defs>
+  <g clip-path="url(#quadro)">
+    <rect width="1200" height="675" fill="#F5F3EE"/>
+    <rect width="1200" height="675" fill="url(#aura)"/>
+    
+      <g stroke="#D97A4A" stroke-opacity=".6" stroke-width="8" fill="none" stroke-linecap="round">
+        <path d="M170 318 C 295 318, 295 467, 420 467"/><path d="M420 467 C 540 467, 540 336, 660 336"/><path d="M660 336 C 780 336, 780 205, 900 205"/><path d="M900 205 C 980 205, 980 354, 1060 354"/>
+      </g>
+      <circle cx="170" cy="318" r="30" fill="#FFFFFF" stroke="#D97A4A" stroke-width="6"/><circle cx="420" cy="467" r="30" fill="#FFFFFF" stroke="#D97A4A" stroke-width="6"/><circle cx="660" cy="336" r="54" fill="#A8572E" stroke="#A8572E" stroke-width="6"/><circle cx="900" cy="205" r="30" fill="#FFFFFF" stroke="#D97A4A" stroke-width="6"/><circle cx="1060" cy="354" r="30" fill="#FFFFFF" stroke="#D97A4A" stroke-width="6"/>
+  </g>
+</svg>

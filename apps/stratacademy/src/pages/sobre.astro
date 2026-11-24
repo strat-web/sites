@@ -1,0 +1,138 @@
+---
+import RubikLayout from '../layouts/RubikLayout.astro';
+import { SITE } from '../consts';
+import { PLANO, HUB } from '../data/catalogo';
+
+const pilares = [
+  { title: 'Educação aplicada', desc: 'Trilhas que vão do zero ao projeto rodando — sem teoria solta.' },
+  { title: 'Automação real', desc: 'N8N, integrações e fluxos que ajudam a devolver horas e escalar a operação.' },
+  { title: 'IA no dia a dia', desc: 'Como usar LLMs e agentes para produzir mais, com método.' },
+  { title: 'Comunidade', desc: 'Uma rede de profissionais que aprende e implementa junto.' },
+];
+
+const stats = [
+  { number: '+800', label: 'alunos' },
+  { number: '50+', label: 'aulas' },
+  { number: '3.000+', label: 'prompts' },
+  { number: '5', label: 'nota (estrelas)' },
+];
+
+const metodologia = [
+  { title: 'Answer-first', desc: 'Vamos direto ao que resolve. Cada aula abre com a resposta prática antes da teoria.' },
+  { title: 'Mão na massa', desc: 'Você aprende construindo: fluxos, prompts e integrações no seu próprio contexto.' },
+  { title: 'Comunidade', desc: 'Uma rede que compartilha implementações reais e destrava quem está começando.' },
+  { title: 'Suporte', desc: 'Dúvidas respondidas para você não travar no meio de um projeto.' },
+];
+
+const paraQuem = [
+  { title: 'Profissionais', desc: 'Quem quer economizar tempo, entregar mais e se posicionar como referência em IA e automação na sua área.' },
+  { title: 'Donos de negócio', desc: 'Quem precisa escalar a operação sem inchar a estrutura, usando automação e N8N como alavanca.' },
+  { title: 'Times', desc: 'Equipes que querem padronizar processos com IA e transformar tarefas repetitivas em fluxos automáticos.' },
+];
+
+const faqs = [
+  { q: 'Preciso saber programar para começar?', a: 'Não. O método é pensado para levar você do zero ao primeiro projeto rodando. Ferramentas como N8N e agentes de IA são low-code, e as aulas explicam cada passo com prática.' },
+  { q: 'O que é aprender "answer-first"?', a: 'É começar pela resposta prática: primeiro você vê o resultado e como chegar nele, depois entende a teoria por trás. Isso encurta o caminho entre assistir e implementar.' },
+  { q: 'A IA vai fazer o trabalho no meu lugar?', a: 'IA e automação são ferramentas que ajudam a ganhar tempo e escalar, mas não substituem seu julgamento. Ensinamos a usar essas ferramentas com método para que você produza mais e melhor.' },
+  { q: 'Como começo do jeito mais leve?', a: 'Criando a conta gratuita no Strat Hub: as Masterclasses de N8N e de Claude Code entram liberadas na hora, completas e sem cartão. Se quiser o catálogo inteiro, aí sim existe a assinatura.' },
+  { q: 'Quem está por trás da Strat Academy?', a: 'A Strat Academy é fundada por Helbert Paranhos, engenheiro de automação e dono de uma agência de IA. O conteúdo nasce de projetos reais de automação e uso de IA em negócios.' },
+];
+---
+<RubikLayout
+  title={`Sobre a ${SITE.name} — quem somos e como ensinamos`}
+  description="A Strat Academy ensina IA, automação e N8N aplicados a negócios reais. Método answer-first, mão na massa e comunidade."
+  faq={faqs}
+  breadcrumb={[{ name: 'Início', url: '/' }, { name: 'Sobre', url: '/sobre/' }]}
+>
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="hero wrap">
+      <p class="kicker rise d1">Sobre</p>
+      <h1 class="rise d2">Tecnologia que liberta tempo e escala resultado</h1>
+      <p class="lead rise d3">
+        A gente ensina IA, automação e N8N aplicados a negócio de verdade. O conteúdo nasce
+        de projetos reais — não de aula gravada sobre teoria que ninguém usa.
+      </p>
+      <div class="cta-row rise d4">
+        <a href={HUB} data-evento="SignUpIntent" data-evento-local="sobre" class="btn btn-primario">{PLANO.chamada}</a>
+        <a href="/cursos/" class="btn btn-secundario">Ver as trilhas</a>
+      </div>
+    </section>
+  </div>
+
+  <section class="wrap">
+    <div class="numeros">
+      {stats.map((s) => <div><b>{s.number}</b><span>{s.label}</span></div>)}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">O que sustenta</p>
+      <h2>Quatro pilares que sustentam tudo o que ensinamos</h2>
+    </div>
+    <div class="grade">
+      {pilares.map((p) => <div class="card"><h3>{p.title}</h3><p>{p.desc}</p></div>)}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Método</p>
+      <h2>O caminho entre a ferramenta e o resultado é mais curto do que parece</h2>
+    </div>
+    <div class="grade">
+      {metodologia.map((m) => <div class="card"><h3>{m.title}</h3><p>{m.desc}</p></div>)}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Quem conduz</p>
+      <h2>Helbert Paranhos</h2>
+    </div>
+    <div class="card card-largo" style="max-width: var(--max-texto)">
+      <p>
+        Engenheiro de automação, fundador da Strat Academy e dono de uma agência de IA.
+        O que é ensinado aqui é o que roda na operação: fluxos de N8N em produção, agentes
+        atendendo cliente e projetos entregues para empresas de verdade.
+      </p>
+      <p>
+        É por isso que o catálogo muda quando a stack muda — quando uma ferramenta entra no
+        nosso fluxo de trabalho, ela vira trilha no Hub.
+      </p>
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Para quem é</p>
+      <h2>Feito para quem quer escalar sem inchar a estrutura</h2>
+    </div>
+    <div class="grade grade-3">
+      {paraQuem.map((p) => <div class="card"><h3>{p.title}</h3><p>{p.desc}</p></div>)}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Dúvidas</p>
+      <h2>O que costumam perguntar antes de começar</h2>
+    </div>
+    <div class="faq">
+      {faqs.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="cta">
+      <p class="kicker">Strat Hub</p>
+      <h2>O jeito mais leve de começar é de graça.</h2>
+      <p class="lead">
+        Conta gratuita, sem cartão, com as Masterclasses de N8N e Claude Code completas.
+      </p>
+      <a href={HUB} data-evento="SignUpIntent" data-evento-local="sobre" class="btn btn-primario">{PLANO.chamada}</a>
+      <p class="nota">{PLANO.nome} · {PLANO.preco}{PLANO.periodo} quando quiser assinar</p>
+    </div>
+  </section>
+</RubikLayout>

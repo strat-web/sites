@@ -1,0 +1,228 @@
+---
+import RubikLayout from '../layouts/RubikLayout.astro';
+import BrandLogo from '../components/BrandLogo.astro';
+import { SITE } from '../consts';
+import { CURSOS, MASTERCLASSES, GRUPOS, PLANO, HUB } from '../data/catalogo';
+import { DETALHES } from '../data/cursos-detalhe';
+import { MARCAS_REAIS } from '../data/marcas';
+
+const publicados = new Set(Object.keys(DETALHES));
+const hrefDe = (slug: string) => (publicados.has(slug) ? `/curso-${slug}/` : null);
+
+// Constelação do hero: as ferramentas com logo real, para o topo abrir com marca de verdade.
+const destaque = CURSOS.filter((c) => MARCAS_REAIS[c.mark]).slice(0, 6);
+const builder = CURSOS.filter((c) => c.grupo === 'builder');
+const midia = CURSOS.filter((c) => c.grupo === 'midia');
+
+const stats = [
+  { num: '11', label: 'cursos por ferramenta' },
+  { num: '3', label: 'masterclasses' },
+  { num: '2', label: 'trilhas grátis no cadastro' },
+  { num: 'R$ 67', label: 'por mês para tudo' },
+];
+
+const escolher = [
+  { mark: 'n8n', title: 'Quero construir alguma coisa', href: '/curso-n8n/', cta: 'Ir para N8N',
+    desc: 'Sistema, agente, automação, site. Comece pela Masterclass de N8N — é grátis e ensina a lógica que sustenta todo o resto.' },
+  { mark: 'claude-code', title: 'Já programo e quero acelerar', href: '/curso-claude-code/', cta: 'Ir para Claude Code',
+    desc: 'Claude Code para trabalhar no projeto inteiro pelo terminal, Cursor para a edição do dia a dia. Muita gente usa os dois.' },
+  { mark: 'kling', title: 'Preciso produzir conteúdo', href: '#midia', cta: 'Ver trilhas de mídia',
+    desc: 'Imagem e vídeo por IA com consistência de marca e de personagem, sem depender de gravação para tudo.' },
+];
+
+const faq = [
+  { q: 'Onde eu assisto às aulas?', a: 'Tudo acontece dentro do Strat Hub, nossa plataforma. O site serve para você entender o que tem lá dentro; o acesso e o aprendizado ficam no Hub.' },
+  { q: 'Preciso comprar curso por curso?', a: `Não. Não vendemos curso avulso pelo site: você cria a conta gratuita, assiste ao que está liberado e, se quiser o catálogo inteiro, assina ${PLANO.nome} por ${PLANO.preco}${PLANO.periodo}.` },
+  { q: 'Por onde eu começo?', a: 'Pela Masterclass de N8N se você quer entender automação do zero, ou pela de Claude Code se você já mexe com código. As duas são gratuitas e completas.' },
+  { q: 'Em quanto tempo eu termino uma trilha?', a: 'Depende do seu ritmo — não há turma, prazo nem data de início. As aulas são gravadas e você assiste quando der, quantas vezes quiser.' },
+  { q: 'As trilhas ficam desatualizadas?', a: 'Essas ferramentas mudam rápido, e é por isso que o catálogo acompanha o que a gente usa na operação real. Quando uma ferramenta entra no nosso fluxo, entra trilha no Hub.' },
+];
+---
+<RubikLayout
+  title={`Cursos de IA por ferramenta — ${SITE.name}`}
+  description="Trilhas de Claude Code, N8N, Cursor, Lovable, Nano Banana, Kling AI, HeyGen e mais. Crie sua conta grátis no Strat Hub e comece pelas masterclasses liberadas."
+  faq={faq}
+  breadcrumb={[{ name: 'Início', url: '/' }, { name: 'Cursos', url: '/cursos/' }]}
+>
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="hero hero-duplo wrap" data-gatilho>
+      <div>
+        <p class="kicker rise d1">Catálogo</p>
+        <h1 class="rise d2">Uma trilha para cada ferramenta que a gente usa de verdade</h1>
+        <p class="lead rise d3">
+          Nada de curso genérico de inteligência artificial. Cada trilha ataca uma ferramenta
+          específica e termina com você tendo feito alguma coisa com ela.
+        </p>
+        <div class="cta-row rise d4">
+          <a href={HUB} data-evento="SignUpIntent" data-evento-local="cursos" class="btn btn-primario">{PLANO.chamada}</a>
+          <a href="/assinatura/" class="btn btn-secundario">Como funciona a assinatura</a>
+        </div>
+      </div>
+      <div class="constelacao rise d4" aria-hidden="true">
+        {destaque.map((c) => (
+          <span class="astro-chip"><BrandLogo mark={c.mark} size={30} /><b>{c.nome}</b></span>
+        ))}
+      </div>
+    </section>
+  </div>
+
+  <section class="wrap">
+    <div class="numeros">
+      {stats.map((s) => <div><b>{s.num}</b><span>{s.label}</span></div>)}
+    </div>
+  </section>
+
+  <section class="wrap esteira-secao">
+    <p class="esteira-rotulo">As ferramentas que você aprende aqui</p>
+    <div class="esteira">
+      <div class="esteira-trilho">
+        {[...CURSOS, ...CURSOS].map((c) => (
+          <span class="esteira-item"><BrandLogo mark={c.mark} size={22} />{c.nome}</span>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Por onde começar</p>
+      <h2>Escolha pelo que você precisa resolver</h2>
+    </div>
+    <div class="grade grade-3">
+      {escolher.map((e) => (
+        <a href={e.href} class="card">
+          <span class="chip-logo"><BrandLogo mark={e.mark} size={26} /></span>
+          <h3>{e.title}</h3>
+          <p>{e.desc}</p>
+          <span class="ver">{e.cta} →</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Grátis</p>
+      <h2>Duas trilhas completas, sem pagar nada</h2>
+      <p class="lead">
+        Elas entram liberadas no momento em que você cria a conta. É o melhor jeito de medir
+        se a nossa didática combina com você.
+      </p>
+    </div>
+    <div class="grade grade-3">
+      {MASTERCLASSES.map((m) => (
+        <div class="card">
+          <div class="card-topo">
+            <span class="chip-logo"><BrandLogo mark={m.mark} size={26} /></span>
+            <span class={m.acesso === 'Gratuito' ? 'pill pill-acento' : 'pill'}>{m.acesso.toLowerCase()}</span>
+          </div>
+          <h3>{m.nome}</h3>
+          <p>{m.desc}</p>
+          {m.aulas && <span class="pill" style="align-self:start">{m.aulas} aulas</span>}
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap secao" id="construir">
+    <div class="sec-head">
+      <p class="kicker">{GRUPOS.builder.eyebrow}</p>
+      <h2>{GRUPOS.builder.titulo}</h2>
+      <p class="lead">{GRUPOS.builder.desc}</p>
+    </div>
+    <div class="grade">
+      {builder.map((c) => {
+        const href = hrefDe(c.slug);
+        const Tag = href ? 'a' : 'div';
+        return (
+          <Tag href={href ?? undefined} class="card">
+            <div class="card-topo">
+              <span class="chip-logo"><BrandLogo mark={c.mark} size={26} /></span>
+              <span class={c.acesso === 'gratuito' ? 'pill pill-acento' : 'pill'}>
+                {c.acesso === 'gratuito' ? 'grátis' : 'assinatura'}
+              </span>
+            </div>
+            <h3>{c.nome}</h3>
+            <p>{c.tagline}</p>
+            {href && <span class="ver">Ver o curso →</span>}
+          </Tag>
+        );
+      })}
+    </div>
+  </section>
+
+  <section class="wrap secao" id="midia">
+    <div class="sec-head">
+      <p class="kicker">{GRUPOS.midia.eyebrow}</p>
+      <h2>{GRUPOS.midia.titulo}</h2>
+      <p class="lead">{GRUPOS.midia.desc}</p>
+    </div>
+    <div class="grade">
+      {midia.map((c) => {
+        const href = hrefDe(c.slug);
+        const Tag = href ? 'a' : 'div';
+        return (
+          <Tag href={href ?? undefined} class="card">
+            <div class="card-topo">
+              <span class="chip-logo"><BrandLogo mark={c.mark} size={26} /></span>
+              <span class="pill">assinatura</span>
+            </div>
+            <h3>{c.nome}</h3>
+            <p>{c.tagline}</p>
+            {href && <span class="ver">Ver o curso →</span>}
+          </Tag>
+        );
+      })}
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Depois daqui</p>
+      <h2>Se você quiser ir além da plataforma</h2>
+    </div>
+    <div class="grade grade-2">
+      <a href="/eventos/" class="card card-largo">
+        <h3>Eventos ao vivo</h3>
+        <p>Imersão presencial e bootcamp online, com data marcada e gravação liberada no Hub depois.</p>
+        <span class="ver">Ver eventos →</span>
+      </a>
+      <a href="/mentoria/" class="card card-largo">
+        <h3>Mentoria individual</h3>
+        <p>Acompanhamento um a um, ao vivo, olhando para o seu projeto. Para quem já passou da fase de assistir aula.</p>
+        <span class="ver">Conhecer a mentoria →</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Dúvidas</p>
+      <h2>Perguntas frequentes</h2>
+    </div>
+    <div class="faq">
+      {faq.map((f) => (
+        <details><summary>{f.q}</summary><p>{f.a}</p></details>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="cta">
+      <p class="kicker">Strat Hub</p>
+      <h2>Comece de graça. Pague só quando fizer sentido.</h2>
+      <p class="lead">
+        Criar conta no Strat Hub não custa nada e já libera as Masterclasses de N8N e Claude Code
+        completas. Você decide depois se quer o resto.
+      </p>
+      <a href={HUB} data-evento="SignUpIntent" data-evento-local="cursos" class="btn btn-primario">{PLANO.chamada}</a>
+      <p class="nota">{PLANO.nome} · {PLANO.preco}{PLANO.periodo} quando quiser assinar · cancela quando quiser</p>
+    </div>
+  </section>
+
+  <div class="barra-fixa">
+    <div class="info"><b>{PLANO.nome}</b><span>Grátis · {PLANO.preco}{PLANO.periodo} para assinar</span></div>
+    <a href={HUB} data-evento="SignUpIntent" data-evento-local="cursos" class="btn btn-primario">{PLANO.chamada}</a>
+  </div>
+</RubikLayout>

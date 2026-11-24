@@ -1,0 +1,101 @@
+---
+// O bloco do Criador de Funil de Vendas.
+//
+// A regra da central vale aqui: o conteúdo precisa estar no HTML do build.
+// GPTBot, ClaudeBot e PerplexityBot não executam JavaScript, e o editor é um
+// canvas — para eles, uma div vazia. Então o funil de exemplo sai DESENHADO no
+// build, em SVG, com os nomes de todas as etapas em texto de verdade. O editor
+// entra por cima, quando o bloco aparece na tela.
+//
+// Sem JavaScript, a página continua útil: o desenho fica, e o texto da folha
+// explica o método inteiro.
+//
+// Prefixo de classe `cf-` — `.ferramenta*` e `.funil-*` são da calculadora.
+import { renderFunilSVG, type DocumentoFunil } from '@strat-ai-horus-os/funil-nucleo';
+
+interface Props {
+  /** O funil que aparece no HTML do build e abre o editor na primeira visita. */
+  documento: DocumentoFunil;
+  titulo: string;
+  legenda: string;
+  /** Rótulo de onde o bloco está, para os eventos. */
+  local: string;
+}
+
+const { documento, titulo, legenda, local } = Astro.props;
+
+const desenho = renderFunilSVG(documento, { fundo: 'transparent', descricao: legenda });
+---
+
+<section class="cf" data-construtor data-construtor-local={local}>
+  <div class="cf-cabeca">
+    <h2>{titulo}</h2>
+    <p class="cf-sub">
+      Arraste um elemento da lista para o quadro, ligue um no outro e renomeie com os nomes que o
+      seu time usa. O funil fica salvo neste navegador enquanto você desenha.
+    </p>
+  </div>
+
+  <div class="cf-quadro">
+    <!-- O que existe sem JavaScript — e o que os robôs de IA leem. -->
+    <figure class="cf-estatico" data-construtor-estatico>
+      <div class="cf-desenho" set:html={desenho} />
+      <figcaption>{legenda}</figcaption>
+    </figure>
+
+    <!-- O editor monta aqui por cima, quando o bloco chega perto da tela. -->
+    <div class="cf-ilha" data-construtor-raiz hidden></div>
+
+    <p class="cf-carregando" data-construtor-carregando hidden>Abrindo o editor…</p>
+  </div>
+
+  <p class="cf-nota">
+    Salvo neste navegador, sem conta e sem enviar nada para a gente. Se o funil importa, exporte o
+    arquivo — limpar os dados do navegador apaga o desenho.
+  </p>
+</section>
+
+<script>
+  import '../scripts/construtor';
+</script>
+
+<style>
+  .cf { display: grid; gap: var(--s3); }
+  .cf-cabeca h2 { font-size: var(--t-h3); font-weight: var(--w-semi); }
+  .cf-sub { color: var(--txt-2); max-width: var(--leitura); margin-top: var(--s2); }
+
+  .cf-quadro {
+    position: relative;
+    height: clamp(520px, 72vh, 780px);
+    background: var(--surf);
+    border-radius: var(--raio-g);
+    box-shadow: var(--sombra-card);
+    overflow: hidden;
+  }
+
+  .cf-estatico {
+    position: absolute; inset: 0; margin: 0;
+    display: flex; flex-direction: column; gap: var(--s2);
+    justify-content: center;
+    padding: var(--s4);
+    overflow: auto;
+  }
+  .cf-desenho { display: block; }
+  /* O desenho é largo de propósito: num funil, a ordem das etapas é a leitura. */
+  .cf-estatico :global(svg) { display: block; width: 100%; height: auto; min-width: 680px; }
+  .cf-estatico figcaption { font-size: var(--t-meta); color: var(--txt-2); text-align: center; }
+
+  .cf-ilha { position: absolute; inset: 0; }
+
+  .cf-carregando {
+    position: absolute; left: 50%; bottom: var(--s3); transform: translateX(-50%);
+    font-size: var(--t-meta); color: var(--txt-2);
+  }
+
+  .cf-nota { font-size: var(--t-meta); color: var(--txt-2); max-width: var(--leitura); }
+
+  @media (max-width: 780px) {
+    .cf-quadro { height: clamp(460px, 80vh, 640px); }
+    .cf-estatico { padding: var(--s2); }
+  }
+</style>

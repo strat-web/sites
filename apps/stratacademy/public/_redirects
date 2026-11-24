@@ -1,0 +1,163 @@
+# Cloudflare Pages — redirects 301
+# Mapa único do cutover. Ver docs/ARQUITETURA-SITE.md.
+# Formato: <origem>  <destino>  <status>
+#
+# CADA ORIGEM APARECE NAS DUAS FORMAS, sem e com barra final. No Cloudflare
+# Pages `/loja` e `/loja/` são caminhos distintos: a regra de um NÃO casa com o
+# outro. O WordPress antigo usava barra final, então é essa a forma dos links
+# externos e do que o Google indexou — mas links sem barra também existem.
+# Ao acrescentar uma regra, acrescente a irmã na linha de baixo.
+#
+# Não use splat (/loja/*): casaria qualquer subcaminho e mandaria para cá URL que
+# não deveria vir.
+#
+# Redirect VENCE página: "Redirects are always followed, regardless of whether or
+# not an asset matches the incoming request" (docs da Cloudflare). Uma regra aqui
+# dispara mesmo que exista página no mesmo caminho.
+#
+# DEPOIS DE CADA DEPLOY QUE MEXER NESTE ARQUIVO, rode contra o domínio real:
+#   pnpm --filter stratacademy redirects:checar -- https://stratacademy.com.br
+# Ele requisita cada origem nas duas formas e falha se alguma não der 301 para o
+# destino declarado. O build local não pega isso: o _redirects só existe no Pages.
+
+# ============================================================
+# Consolidação da arquitetura nova
+# ============================================================
+
+# Vitrines concorrentes -> catálogo único
+/loja               /cursos       301
+/loja/              /cursos       301
+/todos-produtos     /cursos       301
+/todos-produtos/    /cursos       301
+
+# Produtos que passaram a viver dentro da assinatura
+/academy            /assinatura   301
+/academy/           /assinatura   301
+/masterclass-01     /assinatura   301
+/masterclass-01/    /assinatura   301
+# "Strat Hub" é o nome antigo do produto educacional -> hoje é a assinatura.
+# (Já apontou para /strat, que é o link-in-bio — coisa diferente.)
+# Esta é a ÚNICA fonte deste redirect: não recrie em astro.config.mjs. Duas
+# fontes para o mesmo redirect foi o que escondeu, por semanas, que a forma com
+# barra não tinha regra nenhuma (ver o cabeçalho deste arquivo).
+/strat-hub          /assinatura   301
+/strat-hub/         /assinatura   301
+
+# Captura duplicada -> vitrine única de materiais
+/acesso-gratis      /downloads    301
+/acesso-gratis/     /downloads    301
+/curso-gratis       /downloads    301
+/curso-gratis/      /downloads    301
+/marketing          /downloads    301
+/marketing/         /downloads    301
+
+# Live semanal passou a viver no modelo de eventos
+/live-semanal       /eventos/live-semanal   301
+/live-semanal/      /eventos/live-semanal   301
+
+# Link-in-bio: tudo que era lista de links vai para /strat
+/links              /strat        301
+/links/             /strat        301
+/links-live         /strat        301
+/links-live/        /strat        301
+
+# Sem vaga aberta hoje — recriar quando houver
+/carreiras          /sobre        301
+/carreiras/         /sobre        301
+
+# Descontinuada: não usamos mais
+/app                https://hub.stratacademy.com.br  301
+/app/               https://hub.stratacademy.com.br  301
+
+# Thank-you padronizadas em /obrigado/<slug>
+/obrigado-acesso-gratis  /obrigado/downloads  301
+/obrigado-acesso-gratis/ /obrigado/downloads  301
+/obr-live                /obrigado/live       301
+/obr-live/               /obrigado/live       301
+/obg-2                   /obrigado            301
+/obg-2/                  /obrigado            301
+
+# ============================================================
+# Posts antigos do WP (permalink com data) -> /blog/<slug>
+# ============================================================
+/2026/03/05/o-que-e-claude-code-e-como-usar-na-pratica-para-programar-com-ia/  /blog/o-que-e-claude-code-e-como-usar-na-pratica-para-programar-com-ia/  301
+/2026/03/05/o-que-e-claude-code-e-como-usar-na-pratica-para-programar-com-ia   /blog/o-que-e-claude-code-e-como-usar-na-pratica-para-programar-com-ia/  301
+/2026/03/08/o-que-e-google-pomelli-e-como-usar-na-pratica-para-criar-marketing-com-ia/  /blog/o-que-e-google-pomelli-e-como-usar-na-pratica-para-criar-marketing-com-ia/  301
+/2026/03/08/o-que-e-google-pomelli-e-como-usar-na-pratica-para-criar-marketing-com-ia   /blog/o-que-e-google-pomelli-e-como-usar-na-pratica-para-criar-marketing-com-ia/  301
+/2026/03/11/por-que-a-replica-digital-do-cerebro-de-mosca-e-o-experimento-mais-importante-de-2026/  /blog/por-que-a-replica-digital-do-cerebro-de-mosca-e-o-experimento-mais-importante-de-2026/  301
+/2026/03/11/por-que-a-replica-digital-do-cerebro-de-mosca-e-o-experimento-mais-importante-de-2026   /blog/por-que-a-replica-digital-do-cerebro-de-mosca-e-o-experimento-mais-importante-de-2026/  301
+/2026/03/15/inteligencia-artificial-na-guerra-o-que-o-conflito-do-ira-revela-sobre-o-futuro-da-ia/  /blog/inteligencia-artificial-na-guerra-o-que-o-conflito-do-ira-revela-sobre-o-futuro-da-ia/  301
+/2026/03/15/inteligencia-artificial-na-guerra-o-que-o-conflito-do-ira-revela-sobre-o-futuro-da-ia   /blog/inteligencia-artificial-na-guerra-o-que-o-conflito-do-ira-revela-sobre-o-futuro-da-ia/  301
+/2026/03/17/o-que-sao-claude-skills-e-as-15-melhores-para-turbinar-sua-produtividade-com-ia/  /blog/o-que-sao-claude-skills-e-as-15-melhores-para-turbinar-sua-produtividade-com-ia/  301
+/2026/03/17/o-que-sao-claude-skills-e-as-15-melhores-para-turbinar-sua-produtividade-com-ia   /blog/o-que-sao-claude-skills-e-as-15-melhores-para-turbinar-sua-produtividade-com-ia/  301
+
+# ============================================================
+# Arquivos do WP sem página no blog novo (categoria, autor, dia, feeds)
+# Categoria que existe no blog novo vai para ela; a que não existe, para /blog/.
+# Origem: 404 no Search Console em 17/11/2026 (WEB-101, relatório do WEB-65).
+# ============================================================
+/category/ferramentas-digitais      /blog/categoria/ferramentas-digitais/  301
+/category/ferramentas-digitais/     /blog/categoria/ferramentas-digitais/  301
+/category/geral                     /blog/categoria/geral/  301
+/category/geral/                    /blog/categoria/geral/  301
+/category/inteligencia-artificial   /blog/categoria/inteligencia-artificial/  301
+/category/inteligencia-artificial/  /blog/categoria/inteligencia-artificial/  301
+/category/noticias-e-novidades      /blog/categoria/noticias-e-novidades/  301
+/category/noticias-e-novidades/     /blog/categoria/noticias-e-novidades/  301
+/category/strat-academy             /blog/  301
+/category/strat-academy/            /blog/  301
+/category/tutoriais                 /blog/  301
+/category/tutoriais/                /blog/  301
+/category/strat-academy/feed        /rss.xml  301
+/category/strat-academy/feed/       /rss.xml  301
+/author/strat                       /blog/autor/equipe-strat/  301
+/author/strat/                      /blog/autor/equipe-strat/  301
+/2026/03/05                         /blog/  301
+/2026/03/05/                        /blog/  301
+/2026/03/08                         /blog/  301
+/2026/03/08/                        /blog/  301
+/2026/03/11                         /blog/  301
+/2026/03/11/                        /blog/  301
+/2026/03/15                         /blog/  301
+/2026/03/15/                        /blog/  301
+/2026/03/17                         /blog/  301
+/2026/03/17/                        /blog/  301
+/feed                               /rss.xml  301
+/feed/                              /rss.xml  301
+/comments/feed                      /rss.xml  301
+/comments/feed/                     /rss.xml  301
+
+# ============================================================
+# Páginas descontinuadas / renomeadas
+# ============================================================
+/academy-old        /assinatura   301
+/academy-old/       /assinatura   301
+/mentoria-_-teste   /strat        301
+/mentoria-_-teste/  /strat        301
+/home               /             301
+/home/              /             301
+
+# ============================================================
+# Páginas de teste / versões antigas -> home
+# ============================================================
+/strat-academy-v2       /  301
+/strat-academy-v2/      /  301
+/strat-academy-v3       /  301
+/strat-academy-v3/      /  301
+/strat-academy-v4-copy  /  301
+/strat-academy-v4-copy/ /  301
+/v4                     /  301
+/v4/                    /  301
+/bioteste               /  301
+/bioteste/              /  301
+/teste-de-bio-claude    /  301
+/teste-de-bio-claude/   /  301
+/teste-01               /  301
+/teste-01/              /  301
+
+# Sitemap do horus (@astrojs/sitemap) -> sitemap.xml do kit (WEB-49). O Search Console e o Bing receberam o
+# sitemap-index.xml; o 301 mantém o endereço antigo valendo até o envio do novo.
+/sitemap-index.xml  /sitemap.xml  301
+/sitemap-index.xml/  /sitemap.xml  301
+/sitemap-0.xml  /sitemap.xml  301
+/sitemap-0.xml/  /sitemap.xml  301

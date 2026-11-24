@@ -54,7 +54,8 @@ A branch `main` publica a versão principal de cada projeto no endereço `.pages
 verdade aponta para estes projetos ainda.** Os apps nascem como esqueleto (uma página com `noindex`), de propósito:
 o conteúdo entra nos itens de migração (WEB-23, WEB-32, WEB-36, WEB-49) e só então o domínio vira, com o "pode virar"
 do Helbert nos que estão no ar. Ver `dominios.md`. O `stratai` já tem as páginas reais desde o WEB-32 (home, /raio-x/
-e /politica-de-privacidade/), ainda sem o domínio.
+e /politica-de-privacidade/), ainda sem o domínio, e o `sites-stratacademy` tem o site e o blog da Academy desde o
+WEB-49.
 
 Redirecionamento de URL que mudou fica em `apps/<app>/public/_redirects` (formato do Pages: `origem destino 301`; a
 query segue junto). Conferir na máquina com `npx wrangler pages dev apps/<app>/dist` antes do PR.
@@ -86,6 +87,21 @@ O Pages procura a pasta `functions/` no diretório raiz do projeto, que aqui é 
 `functions/u/[[caminho]].js` (proxy do Umami, `tracking.md`) vale para todos os apps e LPs. `functions/*` está no caminho observado dos
 quatro projetos desde 12/11/2026:
 mudou a Function, os quatro buildam (como `packages/*` e `catalogo/*`).
+
+## Segredos e variáveis do `sites-stratacademy` (WEB-49)
+O site da Academy instala três pacotes privados do GitHub Packages (`@strat-ai-horus-os/funil-nucleo`, `funil-react`
+e `whatsapp-nucleo`, publicados pela oficina). O `.npmrc` da raiz só diz onde eles moram; a credencial nunca entra no
+repositório.
+
+| Onde | O quê |
+|---|---|
+| **Todo projeto do Pages deste repositório** (o Pages instala o workspace inteiro, então os 10 baixam os pacotes), produção e prévia | segredo `NPM_TOKEN` (token clássico, só `read:packages`, de quem lê os pacotes da `Strat-Ai-Horus-OS`) e `NPM_CONFIG_USERCONFIG=/opt/buildhome/repo/.npmrc.pages` (o arquivo está na raiz e só referencia o `${NPM_TOKEN}`). Sem os dois, o `pnpm install` dá 401 e o build falha |
+| Pages `sites-stratacademy`, produção e prévia | `LEAD_WEBHOOK_URL` e `TURNSTILE_SECRET` (segredos, os mesmos do projeto `stratacademy` do horus) e `PUBLIC_TURNSTILE_KEY` (chave pública do Turnstile, lida no build) para o `functions/api/lead.ts` |
+| Actions do `strat-web/sites` | segredo `NPM_TOKEN`, para o build das checagens |
+| Na máquina | `NPM_TOKEN` no ambiente (ex.: `NPM_TOKEN=$(gh auth token)` com o escopo `read:packages`) e `NPM_CONFIG_USERCONFIG` num arquivo fora do repositório com a mesma linha |
+
+O `functions/api/lead.ts` (captação do site da Academy, veio do horus) vale para os quatro projetos, como toda
+Function da raiz. Nos outros três, sem a `LEAD_WEBHOOK_URL`, responde 503 e não manda nada.
 
 ## Armadilhas
 - **Sem `404.html` na raiz da saída**, o Pages trata o projeto como aplicação de página única e responde 200 com a

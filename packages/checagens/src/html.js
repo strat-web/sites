@@ -69,6 +69,10 @@ export function textos(html, nome) {
   return [...marcacao(html).matchAll(new RegExp(`<${nome}\\b[^>]*>([\\s\\S]*?)<\\/${nome}>`, 'gi'))].map((m) => semTags(m[1]));
 }
 
+/** O HTML sem o conteúdo de <svg>: o <title> de dentro dele é o nome acessível do desenho, não o da página (WEB-49,
+ * diagrama do criador de funil da Academy). */
+const semSvg = (html) => html.replace(/(<svg\b[^>]*>)[\s\S]*?(<\/svg>)/gi, '$1$2');
+
 /** Posição do </head> no HTML (o mesmo índice de `scripts().inicio`), ignorando o que estiver dentro de <script>.
  * Sem </head>, a página inteira conta como <head>. */
 export function fimDoHead(html) {
@@ -87,7 +91,7 @@ export function lerPagina(html) {
   const robots = (meta('robots') || '').toLowerCase();
   const canonical = tags(html, 'link').find((t) => (t.attrs.rel || '').toLowerCase().split(/\s+/).includes('canonical'));
   return {
-    titulos: textos(html, 'title'),
+    titulos: textos(semSvg(html), 'title'),
     h1s: textos(html, 'h1'),
     canonical: canonical?.attrs.href,
     noindex: /\b(noindex|none)\b/.test(robots),

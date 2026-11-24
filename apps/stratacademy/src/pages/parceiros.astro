@@ -1,0 +1,187 @@
+---
+// Benefícios Strat — a stack paga que a gente recomenda (links de afiliado).
+// Vivia em /ferramentas; saiu de lá em 2026-09-06 quando aquela slug passou a ser
+// a central de ferramentas gratuitas. 301 em public/_redirects.
+// LINKS DE AFILIADO PRESERVADOS EXATAMENTE — não alterar href, rel ou target.
+import RubikLayout from '../layouts/RubikLayout.astro';
+import BrandLogo from '../components/BrandLogo.astro';
+import { SITE } from '../consts';
+import { PLANO, HUB } from '../data/catalogo';
+
+// Ferramentas recomendadas (links de afiliado), agrupadas por categoria.
+// LINKS PRESERVADOS EXATAMENTE — não alterar href, rel ou target.
+const categorias = [
+  {
+    id: 'automacao-atendimento',
+    titulo: 'Automação & Atendimento',
+    resumo: 'O que conecta seu WhatsApp, seus fluxos e o cliente do outro lado.',
+    ferramentas: [
+      {
+        nome: 'Z-API',
+        mark: 'zapi',
+        desc: 'API de WhatsApp para automações e atendimento.',
+        porque: 'É a ponte que liga o WhatsApp ao N8N e aos seus agentes de IA — dá para receber, responder e disparar mensagens de forma programática, sem depender de aparelho físico ligado o tempo todo.',
+        href: 'https://links.stratacademy.com.br/z-api',
+      },
+    ],
+  },
+  {
+    id: 'infraestrutura',
+    titulo: 'Infraestrutura',
+    resumo: 'Onde suas automações e agentes ficam rodando 24/7.',
+    ferramentas: [
+      {
+        nome: 'DigitalOcean',
+        mark: 'digitalocean',
+        desc: 'Servidores e infraestrutura na nuvem (VPS).',
+        porque: 'É onde subimos o N8N e outras ferramentas self-hosted. Um VPS próprio dá controle total, custo previsível e evita limites de planos SaaS quando o volume de automações cresce.',
+        href: 'https://links.stratacademy.com.br/digitalocean',
+      },
+      {
+        nome: 'BRDID',
+        mark: 'brdid',
+        desc: 'Números virtuais e telefonia para o seu negócio.',
+        porque: 'Fornece números virtuais para validar contas, separar linhas de atendimento e montar telefonia sem precisar de novos chips físicos — útil quando você opera vários canais.',
+        href: 'https://links.stratacademy.com.br/brdid',
+      },
+    ],
+  },
+  {
+    id: 'gestao-financeiro',
+    titulo: 'Gestão & Financeiro',
+    resumo: 'Para organizar o time e o dinheiro sem virar planilha eterna.',
+    ferramentas: [
+      {
+        nome: 'ClickUp',
+        mark: 'clickup',
+        desc: 'Gestão de projetos, tarefas e produtividade do time.',
+        porque: 'Centraliza tarefas, projetos e documentação num lugar só. Como tem API aberta, dá para automatizar criação de tarefas e status a partir dos seus fluxos no N8N.',
+        href: 'https://links.stratacademy.com.br/clickup',
+      },
+      {
+        nome: 'Asaas',
+        mark: 'asaas',
+        desc: 'Conta digital, cobranças e pagamentos automatizados.',
+        porque: 'Conta digital com API de cobrança: dá para gerar boletos, Pix e links de pagamento de forma automática e conectar o financeiro às suas automações, reduzindo trabalho manual de faturamento.',
+        href: 'https://links.stratacademy.com.br/asaas',
+      },
+    ],
+  },
+  {
+    id: 'conteudo',
+    titulo: 'Conteúdo',
+    resumo: 'Para acelerar a produção de vídeo com ajuda de IA.',
+    ferramentas: [
+      {
+        nome: 'OpusClip',
+        mark: 'opusclip',
+        desc: 'Transforma vídeos longos em cortes virais com IA.',
+        porque: 'Pega um vídeo longo e sugere cortes curtos com legenda e enquadramento automáticos. Ajuda a alimentar Reels, Shorts e TikTok sem editar cada corte na mão do zero.',
+        href: 'https://links.stratacademy.com.br/opusclip',
+      },
+    ],
+  },
+];
+
+const totalFerramentas = categorias.reduce((acc, c) => acc + c.ferramentas.length, 0);
+
+const stats = [
+  { numero: String(totalFerramentas), label: 'ferramentas' },
+  { numero: String(categorias.length), label: 'categorias' },
+  { numero: '+800', label: 'alunos na Strat' },
+];
+
+const faqs = [
+  { q: 'O que significa "link de afiliado"?', a: 'Quando você acessa uma ferramenta por um link nosso e cria a conta, a Strat pode receber uma comissão da própria empresa — sem que você pague nada a mais por isso. É assim que apoiamos o conteúdo gratuito da Academy.' },
+  { q: 'Vocês recomendam só porque ganham comissão?', a: 'Não. Toda ferramenta desta página faz parte do nosso stack real de trabalho. Só entra aqui o que usamos de verdade no dia a dia da Strat e da agência.' },
+  { q: 'Preciso de todas para começar?', a: 'Não. Comece pelo que resolve a sua dor mais urgente — atendimento, infraestrutura, gestão ou conteúdo — e vá somando conforme suas automações crescem.' },
+  { q: 'Onde aprendo a usar essas ferramentas na prática?', a: 'Nas trilhas do Strat Hub, que ensinam IA, automação e N8N aplicados ao negócio conectando várias dessas ferramentas em fluxos reais. A conta é gratuita e já libera duas masterclasses completas.' },
+];
+---
+<RubikLayout
+  title={`Benefícios Strat — as ferramentas que a gente usa — ${SITE.name}`}
+  description="A stack real da Strat: automação, infraestrutura, gestão e conteúdo. O que usamos no dia a dia, com o porquê de cada escolha."
+  faq={faqs}
+  breadcrumb={[{ name: 'Início', url: '/' }, { name: 'Benefícios Strat', url: '/parceiros/' }]}
+>
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="hero wrap">
+      <p class="kicker rise d1">Benefícios Strat</p>
+      <h1 class="rise d2">As ferramentas que a gente usa de verdade</h1>
+      <p class="lead rise d3">
+        Se você está montando ou automatizando um negócio, esta página é o ponto de partida.
+        Nada aqui é lista genérica: é o stack que roda na nossa operação, com o motivo de
+        cada escolha.
+      </p>
+      <p class="hero-nota rise d4">
+        Alguns links são de afiliado — se você criar conta por eles, a Strat pode receber
+        comissão da empresa, sem custo a mais para você.
+      </p>
+    </section>
+  </div>
+
+  <section class="wrap">
+    <div class="numeros" style="grid-template-columns: repeat(3, minmax(0, 1fr))">
+      {stats.map((s) => <div><b>{s.numero}</b><span>{s.label}</span></div>)}
+    </div>
+  </section>
+
+  {categorias.map((cat) => (
+    <section class="wrap secao" id={cat.id}>
+      <div class="sec-head">
+        <p class="kicker">{cat.titulo}</p>
+        <h2>{cat.resumo}</h2>
+      </div>
+      <div class="grade grade-2">
+        {cat.ferramentas.map((f) => (
+          <a href={f.href} target="_blank" rel="noopener sponsored" class="card card-largo">
+            <div class="card-topo">
+              <span class="chip-logo"><BrandLogo mark={f.mark} size={26} /></span>
+              <span class="pill">parceiro</span>
+            </div>
+            <h3>{f.nome}</h3>
+            <p>{f.desc}</p>
+            <p><strong>Por que usamos:</strong> {f.porque}</p>
+            <span class="ver">Acessar {f.nome} →</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  ))}
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Critério</p>
+      <h2>O que faz uma ferramenta entrar no nosso stack</h2>
+    </div>
+    <div class="grade grade-3">
+      <div class="card"><h3>A gente usa</h3><p>Se não roda na nossa operação, não entra. Não indicamos por catálogo.</p></div>
+      <div class="card"><h3>Tem API</h3><p>Ferramenta que não conversa com outras vira ilha. API aberta é quase pré-requisito.</p></div>
+      <div class="card"><h3>Custo previsível</h3><p>Preferimos o que escala sem surpresa na fatura quando o volume cresce.</p></div>
+    </div>
+  </section>
+
+  <section class="wrap secao">
+    <div class="sec-head">
+      <p class="kicker">Dúvidas</p>
+      <h2>Perguntas frequentes</h2>
+    </div>
+    <div class="faq">
+      {faqs.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="cta">
+      <p class="kicker">Strat Hub</p>
+      <h2>Ter as ferramentas é metade. Saber conectar é a outra.</h2>
+      <p class="lead">
+        As trilhas do Strat Hub ensinam a ligar essas ferramentas em fluxos que funcionam.
+        A conta é gratuita e já libera duas masterclasses completas.
+      </p>
+      <a href={HUB} data-evento="SignUpIntent" data-evento-local="parceiros" class="btn btn-primario">{PLANO.chamada}</a>
+      <p class="nota">{PLANO.nome} · {PLANO.preco}{PLANO.periodo} quando quiser assinar</p>
+    </div>
+  </section>
+</RubikLayout>

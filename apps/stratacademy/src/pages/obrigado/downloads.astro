@@ -1,0 +1,18 @@
+---
+import RubikLayout from '../../layouts/RubikLayout.astro';
+import { SITE } from '../../consts';
+---
+<RubikLayout noindex title={`Acesso liberado — ${SITE.name}`} description="Seu acesso gratuito foi liberado. Verifique seu e-mail.">
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="wrap aviso">
+      <p class="simbolo" aria-hidden="true">✓</p>
+      <h1>Acesso liberado!</h1>
+      <p class="lead">Enviamos o seu acesso por e-mail. Confira a caixa de entrada — e o spam — e comece agora mesmo.</p>
+      <div class="cta-row" style="justify-content:center">
+        <a href="https://hub.stratacademy.com.br" target="_blank" rel="noopener" class="btn btn-primario">Entrar no Strat Hub</a>
+        <a href="/blog/" class="btn btn-secundario">Explorar o blog</a>
+      </div>
+    </section>
+  </div>
+</RubikLayout>

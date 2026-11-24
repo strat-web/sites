@@ -1,0 +1,59 @@
+---
+import RubikLayout from '../../../layouts/RubikLayout.astro';
+import PostCardRubik from '../../../components/PostCardRubik.astro';
+import { getCategories } from '../../../lib/tags';
+import { SITE } from '../../../consts';
+
+export async function getStaticPaths() {
+  const categories = await getCategories();
+  return categories.map((cat) => ({
+    params: { tag: cat.slug },
+    props: { category: cat, categories },
+  }));
+}
+
+const { category, categories } = Astro.props;
+const description = `Artigos de ${SITE.name} sobre ${category.label}.`;
+---
+<RubikLayout
+  title={`${category.label} — artigos — ${SITE.name}`}
+  description={description}
+  breadcrumb={[
+    { name: 'Início', url: '/' },
+    { name: 'Blog', url: '/blog/' },
+    { name: category.label, url: `/blog/categoria/${category.slug}/` },
+  ]}
+>
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="hero wrap blog-hero">
+      <nav class="migalhas"><a href="/">Início</a><span>/</span><a href="/blog/">Blog</a><span>/</span>{category.label}</nav>
+      <p class="kicker">Categoria</p>
+      <h1>{category.label}</h1>
+      <p class="lead">{description}</p>
+      <p class="hero-nota">{category.posts.length} {category.posts.length === 1 ? 'artigo' : 'artigos'}</p>
+    </section>
+  </div>
+
+  <section class="wrap secao">
+    <div class="chips-cat">
+      <a href="/blog/"><span class="pill">Todos</span></a>
+      {categories.map((c) => (
+        <a href={`/blog/categoria/${c.slug}/`} aria-current={c.slug === category.slug ? 'page' : undefined}>
+          <span class="pill">{c.label}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap" style="padding-bottom: var(--s6)">
+    <div class="grade grade-3">
+      {category.posts.map((p) => <PostCardRubik post={p} />)}
+    </div>
+  </section>
+</RubikLayout>
+
+<style>
+  .blog-hero { padding-block: var(--s6) var(--s5); }
+  .blog-hero h1 { font-size: clamp(2rem, 4.6vw, 3.2rem); }
+</style>

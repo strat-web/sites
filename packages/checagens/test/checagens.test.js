@@ -109,6 +109,12 @@ test('seo: <h1> montado numa string do <script> não conta como H1 da página (W
   assert.match(msgs(checarSeo(ctx([pagina({ h1: '', corpo: tela })]))), /exatamente um <h1> com texto/);
 });
 
+test('seo: <title> dentro de <svg> é o nome do desenho e não conta como título da página (WEB-49)', () => {
+  const desenho = '<svg role="img" aria-label="Funil"><title>Funil de isca digital</title><path d="M0 0"/></svg>';
+  assert.deepEqual(checarSeo(ctx([pagina({ corpo: desenho })])).erros, []);
+  assert.match(msgs(checarSeo(ctx([pagina({ corpo: '<title>Outro título</title>' })]))), /exatamente um <title> com texto \(tem 2\)/);
+});
+
 test('tracking: fbq de evento passa no pixel do m.js do kit; init e fbq sem esse pixel barram (WEB-24)', async () => {
   // Agência: MetricaaS com o pixel no m.js (data-pixel), sem Rastro.
   const semRastro = linha({ rastro_slug: null, metricaas_ws: 'strat-marketing', meta_pixel: '1815630929780241' });
@@ -208,15 +214,18 @@ test('tracking: Umami com id no catálogo exige o script; sem id é só aviso', 
 });
 
 test('tracking: esqueleto passa sem tracking e barra quando ganha tracking', async () => {
-  // stratacademy.com.br/ segue esqueleto até o WEB-49 (packages/checagens/src/esqueletos.js); o metricaas.com.br/
-  // saiu da lista no WEB-36.
+  // Desde o WEB-49 todos os apps migraram e packages/checagens/src/esqueletos.js ficou vazio; o teste usa uma lista
+  // própria para a regra continuar valendo no próximo app que nascer como esqueleto.
   const MET = 'https://stratacademy.com.br/';
+  const esqueletos = { [MET]: 'WEB-49' };
   const comUrl = (p) => ({ ...p, url: MET });
   const linhas = [linha({ id: 'academy', url: MET })];
   const esqueleto = comUrl(pagina({ caminho: '/', head: '' }));
-  assert.deepEqual((await checarTracking(ctx([esqueleto], { linhas }), { semRede: true })).erros, []);
+  assert.deepEqual((await checarTracking(ctx([esqueleto], { linhas }), { semRede: true, esqueletos })).erros, []);
   const migrada = comUrl(pagina({ caminho: '/' }));
-  assert.match(msgs(await checarTracking(ctx([migrada], { linhas }), { semRede: true })), /tirar a URL de packages\/checagens\/src\/esqueletos\.js/);
+  assert.match(msgs(await checarTracking(ctx([migrada], { linhas }), { semRede: true, esqueletos })), /tirar a URL de packages\/checagens\/src\/esqueletos\.js/);
+  // Com a lista real (vazia), a home da Academy é página normal: sem o <Tracking> do kit, barra.
+  assert.match(msgs(await checarTracking(ctx([esqueleto], { linhas }), { semRede: true })), /não usa o <Tracking> do kit/);
 });
 
 test('tracking: a home da StratAI saiu dos esqueletos (WEB-32) e passa com o Tracking do catálogo', async () => {

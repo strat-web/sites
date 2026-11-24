@@ -1,0 +1,48 @@
+---
+/**
+ * Logo da ferramenta.
+ *
+ * Quando existe traçado de marca real (simple-icons, paths em CC0), usa ele com a
+ * cor oficial da marca. Quando não existe — Lovable, Higgsfield, Kling AI e HeyGen
+ * não têm SVG canônico aberto — cai no ToolMark geométrico, que é assumidamente
+ * nosso e não finge ser o logo deles.
+ *
+ * `data-placeholder` marca quem ainda espera o asset oficial.
+ */
+import ToolMark from './ToolMark.astro';
+import { MARCAS_REAIS } from '../data/marcas';
+
+interface Props {
+  mark: string;
+  size?: number;
+  /** 'marca' usa a cor oficial; 'tinta' força monocromático. */
+  cor?: 'marca' | 'tinta';
+  class?: string;
+}
+const { mark, size = 28, cor = 'marca', class: cls = '' } = Astro.props;
+const real = MARCAS_REAIS[mark];
+---
+{real ? (
+  <svg
+    class={`brand ${cls}`}
+    role="img"
+    aria-label={real.titulo}
+    viewBox="0 0 24 24"
+    width={size}
+    height={size}
+    fill={cor === 'marca' ? real.hex : 'currentColor'}
+  >
+    <path d={real.path} />
+  </svg>
+) : (
+  <span class={`brand brand-geo ${cls}`} data-placeholder>
+    <ToolMark mark={mark} size={size} />
+  </span>
+)}
+
+<style>
+  .brand { display: block; flex: none; }
+  /* O traço geométrico usa o acento — assim lê como escolha nossa,
+     não como logo que faltou carregar. */
+  .brand-geo { display: inline-flex; color: var(--acento); }
+</style>

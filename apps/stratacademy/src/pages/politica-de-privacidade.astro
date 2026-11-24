@@ -1,0 +1,349 @@
+---
+// Política de privacidade — escrita a partir do que o site REALMENTE faz.
+//
+// STATUS: aprovada internamente, sem revisão jurídica externa.
+//   Aprovada por Helbert Paranhos, responsável, em 2026-09-09.
+//   Não houve revisão por advogado.
+//
+// O texto é fiel ao código — foi escrito lendo lib/captacao.ts e
+// functions/api/lead.ts —, mas não é peça jurídica.
+//
+// Pontos que mereceriam revisão jurídica externa, como referência para quando
+// ela houver:
+//   · transferência internacional (PostHog, Meta, Supabase, Cloudflare)
+//   · prazos de retenção, que hoje descrevem a prática e não um compromisso
+//   · o dado do funil, que é dado de negócio do titular
+//   · a base legal de cada tratamento, em especial legítimo interesse
+//
+// REGRA: ao mudar o que o site coleta, esta política se atualiza na mesma
+// tarefa. É a única parte do site que fica errada em silêncio — nenhum build
+// quebra e nenhum teste pega quando ela deixa de descrever o código.
+//
+// ÚLTIMA ATUALIZAÇÃO TÉCNICA: 8 de setembro de 2026.
+// O que mudou nela: o diagnóstico do funil passou a enviar a URL com as etapas e
+// os números digitados (custom.contexto_url no payload), o Cloudflare Turnstile
+// entrou em todos os formulários, e os direitos do titular foram listados com o
+// artigo da LGPD.
+//
+// O que o site faz, em resumo: consentimento antes de qualquer rastreio,
+// PostHog + Meta + Rastro (server-side), captura de lead via
+// /api/lead (Cloudflare Pages Function) -> n8n -> Hermes -> Listmonk/Supabase.
+import RubikLayout from '../layouts/RubikLayout.astro';
+import { SITE, CANAIS } from '../consts';
+
+const atualizacao = '8 de setembro de 2026';
+
+const dados = [
+  {
+    o: 'E-mail e nome',
+    quando: 'Quando você se inscreve na newsletter ou pede material',
+    porque: 'Enviar o conteúdo que você pediu e comunicações sobre nossos produtos',
+    base: 'Consentimento',
+  },
+  {
+    o: 'Telefone',
+    quando: 'Só se você nos escrever pelo WhatsApp',
+    porque: 'Responder e dar continuidade ao atendimento',
+    base: 'Consentimento e execução de contrato',
+  },
+  {
+    o: 'Dados de navegação',
+    quando: 'Páginas visitadas, origem do acesso, cliques em botões',
+    porque: 'Entender o que funciona no site e melhorar o conteúdo',
+    base: 'Consentimento',
+  },
+  {
+    o: 'Os números do seu funil',
+    quando: 'Só quando você pede o diagnóstico da calculadora de funil de vendas',
+    porque: 'Escrever a leitura do seu funil e enviar por e-mail — sem eles não há o que escrever',
+    base: 'Consentimento',
+  },
+  {
+    o: 'Sinais anti-robô',
+    quando: 'Ao enviar qualquer formulário — IP e sinais do navegador, pelo Cloudflare Turnstile',
+    porque: 'Distinguir pessoa de robô e impedir que a nossa operação seja inundada por envios falsos',
+    base: 'Legítimo interesse (segurança da informação)',
+  },
+  {
+    o: 'Identificadores de anúncio',
+    quando: 'Cookies `_fbp` e `_fbc` da Meta, se você aceitou',
+    porque: 'Medir o resultado de campanhas e evitar contar a mesma conversão duas vezes',
+    base: 'Consentimento',
+  },
+];
+
+const parceiros = [
+  { nome: 'PostHog', papel: 'Analytics de produto — como as páginas são usadas', onde: 'Estados Unidos' },
+  { nome: 'Meta (Facebook/Instagram)', papel: 'Medição de campanhas, se você aceitou cookies', onde: 'Estados Unidos' },
+  { nome: 'Rastro', papel: 'Nossa própria medição server-side', onde: 'Brasil, infraestrutura própria' },
+  { nome: 'Listmonk', papel: 'Envio da newsletter', onde: 'Brasil, infraestrutura própria' },
+  { nome: 'Supabase', papel: 'Banco de dados do relacionamento', onde: 'Estados Unidos' },
+  { nome: 'Hotmart', papel: 'Processamento de pagamento de eventos e mentoria', onde: 'Brasil' },
+  { nome: 'Cloudflare', papel: 'Entrega do site e a função que recebe os formulários', onde: 'Rede global' },
+  { nome: 'Cloudflare Turnstile', papel: 'Verificação anti-robô nos formulários', onde: 'Rede global' },
+  { nome: 'YouTube', papel: 'Vídeos — só carrega quando você clica em assistir', onde: 'Estados Unidos' },
+];
+
+// Os direitos do art. 18 da LGPD, na ordem dos incisos. A lei chama de
+// "titular" a pessoa a quem os dados se referem — é você.
+const direitos = [
+  { inciso: 'I', d: 'Confirmar que existe tratamento de dados seus' },
+  { inciso: 'II', d: 'Acessar os dados que temos sobre você' },
+  { inciso: 'III', d: 'Corrigir dado incompleto, inexato ou desatualizado' },
+  { inciso: 'IV', d: 'Pedir anonimização, bloqueio ou eliminação de dado desnecessário, excessivo ou tratado fora da lei' },
+  { inciso: 'V', d: 'Pedir a portabilidade dos seus dados para outro fornecedor' },
+  { inciso: 'VI', d: 'Pedir a eliminação dos dados tratados com base no seu consentimento' },
+  { inciso: 'VII', d: 'Saber com quem compartilhamos seus dados, públicos e privados' },
+  { inciso: 'VIII', d: 'Ser informado sobre a possibilidade de não consentir, e o que acontece se você negar' },
+  { inciso: 'IX', d: 'Revogar o consentimento a qualquer momento' },
+  { inciso: 'X', d: 'Pedir revisão de decisão tomada só por sistema automatizado que afete seus interesses' },
+];
+
+const faq = [
+  { q: 'Vocês vendem meus dados?', a: 'Não. Nunca vendemos, alugamos nem cedemos dados pessoais. Compartilhamos apenas com os operadores listados nesta página, e só no necessário para o serviço funcionar.' },
+  { q: 'O que acontece se eu recusar os cookies?', a: 'O site funciona normalmente. Nenhum script de analytics ou de anúncio carrega, e nenhum evento é enviado. Você só perde a possibilidade de o conteúdo ser melhorado com base no seu uso.' },
+  { q: 'Como eu saio da newsletter?', a: 'Todo e-mail tem link de cancelamento no rodapé — um clique e você sai, sem precisar responder nada. Também pode pedir pelo canal de contato.' },
+  { q: 'Vocês usam meus dados para treinar IA?', a: 'Não. Seus dados pessoais não alimentam treinamento de modelo, nem nosso nem de terceiro.' },
+  { q: 'Quanto tempo vocês guardam meus dados?', a: 'Enquanto a relação existir. Se você cancelar a inscrição, removemos da base de envio; alguns registros podem ser mantidos pelo prazo legal de guarda fiscal ou para defesa em processo, como a lei permite.' },
+];
+---
+<RubikLayout
+  title={`Política de Privacidade — ${SITE.name}`}
+  description="Como a Strat Academy trata seus dados: o que coletamos, por quê, com quem compartilhamos e como você exerce seus direitos sob a LGPD."
+  faq={faq}
+  breadcrumb={[{ name: 'Início', url: '/' }, { name: 'Política de Privacidade', url: '/politica-de-privacidade/' }]}
+>
+  <div class="topo">
+    <div class="aura" aria-hidden="true"></div>
+    <section class="hero wrap" style="max-width: var(--max-texto); padding-block: var(--s6) var(--s4)">
+      <p class="kicker">Privacidade</p>
+      <h1 style="font-size: clamp(2rem, 4.4vw, 3rem)">Política de Privacidade</h1>
+      <p class="lead">
+        O resumo honesto: só rastreamos se você aceitar, não vendemos seus dados e
+        você sai da lista com um clique.
+      </p>
+      <p class="hero-nota">Última atualização: {atualizacao}</p>
+    </section>
+  </div>
+
+  <section class="wrap secao" style="max-width: var(--max-texto)">
+    <div class="prose">
+      <h2>Quem é o responsável</h2>
+      <p>
+        Esta política se aplica ao site <strong>{SITE.name}</strong> e aos serviços
+        oferecidos a partir dele. O tratamento dos seus dados é feito pela Strat, que
+        atua como <em>controladora</em> nos termos da Lei nº 13.709/2018 (LGPD).
+      </p>
+      <p>
+        Para qualquer questão sobre dados pessoais, fale pelo
+        <a href="/contato/">canal de contato</a> ou pelo
+        <a href={CANAIS.whatsappB2B} target="_blank" rel="noopener">WhatsApp</a>.
+      </p>
+
+      <h2>O que coletamos e por quê</h2>
+      <p>
+        Não pedimos nada que não seja necessário. Você navega no site inteiro sem
+        fornecer dado nenhum — só coletamos quando você preenche um formulário ou
+        aceita os cookies.
+      </p>
+    </div>
+
+    <div class="tabela-rola" style="margin-top: var(--s4)">
+      <table>
+        <thead>
+          <tr><th>Dado</th><th>Quando</th><th>Para quê</th><th>Base legal</th></tr>
+        </thead>
+        <tbody>
+          {dados.map((d) => (
+            <tr><td>{d.o}</td><td>{d.quando}</td><td>{d.porque}</td><td>{d.base}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="prose" style="margin-top: var(--s5)">
+      <h2>Cookies e rastreamento</h2>
+      <p>
+        <strong>Nada é carregado antes do seu aceite.</strong> Ao entrar, você vê um
+        aviso com duas opções — aceitar ou recusar. Enquanto você não decide, e se
+        você recusar, nenhum script de analytics ou de anúncio é carregado e nenhum
+        evento sai do seu navegador.
+      </p>
+      <p>Se você aceitar, passamos a registrar:</p>
+      <ul>
+        <li>Páginas que você visita e por onde chegou</li>
+        <li>Cliques em botões que levam a cadastro, contato ou compra</li>
+        <li>Envio de formulário de newsletter</li>
+      </ul>
+      <p>
+        Esses eventos vão para o PostHog, para a Meta — se você aceitou — e para o
+        nosso próprio servidor de medição. Usamos o mesmo identificador de evento
+        nos três para não contar a mesma ação mais de uma vez.
+      </p>
+      <p>
+        Sua escolha fica guardada no seu próprio navegador. Para mudar de ideia, limpe
+        os dados do site nas configurações do navegador e o aviso aparece de novo.
+      </p>
+
+      <h2>Vídeos</h2>
+      <p>
+        Os vídeos de depoimento usam um player que <strong>só carrega o YouTube quando
+        você clica em assistir</strong>. Até lá, o que você vê é apenas uma imagem, e o
+        YouTube não recebe nada sobre a sua visita. Ao clicar, valem os termos do
+        YouTube — e usamos o domínio sem cookies de rastreio deles.
+      </p>
+
+      <h2>Com quem compartilhamos</h2>
+      <p>
+        Só com quem opera parte do serviço, e apenas no necessário. Nunca vendemos,
+        alugamos ou cedemos dados pessoais.
+      </p>
+    </div>
+
+    <div class="tabela-rola" style="margin-top: var(--s4)">
+      <table>
+        <thead><tr><th>Parceiro</th><th>Para quê</th><th>Onde processa</th></tr></thead>
+        <tbody>
+          {parceiros.map((p) => (
+            <tr><td>{p.nome}</td><td>{p.papel}</td><td>{p.onde}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="prose" style="margin-top: var(--s5)">
+      <h2>Transferência internacional</h2>
+      <p>
+        Alguns desses parceiros processam dados fora do Brasil, como indicado na
+        tabela. A transferência acontece com base no seu consentimento e nas
+        salvaguardas contratuais oferecidas por cada fornecedor, conforme os
+        artigos 33 e seguintes da LGPD.
+      </p>
+
+      <h2>A calculadora de funil e o diagnóstico</h2>
+      <p>
+        A <a href="/ferramentas/calculadora-de-funil-de-vendas/">calculadora de funil de vendas</a>
+        roda inteira no seu navegador. Enquanto você digita as etapas e os números,
+        <strong>nada é enviado para nós</strong> — não há servidor no meio do cálculo, e você
+        confere isso sozinho na aba Rede do navegador. O link de compartilhamento também não
+        passa por aqui: os números vão codificados na própria URL.
+      </p>
+      <p>
+        Há um momento, e só um, em que esses números vêm para nós: <strong>quando você pede o
+        diagnóstico por e-mail</strong>. Aí o site envia, junto com o seu nome, e-mail e telefone:
+      </p>
+      <ul>
+        <li>
+          <strong>A URL da página com o seu funil</strong> — ela carrega, na própria query, o
+          nome de cada etapa e o número que você digitou, mais o ticket médio. É o que permite
+          remontar o funil do seu lado de cá e escrever a leitura. Sem isso não há diagnóstico
+          a enviar.
+        </li>
+        <li>
+          <strong>O endereço da página</strong> em que você estava e um identificador do envio,
+          para não registrar o mesmo pedido duas vezes.
+        </li>
+        <li>
+          <strong>Seu IP e o país</strong>, que a Cloudflare nos informa junto com a requisição,
+          para auditoria e para conter abuso.
+        </li>
+      </ul>
+      <p>
+        Esses números são <strong>dado de negócio seu</strong>, e nós tratamos assim: eles são
+        usados para escrever o seu diagnóstico e entender que tipo de funil chega até nós — nunca
+        são vendidos, nem repassados a terceiro, nem usados para te identificar em outro lugar.
+        Ficam guardados <strong>enquanto você estiver na nossa base de relacionamento</strong>, e
+        saem junto quando você pede a exclusão ou cancela a inscrição.
+      </p>
+
+      <h2>Verificação anti-robô (Cloudflare Turnstile)</h2>
+      <p>
+        Todos os formulários do site usam o <strong>Cloudflare Turnstile</strong> para separar
+        pessoa de robô. Ele é o substituto do CAPTCHA: na maioria das vezes você não vê nada e
+        não precisa clicar em nada.
+      </p>
+      <p>
+        Para funcionar, o Turnstile processa o <strong>seu IP e sinais do seu navegador</strong>
+        (características do dispositivo e padrão de interação com a página). Ele é carregado
+        <strong>só quando você interage com um formulário</strong> — ao abrir o pedido de
+        diagnóstico ou ao clicar no campo da newsletter —, nunca no simples carregamento da
+        página. Segundo a Cloudflare, o Turnstile não usa esses sinais para publicidade nem para
+        criar perfil de navegação.
+      </p>
+      <p>
+        A base legal aqui é o <strong>legítimo interesse</strong> em segurança da informação:
+        sem essa verificação, qualquer pessoa poderia inundar a nossa operação com envios falsos
+        — e cada envio falso vira uma mensagem disparada em nome de alguém que nunca pediu nada.
+      </p>
+
+      <h2>Por quanto tempo guardamos</h2>
+      <ul>
+        <li><strong>Newsletter:</strong> enquanto você estiver inscrito. Ao cancelar, saímos com você da base de envio.</li>
+        <li><strong>Dados de navegação:</strong> pelo prazo de retenção de cada ferramenta de analytics.</li>
+        <li><strong>Registros de compra:</strong> pelo prazo legal de guarda fiscal.</li>
+        <li><strong>Os números do seu funil:</strong> enquanto você estiver na base de relacionamento. Saem junto com o resto quando você pede exclusão ou cancela a inscrição.</li>
+        <li><strong>Sinais anti-robô:</strong> não ficam conosco — o token é verificado com a Cloudflare no momento do envio e descartado; guardamos apenas o IP do envio, junto do registro do lead.</li>
+      </ul>
+      <p>
+        Podemos manter o mínimo necessário para cumprir obrigação legal ou para
+        defesa em processo, como a LGPD permite.
+      </p>
+
+      <h2>Seus direitos como titular</h2>
+      <p>
+        A LGPD chama de <strong>titular</strong> a pessoa a quem os dados se referem — no
+        caso desta página, você. O artigo 18 da lei garante que você possa, a qualquer
+        momento e sem custo:
+      </p>
+      <ul>
+        {direitos.map((d) => (
+          <li><strong>{d.inciso}.</strong> {d.d}</li>
+        ))}
+      </ul>
+      <p>
+        Para exercer qualquer um deles, escreva pelo
+        <a href="/contato/">canal de contato</a> ou pelo
+        <a href={CANAIS.whatsappB2B} target="_blank" rel="noopener">WhatsApp</a>.
+        Respondemos em até 15 dias, como a lei pede. Só pedimos confirmação de que
+        você é o titular antes de mexer nos dados — é a proteção contra alguém pedir
+        exclusão ou acesso no seu lugar.
+      </p>
+      <p>
+        Se a resposta não resolver, você pode reclamar à
+        <strong>ANPD</strong> (Autoridade Nacional de Proteção de Dados), em
+        <a href="https://www.gov.br/anpd" target="_blank" rel="noopener">gov.br/anpd</a>.
+      </p>
+
+      <h2>Segurança</h2>
+      <p>
+        O site trafega por HTTPS, os segredos ficam num cofre de credenciais e o
+        acesso aos sistemas é restrito a quem precisa. Nenhum sistema é
+        inviolável — se acontecer um incidente com risco relevante a você, vamos
+        comunicar você e a ANPD, como a lei exige.
+      </p>
+
+      <h2>Menores de idade</h2>
+      <p>
+        O site não é direcionado a menores de 18 anos e não coletamos
+        intencionalmente dados de crianças e adolescentes. Se identificarmos um
+        cadastro assim, ele é removido.
+      </p>
+
+      <h2>Mudanças nesta política</h2>
+      <p>
+        Quando algo mudar de forma relevante, atualizamos a data no topo desta
+        página. Vale a pena reler de vez em quando.
+      </p>
+    </div>
+  </section>
+
+  <section class="wrap secao" style="max-width: var(--max-texto)">
+    <div class="sec-head">
+      <p class="kicker">Dúvidas</p>
+      <h2>O que costumam perguntar</h2>
+    </div>
+    <div class="faq">
+      {faq.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
+    </div>
+  </section>
+</RubikLayout>

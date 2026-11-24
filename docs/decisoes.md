@@ -16,6 +16,38 @@ até 0,218 no `.mesh`. Decisão do Helbert no item (23/11): o H1 aparece desde o
 - **Vídeos com `preload="none"`:** o script já toca cada um quando entra na tela; o pôster continua.
 - **Cache na borda dos `.mp4`** de `assets.agenciastrat.com.br` é regra da zona na Cloudflare, com o Helbert.
 
+## 2026-11-23 · Blog da Academy no orçamento do peso sem mudar o visual (Jhonathan, WEB-49)
+O site veio do horus com 17 páginas fora do orçamento no celular (blog com LCP de 3,5 a 4,1 s). Quatro causas, todas
+corrigidas sem mexer em texto, layout nem tracking:
+- **Fotos dos posts em tamanho cheio:** vinham do R2 com 1600 px e até 274 KB, carregadas de cara (no post pela
+  imagem do Markdown, nas listagens pelo `<image>` do SVG da `CapaPost`, que não aceita `loading="lazy"`). Com
+  `image.domains` liberado para `assets.stratacademy.com.br`, o build baixa cada foto e gera a versão do tamanho em
+  que ela aparece (capa do card 800 px, destaque 1200 px, webp); as do Markdown ganham `srcset`, `sizes`,
+  `loading="lazy"` e largura/altura (`image.layout: 'constrained'`, sem os estilos globais do Astro).
+- **Preload de três fontes que o site não usa** (Clash Display, Switzer e JetBrains Mono, ~140 KB): o site é todo em
+  Rubik e na mono do sistema. Os preloads saíram; os arquivos ficam em `public/fonts/` até a limpeza do horus.
+- **Material Symbols do Google Fonts** travava a renderização (~650 ms): o subconjunto dos ícones usados agora é
+  servido pelo app (`public/fonts/MaterialSymbolsOutlined-subset.woff2`). Ícone novo pede baixar o subconjunto de novo.
+- **Print do criador de funil** (PNG de 317 KB em `public/`) foi para `src/assets/blog/`, e o build gera as larguras
+  em webp. Isso substitui o envio dele ao R2 que estava pendente.
+Medido com as opções da checagem `peso`: post 1,4 a 1,7 s, `/blog/` 2,1 s e home 2,0 s, notas de 99 a 100.
+
+## 2026-11-17 · Site e blog da Academy no repositório (Jhonathan, WEB-49)
+- **Igual ao horus:** visual, textos e URLs do `horus/apps/stratacademy` (com os PRs #38 e #39 de lá, WEB-100 e
+  WEB-101). O `@horus/seo` veio copiado para `apps/stratacademy/src/horus/seo`, com o mesmo nome de import; o
+  `@horus/ui` e o `@horus/config` não vieram (o primeiro não era usado; o schema do blog já é o `@strat/conteudo`).
+- **Tracking pelo `<Tracking>` do kit**, no lugar do `@horus/analytics`: o snippet do Rastro expõe o mesmo
+  `window.stratTrack`, e o aviso de cookies passa a ser o do Rastro (mesma chave `strat_consent`). Todas as URLs em
+  `banner`, como o horus faz hoje (nada antes do aceite); por isso os produtos `calculadora-funil`,
+  `calculadora-whatsapp` e `criador-funil` do Rastro vão de `off` para `strict` (pedido no item).
+- **Catálogo com uma linha por URL** (88 da Academy, geradas do build), sem curinga: post novo leva a linha dele no
+  mesmo PR (o `/blog-publicar` passa a fazer isso no WEB-50).
+- **Pacotes das ferramentas pelo GitHub Packages** (`@strat-ai-horus-os/funil-nucleo`, `funil-react` e
+  `whatsapp-nucleo`), não copiados: o build pede o segredo `NPM_TOKEN` (só `read:packages`) no Pages
+  `sites-stratacademy` e na CI (`pages.md`).
+- **Links internos com barra no fim** (a página é a mesma; tira um redirecionamento por clique) e o `sitemap-index.xml`
+  e o `sitemap-0.xml` do horus em 301 para o `sitemap.xml` do kit.
+
 ## 2026-11-19 · A Agência não manda `Contact` no clique do WhatsApp (Helbert, WEB-86)
 Decisão do Helbert no Plane (19/11, 17h04): fica como está. A Agência (sem Rastro, pixel pelo `m.js`) otimiza por
 `Lead` e `LeadQualificado`, que saem do servidor do MetricaaS; o clique no WhatsApp segue só como `wa_click` no
