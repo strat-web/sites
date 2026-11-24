@@ -1,0 +1,115 @@
+<meta name="theme-color" content="#fafaf7">
+<link rel="icon" href="/midia/favicon/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="/midia/favicon/favicon-192.png">
+<link rel="apple-touch-icon" href="/midia/favicon/favicon-180.png">
+<link rel="preload" href="/fontes/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Fontes do próprio app (public/fontes/, licença OFL ao lado), no lugar da folha do Google, que bloqueava a renderização (mesma troca do WEB-87 e da bio da StratAI no WEB-35). Mesmo subset latin e mesmos arquivos variáveis que o Google servia: um arquivo cobre todos os pesos. */
+@font-face{font-family:"Space Grotesk";font-style:normal;font-weight:400 700;font-display:swap;src:url("/fontes/space-grotesk-latin.woff2") format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:"JetBrains Mono";font-style:normal;font-weight:400 700;font-display:swap;src:url("/fontes/jetbrains-mono-latin.woff2") format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+:root{--bg:#fafaf7;--bg-2:#f1f0eb;--card:#fff;--line:#e4e2db;--line-2:#cfccc2;--ink:#1e1e1c;--ink-2:#55544e;--mute:#8a887f;--dark:#191919;
+--red:#ff1f1f;--blue:#57a1ea;--purple:#bb44f2;--lime:#c6ff34;
+--font:"Space Grotesk",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.45 var(--font);min-height:100vh;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.wrap{max-width:460px;margin:0 auto;padding:26px 16px 0;position:relative}
+/* nuvens de cor no topo */
+.top-clip{position:relative}
+.mesh-box{position:absolute;left:0;right:0;top:-120px;height:560px;overflow:hidden;pointer-events:none;z-index:-1;-webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}
+.mesh{position:absolute;left:50%;top:0;width:min(1100px,180vw);transform:translateX(-50%);height:420px;filter:blur(60px);opacity:.38}
+.mesh i{position:absolute;width:240px;height:240px;border-radius:50%;animation:float 12s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,20px)}}
+/* degrau (sombra em camadas do logo) */
+.stack{position:relative;isolation:isolate}
+.stack::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;
+box-shadow:-4px 4px 0 var(--lime),-8px 8px 0 var(--purple),-12px 12px 0 var(--blue),-16px 16px 0 var(--red)}
+.head{text-align:center}
+.av{width:96px;height:96px;border-radius:50%;margin:0 auto 14px;overflow:hidden;border:3px solid var(--card);box-shadow:0 0 0 1px var(--line)}
+.av img{width:100%;height:100%;object-fit:cover;display:block}
+h1{font-size:23px;font-weight:700;letter-spacing:-.02em}
+.tag{margin-top:6px;font-size:18px;font-weight:600;letter-spacing:-.02em;line-height:1.25;text-wrap:balance}
+/* a palavra que gira mora numa linha só dela: assim a frase não muda de quebra a cada palavra */
+.tag .rot{display:table;margin:4px auto 0;padding:0 8px;border-radius:6px;color:var(--ink);transition:background .3s}
+.meta{margin-top:10px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.meta{align-items:center}
+.meta span{font:500 12px var(--mono);padding:5px 9px;border-radius:99px;background:var(--card);border:1px solid var(--line);color:var(--ink-2)}
+/* selos oficiais: pequenos no celular, um pouco maiores no computador */
+.seal{height:34px;width:auto;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:2px 6px}
+@media (min-width:600px){.seal{height:38px;padding:3px 7px;border-radius:10px}}
+/* Raio-X */
+.xray{margin:26px 16px 0 16px;background:var(--dark);color:#f3f3ee;border-radius:18px;padding:20px 18px}
+.xray small{font:700 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--lime)}
+.xray h2{font-size:22px;letter-spacing:-.02em;line-height:1.15;margin-top:6px}
+.xray p.sub{font-size:14px;color:#b9b9b1;margin-top:6px}
+/* formulário centralizado, igual ao resto da bio */
+.xray{text-align:center}
+.xray small{display:block}
+.xray .opts button{text-align:center}
+.xray .cap{text-align:center}
+/* da 2ª pergunta em diante: somem o título e o subtítulo, ficam o selo, as barrinhas e a pergunta */
+.xray.adiante > h2,.xray.adiante > p.sub{display:none}
+.done .nl{display:block;white-space:nowrap}
+.steps{display:flex;gap:4px;margin:16px 0 12px}
+.steps i{flex:1;height:4px;border-radius:2px;background:#353535;transition:.3s}
+.steps i.on:nth-child(1){background:var(--red)}.steps i.on:nth-child(2){background:var(--blue)}.steps i.on:nth-child(3){background:var(--purple)}
+.q{display:none}.q.on{display:block;animation:up .3s ease}
+@keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.q b{display:block;font-size:16px;margin-bottom:10px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opts button{background:#242424;border:1px solid #353535;border-radius:12px;padding:12px 10px;font-size:14px;font-weight:500;text-align:left;color:#f3f3ee;transition:.15s}
+.opts button:hover,.opts button:focus-visible{border-color:var(--lime)}
+.opts button:active{transform:scale(.97)}
+.done{text-align:center}
+.done .big{font-size:40px}
+.go{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;background:var(--lime);color:var(--dark);font-weight:700;font-size:17px;border-radius:12px;padding:15px}
+.fine2{font:400 12px/1.5 var(--mono);color:#9a9a92;margin-top:10px;text-align:center}
+.fine2 a{color:#cfcfc7;text-decoration:underline;text-underline-offset:3px}
+/* captação no fim do Raio-X */
+.cap{display:grid;gap:6px;margin-top:14px;text-align:left}
+.cap label{font-size:14px;font-weight:600;color:#e6e6df;margin-top:6px}
+.cap input{width:100%;min-height:50px;background:#242424;border:1px solid #3a3a3a;border-radius:12px;padding:0 14px;font:500 16px var(--font);color:#f3f3ee;transition:border-color .15s}
+.cap input::placeholder{color:#7d7d76}
+.cap input:focus{outline:none;border-color:var(--lime)}
+.cap input[aria-invalid="true"]{border-color:var(--red)}
+.xray .cap .err{font:500 13px/1.35 var(--font);letter-spacing:0;text-transform:none;color:#ff8a8a}
+.cap .go{margin-top:10px;width:100%;border:0;cursor:pointer}
+.cap .go:disabled{opacity:.6;cursor:wait}
+.ok-p{font-size:14px;color:#b9b9b1;margin-top:-2px}
+/* seções */
+.lbl{font:500 12px var(--mono);color:var(--mute);margin:34px 0 12px;display:flex;gap:8px;align-items:center}
+.lbl::before,.lbl::after{content:"";flex:1;height:1px;background:var(--line)}  /* "quem faz" no meio, com uma linha de cada lado */
+/* botões site e WhatsApp */
+.ctas{display:grid;gap:10px;margin-top:34px}
+.cta{display:flex;align-items:center;justify-content:center;gap:10px;min-height:54px;border-radius:12px;font-weight:700;font-size:17px;border:1px solid var(--line-2);background:var(--card);transition:transform .15s,box-shadow .15s,border-color .15s}
+.cta-site:hover{border-color:var(--ink)}
+.cta-site .ar{font-family:var(--mono)}
+.cta-wa{background:var(--dark);color:#fff;border-color:var(--dark)}
+.cta-wa:hover{transform:translate(3px,-3px);box-shadow:-2px 2px 0 var(--lime),-4px 4px 0 var(--purple),-6px 6px 0 var(--blue),-8px 8px 0 var(--red)}
+.cta:active{transform:scale(.98)}
+/* time */
+.team{display:flex;justify-content:center;margin-top:4px}
+.team img{object-position:50% 25%;flex:none;width:48px;height:48px;border-radius:50%;object-fit:cover;border:3px solid var(--bg);margin-left:-12px;filter:grayscale(1);transition:.25s}
+.team img:first-child{margin-left:0}
+.team img:hover{filter:none;transform:translateY(-4px)}
+.team-t{text-align:center;font-size:14px;color:var(--ink-2);margin-top:10px}
+.team-t b{color:var(--ink)}
+.soc{display:flex;justify-content:center;gap:10px;margin-top:26px}
+.soc a{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--card);display:grid;place-items:center}
+.soc svg{width:20px;height:20px}
+footer{margin-top:34px}
+.degrau{height:8px;display:flex}.degrau i{flex:1}
+.fine{font:400 12px var(--mono);color:var(--mute);text-align:center;padding:12px 16px 26px}
+.tbd{outline:1px dashed #d9b93a;outline-offset:2px}
+/* desktop: a bio é mais baixa que a tela. O conteúdo fica no meio da altura e a faixa do rodapé
+   desce pro fim da tela (as duas margens automáticas dividem a sobra igualmente) */
+@media (min-width:700px){
+  body{display:flex;flex-direction:column}
+  .top-clip{margin-top:auto}
+  footer{margin-top:auto}
+  body > main.wrap{padding-bottom:34px}   /* o respiro antes da faixa (a margem do footer virou auto) */
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
