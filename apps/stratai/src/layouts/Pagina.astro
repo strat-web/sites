@@ -1,0 +1,204 @@
+---
+// Casca das páginas novas da StratAI (WEB-34 em diante, mapa em docs/planos/stratai-estrutura.md): o Layout do kit
+// (Seo, JSON-LD da marca e o <Tracking> da linha do catálogo), o menu e o rodapé da seção 5 do mapa e o visual da
+// home (grafite e lima, Space Grotesk servida pelo app). Menu e rodapé só levam a páginas que já existem: cada lote
+// acrescenta as suas aqui (ver LINKS).
+import Layout from '@strat/kit/Layout.astro';
+import Breadcrumb from '@strat/kit/Breadcrumb.astro';
+
+interface Props {
+  titulo: string;
+  descricao: string;
+  perfil: 'lead' | 'conteudo';
+  trilha: { nome: string; caminho: string }[];
+  tipo?: 'website' | 'article';
+}
+const { titulo, descricao, perfil, trilha, tipo = 'website' } = Astro.props;
+
+// O diagnóstico é o convite da marca (voz da StratAI): a home, na seção #diagnostico.
+const DIAGNOSTICO = '/#diagnostico';
+const AGENCIA = 'https://agenciastrat.com.br/';
+const MENU = [
+  { nome: 'Agente no WhatsApp', href: '/agente-de-ia-whatsapp/' },
+  { nome: 'Raio-X de IA', href: '/raio-x/' },
+  { nome: 'Casos', href: '/casos/' },
+  { nome: 'Parcerias', href: '/parcerias/' },
+  { nome: 'Sobre', href: '/sobre/' },
+];
+const RODAPE = [
+  { titulo: 'Produtos', links: [{ nome: 'Agente de IA no WhatsApp', href: '/agente-de-ia-whatsapp/' }] },
+  {
+    titulo: 'StratAI',
+    links: [
+      { nome: 'Sobre', href: '/sobre/' },
+      { nome: 'Agência de IA em Joinville', href: '/agencia-de-ia-joinville/' },
+      { nome: 'Casos', href: '/casos/' },
+      { nome: 'Parcerias', href: '/parcerias/' },
+      { nome: 'Política de privacidade', href: '/politica-de-privacidade/' },
+    ],
+  },
+  { titulo: 'Conteúdo', links: [{ nome: 'Raio-X de IA', href: '/raio-x/' }] },
+  {
+    titulo: 'Grupo Strat',
+    links: [
+      { nome: 'Agência Strat', href: AGENCIA },
+      { nome: 'Strat Academy', href: 'https://stratacademy.com.br/' },
+      { nome: 'MetricaaS', href: 'https://metricaas.com.br/' },
+    ],
+  },
+];
+const atual = new URL(Astro.url).pathname;
+---
+<Layout marca="stratai" perfil={perfil} titulo={titulo} descricao={descricao} tipo={tipo} imagem="/midia/og.png">
+  <Fragment slot="head">
+    <meta name="theme-color" content="#191919" />
+    <link rel="icon" href="/midia/favicon/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/midia/favicon/favicon-192.png" />
+    <link rel="apple-touch-icon" href="/midia/favicon/favicon-180.png" />
+    <link rel="preload" href="/fontes/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin />
+  </Fragment>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+  <header class="topo">
+    <div class="faixa topo-faixa">
+      <a class="marca" href="/" aria-label="StratAI, página inicial">Strat<span>.ai</span></a>
+      <details class="menu">
+        <summary>Menu</summary>
+        <nav aria-label="Principal">
+          {MENU.map((m) => <a href={m.href} aria-current={atual === m.href ? 'page' : undefined}>{m.nome}</a>)}
+          <a href={AGENCIA}>Agência</a>
+          <a class="botao botao-p" href={DIAGNOSTICO} data-strat-cta="topo-diagnostico">Fazer diagnóstico</a>
+        </nav>
+      </details>
+      <script is:inline>
+        // <details> fechado esconde o <nav> em qualquer largura, e o CSS não o mostra: no computador o menu abre aqui.
+        // Sem JavaScript, o botão "Menu" continua aparecendo e abre a lista.
+        (function () {
+          var d = document.querySelector('.topo details.menu');
+          if (!d || !window.matchMedia) return;
+          var mq = window.matchMedia('(min-width:960px)');
+          var ajustar = function () { d.open = mq.matches; };
+          ajustar();
+          if (mq.addEventListener) mq.addEventListener('change', ajustar); else mq.addListener(ajustar);
+        })();
+      </script>
+    </div>
+  </header>
+  <main id="conteudo">
+    <div class="faixa"><Breadcrumb itens={trilha} class="trilha" /></div>
+    <slot />
+  </main>
+  <footer class="rodape">
+    <div class="faixa rodape-grade">
+      <div class="rodape-marca">
+        <a class="marca" href="/">Strat<span>.ai</span></a>
+        <p>Agentes de IA, automações e sistemas para pequenas e médias empresas. Braço de tecnologia do Grupo Strat.</p>
+        <address>
+          StratAI · Rua Aubé, 777, Boa Vista, Joinville/SC, 89205-000<br />
+          WhatsApp <a href="https://wa.me/5547991658478">(47) 99165-8478</a> · CNPJ 54.740.945/0001-79
+        </address>
+        <p class="redes">
+          <a href="https://www.instagram.com/strat.ai/" rel="me">Instagram</a>
+          <a href="https://www.linkedin.com/company/strataibr/" rel="me">LinkedIn</a>
+        </p>
+      </div>
+      {RODAPE.map((c) => (
+        <div class="rodape-col">
+          <p class="mono">{c.titulo}</p>
+          {c.links.map((l) => <a href={l.href}>{l.nome}</a>)}
+        </div>
+      ))}
+    </div>
+    <div class="faixa rodape-base">
+      <p class="mono">© 2026 StratAI</p>
+      <p class="mono destaque">Toda alavanca tem um número</p>
+    </div>
+  </footer>
+</Layout>
+
+<style is:global>
+@font-face{font-family:"Space Grotesk";font-style:normal;font-weight:400 700;font-display:swap;src:url("/fontes/space-grotesk-latin.woff2") format("woff2")}
+:root{--bg:#191919;--bg-2:#1f1f1f;--card:#242424;--line:#353535;--ink:#f3f3ee;--ink-2:#b9b9b1;--mute:#929289;--lime:#c6ff34;--lime-ink:#141414;--f:"Space Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:ui-monospace,"JetBrains Mono",Consolas,monospace;--r:14px}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 var(--f)}
+a{color:inherit}
+h1,h2,h3{margin:0;line-height:1.12;letter-spacing:-.02em;font-weight:700}
+p{margin:0}
+.faixa{width:100%;max-width:1080px;margin:0 auto;padding:0 20px}
+.pular{position:absolute;left:-9999px}.pular:focus{left:12px;top:12px;z-index:50;background:var(--lime);color:var(--lime-ink);padding:8px 12px;border-radius:8px}
+.mono{font:500 .76rem/1.3 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.destaque,.hl{color:var(--lime)}
+.botao{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 24px;border-radius:999px;background:var(--lime);color:var(--lime-ink);font:600 1rem/1 var(--f);text-decoration:none}
+.botao:hover{background:#d6ff6a}
+.botao-p{min-height:42px;padding:0 18px;font-size:.92rem}
+.botao-fantasma{background:transparent;color:var(--ink);border:1px solid #444}
+/* topo */
+.topo{position:sticky;top:0;z-index:40;background:rgba(25,25,25,.92);border-bottom:1px solid var(--line)}
+.topo-faixa{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:66px}
+.marca{font:700 1.3rem/1 var(--f);text-decoration:none}.marca span{color:var(--lime)}
+.menu summary{list-style:none;cursor:pointer;padding:10px 14px;border:1px solid var(--line);border-radius:999px;font-weight:600}
+.menu summary::-webkit-details-marker{display:none}
+.menu nav{position:absolute;right:20px;top:62px;display:flex;flex-direction:column;gap:4px;min-width:240px;padding:12px;background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r)}
+.menu nav a{padding:10px 12px;border-radius:10px;text-decoration:none}
+.menu nav a:not(.botao):hover,.menu nav a[aria-current]{background:var(--card)}
+.menu nav .botao{margin-top:6px}
+@media (min-width:960px){
+  .menu[open] summary{display:none}
+  .menu[open] nav{position:static;flex-direction:row;align-items:center;gap:2px;min-width:0;padding:0;background:none;border:0}
+  .menu nav a{padding:8px 12px;font-size:.95rem;color:var(--ink-2)}
+  .menu nav a:hover,.menu nav a[aria-current]{color:var(--ink);background:none}
+  .menu nav .botao{margin:0 0 0 8px;color:var(--lime-ink)}
+}
+/* trilha */
+.trilha{padding:18px 0 0}
+.trilha ol{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none;font:500 .8rem/1.4 var(--mono);color:var(--mute)}
+.trilha li+li::before{content:"/";margin-right:6px;color:var(--line)}
+.trilha a{text-decoration:none}.trilha a:hover{color:var(--ink)}
+/* blocos das páginas */
+.abre{padding:clamp(36px,6vw,72px) 0 clamp(40px,6vw,64px)}
+.abre h1{font-size:clamp(2rem,5vw,3.4rem);max-width:20ch;margin-top:14px}
+.abre .lead{color:var(--ink-2);font-size:1.15rem;max-width:62ch;margin-top:18px}
+.abre .acoes{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.bloco{padding:clamp(40px,6vw,72px) 0;border-top:1px solid var(--line)}
+.bloco h2{font-size:clamp(1.6rem,3.4vw,2.3rem);max-width:28ch;margin-top:12px}
+.bloco>.faixa>p,.bloco .texto{color:var(--ink-2);max-width:68ch;margin-top:16px}
+.bloco .texto p+p{margin-top:14px}
+.texto a,.cartao a.ir{color:var(--lime)}
+.grade{display:grid;gap:14px;margin-top:28px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.cartao{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.cartao h3{font-size:1.15rem}
+.cartao p{color:var(--ink-2);margin-top:8px;font-size:.97rem}
+.cartao .ir{display:inline-block;margin-top:12px;font-weight:600;text-decoration:none}
+.numero{font:700 clamp(2.2rem,5vw,3rem)/1 var(--f);color:var(--lime)}
+.passos{counter-reset:p;list-style:none;margin:28px 0 0;padding:0;display:grid;gap:12px}
+.passos li{counter-increment:p;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px 18px 64px;position:relative;color:var(--ink-2)}
+.passos li::before{content:counter(p,decimal-leading-zero);position:absolute;left:20px;top:18px;font:600 .9rem/1.6 var(--mono);color:var(--lime)}
+.passos b{color:var(--ink)}
+.conversa{max-width:440px;margin-top:24px;background:#0f1a14;border:1px solid #2c4a2f;border-radius:var(--r);padding:16px;display:grid;gap:8px;font-size:.95rem}
+.conversa .msg{max-width:85%;padding:8px 12px;border-radius:10px;background:#1f2c24}
+.conversa .msg.a{justify-self:end;background:#2c4a2f}
+.conversa .msg small{display:block;font:500 .7rem/1.4 var(--mono);color:var(--mute);margin-top:4px}
+.nota{font-size:.85rem;color:var(--mute);margin-top:10px}
+.nao-e{list-style:none;margin:20px 0 0;padding:0;display:grid;gap:8px;color:var(--ink-2)}
+.nao-e li::before{content:"✕";color:#ff6b6b;margin-right:10px}
+.final{text-align:center}
+.final h2{margin:12px auto 0}
+.final p{margin:14px auto 0}
+.final .botao{margin-top:26px}
+/* FAQ do kit */
+.kit-faq{width:100%;max-width:1080px;margin:0 auto;padding:clamp(40px,6vw,72px) 20px;border-top:1px solid var(--line)}
+.kit-faq h2{font-size:clamp(1.6rem,3.4vw,2.3rem)}
+.kit-faq details{margin-top:12px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 20px}
+.kit-faq summary{cursor:pointer;font-weight:600}
+.kit-faq details p{color:var(--ink-2);margin-top:10px}
+/* rodapé */
+.rodape{border-top:1px solid var(--line);margin-top:24px;padding:48px 0 28px;background:#141414}
+.rodape-grade{display:grid;gap:28px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.rodape-marca{grid-column:1/-1;max-width:520px}
+.rodape-marca p,.rodape address{color:var(--ink-2);font-size:.92rem;font-style:normal;margin-top:12px}
+.redes{display:flex;gap:16px}
+.rodape-col{display:flex;flex-direction:column;gap:8px;font-size:.95rem}
+.rodape-col a{color:var(--ink-2);text-decoration:none}.rodape-col a:hover{color:var(--ink)}
+.rodape-base{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:36px;padding-top:18px;border-top:1px solid var(--line)}
+@media (min-width:960px){.rodape-marca{grid-column:auto}}
+</style>

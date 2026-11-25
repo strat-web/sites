@@ -1,0 +1,102 @@
+---
+// Sobre a StratAI (WEB-34, Lote A): a ficha que Google e IA leem (seção 3 do mapa, docs/planos/stratai-estrutura.md).
+// Título sem a busca da /agencia-de-ia-joinville/ (revisão do Helbert de 19/11 e 23/11 no #14; seção 4).
+// Fatos e fonte: razão social, CNPJ e endereço da política de privacidade da StratAI; telefone e endereço de
+// docs/seo-geo.md; sócios, papéis, Imersão (presencial em Joinville) e Bootcamp (online) do bloco "Quem está por
+// trás" da home; o método e as semanas do bloco "Método das Alavancas" da home; marcas do Grupo Strat de
+// packages/kit/src/marcas.js. Perfil conteudo, Rastro stratai-conteudo em strict (banner no catálogo).
+import Pagina from '../../layouts/Pagina.astro';
+import Faq from '@strat/kit/Faq.astro';
+
+const perguntas = [
+  {
+    pergunta: 'A StratAI e a Agência Strat são a mesma empresa?',
+    resposta:
+      'As duas são do Grupo Strat, com papéis diferentes. A StratAI constrói agentes de IA, automações e sistemas. A Agência Strat cuida de marketing: tráfego pago, social media e conteúdo.',
+  },
+  {
+    pergunta: 'Onde fica a StratAI?',
+    resposta: 'Na Rua Aubé, 777, no bairro Boa Vista, em Joinville/SC, CEP 89205-000.',
+  },
+  {
+    pergunta: 'Quem são os sócios da StratAI?',
+    resposta:
+      'Gabriel Bocardo, sócio de estratégia e negócios, e Helbert Paranhos, sócio de tecnologia e implementação. Os dois acompanham as implementações e ensinam empresários a construir com IA.',
+  },
+];
+---
+<Pagina
+  perfil="conteudo"
+  titulo="Sobre a StratAI: a empresa de agentes de IA do Grupo Strat"
+  descricao="A StratAI constrói agentes de IA, automações e sistemas para pequenas e médias empresas. É do Grupo Strat e fica na Rua Aubé, 777, Boa Vista, Joinville/SC."
+  trilha={[{ nome: 'Início', caminho: '/' }, { nome: 'Sobre', caminho: '/sobre/' }]}
+>
+  <section class="abre">
+    <div class="faixa">
+      <p class="mono destaque">Sobre</p>
+      <h1>StratAI: a empresa de agentes de IA do Grupo Strat, em Joinville/SC</h1>
+      <p class="lead">A gente mapeia onde a operação de uma pequena ou média empresa perde tempo e dinheiro e constrói os agentes de IA, as automações e os sistemas que assumem esse trabalho.</p>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">A empresa</p>
+      <div class="grade">
+        <article class="cartao"><h3>Razão social e CNPJ</h3><p>Strat Ai · CNPJ 54.740.945/0001-79</p></article>
+        <article class="cartao"><h3>Endereço</h3><p>Rua Aubé, 777, Boa Vista, Joinville/SC, 89205-000</p></article>
+        <article class="cartao"><h3>Contato</h3><p>WhatsApp <a class="ir" href="https://wa.me/5547991658478">(47) 99165-8478</a></p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Quem está por trás</p>
+      <h2>Os sócios estão dentro de cada implementação</h2>
+      <div class="grade">
+        <article class="cartao"><h3>Gabriel Bocardo</h3><p>Sócio de estratégia e negócios. Acha o número que a IA vai mover em cada empresa.</p></article>
+        <article class="cartao"><h3>Helbert Paranhos</h3><p>Sócio de tecnologia e implementação. Constrói os agentes e as automações e acompanha cada projeto.</p></article>
+      </div>
+      <p class="texto">Os dois também ensinam empresários a construir com IA: a Imersão Claude Code para Negócios é presencial, em Joinville, e o Bootcamp Claude Code para Negócios é online e ao vivo.</p>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Como a gente trabalha</p>
+      <h2>Método das Alavancas: empresa primeiro, ferramenta depois</h2>
+      <ol class="passos">
+        <li><b>Base.</b> Entender como a empresa vende, atende e entrega. Semana 1.</li>
+        <li><b>Mapeamento.</b> Achar os processos que mais consomem tempo e dinheiro, cada um com o seu número. Semana 1.</li>
+        <li><b>Estratégia.</b> Escolher a alavanca que devolve mais com menos risco. Nada é construído antes da aprovação. Semana 2.</li>
+        <li><b>Execução.</b> Construir, testar com conversas reais, colocar no ar e ajustar. Semanas 3 a 6.</li>
+      </ol>
+      <p class="texto">Para quem procura uma empresa de IA perto: a <a href="/agencia-de-ia-joinville/">agência de IA em Joinville</a>. Para ver o resultado em números: os <a href="/casos/">casos da StratAI</a>.</p>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Grupo Strat</p>
+      <h2>As marcas do grupo</h2>
+      <div class="grade">
+        <article class="cartao"><h3>StratAI</h3><p>Agentes de IA, automações e sistemas para pequenas e médias empresas.</p></article>
+        <article class="cartao"><h3>Agência Strat</h3><p>Marketing em Joinville: tráfego pago, social media e conteúdo, com tudo medido em cliente novo.</p><a class="ir" href="https://agenciastrat.com.br/">agenciastrat.com.br</a></article>
+        <article class="cartao"><h3>Strat Academy</h3><p>Ensino de IA, automação e n8n para escalar a operação sem aumentar o time.</p><a class="ir" href="https://stratacademy.com.br/">stratacademy.com.br</a></article>
+        <article class="cartao"><h3>MetricaaS</h3><p>Mostra qual anúncio gerou cada conversa do WhatsApp e organiza os leads num CRM.</p><a class="ir" href="https://metricaas.com.br/">metricaas.com.br</a></article>
+      </div>
+    </div>
+  </section>
+
+  <Faq perguntas={perguntas} />
+
+  <section class="bloco final">
+    <div class="faixa">
+      <p class="mono destaque">3 minutos</p>
+      <h2>Comece pelo diagnóstico</h2>
+      <p class="texto">Você responde 10 perguntas e recebe o mapa de onde a sua operação perde tempo.</p>
+      <a class="botao" href="/#diagnostico" data-strat-cta="sobre-final-diagnostico">Fazer meu diagnóstico</a>
+    </div>
+  </section>
+</Pagina>

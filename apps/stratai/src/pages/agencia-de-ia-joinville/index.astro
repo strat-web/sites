@@ -1,0 +1,123 @@
+---
+// Página local "agência de IA Joinville" (WEB-34, Lote A). Título, H1 e busca: seção 3 do mapa
+// (docs/planos/stratai-estrutura.md); a separação por intenção com a home e o /agente-de-ia-whatsapp/: seção 4.
+// Números só dos casos (regra dura 4): 180 reservas por mês do caso do restaurante (home, WEB-32). Prazo de 4 a 6
+// semanas e valor fechado depois do diagnóstico: o FAQ da home. Endereço: docs/seo-geo.md.
+// Rastro stratai-paginas em soft (decisão do Helbert de 19/11 no #14).
+import Pagina from '../../layouts/Pagina.astro';
+import Faq from '@strat/kit/Faq.astro';
+
+const perguntas = [
+  {
+    pergunta: 'A StratAI atende só empresas de Joinville?',
+    resposta:
+      'Não. O escritório fica em Joinville, no Boa Vista, e boa parte dos clientes é da cidade e da região. O trabalho é feito online, então a gente atende empresas de outras cidades do mesmo jeito: um dos casos publicados é de uma imobiliária de Apucarana, no Paraná.',
+  },
+  {
+    pergunta: 'Por onde começa o trabalho com a StratAI?',
+    resposta:
+      'Pelo diagnóstico: você responde 10 perguntas em 3 minutos e recebe o mapa de onde a sua operação perde tempo. Se fizer sentido seguir, a primeira semana é para entender o negócio e achar as alavancas. Nada é construído antes de você aprovar o desenho.',
+  },
+  {
+    pergunta: 'Quanto tempo leva para ter um agente de IA no ar?',
+    resposta:
+      'Um agente de WhatsApp costuma ficar no ar entre 4 e 6 semanas. O prazo depende do escopo e fica combinado antes de começar.',
+  },
+  {
+    pergunta: 'Quanto custa contratar uma agência de IA?',
+    resposta:
+      'Depende do que vai ser construído. Depois do diagnóstico, a gente entende o seu caso e passa um valor fechado antes de começar.',
+  },
+];
+---
+<Pagina
+  perfil="lead"
+  titulo="Agência de IA em Joinville · StratAI"
+  descricao="A StratAI é uma agência de IA em Joinville/SC: mapeia onde a sua empresa perde tempo e coloca agentes de IA no ar em 4 a 6 semanas."
+  trilha={[{ nome: 'Início', caminho: '/' }, { nome: 'Agência de IA em Joinville', caminho: '/agencia-de-ia-joinville/' }]}
+>
+  <section class="abre">
+    <div class="faixa">
+      <p class="mono destaque">Joinville/SC · Boa Vista</p>
+      <h1>A agência de IA de Joinville que coloca agentes para trabalhar na sua empresa</h1>
+      <p class="lead">A gente fica na Rua Aubé, 777, no Boa Vista. Daqui, mapeia onde a sua empresa perde tempo e dinheiro e constrói os agentes de IA que assumem esse trabalho: no WhatsApp, no CRM e nas rotinas do seu time.</p>
+      <div class="acoes">
+        <a class="botao" href="/#diagnostico" data-strat-cta="joinville-abre-diagnostico">Fazer meu diagnóstico</a>
+        <a class="botao botao-fantasma" href="/casos/">Ver os casos</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Prova em Joinville</p>
+      <h2>Um restaurante daqui recebe <span class="hl">180 reservas por mês</span> pelo agente</h2>
+      <div class="texto">
+        <p>Uma churrascaria de Joinville recebia os pedidos de mesa pelo WhatsApp, em áudio, texto e foto, inclusive sábado à noite. Hoje o agente oferece o horário, anota a reserva na planilha respeitando o limite de cada horário e avisa a equipe no grupo.</p>
+        <p><a href="/casos/restaurante-reservas-no-whatsapp/">Ler o caso do restaurante</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">O que a gente constrói</p>
+      <h2>Quatro frentes. A primeira é a que mais pesa na sua operação hoje.</h2>
+      <div class="grade">
+        <article class="cartao">
+          <h3>Atendimento no WhatsApp</h3>
+          <p>O agente responde na hora, entende áudio, texto e foto e chama uma pessoa quando precisa, com a conversa junto.</p>
+          <a class="ir" href="/agente-de-ia-whatsapp/">Como funciona o agente de IA no WhatsApp</a>
+        </article>
+        <article class="cartao">
+          <h3>Vendas</h3>
+          <p>O lead do anúncio é atendido na hora, qualificado e chega ao vendedor com a reunião marcada no CRM.</p>
+        </article>
+        <article class="cartao">
+          <h3>Rotina do time</h3>
+          <p>Pedido e reserva caem sozinhos na planilha, a equipe é avisada no grupo e o relatório do dia chega pronto.</p>
+        </article>
+        <article class="cartao">
+          <h3>Sistemas sob medida</h3>
+          <p>A operação que vive em planilhas e na memória de uma pessoa vira um painel ligado às ferramentas que você já usa.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Como funciona</p>
+      <h2>Empresa primeiro, ferramenta depois</h2>
+      <ol class="passos">
+        <li><b>Semana 1: entender e mapear.</b> Como a sua empresa vende, atende e entrega, e quais processos mais consomem tempo, cada um com o número que ele move.</li>
+        <li><b>Semana 2: escolher por onde começar.</b> A alavanca que devolve mais resultado com menos risco. Você aprova o desenho antes de qualquer construção.</li>
+        <li><b>Semanas 3 a 6: construir e ligar.</b> O agente é testado com conversas reais, vai ao ar e é ajustado com você acompanhando.</li>
+      </ol>
+      <p class="texto">É o Método das Alavancas, o mesmo que os sócios ensinam na Imersão Claude Code para Negócios, presencial em Joinville. <a href="/sobre/">Quem são e como a StratAI trabalha</a>.</p>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Para quem não é</p>
+      <h2>Melhor dizer antes</h2>
+      <ul class="nao-e">
+        <li>Quem procura uma IA que resolve tudo sem ninguém olhar o processo. Ela não existe.</li>
+        <li>Quem quer um robô genérico pronto em 1 dia.</li>
+        <li>Quem ainda não tem processo nenhum: aí o melhor começo é aprender, não contratar.</li>
+      </ul>
+    </div>
+  </section>
+
+  <Faq perguntas={perguntas} />
+
+  <section class="bloco final">
+    <div class="faixa">
+      <p class="mono destaque">3 minutos</p>
+      <h2>Descubra onde a sua empresa perde tempo</h2>
+      <p class="texto">Você responde 10 perguntas e recebe o mapa das alavancas. Se não fizer sentido, a gente diz e indica outro caminho.</p>
+      <a class="botao" href="/#diagnostico" data-strat-cta="joinville-final-diagnostico">Fazer meu diagnóstico</a>
+    </div>
+  </section>
+</Pagina>
