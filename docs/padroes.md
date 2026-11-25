@@ -199,7 +199,7 @@ A mesma integração `arquivosDoSite` grava o `_headers` do Cloudflare Pages em 
 - Sem limite de PRs abertos: item pronto vira PR na hora (`docs/decisoes.md`, 13/11).
 - Pilha de no máximo **2 níveis**: um PR pode depender de outro aberto, mas esse outro não depende de um terceiro.
 - O Helbert revisa em duas janelas: **9h e 17h** (Brasília).
-- PR que só mexe em `apps/<app>`, com as 6 checagens verdes e o `/lab:lp-revisar` aprovado, o dev mescla sem o
+- PR que só mexe em `apps/<app>`, com as 6 checagens verdes e o `/site:revisar` aprovado, o dev mescla sem o
   Helbert (D11). Todo o resto espera a revisão dele.
 - Rebase que exige mudança de código volta para o Helbert, com novo pedido de revisão.
 - Lead de teste em produção: nome "Teste Strat WEB-<n>", e-mail e telefone fictícios, aviso no grupo do
