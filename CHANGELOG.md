@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- docs: a revisão de LP que libera o merge sem o Helbert (D11) passa a ser o `/site:revisar` do plugin site 1.0.0 (oficina#71), no lugar do `/lab:lp-revisar`, em CLAUDE.md e docs/padroes.md; o registro de 12/11 em docs/decisoes.md fica como foi decidido (WEB-42)
 - docs(catalogo): stratai-parcerias no ar desde 17/11 e conferida em 19/11, com a observação só sobre a página; home, /raio-x/ e política da StratAI com a hospedagem de hoje (Pages stratai desde a virada de 17/11) no catálogo e em docs/dominios.md (WEB-74)
 - feat(agenciastrat): /bio/ migrada de bio.stratai.com.br/agencia/ (strat-lps, com a correção do WEB-82) sem mudar texto, layout nem tracking: tag do MetricaaS strat-marketing com o PX-001 atrás do banner pelo <Tracking>, banner próprio trocado pelo do kit (mesmo texto e mesma chave), fontes do app no lugar do Google Fonts, links do WhatsApp e das redes escritos no HTML, noindex; Umami passa a ser o da Agência; test/bio.test.js (WEB-25)
 - docs(dominios): virada da LP claude em 23/11 no catálogo, em dominios.md e em pages.md: claude e www.claude no projeto academy-claude do Pages, com a ressalva do LCP e do CLS no Android (WEB-48)
