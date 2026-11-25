@@ -77,8 +77,29 @@
     <a class="brand" href="#topo" aria-label="Strat.ai, início"><img src="midia/strat-branco.png" alt="Strat" width="705" height="230"><span>.ai</span></a>
     <nav class="switch" aria-label="Páginas do Grupo Strat">
       <a href="#topo" aria-current="page">StratAI</a>
-      <a href="https://agencia.stratai.com.br/">Agência</a>
+      <a href="https://agenciastrat.com.br/">Agência</a>
     </nav>
+    <details class="site-nav">
+      <summary>Menu</summary>
+      <nav aria-label="Páginas da StratAI">
+        <a href="/agente-de-ia-whatsapp/">Agente no WhatsApp</a>
+        <a href="/raio-x/">Raio-X de IA</a>
+        <a href="/casos/">Casos</a>
+        <a href="/parcerias/">Parcerias</a>
+        <a href="/sobre/">Sobre</a>
+      </nav>
+    </details>
+    <script>
+      // <details> fechado esconde o <nav> em qualquer largura: no computador o menu abre aqui (sem JS, o botão segue).
+      (function () {
+        var d = document.querySelector('details.site-nav');
+        if (!d || !window.matchMedia) return;
+        var mq = window.matchMedia('(min-width:1180px)');
+        var ajustar = function () { d.open = mq.matches; };
+        ajustar();
+        if (mq.addEventListener) mq.addEventListener('change', ajustar); else mq.addListener(ajustar);
+      })();
+    </script>
     <div class="head-cta">
       <a class="btn btn-ghost" href="https://wa.me/5547991658478?text=Ol%C3%A1!%20Vim%20pela%20p%C3%A1gina%20da%20StratAI%20e%20quero%20conversar%20sobre%20IA%20na%20minha%20empresa.%20%5Bref%3A%20LP-AI-v6%5D" data-wa="Olá! Vim pela página da StratAI e quero conversar sobre IA na minha empresa."><svg class="i" style="fill:currentColor;stroke:none"><use href="#i-wa"/></svg>WhatsApp</a>
       <a class="btn btn-lime" href="#diagnostico">Fazer diagnóstico</a>
@@ -258,6 +279,7 @@
             <span class="tag">Churrascaria · Joinville/SC</span>
             <h3><span class="lg"><img src="midia/web/clientes/so-churrasco-logo.webp" alt="" aria-hidden="true" width="240" height="153" loading="lazy"></span><span>Só Churrasco<small>"Deni", o agente de reservas</small></span></h3>
             <div class="cz-stats"><div><b>180</b><span>reservas por mês pelo agente</span></div><div><b>~300</b><span>mensagens por mês</span></div><div><b>14+</b><span>versões até ficar do jeito da casa</span></div></div>
+            <p class="cz-mais"><a href="/casos/restaurante-reservas-no-whatsapp/">Ler o caso completo</a></p>
           </div>
           <div class="cz-flow glass"><small>Caminho da informação</small><ol class="flow" style="--c:var(--lime)">
             <li><i class="fl-ic" style="background:#25d366;--bc:#fff"><svg viewBox="0 0 24 24"><use href="#i-wa"/></svg></i><span><b>Cliente pede mesa no WhatsApp</b>por áudio, texto ou foto</span></li>
@@ -351,7 +373,7 @@
           <div class="toast" style="animation-delay:.3s"><span class="dot">AI</span><div>Mandei o manual em PDF para quem perguntou como preparar.<small>hoje · 23:40</small></div></div>
           <div class="toast" style="animation-delay:.6s"><span class="dot">AI</span><div>Passei 1 caso para a equipe: cliente pediu troca.<small>hoje · 00:05</small></div></div>
         </div></div>
-        <div class="md-tx"><span class="n">01</span><h3>Atendimento</h3><span class="sys">Agente de atendimento no WhatsApp</span><p>O atendimento que para quando o expediente acaba passa a responder na hora.</p><ul class="md-li"><li>Responde na hora, inclusive sábado à noite</li><li>Entende áudio, texto e foto</li><li>Chama uma pessoa quando precisa, com a conversa junto</li></ul><a class="btn btn-ghost" href="#diagnostico">Ver se é por aqui que eu começo<svg class="i"><use href="#i-arrow"/></svg></a></div>
+        <div class="md-tx"><span class="n">01</span><h3>Atendimento</h3><span class="sys">Agente de atendimento no WhatsApp</span><p>O atendimento que para quando o expediente acaba passa a responder na hora.</p><ul class="md-li"><li>Responde na hora, inclusive sábado à noite</li><li>Entende áudio, texto e foto</li><li>Chama uma pessoa quando precisa, com a conversa junto</li></ul><p class="md-mais"><a href="/agente-de-ia-whatsapp/">Como funciona o agente de IA no WhatsApp</a></p><a class="btn btn-ghost" href="#diagnostico">Ver se é por aqui que eu começo<svg class="i"><use href="#i-arrow"/></svg></a></div>
       </div>
       <div class="md-p" id="mdp1" role="tabpanel" hidden style="--c:var(--blue)">
         <div class="md-dev" aria-hidden="true"><div class="md-scr">
@@ -567,8 +589,8 @@
   <div class="wrap">
     <div class="foot-grid">
       <div><a class="brand" href="#topo"><img src="midia/strat-branco.png" alt="Strat" width="705" height="230"><span>.ai</span></a><p class="about">A StratAI é o braço de tecnologia do Grupo Strat: agentes de IA, automações e sistemas para pequenas e médias empresas.</p><div class="social"><a href="https://www.instagram.com/strat.ai/" target="_blank" rel="noopener" aria-label="Instagram da StratAI (@strat.ai)"><svg class="i fill"><use href="#b-ig"/></svg></a><a href="https://www.linkedin.com/company/strataibr/" target="_blank" rel="noopener" aria-label="LinkedIn da StratAI" data-strat-cta="rodape-linkedin" data-mtc-event="rodape_linkedin"><svg class="i fill"><use href="#b-in"/></svg></a><a href="https://www.youtube.com/@stratacademy" target="_blank" rel="noopener" aria-label="YouTube da Strat" data-strat-cta="rodape-youtube" data-mtc-event="rodape_youtube"><svg class="i fill"><use href="#b-yt"/></svg></a><a href="https://wa.me/5547991658478?text=Ol%C3%A1!%20Vim%20pela%20p%C3%A1gina%20da%20StratAI.%20%5Bref%3A%20LP-AI-v6%5D" data-wa="Olá! Vim pela página da StratAI." aria-label="WhatsApp da StratAI"><svg class="i fill"><use href="#i-wa"/></svg></a><a href="mailto:contato@strat.tec.br" aria-label="E-mail da StratAI"><svg class="i"><use href="#i-mail"/></svg></a></div></div>
-      <div><h2>StratAI</h2><ul><li><a href="/raio-x/">Raio-X de IA</a></li><li><a href="/parcerias/">Parcerias e indicação</a></li></ul></div>
-      <div><h2>Grupo Strat</h2><ul><li><a href="#topo">StratAI</a></li><li><a href="https://agencia.stratai.com.br/">Agência Strat</a></li></ul></div>
+      <div><h2>StratAI</h2><ul><li><a href="/agente-de-ia-whatsapp/">Agente de IA no WhatsApp</a></li><li><a href="/raio-x/">Raio-X de IA</a></li><li><a href="/casos/">Casos</a></li><li><a href="/agencia-de-ia-joinville/">Agência de IA em Joinville</a></li><li><a href="/sobre/">Sobre</a></li><li><a href="/parcerias/">Parcerias e indicação</a></li></ul></div>
+      <div><h2>Grupo Strat</h2><ul><li><a href="#topo">StratAI</a></li><li><a href="https://agenciastrat.com.br/">Agência Strat</a></li></ul></div>
       <div><h2>Contato</h2><ul><li><a href="https://wa.me/5547991658478?text=Ol%C3%A1!%20Vim%20pela%20p%C3%A1gina%20da%20StratAI.%20%5Bref%3A%20LP-AI-v6%5D" data-wa="Olá! Vim pela página da StratAI.">WhatsApp (47) 99165-8478</a></li><li><a href="https://www.instagram.com/strat.ai/" target="_blank" rel="noopener">Instagram @strat.ai</a></li><li><a href="mailto:contato@strat.tec.br">contato@strat.tec.br</a></li></ul></div>
       <div><h2>Endereço</h2><ul><li style="color:var(--ink-2)">Rua Aubé, 777 · Boa Vista<br>Joinville/SC</li><li style="color:var(--ink-2)">CNPJ 54.740.945/0001-79</li></ul></div>
     </div>

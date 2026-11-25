@@ -1,0 +1,152 @@
+---
+// Página do produto "agente de IA para WhatsApp" (WEB-34, Lote A). Título, H1 e busca: seção 3 do mapa
+// (docs/planos/stratai-estrutura.md). Seção 4: sem "Joinville" no título, no H1 e na descrição; a cidade só no texto,
+// com link para /agencia-de-ia-joinville/.
+// Números só dos casos (regra dura 4), da home (WEB-32): restaurante, 180 reservas por mês; e-commerce, 85% dos
+// atendimentos resolvidos pela IA. Prazo de 4 a 6 semanas: FAQ da home. A conversa do bloco "Na tela" é ilustrativa
+// e vai marcada assim (regra exemplo-marcado da voz da StratAI).
+// Rastro stratai-paginas em soft (decisão do Helbert de 19/11 no #14).
+import Pagina from '../../layouts/Pagina.astro';
+import Faq from '@strat/kit/Faq.astro';
+
+const perguntas = [
+  {
+    pergunta: 'O agente de IA usa o número de WhatsApp da minha empresa?',
+    resposta:
+      'Usa. Ele entra no WhatsApp da empresa pela API oficial e conversa com o que você já usa, como planilha, CRM e agenda. O que precisar de ajuste é combinado antes, no desenho.',
+  },
+  {
+    pergunta: 'O cliente percebe que está falando com uma IA?',
+    resposta:
+      'Percebe, e não tem problema: o agente se apresenta como assistente da sua empresa. O que afasta o cliente é ficar sem resposta. Responder na hora e resolver ganha de responder só na segunda-feira.',
+  },
+  {
+    pergunta: 'O que o agente faz quando não sabe a resposta?',
+    resposta:
+      'Não inventa. Ele avisa que vai verificar e passa a conversa para uma pessoa do time, com tudo o que já foi dito. Ninguém precisa perguntar de novo.',
+  },
+  {
+    pergunta: 'Qual a diferença para um robô de menu?',
+    resposta:
+      'O robô de menu trava quando a pergunta sai do roteiro. O agente de IA entende áudio, texto e foto, responde pergunta fora do roteiro, volta em quem parou de responder e sabe a hora de chamar uma pessoa.',
+  },
+  {
+    pergunta: 'Em quanto tempo o agente fica pronto?',
+    resposta:
+      'Entre 4 e 6 semanas, na maioria dos casos. O prazo depende do escopo e fica combinado antes de começar.',
+  },
+];
+---
+<Pagina
+  perfil="lead"
+  titulo="Agente de IA no WhatsApp para empresas · StratAI"
+  descricao="Agente de IA no WhatsApp da sua empresa: responde na hora, entende áudio, texto e foto e chama uma pessoa do time quando precisa. Pela API oficial."
+  trilha={[{ nome: 'Início', caminho: '/' }, { nome: 'Agente de IA no WhatsApp', caminho: '/agente-de-ia-whatsapp/' }]}
+>
+  <section class="abre">
+    <div class="faixa">
+      <p class="mono destaque">Produto · Atendimento</p>
+      <h1>Um agente de IA no WhatsApp que atende na hora, até fora do horário</h1>
+      <p class="lead">O cliente manda mensagem às 22h de sábado e recebe resposta na hora. O agente resolve o que é repetitivo, registra tudo nas ferramentas da empresa e chama uma pessoa do seu time quando o assunto pede.</p>
+      <div class="acoes">
+        <a class="botao" href="/#diagnostico" data-strat-cta="whatsapp-abre-diagnostico">Fazer meu diagnóstico</a>
+        <a class="botao botao-fantasma" href="/casos/restaurante-reservas-no-whatsapp/">Ver um agente no ar</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">O que ele faz</p>
+      <h2>Atende, registra e avisa. O seu time fica com o que precisa de gente.</h2>
+      <div class="grade">
+        <article class="cartao">
+          <h3>Responde na hora</h3>
+          <p>Dia útil, sábado à noite ou feriado. A conversa não espera o expediente começar.</p>
+        </article>
+        <article class="cartao">
+          <h3>Entende áudio, texto e foto</h3>
+          <p>E junta várias mensagens seguidas antes de responder, do jeito que o cliente escreve.</p>
+        </article>
+        <article class="cartao">
+          <h3>Registra onde o seu time já trabalha</h3>
+          <p>Reserva na planilha, lead no CRM, horário na agenda, aviso no grupo da equipe.</p>
+        </article>
+        <article class="cartao">
+          <h3>Sabe a hora de chamar alguém</h3>
+          <p>O que ele não sabe, não inventa: passa para uma pessoa com a conversa inteira junto.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Na tela</p>
+      <h2>Uma conversa às 22h47 de sábado</h2>
+      <div class="conversa" aria-label="Exemplo ilustrativo de conversa com o agente">
+        <p class="msg">Boa noite! Tem mesa pra 8 amanhã?<small>22:47</small></p>
+        <p class="msg a">Boa noite! Tem sim. Prefere 12h30 ou 13h30?<small>22:47</small></p>
+        <p class="msg">13h30<small>22:48</small></p>
+        <p class="msg a">Reservado: mesa para 8, domingo às 13h30. A equipe já foi avisada.<small>22:48</small></p>
+      </div>
+      <p class="nota">Exemplo ilustrativo. O texto de cada agente é desenhado com a sua empresa.</p>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Agentes no ar</p>
+      <h2>O número que o agente moveu em cada caso</h2>
+      <div class="grade">
+        <article class="cartao">
+          <p class="numero">180</p>
+          <h3>reservas por mês</h3>
+          <p>Feitas pelo agente de uma churrascaria de Joinville, que recebe os pedidos de mesa pelo WhatsApp.</p>
+          <a class="ir" href="/casos/restaurante-reservas-no-whatsapp/">Ler o caso</a>
+        </article>
+        <article class="cartao">
+          <p class="numero">85%</p>
+          <h3>dos atendimentos de suporte</h3>
+          <p>Resolvidos pela IA num e-commerce, com um agente para entrega, um para pagamento e um para o preparo do produto.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Como fica pronto</p>
+      <h2>De 4 a 6 semanas, com você aprovando cada passo</h2>
+      <ol class="passos">
+        <li><b>Mapeamento.</b> Quais conversas chegam, quais se repetem e qual número o agente vai mover: tempo de resposta, reservas, leads atendidos.</li>
+        <li><b>Desenho.</b> O que o agente responde, onde registra e quando chama alguém. Você aprova antes da construção.</li>
+        <li><b>No ar.</b> Testado com conversas reais e ajustado com você acompanhando.</li>
+      </ol>
+      <p class="texto">A StratAI é de Joinville e atende empresas de qualquer cidade. Se você procura quem faça isso perto, veja a <a href="/agencia-de-ia-joinville/">agência de IA em Joinville</a>.</p>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Para quem não é</p>
+      <h2>Quando o agente não é o melhor começo</h2>
+      <ul class="nao-e">
+        <li>Quando quase nenhuma conversa chega pelo WhatsApp.</li>
+        <li>Quando a ideia é um robô genérico, pronto em 1 dia, sem olhar o processo.</li>
+        <li>Quando a expectativa é tirar as pessoas do atendimento: o agente assume o repetitivo, o time segue com o que precisa de gente.</li>
+      </ul>
+    </div>
+  </section>
+
+  <Faq perguntas={perguntas} />
+
+  <section class="bloco final">
+    <div class="faixa">
+      <p class="mono destaque">3 minutos</p>
+      <h2>Veja se o WhatsApp é a primeira alavanca da sua empresa</h2>
+      <p class="texto">Você responde 10 perguntas e recebe o mapa de onde a sua operação perde tempo.</p>
+      <a class="botao" href="/#diagnostico" data-strat-cta="whatsapp-final-diagnostico">Fazer meu diagnóstico</a>
+    </div>
+  </section>
+</Pagina>

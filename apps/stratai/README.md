@@ -10,6 +10,11 @@ Site da StratAI no Cloudflare Pages (projeto `stratai`, prévia em https://strat
 | `/raio-x/` | `src/pages/raio-x/index.astro` + `src/html/raio-x.*.html` | `stratai-raio-x` | Rastro `raio-x-ia` e MetricaaS `agencia-strat` |
 | `/politica-de-privacidade/` | `src/pages/politica-de-privacidade/index.astro` + `src/html/politica-de-privacidade.*.html` | `stratai-politica-de-privacidade` | nenhum (como no ar) |
 | `/recuperacao/v1/` a `/v4/` | `src/pages/recuperacao/v*/index.astro` + `src/html/recuperacao/v*.*.html` | `stratai-recuperacao-v*` | Rastro `stratai-recuperacao` (soft) e MetricaaS `agencia-strat` |
+| `/agencia-de-ia-joinville/` | `src/pages/agencia-de-ia-joinville/index.astro` + `src/layouts/Pagina.astro` | `stratai-agencia-de-ia-joinville` | Rastro `stratai-paginas` (soft) e MetricaaS `agencia-strat` (WEB-34) |
+| `/agente-de-ia-whatsapp/` | `src/pages/agente-de-ia-whatsapp/index.astro` + `Pagina.astro` | `stratai-agente-de-ia-whatsapp` | Rastro `stratai-paginas` (soft) e MetricaaS `agencia-strat` (WEB-34) |
+| `/casos/` | `src/pages/casos/index.astro` + `Pagina.astro` | `stratai-casos` | Rastro `stratai-conteudo` (banner/strict) e MetricaaS `agencia-strat` (WEB-34) |
+| `/casos/restaurante-reservas-no-whatsapp/` | `src/pages/casos/restaurante-reservas-no-whatsapp/index.astro` + `Pagina.astro` | `stratai-caso-restaurante` | Rastro `stratai-conteudo` (banner/strict) e MetricaaS `agencia-strat` (WEB-34) |
+| `/sobre/` | `src/pages/sobre/index.astro` + `Pagina.astro` | `stratai-sobre` | Rastro `stratai-conteudo` (banner/strict) e MetricaaS `agencia-strat` (WEB-34) |
 | `/recuperacao/cases/` e `/recuperacao/cases/<cliente>/` | `src/pages/recuperacao/cases/` (conteúdo em `public/recuperacao/comum/cases.js`) | `stratai-recuperacao-case*` | Rastro `stratai-recuperacao` (soft) e MetricaaS `agencia-strat` |
 | `/parcerias/` | `src/pages/parcerias/index.astro`, `src/layouts/Parcerias.astro`, `src/components/parcerias/`, textos em `src/data/parcerias.json` | `stratai-parcerias` | Rastro `stratai-parcerias` (soft) e MetricaaS `agencia-strat`; o cadastro vai pelo `mtc.lead()` (WEB-74) |
 
@@ -53,6 +58,20 @@ DEV-94 para o tráfego pago. **Rascunho e `noindex`** até os cases terem o cont
 As páginas de teste do kit (`/kit/`, `/kit/lead/` e `/kit/conteudo/`, noindex, WEB-16 e WEB-17) saíram em 13/11/2026,
 antes de o domínio virar para cá (WEB-32). As de teste do `<Tracking>` que ficam estão na Agência e na Academy
 (`docs/tracking.md`); o código das que saíram está no histórico do git.
+
+## Páginas novas da estrutura (WEB-34 em diante)
+As páginas do mapa (`docs/planos/stratai-estrutura.md`) usam a casca `src/layouts/Pagina.astro`: o Layout do kit, o
+menu e o rodapé da seção 5 do mapa (só com links para páginas que já existem; cada lote acrescenta as suas em `MENU`
+e `RODAPE`), a trilha (`<Breadcrumb>` do kit) e o visual da home. Cada página tem FAQ pelo `<Faq>` do kit (FAQPage
+igual ao visível), 2 ou mais links internos e o CTA "Fazer meu diagnóstico" para `/#diagnostico`. Números só dos
+casos, com a fonte no comentário do topo de cada página (regra dura 4). Casos sem o nome do cliente até a
+autorização (`docs/decisoes.md`, 12/11).
+
+Lote A (WEB-34, 25/11/2026) também mexeu na home, pela decisão 5 da seção 7 do mapa (Helbert, 19/11): o menu do topo
+(Agente no WhatsApp, Raio-X de IA, Casos, Parcerias e Sobre; em lista no celular e abaixo de 1180 px), o link do card
+de atendimento para `/agente-de-ia-whatsapp/`, o "Ler o caso completo" no caso do restaurante, as páginas novas no
+rodapé e a Agência apontando para `agenciastrat.com.br`. Texto, layout e tracking do resto da home não mudaram. Regra
+da decisão: uma semana de leads da home acompanhada depois do merge; se caírem, o menu volta.
 
 ## Depois da migração: home do plano de Joinville (WEB-33, 25/11/2026)
 A F1 de `docs/planos/stratai-buscas-joinville.md`, a primeira mudança de texto da home depois do WEB-32:

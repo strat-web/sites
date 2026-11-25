@@ -1,0 +1,45 @@
+---
+// Índice dos casos da StratAI (WEB-34 antecipou do WEB-60, decisão 4 da seção 7 do mapa, Helbert 19/11 no #14): o
+// breadcrumb do caso do restaurante aponta para cá. Nasce com um caso e cresce no Lote C (WEB-60).
+// Casos sem o nome do cliente até a autorização (docs/decisoes.md, 12/11). Perfil conteudo, Rastro stratai-conteudo
+// em strict (banner no catálogo), decisão do Helbert de 19/11.
+import Pagina from '../../layouts/Pagina.astro';
+---
+<Pagina
+  perfil="conteudo"
+  titulo="Casos de IA em empresas reais · StratAI"
+  descricao="Casos da StratAI: agentes de IA no ar em empresas reais, com o número que cada um moveu na operação. Restaurante de Joinville: 180 reservas por mês."
+  trilha={[{ nome: 'Início', caminho: '/' }, { nome: 'Casos', caminho: '/casos/' }]}
+>
+  <section class="abre">
+    <div class="faixa">
+      <p class="mono destaque">Toda alavanca tem um número</p>
+      <h1>Casos da StratAI: o número que cada agente moveu</h1>
+      <p class="lead">Cada caso conta o que a empresa fazia antes, o que o agente passou a fazer e o número que mudou. Os nomes das empresas só aparecem quando elas autorizam.</p>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <div class="grade">
+        <article class="cartao">
+          <p class="mono">Restaurante · Joinville/SC</p>
+          <p class="numero">180</p>
+          <h3>reservas por mês feitas por um agente de IA no WhatsApp</h3>
+          <p>Pedido de mesa por áudio, texto ou foto, reserva na planilha e equipe avisada no grupo.</p>
+          <a class="ir" href="/casos/restaurante-reservas-no-whatsapp/">Ler o caso</a>
+        </article>
+      </div>
+      <p class="texto">Os próximos casos entram nesta página conforme cada empresa autoriza a publicação. O agente do caso do restaurante é o <a href="/agente-de-ia-whatsapp/">agente de IA no WhatsApp</a>.</p>
+    </div>
+  </section>
+
+  <section class="bloco final">
+    <div class="faixa">
+      <p class="mono destaque">3 minutos</p>
+      <h2>Qual seria o número da sua empresa?</h2>
+      <p class="texto">O diagnóstico mostra onde a sua operação perde tempo e qual número cada alavanca move.</p>
+      <a class="botao" href="/#diagnostico" data-strat-cta="casos-final-diagnostico">Fazer meu diagnóstico</a>
+    </div>
+  </section>
+</Pagina>

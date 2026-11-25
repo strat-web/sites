@@ -1423,4 +1423,20 @@ body.ready .hero .rise,body.ready .phone-wrap{animation:none;opacity:1;transform
 /* WEB-97 · contraste AA (4,5:1) nos textos pequenos da escada: o número do degrau roxo fica 20% mais claro (só o texto; bordas e ícones seguem com o roxo da marca) e o rótulo do que o degrau entrega sobe um tom sobre o fundo tingido */
 .stair.c-purple .k b{color:#c969f5}
 .gets small{color:#9c9c93}
+
+/* WEB-34: menu do topo (decisão 5 do mapa, Helbert 19/11) e links para as páginas novas */
+.site-nav summary{list-style:none;cursor:pointer;padding:.55em 1em;border:1px solid var(--line);border-radius:999px;font:600 .9rem/1.2 var(--f);color:var(--ink-2)}
+.site-nav summary::-webkit-details-marker{display:none}
+.site-nav nav{position:absolute;left:20px;right:20px;top:100%;margin-top:6px;display:grid;gap:2px;padding:10px;background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r)}
+.site-nav nav a{padding:10px 12px;border-radius:10px;text-decoration:none;color:var(--ink)}
+.site-nav nav a:hover{background:var(--card)}
+@media (min-width:1180px){
+  .site-nav[open] summary{display:none}
+  .site-nav[open] nav{position:static;display:flex;gap:0;margin:0;padding:0;background:none;border:0}
+  .site-nav nav a{padding:.5em .7em;font:500 .92rem/1.2 var(--f);color:var(--ink-2)}
+  .site-nav nav a:hover{background:none;color:var(--ink)}
+}
+.md-mais,.cz-mais{margin:0 0 18px}
+.cz-mais{margin:18px 0 0}
+.md-mais a,.cz-mais a{color:var(--lime);font-weight:600}
 </style>
