@@ -12,8 +12,9 @@ interface Props {
   perfil: 'lead' | 'conteudo';
   trilha: { nome: string; caminho: string }[];
   tipo?: 'website' | 'article';
+  atualizado?: string; // AAAA-MM-DD: article:modified_time e lastmod do sitemap (os guias, WEB-61)
 }
-const { titulo, descricao, perfil, trilha, tipo = 'website' } = Astro.props;
+const { titulo, descricao, perfil, trilha, tipo = 'website', atualizado } = Astro.props;
 
 // O diagnóstico é o convite da marca (voz da StratAI): a home, na seção #diagnostico.
 const DIAGNOSTICO = '/#diagnostico';
@@ -40,6 +41,7 @@ const MENU: { nome: string; href?: string; itens?: { nome: string; href: string 
   },
   { nome: 'Casos', href: '/casos/' },
   { nome: 'Parcerias', href: '/parcerias/' },
+  { nome: 'Guias', href: '/guias/' },
   { nome: 'Sobre', href: '/sobre/' },
 ];
 const RODAPE = [
@@ -73,7 +75,13 @@ const RODAPE = [
       { nome: 'Política de privacidade', href: '/politica-de-privacidade/' },
     ],
   },
-  { titulo: 'Conteúdo', links: [{ nome: 'Raio-X de IA', href: '/raio-x/' }] },
+  {
+    titulo: 'Conteúdo',
+    links: [
+      { nome: 'Guias', href: '/guias/' },
+      { nome: 'Raio-X de IA', href: '/raio-x/' },
+    ],
+  },
   {
     titulo: 'Grupo Strat',
     links: [
@@ -85,7 +93,7 @@ const RODAPE = [
 ];
 const atual = new URL(Astro.url).pathname;
 ---
-<Layout marca="stratai" perfil={perfil} titulo={titulo} descricao={descricao} tipo={tipo} imagem="/midia/og.png">
+<Layout marca="stratai" perfil={perfil} titulo={titulo} descricao={descricao} tipo={tipo} atualizado={atualizado} imagem="/midia/og.png">
   <Fragment slot="head">
     <meta name="theme-color" content="#191919" />
     <link rel="icon" href="/midia/favicon/favicon.ico" sizes="any" />
@@ -123,7 +131,7 @@ const atual = new URL(Astro.url).pathname;
       (function () {
         var menu = document.querySelector('.topo .menu');
         if (!menu) return;
-        var largo = window.matchMedia('(min-width:1024px)');
+        var largo = window.matchMedia('(min-width:1100px)');
         var ajustar = function () { menu.open = largo.matches; };
         ajustar();
         if (largo.addEventListener) largo.addEventListener('change', ajustar);
@@ -202,7 +210,8 @@ p{margin:0}
 .sub>summary::after{content:"";display:inline-block;width:6px;height:6px;margin:0 0 3px 10px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg)}
 .sub[open]>summary::after{transform:rotate(-135deg);margin-bottom:-1px}
 .sub>div{display:flex;flex-direction:column;gap:2px;padding:0 0 6px 12px}
-@media (min-width:1024px){
+/* Em linha a partir de 1100 px (o Lote B usava 1024): com Guias, abaixo disso o menu quebra em duas linhas (WEB-61). */
+@media (min-width:1100px){
   .menu[open]>summary{display:none}
   .menu[open] nav{position:static;flex-direction:row;align-items:center;gap:2px;min-width:0;max-height:none;overflow:visible;padding:0;background:none;border:0}
   .menu nav a,.sub>summary{padding:8px 12px;font-size:.95rem;color:var(--ink-2)}

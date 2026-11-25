@@ -1,0 +1,168 @@
+---
+// Guia "quanto custa agente de IA" (WEB-61). Título, H1 e busca: seção 3 do mapa (docs/planos/stratai-estrutura.md).
+// Sem faixa de preço (regra dura 4 e observação "Guias" da seção 3): a página explica do que o preço depende e leva ao
+// diagnóstico. Fontes de cada fato:
+// - "depende do tamanho do que vamos construir", "valor fechado antes de começar", plano mensal ou time assumindo
+//   depois da entrega, contas no nome da empresa, canais (WhatsApp, Instagram Direct, site) e ferramentas (CRM,
+//   planilha, agenda, plataforma da loja), sócio lê o caso em até 1 dia útil, conversa de 30 minutos, robô genérico
+//   pronto em 1 dia: home (src/html/home.corpo.html, FAQ, "Funciona com o que você já usa" e "Diagnóstico").
+// - 14+ versões até ficar do jeito da casa e regras da casa (limite por horário): caso do restaurante (WEB-34, números
+//   da home).
+// - 4 a 6 semanas: FAQ da home (llms.txt antigo do strat-lps).
+// - Cobrança da Meta (por mensagem entregue desde 01/07/2025, categoria e país, 1.000 mensagens de serviço grátis por
+//   mês por número e utilidade na janela cobrada desde 01/10/2026, tabela por moeda, BRL entre elas): página de preços
+//   da WhatsApp Business Platform, conferida em 25/11/2026. Nenhum valor da tabela foi copiado: muda e depende do país.
+// - Custo do modelo de IA por volume de texto (tokens): é como os provedores cobram; sem número, sem provedor citado.
+// Rastro stratai-conteudo em strict (banner no catálogo), como as outras páginas conteudo (decisão do Helbert de 19/11).
+import Guia from '../../../layouts/Guia.astro';
+
+const perguntas = [
+  {
+    pergunta: 'Dá para saber o preço sem fazer o diagnóstico?',
+    resposta:
+      'Não com honestidade. O preço depende do que o agente vai fazer, de onde ele registra e de quantas conversas recebe. No diagnóstico a gente entende o seu caso e passa um valor fechado antes de começar.',
+  },
+  {
+    pergunta: 'As mensagens do WhatsApp estão no preço do projeto?',
+    resposta:
+      'São um custo de uso, separado da construção: a Meta cobra por mensagem entregue, pela tabela dela, que muda conforme o tipo de mensagem e o país de quem recebe. Em qualquer proposta, vale perguntar quais custos de uso ficam com a sua empresa.',
+  },
+  {
+    pergunta: 'Depois que o agente está no ar, tem custo todo mês?',
+    resposta:
+      'Tem os custos de uso, enquanto o agente conversa: mensagens da API oficial e o modelo de IA. O acompanhamento você escolhe: o seu time assume o agente, com o treinamento da entrega, ou a gente segue cuidando dos ajustes num plano mensal, combinado na proposta.',
+  },
+  {
+    pergunta: 'Em quanto tempo o agente fica pronto?',
+    resposta:
+      'Entre 4 e 6 semanas, na maioria dos casos. O prazo depende do escopo e fica combinado antes de começar.',
+  },
+];
+
+const fontes = [
+  {
+    nome: 'Meta · WhatsApp Business Platform: preços (Pricing)',
+    url: 'https://developers.facebook.com/documentation/business-messaging/whatsapp/pricing',
+    consultado: '2026-11-25',
+  },
+  {
+    nome: 'Meta · WhatsApp Cloud API: envio de mensagens e janela de atendimento de 24 horas',
+    url: 'https://developers.facebook.com/documentation/business-messaging/whatsapp/messages/send-messages',
+    consultado: '2026-11-25',
+  },
+];
+---
+<Guia
+  titulo="Quanto custa um agente de IA no WhatsApp · StratAI"
+  h1="Quanto custa um agente de IA no WhatsApp (e o que muda o preço)"
+  descricao="O preço de um agente de IA no WhatsApp depende do escopo, das integrações e do volume de conversas. Veja o que entra na conta e como ter um valor fechado."
+  nome="Quanto custa um agente de IA"
+  rotulo="Guia · Preço"
+  lead="Não existe preço de tabela honesto para um agente feito para a sua operação. Este guia não traz faixa de preço: mostra os três custos de um agente, o que faz cada um subir ou descer e como chegar a um valor fechado antes de começar."
+  publicado="2026-11-25"
+  atualizado="2026-11-25"
+  perguntas={perguntas}
+  fontes={fontes}
+  cta="guia-custo"
+>
+  <section class="bloco guia">
+    <div class="faixa">
+      <p class="mono">Resposta curta</p>
+      <h2>Depende do que o agente vai fazer. E o valor fica fechado antes de começar.</h2>
+      <div class="texto">
+        <p>Um agente que responde dúvidas no WhatsApp custa diferente de um que também consulta a agenda, registra o lead no CRM e avisa o time no grupo. Por isso a gente passa o valor depois do diagnóstico, já fechado, sem surpresa no meio do caminho.</p>
+        <p>O que dá para saber desde já é o que entra na conta.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco guia">
+    <div class="faixa">
+      <p class="mono">O que entra na conta</p>
+      <h2>Os três custos de um agente de IA</h2>
+      <div class="grade">
+        <article class="cartao">
+          <h3>1. Construção</h3>
+          <p>O projeto: mapear as conversas, desenhar o que o agente faz, construir, testar com conversas reais e colocar no ar. O valor fica fechado antes de começar.</p>
+        </article>
+        <article class="cartao">
+          <h3>2. Acompanhamento</h3>
+          <p>Depois da entrega, você escolhe: o seu time assume o agente, com o treinamento que a gente faz, ou a gente segue cuidando dos ajustes num plano mensal, combinado na proposta.</p>
+        </article>
+        <article class="cartao">
+          <h3>3. Uso</h3>
+          <p>Enquanto o agente conversa, há custo com as plataformas: as mensagens da API oficial do WhatsApp, cobradas pela Meta, e o modelo de IA, cobrado pelo volume de texto.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco guia">
+    <div class="faixa">
+      <p class="mono">Construção</p>
+      <h2>O que faz o preço da construção subir ou descer</h2>
+      <ul>
+        <li><b>Quantas tarefas o agente assume.</b> Tirar dúvida é uma coisa; tirar dúvida, reservar, qualificar o lead e marcar a reunião é outra.</li>
+        <li><b>Por onde o cliente chega.</b> Só o WhatsApp, ou também o Instagram Direct e o formulário do site.</li>
+        <li><b>Onde ele registra e avisa.</b> Cada ferramenta ligada é uma integração: CRM, planilha, agenda, plataforma da loja, grupo do time.</li>
+        <li><b>As regras do seu negócio.</b> Limite de pessoas por horário, tabela de serviços, quem atende cada assunto. Quanto mais regra, mais desenho e mais teste.</li>
+        <li><b>Os ajustes até ficar do seu jeito.</b> O agente do <a href="/casos/restaurante-reservas-no-whatsapp/">caso do restaurante de Joinville</a> passou por mais de 14 versões até responder do jeito da casa. Isso faz parte da construção.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="bloco guia">
+    <div class="faixa">
+      <p class="mono">Uso · WhatsApp</p>
+      <h2>Quanto a Meta cobra pelas mensagens</h2>
+      <div class="texto">
+        <p>Pela <a href="/guias/api-oficial-whatsapp/">API oficial do WhatsApp</a>, a Meta cobra por mensagem entregue (desde 1º de julho de 2025). O valor de cada mensagem depende de duas coisas, segundo a página de preços da Meta:</p>
+      </div>
+      <ul>
+        <li><b>O tipo de mensagem.</b> Marketing, utilidade (confirmação, lembrete), autenticação (código de acesso) e serviço (a resposta a quem escreveu para a empresa).</li>
+        <li><b>O país do número de quem recebe.</b> A tabela da Meta tem um valor por país ou região, em várias moedas, entre elas o real.</li>
+      </ul>
+      <div class="texto">
+        <p>Quando o cliente escreve, abre uma janela de 24 horas em que a empresa responde com mensagens de serviço. Desde 1º de outubro de 2026, cada número tem 1.000 mensagens de serviço grátis por mês; da 1.001ª em diante, a Meta cobra. Na mesma data, as mensagens de utilidade enviadas dentro dessa janela passaram a ser cobradas.</p>
+        <p>A gente não copia os valores aqui: a Meta muda a tabela e o valor depende do país. O que conta para o seu caso é quantas mensagens o agente vai trocar e de que tipo: uma operação que só responde quem escreve gasta diferente de uma que também manda lembrete e confirmação.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco guia">
+    <div class="faixa">
+      <p class="mono">Uso · Modelo de IA</p>
+      <h2>Quanto custa o modelo de IA que responde</h2>
+      <div class="texto">
+        <p>O modelo de IA é cobrado pelo volume de texto que ele lê e escreve (os tokens). Conversa longa, áudio transcrito e histórico grande pesam mais; pergunta simples com resposta curta pesa menos. O custo também muda com o modelo escolhido.</p>
+        <p>Por isso o volume de conversas e o tamanho das respostas entram na conta tanto quanto o número de mensagens.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco guia">
+    <div class="faixa">
+      <p class="mono">Como chegar ao número</p>
+      <h2>Do diagnóstico ao valor fechado</h2>
+      <ol class="passos">
+        <li><b>Diagnóstico.</b> Você responde 10 perguntas, em 3 minutos, e vê onde a operação perde tempo.</li>
+        <li><b>Um sócio lê o seu caso,</b> em até 1 dia útil.</li>
+        <li><b>Conversa de 30 minutos</b> com uma pessoa. Se não fizer sentido, a gente diz.</li>
+        <li><b>Valor fechado e prazo combinado,</b> antes de começar. Nada é construído antes de você aprovar o desenho.</li>
+      </ol>
+      <p class="texto">Quer ver o produto antes? O <a href="/agente-de-ia-whatsapp/">agente de IA no WhatsApp</a> mostra o que ele faz e como fica pronto, e o <a href="/agente-sdr-ia/">agente SDR com IA</a> faz o mesmo para o lead do anúncio. Sobre o prazo, veja <a href="/guias/prazo-agente-de-ia/">quanto tempo leva para colocar um agente de IA no ar</a>.</p>
+    </div>
+  </section>
+
+  <section class="bloco guia">
+    <div class="faixa">
+      <p class="mono">Para quem não é</p>
+      <h2>Quando desconfiar de um preço</h2>
+      <ul class="nao-e">
+        <li>Preço fechado antes de alguém olhar como a sua empresa atende.</li>
+        <li>Robô genérico, pronto em 1 dia, sem olhar o processo.</li>
+        <li>Proposta que não diz quais custos de uso ficam com a sua empresa depois que o agente estiver no ar.</li>
+      </ul>
+    </div>
+  </section>
+</Guia>

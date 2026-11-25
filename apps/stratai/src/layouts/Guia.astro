@@ -1,0 +1,147 @@
+---
+// Casca dos guias da StratAI (WEB-61): a Pagina.astro com perfil conteudo (Rastro stratai-conteudo em strict, banner
+// no catálogo), a trilha Início › Guias › guia, o JSON-LD Article, a data de publicação e de atualização (vira o
+// article:modified_time e o lastmod do sitemap), a lista de fontes com a data de consulta, o FAQ do kit, os outros
+// guias e o CTA do diagnóstico. O texto de cada guia fica na página; aqui só o que se repete.
+// Regra dos guias (mapa, seção 3): nenhuma faixa de preço inventada; fato de fora (Meta, LGPD, ANPD) só com a fonte
+// oficial na lista `fontes`, com a data em que foi conferida.
+import Pagina from './Pagina.astro';
+import Faq from '@strat/kit/Faq.astro';
+import JsonLd from '@strat/kit/JsonLd.astro';
+import { marca, urlCanonica } from '@strat/kit';
+import { GUIAS } from '../data/guias.js';
+
+interface Fonte {
+  nome: string;
+  url: string;
+  consultado: string; // AAAA-MM-DD
+}
+interface Props {
+  titulo: string;
+  descricao: string;
+  h1: string;
+  nome: string; // o nome do guia na trilha
+  rotulo: string; // o rótulo mono acima do H1
+  lead: string;
+  publicado: string; // AAAA-MM-DD
+  atualizado: string; // AAAA-MM-DD
+  perguntas: { pergunta: string; resposta: string }[];
+  fontes: Fonte[];
+  cta: string; // prefixo do data-strat-cta
+}
+
+const { titulo, descricao, h1, nome, rotulo, lead, publicado, atualizado, perguntas, fontes, cta } = Astro.props;
+const caminho = Astro.url.pathname;
+const url = urlCanonica(Astro.site, caminho);
+const m = marca('stratai');
+const data = (d: string) => d.split('-').reverse().join('/');
+
+const artigo = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: h1,
+  description: descricao,
+  inLanguage: 'pt-BR',
+  url,
+  mainEntityOfPage: url,
+  datePublished: publicado,
+  dateModified: atualizado,
+  image: m.imagem,
+  author: { '@type': 'Organization', '@id': `${m.url}#organizacao`, name: m.nome, url: m.url },
+  publisher: { '@type': 'Organization', '@id': `${m.url}#organizacao`, name: m.nome, url: m.url, logo: m.logo },
+  citation: fontes.map((f) => f.url),
+};
+const outros = GUIAS.filter((g) => g.caminho !== caminho);
+---
+<Pagina
+  perfil="conteudo"
+  tipo="article"
+  titulo={titulo}
+  descricao={descricao}
+  atualizado={atualizado}
+  trilha={[
+    { nome: 'Início', caminho: '/' },
+    { nome: 'Guias', caminho: '/guias/' },
+    { nome, caminho },
+  ]}
+>
+  <JsonLd dados={artigo} />
+  <article>
+    <header class="abre">
+      <div class="faixa">
+        <p class="mono destaque">{rotulo}</p>
+        <h1>{h1}</h1>
+        <p class="lead">{lead}</p>
+        <p class="nota">
+          Publicado em <time datetime={publicado}>{data(publicado)}</time>
+          {atualizado !== publicado && <> · atualizado em <time datetime={atualizado}>{data(atualizado)}</time></>}
+          {' · StratAI'}
+        </p>
+      </div>
+    </header>
+
+    <slot />
+
+    <section class="bloco" aria-labelledby="fontes">
+      <div class="faixa">
+        <p class="mono">De onde vem cada fato</p>
+        <h2 id="fontes">Fontes</h2>
+        <ol class="fontes">
+          {fontes.map((f) => (
+            <li>
+              <a href={f.url} rel="noopener">{f.nome}</a>
+              <span>consultada em <time datetime={f.consultado}>{data(f.consultado)}</time></span>
+            </li>
+          ))}
+        </ol>
+        <p class="nota">Regras de plataforma, preços e normas mudam. Se algo aqui ficou desatualizado, a fonte oficial vale mais do que este guia.</p>
+      </div>
+    </section>
+  </article>
+
+  <Faq perguntas={perguntas} />
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Outros guias</p>
+      <h2>Antes de contratar, leia também</h2>
+      <div class="grade">
+        {outros.map((g) => (
+          <article class="cartao">
+            <h3>{g.nome}</h3>
+            <p>{g.resumo}</p>
+            <a class="ir" href={g.caminho}>Ler o guia</a>
+          </article>
+        ))}
+      </div>
+      <p class="texto">Todos os guias em <a href="/guias/">Guias</a>.</p>
+    </div>
+  </section>
+
+  <section class="bloco final">
+    <div class="faixa">
+      <p class="mono destaque">3 minutos</p>
+      <h2>Veja o que faria sentido na sua empresa</h2>
+      <p class="texto">Você responde 10 perguntas e recebe o mapa de onde a sua operação perde tempo. Depois, um sócio lê o seu caso em até 1 dia útil.</p>
+      <a class="botao" href="/#diagnostico" data-strat-cta={`${cta}-final-diagnostico`}>Fazer meu diagnóstico</a>
+    </div>
+  </section>
+</Pagina>
+
+<style is:global>
+.guia h3{font-size:1.2rem;margin-top:28px}
+.guia ul,.guia ol:not(.passos){margin:14px 0 0;padding-left:22px;color:var(--ink-2);max-width:68ch}
+.guia li+li{margin-top:8px}
+.guia li b,.guia p b{color:var(--ink)}
+.tabela{width:100%;max-width:860px;margin-top:24px;overflow-x:auto}
+.tabela table{width:100%;border-collapse:collapse;font-size:.95rem}
+.tabela th,.tabela td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}
+.tabela th{font:500 .74rem/1.3 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.tabela td{color:var(--ink-2)}
+.tabela td:first-child{color:var(--ink);font-weight:600}
+@media (max-width:640px){.tabela thead{display:none}.tabela tr{display:block;padding:14px 0;border-bottom:1px solid var(--line)}.tabela td{display:block;border:0;padding:4px 0}.tabela td[data-rotulo]::before{content:attr(data-rotulo);display:block;margin-top:8px;font:500 .7rem/1.3 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}}
+.aviso{max-width:68ch;margin-top:24px;padding:16px 20px;border:1px solid var(--line);border-left:3px solid var(--lime);border-radius:var(--r);background:var(--card);color:var(--ink-2)}
+.fontes{margin:20px 0 0;padding-left:22px;color:var(--ink-2);max-width:72ch;display:grid;gap:10px}
+.fontes a{color:var(--lime);overflow-wrap:anywhere}
+.fontes span{display:block;font-size:.85rem;color:var(--mute)}
+</style>

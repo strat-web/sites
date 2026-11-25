@@ -25,6 +25,8 @@ Site da StratAI no Cloudflare Pages (projeto `stratai`, prévia em https://strat
 | `/ia-para-clinicas/` | `src/pages/ia-para-clinicas/index.astro` + `Pagina.astro` | `stratai-ia-para-clinicas` | Rastro `stratai-paginas` (soft) e MetricaaS `agencia-strat` (WEB-60) |
 | `/casos/imobiliaria-leads-fora-do-horario/` | `src/pages/casos/imobiliaria-leads-fora-do-horario/index.astro` + `Pagina.astro` | `stratai-caso-imobiliaria` | Rastro `stratai-conteudo` (banner/strict) e MetricaaS `agencia-strat` (WEB-60) |
 | `/casos/ecommerce-suporte-com-ia/` | `src/pages/casos/ecommerce-suporte-com-ia/index.astro` + `Pagina.astro` | `stratai-caso-ecommerce` | Rastro `stratai-conteudo` (banner/strict) e MetricaaS `agencia-strat` (WEB-60) |
+| `/guias/` | `src/pages/guias/index.astro` + `Pagina.astro`, lista em `src/data/guias.js` | `stratai-guias` | Rastro `stratai-conteudo` (banner/strict) e MetricaaS `agencia-strat` (WEB-61) |
+| `/guias/quanto-custa-agente-de-ia/`, `/guias/prazo-agente-de-ia/`, `/guias/api-oficial-whatsapp/`, `/guias/lgpd-agente-de-ia/` | `src/pages/guias/<guia>/index.astro` + `src/layouts/Guia.astro` | `stratai-guia-quanto-custa`, `stratai-guia-prazo`, `stratai-guia-api-oficial`, `stratai-guia-lgpd` | Rastro `stratai-conteudo` (banner/strict) e MetricaaS `agencia-strat` (WEB-61) |
 | `/recuperacao/cases/` e `/recuperacao/cases/<cliente>/` | `src/pages/recuperacao/cases/` (conteúdo em `public/recuperacao/comum/cases.js`) | `stratai-recuperacao-case*` | Rastro `stratai-recuperacao` (soft) e MetricaaS `agencia-strat` |
 | `/parcerias/` | `src/pages/parcerias/index.astro`, `src/layouts/Parcerias.astro`, `src/components/parcerias/`, textos em `src/data/parcerias.json` | `stratai-parcerias` | Rastro `stratai-parcerias` (soft) e MetricaaS `agencia-strat`; o cadastro vai pelo `mtc.lead()` (WEB-74) |
 
@@ -99,6 +101,25 @@ casca ganhou a coluna "Por segmento" no rodapé (o menu do topo não mudou). Na 
 casos da imobiliária e do e-commerce, como o do restaurante no Lote A. Links que esperam página: os segmentos e o caso
 da imobiliária ganham o link para `/agente-sdr-ia/` quando o Lote B (WEB-59) entrar; a checagem `links` barra link
 para página que não existe.
+## Guias de compra (WEB-61, 25/11/2026)
+`/guias/` e quatro guias (mapa, seção 3), na casca `src/layouts/Guia.astro`, que monta sobre a `Pagina.astro`: trilha
+Início › Guias › guia, JSON-LD `Article` (autor e editora: a StratAI; `citation` com as fontes), data de publicação e
+de atualização (o `atualizado` vira o `article:modified_time` e o `lastmod` do sitemap), a lista "Fontes" com a data
+de consulta de cada uma, o FAQ do kit, os outros guias (de `src/data/guias.js`) e o CTA para `/#diagnostico`.
+- **Fato de fora só com fonte oficial:** regras e preços da Meta pela documentação da WhatsApp Business Platform e
+  pela Central de Ajuda do WhatsApp; LGPD pelo texto da Lei 13.709/2018 no planalto.gov.br e pela ANPD. Cada link
+  vai na lista `fontes` da página, e o comentário do topo diz de onde veio cada fato.
+- **Sem faixa de preço** (regra dura 4): o guia de custo explica do que o preço depende; nenhum valor da tabela da
+  Meta é copiado. O prazo de 4 a 6 semanas e o método semana a semana vêm da home.
+- **LGPD sem parecer jurídico:** o guia diz isso no topo e não promete conformidade.
+- **Guia novo:** página em `src/pages/guias/<slug>/`, item em `src/data/guias.js`, linha no catálogo (perfil
+  `conteudo`, `stratai-conteudo`, `banner`) e as fontes conferidas na data do PR. Ao revisar um guia, atualizar
+  `atualizado` e a data de consulta das fontes que foram conferidas de novo.
+- O texto não saiu de um perfil "stratai" do setor de blog: esse perfil ainda não existe (depende do WEB-43). A voz é
+  a da StratAI no Saber (`marca_obter strat-ai`, versão 0.3.0).
+- A `Pagina.astro` ganhou Guias no menu e no rodapé e o prop `atualizado`. Com Guias, o menu em linha só cabe a
+  partir de 1100 px (medido em 25/11 no Chrome sem janela: em 1024 ele quebra em duas linhas); abaixo disso fica o
+  botão "Menu".
 
 ## Depois da migração: home do plano de Joinville (WEB-33, 25/11/2026)
 A F1 de `docs/planos/stratai-buscas-joinville.md`, a primeira mudança de texto da home depois do WEB-32:

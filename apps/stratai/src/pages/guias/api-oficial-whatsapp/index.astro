@@ -1,0 +1,188 @@
+---
+// Guia "API oficial do WhatsApp" (WEB-61). Título, H1 e busca: seção 3 do mapa (docs/planos/stratai-estrutura.md).
+// Todo fato sobre o WhatsApp vem de página oficial da Meta ou do WhatsApp, conferida em 25/11/2026 (lista `fontes`):
+// - banimento por app não oficial ("sua conta pode ser banida temporária ou permanentemente", exemplos GB WhatsApp,
+//   FM WhatsApp, TeleMessage, TM WhatsApp): Central de Ajuda do WhatsApp, "Sobre apps não oficiais do WhatsApp".
+// - opt-in antes de contatar, respeitar pedido para parar, automação permitida na janela de 24 h com caminho claro
+//   para uma pessoa, "poderemos limitar ou remover seu acesso", cartão de pagamento e saúde: Política de Mensagens do
+//   WhatsApp Business (atualizada em 23/09/2026).
+// - janela de 24 h e mensagem livre só dentro dela: Cloud API, "Send messages".
+// - modelos só com status APPROVED e categorias: "Message templates".
+// - limite de 250 números únicos em 24 h para portfólio novo, 2.000, depois 10.000, 100.000 e sem limite: "Messaging
+//   limits".
+// - selo azul (Official Business Account): 5 critérios, sem garantia de aprovação, novo pedido depois de 30 dias:
+//   "Official Business Accounts".
+// - número no app WhatsApp Business e na plataforma ao mesmo tempo (coexistência), com limitações: "Onboard Business
+//   app users".
+// - cobrança por mensagem entregue: "Pricing".
+// - "O agente entra pela porta oficial, no número que você já usa" e "Preciso trocar meu número? Não": home (WEB-32).
+// Nenhum nome de ferramenta não oficial do mercado é citado além dos exemplos que a própria Central de Ajuda dá.
+// Rastro stratai-conteudo em strict (banner no catálogo), como as outras páginas conteudo (decisão do Helbert de 19/11).
+import Guia from '../../../layouts/Guia.astro';
+
+const perguntas = [
+  {
+    pergunta: 'Usando a API oficial, o número ainda pode ser bloqueado?',
+    resposta:
+      'Pode, se a empresa descumprir as regras. A Política de Mensagens do WhatsApp Business diz que a Meta pode limitar ou remover o acesso de quem viola os termos, como mandar mensagem a quem não deu permissão. A diferença é que, na API oficial, as regras estão escritas e dá para segui-las.',
+  },
+  {
+    pergunta: 'Preciso trocar o número da empresa?',
+    resposta:
+      'Não precisa: o agente entra pela API oficial no número que você já usa. A Meta também documenta um modo em que o número segue no aplicativo WhatsApp Business e na plataforma ao mesmo tempo, com limitações. Se ele serve para o seu número, a gente confere no diagnóstico.',
+  },
+  {
+    pergunta: 'Toda mensagem pela API oficial é paga?',
+    resposta:
+      'A Meta cobra por mensagem entregue, e o valor depende do tipo de mensagem e do país de quem recebe. Cada número tem uma cota mensal de mensagens de serviço grátis. O guia de quanto custa um agente explica cada parte.',
+  },
+  {
+    pergunta: 'O agente de IA pode mandar mensagem para quem nunca falou com a empresa?',
+    resposta:
+      'Só com permissão da pessoa (opt-in) e por um modelo de mensagem aprovado pela Meta. A política do WhatsApp Business exige a permissão antes do contato e manda respeitar quem pede para parar de receber.',
+  },
+];
+
+const fontes = [
+  {
+    nome: 'Central de Ajuda do WhatsApp · Sobre apps não oficiais do WhatsApp',
+    url: 'https://faq.whatsapp.com/1217634902127718',
+    consultado: '2026-11-25',
+  },
+  {
+    nome: 'WhatsApp Business · Política de Mensagens do WhatsApp Business',
+    url: 'https://whatsappbusiness.com/pt-br/policy/',
+    consultado: '2026-11-25',
+  },
+  {
+    nome: 'Meta · WhatsApp Cloud API: envio de mensagens e janela de atendimento de 24 horas',
+    url: 'https://developers.facebook.com/documentation/business-messaging/whatsapp/messages/send-messages',
+    consultado: '2026-11-25',
+  },
+  {
+    nome: 'Meta · Modelos de mensagem (message templates)',
+    url: 'https://developers.facebook.com/documentation/business-messaging/whatsapp/templates/overview',
+    consultado: '2026-11-25',
+  },
+  {
+    nome: 'Meta · Limites de envio (messaging limits)',
+    url: 'https://developers.facebook.com/documentation/business-messaging/whatsapp/messaging-limits',
+    consultado: '2026-11-25',
+  },
+  {
+    nome: 'Meta · Contas comerciais oficiais (Official Business Accounts)',
+    url: 'https://developers.facebook.com/documentation/business-messaging/whatsapp/official-business-accounts',
+    consultado: '2026-11-25',
+  },
+  {
+    nome: 'Meta · Número no aplicativo WhatsApp Business e na plataforma ao mesmo tempo (coexistência)',
+    url: 'https://developers.facebook.com/documentation/business-messaging/whatsapp/embedded-signup/onboarding-business-app-users',
+    consultado: '2026-11-25',
+  },
+  {
+    nome: 'Meta · WhatsApp Business Platform: preços (Pricing)',
+    url: 'https://developers.facebook.com/documentation/business-messaging/whatsapp/pricing',
+    consultado: '2026-11-25',
+  },
+];
+---
+<Guia
+  titulo="API oficial do WhatsApp ou não oficial? · StratAI"
+  h1="API oficial do WhatsApp ou não oficial: o que muda para a sua empresa"
+  descricao="API oficial do WhatsApp ou ferramenta não oficial? O que a Meta diz sobre banimento, modelos aprovados, janela de 24 horas, limite de envio e selo azul."
+  nome="API oficial do WhatsApp"
+  rotulo="Guia · WhatsApp"
+  lead="Colocar um agente de IA no WhatsApp da empresa passa por uma escolha: a API oficial da Meta ou uma ferramenta não oficial. Este guia mostra o que cada caminho significa, pelo que a própria Meta publica, com o link de cada regra."
+  publicado="2026-11-25"
+  atualizado="2026-11-25"
+  perguntas={perguntas}
+  fontes={fontes}
+  cta="guia-api"
+>
+  <section class="bloco guia">
+    <div class="faixa">
+      <p class="mono">Resposta curta</p>
+      <h2>Na API oficial, as regras estão escritas. Fora dela, o número fica em risco.</h2>
+      <div class="texto">
+        <p>A <b>API oficial</b> é a WhatsApp Business Platform, da Meta: a empresa liga o número dela à plataforma e passa a seguir a Política de Mensagens do WhatsApp Business. <b>Não oficial</b> é tudo o que conecta a conta ao WhatsApp por fora disso, como versões modificadas do aplicativo.</p>
+        <p>A Central de Ajuda do WhatsApp é direta: usar apps não oficiais, ou conectar a conta a versões não oficiais do WhatsApp, viola os Termos de Serviço, e a conta pode ser banida temporária ou permanentemente. Os exemplos citados lá são GB WhatsApp, FM WhatsApp, TeleMessage e TM WhatsApp, "entre outros".</p>
+        <p>Para um agente que atende os clientes da empresa, perder o número é perder o canal. Por isso o agente da StratAI entra pela porta oficial, no número que você já usa.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco guia">
+    <div class="faixa">
+      <p class="mono">O que muda na prática</p>
+      <h2>As regras da API oficial, uma por uma</h2>
+      <div class="tabela">
+        <table>
+          <thead>
+            <tr><th scope="col">Regra</th><th scope="col">O que a Meta diz</th><th scope="col">O que significa para o agente</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Janela de 24 horas</td>
+              <td data-rotulo="O que a Meta diz">Quando o cliente escreve, abre uma janela de 24 horas. Dentro dela, a empresa responde com mensagem livre. Depois que ela fecha, só com modelo aprovado.</td>
+              <td data-rotulo="O que significa para o agente">O agente conversa à vontade com quem escreveu. Para voltar a falar depois de 24 horas, usa um modelo.</td>
+            </tr>
+            <tr>
+              <td>Modelos de mensagem</td>
+              <td data-rotulo="O que a Meta diz">Todo modelo é de marketing, utilidade ou autenticação, passa por revisão e só pode ser enviado com status aprovado.</td>
+              <td data-rotulo="O que significa para o agente">Lembrete, confirmação e retorno são escritos antes e aprovados pela Meta, não improvisados pela IA.</td>
+            </tr>
+            <tr>
+              <td>Permissão (opt-in)</td>
+              <td data-rotulo="O que a Meta diz">A empresa só pode contatar quem deu permissão e precisa respeitar quem pede para parar.</td>
+              <td data-rotulo="O que significa para o agente">O agente não sai mandando mensagem para lista comprada. Quem pede para parar, para de receber.</td>
+            </tr>
+            <tr>
+              <td>Automação</td>
+              <td data-rotulo="O que a Meta diz">Automação é permitida na janela de 24 horas, com um caminho rápido, claro e direto para o atendimento humano.</td>
+              <td data-rotulo="O que significa para o agente">O agente precisa saber a hora de chamar uma pessoa do time, com a conversa junto.</td>
+            </tr>
+            <tr>
+              <td>Limite de envio</td>
+              <td data-rotulo="O que a Meta diz">Portfólio empresarial novo começa com 250 números diferentes em 24 horas, fora da janela de atendimento. Pode subir para 2.000 depois da verificação da empresa, ou de 2.000 mensagens entregues em 30 dias com modelos bem avaliados, se a Meta aprovar. Depois sobe para 10.000, 100.000 e sem limite, conforme a qualidade das mensagens e o uso.</td>
+              <td data-rotulo="O que significa para o agente">Responder quem escreve não entra nesse limite. Lembrete e confirmação fora da janela entram, e a qualidade das mensagens conta.</td>
+            </tr>
+            <tr>
+              <td>Dados sensíveis</td>
+              <td data-rotulo="O que a Meta diz">A política proíbe pedir o número completo de cartão de pagamento e limita pedir informação de saúde onde a lei não permite.</td>
+              <td data-rotulo="O que significa para o agente">O desenho define o que o agente pode perguntar. Veja o guia de <a href="/guias/lgpd-agente-de-ia/">LGPD e agente de IA</a>.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco guia">
+    <div class="faixa">
+      <p class="mono">Selo azul</p>
+      <h2>O selo de conta comercial oficial não vem junto com a API</h2>
+      <div class="texto">
+        <p>Na API oficial, o número pode virar uma conta comercial oficial (Official Business Account), com o selo azul ao lado do nome. A Meta lista cinco critérios:</p>
+      </div>
+      <ul>
+        <li>cumprir a Política de Mensagens do WhatsApp Business;</li>
+        <li>estar na WhatsApp Business Platform há pelo menos 30 dias;</li>
+        <li>ter o portfólio da empresa verificado (Business Verification);</li>
+        <li>ter a verificação em duas etapas ligada no número;</li>
+        <li>ter o nome de exibição do número aprovado.</li>
+      </ul>
+      <p class="texto">Cumprir os critérios não garante o selo: a Meta analisa o pedido e, se negar, aceita um novo depois de 30 dias. O agente funciona com ou sem selo.</p>
+    </div>
+  </section>
+
+  <section class="bloco guia">
+    <div class="faixa">
+      <p class="mono">Custo</p>
+      <h2>Na API oficial, a Meta cobra por mensagem</h2>
+      <div class="texto">
+        <p>A cobrança é por mensagem entregue, e o valor depende do tipo de mensagem e do país de quem recebe. A tabela fica na página de preços da Meta e muda com o tempo, por isso a gente não copia valores aqui. O que entra no preço de um agente, do projeto ao uso, está no guia <a href="/guias/quanto-custa-agente-de-ia/">quanto custa um agente de IA no WhatsApp</a>.</p>
+        <p>Para ver o que o agente faz no dia a dia, veja o <a href="/agente-de-ia-whatsapp/">agente de IA no WhatsApp</a>.</p>
+      </div>
+    </div>
+  </section>
+</Guia>

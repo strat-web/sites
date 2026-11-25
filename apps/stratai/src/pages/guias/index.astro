@@ -1,0 +1,50 @@
+---
+// Índice dos guias da StratAI (WEB-61). Título, H1 e busca: seção 3 do mapa (docs/planos/stratai-estrutura.md); entra
+// no mesmo item dos guias para o breadcrumb deles não quebrar. A lista vem de src/data/guias.js.
+// Sem número próprio: os fatos estão em cada guia, com a fonte. Perfil conteudo, Rastro stratai-conteudo em strict
+// (banner no catálogo), como as outras páginas conteudo (decisão do Helbert de 19/11).
+import Pagina from '../../layouts/Pagina.astro';
+import { GUIAS } from '../../data/guias.js';
+---
+<Pagina
+  perfil="conteudo"
+  titulo="Guias para contratar IA na sua empresa · StratAI"
+  descricao="Guias da StratAI para quem vai contratar IA: quanto custa um agente no WhatsApp, quanto tempo leva, API oficial e LGPD, com a fonte de cada fato."
+  trilha={[{ nome: 'Início', caminho: '/' }, { nome: 'Guias', caminho: '/guias/' }]}
+>
+  <section class="abre">
+    <div class="faixa">
+      <p class="mono destaque">Guias · Antes de contratar</p>
+      <h1>Guias para quem vai contratar IA</h1>
+      <p class="lead">As perguntas que todo dono de empresa faz antes de colocar um agente de IA para atender: quanto custa, quanto tempo leva, qual WhatsApp usar e o que a LGPD pede. Cada guia traz a fonte de cada fato.</p>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <div class="grade">
+        {GUIAS.map((g) => (
+          <article class="cartao">
+            <h2 class="h3">{g.nome}</h2>
+            <p>{g.resumo}</p>
+            <a class="ir" href={g.caminho}>Ler o guia</a>
+          </article>
+        ))}
+      </div>
+      <p class="texto">Os guias falam do produto que a StratAI coloca no ar: o <a href="/agente-de-ia-whatsapp/">agente de IA no WhatsApp</a>. Para ver um funcionando, leia os <a href="/casos/">casos</a>.</p>
+    </div>
+  </section>
+
+  <section class="bloco final">
+    <div class="faixa">
+      <p class="mono destaque">3 minutos</p>
+      <h2>Prefere a resposta para o seu caso?</h2>
+      <p class="texto">Você responde 10 perguntas e recebe o mapa de onde a sua operação perde tempo. Depois, um sócio lê o seu caso em até 1 dia útil.</p>
+      <a class="botao" href="/#diagnostico" data-strat-cta="guias-final-diagnostico">Fazer meu diagnóstico</a>
+    </div>
+  </section>
+</Pagina>
+
+<style>
+.cartao .h3{font-size:1.15rem;margin:0}
+</style>

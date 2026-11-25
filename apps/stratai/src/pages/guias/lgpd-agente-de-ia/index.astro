@@ -1,0 +1,158 @@
+---
+// Guia "LGPD e agente de IA" (WEB-61). Título, H1 e busca: seção 3 do mapa (docs/planos/stratai-estrutura.md).
+// Não é parecer jurídico e não promete conformidade: explica artigos da lei e deixa a decisão com o controlador.
+// Fontes de cada fato, conferidas em 25/11/2026 (lista `fontes`):
+// - Lei 13.709/2018 (texto compilado no planalto.gov.br): art. 5º (I dado pessoal, II dado sensível, com saúde,
+//   VI controlador, VII operador), art. 6º (I finalidade, III necessidade, VI transparência, VII segurança), art. 7º
+//   (I consentimento, II obrigação legal, V contrato e procedimentos preliminares, IX legítimo interesse), art. 11
+//   (dado sensível: consentimento específico e destacado ou hipóteses do inciso II, como tutela da saúde), arts. 15 e
+//   16 (término do tratamento e eliminação), art. 18 (direitos do titular), art. 20 (revisão de decisão só
+//   automatizada), art. 39 (operador segue as instruções do controlador), art. 41 (encarregado), art. 46 (segurança),
+//   art. 48 (comunicar incidente à autoridade e ao titular).
+// - Resolução CD/ANPD nº 2/2022 (agentes de pequeno porte): art. 3º (alto risco fica fora do tratamento
+//   diferenciado), art. 4º (alto risco: um critério geral e um específico, entre eles tecnologia emergente e dado
+//   sensível), art. 6º (a dispensa não isenta do resto da lei) e art. 11 (dispensa do encarregado com canal de
+//   comunicação).
+// - Guia da ANPD sobre agentes de tratamento e encarregado (versão 2.0, abril de 2022): quem é controlador e operador
+//   depende do caso.
+// - Política de Mensagens do WhatsApp Business: cartão de pagamento e informação de saúde.
+// - Política de privacidade da StratAI (src/html/politica-de-privacidade.corpo.html): a StratAI é controladora dos
+//   dados das páginas e do atendimento comercial; bases dos arts. 7º, V e IX; contatos guardados por até 24 meses
+//   após o último contato; resposta em até 15 dias.
+// - Contas e acessos no nome da empresa, "a gente trabalha com o acesso que você libera", desenho aprovado antes da
+//   construção: home (FAQ e #metodo). O agente se apresenta como assistente da empresa: /agente-de-ia-whatsapp/ (WEB-34).
+// Rastro stratai-conteudo em strict (banner no catálogo), como as outras páginas conteudo (decisão do Helbert de 19/11).
+import Guia from '../../../layouts/Guia.astro';
+
+const perguntas = [
+  {
+    pergunta: 'Preciso pedir consentimento para o agente responder no WhatsApp?',
+    resposta:
+      'Nem sempre. O consentimento é uma das bases legais do art. 7º da LGPD, ao lado de outras, como os procedimentos preliminares a um contrato pedidos pela própria pessoa e o legítimo interesse. Qual base vale para cada conversa é decisão da sua empresa, como controladora, com orientação jurídica.',
+  },
+  {
+    pergunta: 'Clínica pode usar agente de IA no WhatsApp?',
+    resposta:
+      'A LGPD não proíbe, mas dado de saúde é sensível (art. 5º, II) e só pode ser tratado nas hipóteses do art. 11. Na prática, o desenho deve evitar que o agente peça sintoma ou diagnóstico quando não precisa, e a base legal deve ser avaliada pelo jurídico da clínica.',
+  },
+  {
+    pergunta: 'O agente precisa avisar que é uma IA?',
+    resposta:
+      'A LGPD não tem um artigo só sobre isso, mas o princípio da transparência (art. 6º, VI) pede informação clara sobre o tratamento. Os agentes que a StratAI coloca no ar se apresentam como assistentes da empresa.',
+  },
+  {
+    pergunta: 'A StratAI garante que o agente está de acordo com a LGPD?',
+    resposta:
+      'Não damos parecer jurídico nem garantia de conformidade: ela depende de decisões da sua empresa, como a base legal e o prazo de guarda. O que a gente faz é trazer esses pontos para o desenho, que você aprova antes da construção.',
+  },
+];
+
+const fontes = [
+  {
+    nome: 'Lei nº 13.709/2018 (LGPD), texto compilado · Planalto',
+    url: 'https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm',
+    consultado: '2026-11-25',
+  },
+  {
+    nome: 'ANPD · Resolução CD/ANPD nº 2, de 27 de janeiro de 2022 (agentes de tratamento de pequeno porte)',
+    url: 'https://www.gov.br/anpd/pt-br/acesso-a-informacao/institucional/atos-normativos/regulamentacoes_anpd/resolucao-cd-anpd-no-2-de-27-de-janeiro-de-2022',
+    consultado: '2026-11-25',
+  },
+  {
+    nome: 'ANPD · Guia orientativo sobre agentes de tratamento e encarregado (versão 2.0)',
+    url: 'https://www.gov.br/anpd/pt-br/assuntos/noticias/nova-versao-do-guia-dos-agentes-de-tratamento',
+    consultado: '2026-11-25',
+  },
+  {
+    nome: 'WhatsApp Business · Política de Mensagens do WhatsApp Business',
+    url: 'https://whatsappbusiness.com/pt-br/policy/',
+    consultado: '2026-11-25',
+  },
+];
+---
+<Guia
+  titulo="LGPD e agente de IA: o que a empresa precisa · StratAI"
+  h1="LGPD e agente de IA: o que a sua empresa precisa cuidar"
+  descricao="O que a LGPD pede de quem coloca um agente de IA para atender clientes: base legal, finalidade, dado de saúde, prazo de guarda e direitos do titular."
+  nome="LGPD e agente de IA"
+  rotulo="Guia · LGPD"
+  lead="Um agente de IA no WhatsApp conversa com clientes, e conversa tem dado pessoal: nome, telefone, o que a pessoa pediu. Este guia junta os pontos da Lei 13.709/2018 (LGPD) que aparecem em todo projeto de agente, com o artigo de cada um."
+  publicado="2026-11-25"
+  atualizado="2026-11-25"
+  perguntas={perguntas}
+  fontes={fontes}
+  cta="guia-lgpd"
+>
+  <section class="bloco guia">
+    <div class="faixa">
+      <p class="aviso"><b>Isto não é parecer jurídico.</b> O guia explica o que a lei diz, para você chegar preparado à conversa. Para decidir o seu caso, fale com o advogado ou o encarregado de dados da sua empresa.</p>
+    </div>
+  </section>
+
+  <section class="bloco guia">
+    <div class="faixa">
+      <p class="mono">Quem é quem</p>
+      <h2>Controlador e operador: quem decide e quem executa</h2>
+      <div class="texto">
+        <p>A LGPD chama de <b>controlador</b> quem toma as decisões sobre o tratamento dos dados (art. 5º, VI) e de <b>operador</b> quem trata os dados em nome do controlador (art. 5º, VII), seguindo as instruções dele (art. 39).</p>
+        <p>Num agente que atende os clientes da sua empresa, as decisões sobre as conversas (para que servem, o que guardar, por quanto tempo) costumam ser da sua empresa, e quem constrói e opera o agente segue as instruções dela. Quem é o quê depende do caso concreto: o guia da ANPD sobre agentes de tratamento explica os critérios.</p>
+        <p>Nas páginas e no atendimento comercial da própria StratAI, a controladora é a StratAI, como está na nossa <a href="/politica-de-privacidade/">política de privacidade</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco guia">
+    <div class="faixa">
+      <p class="mono">Os pontos da lei</p>
+      <h2>Seis cuidados antes de colocar o agente no ar</h2>
+
+      <h3>1. Uma base legal para cada finalidade</h3>
+      <div class="texto">
+        <p>Dado pessoal só pode ser tratado numa das hipóteses do art. 7º. Entre elas estão o consentimento (inciso I), o cumprimento de obrigação legal (II), a execução de contrato ou de procedimentos preliminares a pedido da pessoa (V) e o legítimo interesse (IX). Na nossa política, por exemplo, responder a um pedido de diagnóstico se apoia nos incisos V e IX.</p>
+      </div>
+
+      <h3>2. Pedir só o que precisa</h3>
+      <div class="texto">
+        <p>O tratamento deve ter propósito legítimo, específico e informado (finalidade, art. 6º, I) e ficar no mínimo necessário (necessidade, art. 6º, III). Para reservar uma mesa, o agente precisa do nome, do horário e do número de pessoas, não do CPF. O que o agente pergunta é definido no desenho, que você aprova antes da construção.</p>
+      </div>
+
+      <h3>3. Dado de saúde pede cuidado dobrado</h3>
+      <div class="texto">
+        <p>Dado referente à saúde é dado pessoal sensível (art. 5º, II). Ele só pode ser tratado com consentimento específico e destacado, para finalidade específica, ou numa das hipóteses do art. 11, II, como a tutela da saúde por profissionais e serviços de saúde. A Política de Mensagens do WhatsApp Business também proíbe pedir informação de saúde onde a lei aplicável não permite, e pedir o número completo de cartão de pagamento. Para quem atende paciente, veja também <a href="/ia-para-clinicas/">IA para clínicas</a>.</p>
+        <p>Para empresa pequena, há mais um ponto: a Resolução CD/ANPD nº 2/2022 tira o tratamento simplificado de quem faz tratamento de alto risco (art. 3º, I). Uso de tecnologia emergente e de dado sensível estão entre os critérios específicos de alto risco, que contam junto com pelo menos um critério geral (art. 4º).</p>
+      </div>
+
+      <h3>4. Prazo de guarda das conversas</h3>
+      <div class="texto">
+        <p>O tratamento termina quando a finalidade foi alcançada ou o dado deixou de ser necessário, no fim do período de tratamento, a pedido do titular ou por determinação da ANPD (art. 15). Depois disso, os dados são eliminados, salvo as hipóteses de guarda do art. 16. Na prática: definir por quanto tempo o agente e as ferramentas guardam as conversas e o que acontece depois. Na nossa política, contatos comerciais ficam por até 24 meses após o último contato.</p>
+      </div>
+
+      <h3>5. Os direitos de quem conversou com o agente</h3>
+      <div class="texto">
+        <p>O titular pode pedir confirmação de que os dados são tratados, acesso, correção, anonimização, bloqueio ou eliminação do que for desnecessário, portabilidade, informação sobre com quem os dados foram compartilhados e revogação do consentimento (art. 18). Se uma decisão que o afeta for tomada só por tratamento automatizado, ele pode pedir revisão (art. 20). A empresa precisa de um canal para receber esses pedidos e indicar um encarregado (art. 41); a empresa que se enquadra como agente de tratamento de pequeno porte pode ser dispensada do encarregado, desde que mantenha um canal de comunicação com o titular (Resolução CD/ANPD nº 2/2022, art. 11). A dispensa não isenta do resto da lei (art. 6º da resolução).</p>
+      </div>
+
+      <h3>6. Segurança e transparência</h3>
+      <div class="texto">
+        <p>A lei pede medidas técnicas e administrativas para proteger os dados (art. 46) e, se houver incidente que possa causar risco ou dano relevante, a comunicação à ANPD e ao titular (art. 48). No nosso jeito de trabalhar, as contas e os acessos (WhatsApp, CRM, planilhas) ficam no nome da sua empresa: a gente trabalha com o acesso que você libera, e você pode tirar quando quiser.</p>
+        <p>Sobre avisar que é uma IA: a LGPD pede informação clara, precisa e facilmente acessível ao titular (transparência, art. 6º, VI). O <a href="/agente-de-ia-whatsapp/">agente de IA no WhatsApp</a> da StratAI se apresenta como assistente da sua empresa.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco guia">
+    <div class="faixa">
+      <p class="mono">Para levar à conversa</p>
+      <h2>Perguntas para responder antes do agente ir ao ar</h2>
+      <ol class="passos">
+        <li><b>Para que o agente usa cada dado?</b> E qual base legal do art. 7º vale para cada uso.</li>
+        <li><b>O que ele precisa perguntar,</b> e o que fica de fora do roteiro.</li>
+        <li><b>Chega dado de saúde ou outro dado sensível?</b> Se sim, como o desenho evita pedir sem necessidade.</li>
+        <li><b>Por quanto tempo as conversas ficam guardadas,</b> e em quais ferramentas.</li>
+        <li><b>Por onde o cliente pede acesso, correção ou exclusão,</b> e quem responde.</li>
+        <li><b>Quem é controlador e quem é operador,</b> escrito no contrato.</li>
+      </ol>
+      <p class="texto">Para os outros pontos de um projeto de agente, leia o guia da <a href="/guias/api-oficial-whatsapp/">API oficial do WhatsApp</a> e o de <a href="/guias/quanto-custa-agente-de-ia/">quanto custa um agente de IA</a>.</p>
+    </div>
+  </section>
+</Guia>
