@@ -18,21 +18,47 @@ const { titulo, descricao, perfil, trilha, tipo = 'website' } = Astro.props;
 // O diagnóstico é o convite da marca (voz da StratAI): a home, na seção #diagnostico.
 const DIAGNOSTICO = '/#diagnostico';
 const AGENCIA = 'https://agenciastrat.com.br/';
-const MENU = [
-  { nome: 'Agente no WhatsApp', href: '/agente-de-ia-whatsapp/' },
-  { nome: 'Raio-X de IA', href: '/raio-x/' },
+// Menu da seção 5 do mapa, na ordem da reunião de 12/11 (Produtos, Personalizado, Serviços, Casos, Parcerias), só com
+// páginas no ar. Grupo (`itens`) abre um submenu; Sobre segue do Lote A. Lote B (WEB-59): Agente SDR com IA,
+// Sistemas sob medida (Personalizado), Automação com IA e Método das Alavancas.
+const MENU: { nome: string; href?: string; itens?: { nome: string; href: string }[] }[] = [
+  {
+    nome: 'Produtos',
+    itens: [
+      { nome: 'Agente de IA no WhatsApp', href: '/agente-de-ia-whatsapp/' },
+      { nome: 'Agente SDR com IA', href: '/agente-sdr-ia/' },
+    ],
+  },
+  { nome: 'Personalizado', href: '/sistemas-sob-medida/' },
+  {
+    nome: 'Serviços',
+    itens: [
+      { nome: 'Automação com IA', href: '/automacao-com-ia/' },
+      { nome: 'Método das Alavancas', href: '/metodo-das-alavancas/' },
+      { nome: 'Raio-X de IA', href: '/raio-x/' },
+    ],
+  },
   { nome: 'Casos', href: '/casos/' },
   { nome: 'Parcerias', href: '/parcerias/' },
   { nome: 'Sobre', href: '/sobre/' },
 ];
 const RODAPE = [
-  { titulo: 'Produtos', links: [{ nome: 'Agente de IA no WhatsApp', href: '/agente-de-ia-whatsapp/' }] },
+  {
+    titulo: 'Produtos',
+    links: [
+      { nome: 'Agente de IA no WhatsApp', href: '/agente-de-ia-whatsapp/' },
+      { nome: 'Agente SDR com IA', href: '/agente-sdr-ia/' },
+      { nome: 'Sistemas sob medida', href: '/sistemas-sob-medida/' },
+      { nome: 'Automação com IA', href: '/automacao-com-ia/' },
+    ],
+  },
   {
     titulo: 'StratAI',
     links: [
       { nome: 'Sobre', href: '/sobre/' },
       { nome: 'Agência de IA em Joinville', href: '/agencia-de-ia-joinville/' },
       { nome: 'Casos', href: '/casos/' },
+      { nome: 'Método das Alavancas', href: '/metodo-das-alavancas/' },
       { nome: 'Parcerias', href: '/parcerias/' },
       { nome: 'Política de privacidade', href: '/politica-de-privacidade/' },
     ],
@@ -64,24 +90,44 @@ const atual = new URL(Astro.url).pathname;
       <details class="menu">
         <summary>Menu</summary>
         <nav aria-label="Principal">
-          {MENU.map((m) => <a href={m.href} aria-current={atual === m.href ? 'page' : undefined}>{m.nome}</a>)}
+          {MENU.map((m) =>
+            m.itens ? (
+              <details class="sub">
+                <summary>{m.nome}</summary>
+                <div>
+                  {m.itens.map((i) => <a href={i.href} aria-current={atual === i.href ? 'page' : undefined}>{i.nome}</a>)}
+                </div>
+              </details>
+            ) : (
+              <a href={m.href} aria-current={atual === m.href ? 'page' : undefined}>{m.nome}</a>
+            )
+          )}
           <a href={AGENCIA}>Agência</a>
           <a class="botao botao-p" href={DIAGNOSTICO} data-strat-cta="topo-diagnostico">Fazer diagnóstico</a>
         </nav>
       </details>
-      <script is:inline>
-        // <details> fechado esconde o <nav> em qualquer largura, e o CSS não o mostra: no computador o menu abre aqui.
-        // Sem JavaScript, o botão "Menu" continua aparecendo e abre a lista.
-        (function () {
-          var d = document.querySelector('.topo details.menu');
-          if (!d || !window.matchMedia) return;
-          var mq = window.matchMedia('(min-width:960px)');
-          var ajustar = function () { d.open = mq.matches; };
-          ajustar();
-          if (mq.addEventListener) mq.addEventListener('change', ajustar); else mq.addListener(ajustar);
-        })();
-      </script>
     </div>
+    <script is:inline>
+      // Com o <details> fechado, o navegador esconde o <nav> em qualquer largura: no computador o script abre o menu e
+      // o CSS tira o botão (sem JavaScript, o botão "Menu" segue e abre a lista). Um submenu aberto fecha os outros e fecha ao clicar fora (WEB-59).
+      (function () {
+        var menu = document.querySelector('.topo .menu');
+        if (!menu) return;
+        var largo = window.matchMedia('(min-width:1024px)');
+        var ajustar = function () { menu.open = largo.matches; };
+        ajustar();
+        if (largo.addEventListener) largo.addEventListener('change', ajustar);
+        var subs = menu.querySelectorAll('details.sub');
+        subs.forEach(function (d) {
+          d.addEventListener('toggle', function () {
+            if (d.open) subs.forEach(function (o) { if (o !== d) o.open = false; });
+          });
+        });
+        document.addEventListener('click', function (e) {
+          subs.forEach(function (d) { if (d.open && !d.contains(e.target)) d.open = false; });
+        });
+      })();
+    </script>
   </header>
   <main id="conteudo">
     <div class="faixa"><Breadcrumb itens={trilha} class="trilha" /></div>
@@ -136,18 +182,27 @@ p{margin:0}
 .topo{position:sticky;top:0;z-index:40;background:rgba(25,25,25,.92);border-bottom:1px solid var(--line)}
 .topo-faixa{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:66px}
 .marca{font:700 1.3rem/1 var(--f);text-decoration:none}.marca span{color:var(--lime)}
-.menu summary{list-style:none;cursor:pointer;padding:10px 14px;border:1px solid var(--line);border-radius:999px;font-weight:600}
+.menu>summary{list-style:none;cursor:pointer;padding:10px 14px;border:1px solid var(--line);border-radius:999px;font-weight:600}
 .menu summary::-webkit-details-marker{display:none}
-.menu nav{position:absolute;right:20px;top:62px;display:flex;flex-direction:column;gap:4px;min-width:240px;padding:12px;background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r)}
+.menu nav{position:absolute;right:20px;top:62px;display:flex;flex-direction:column;gap:4px;min-width:260px;max-height:calc(100vh - 80px);overflow:auto;padding:12px;background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r)}
 .menu nav a{padding:10px 12px;border-radius:10px;text-decoration:none}
 .menu nav a:not(.botao):hover,.menu nav a[aria-current]{background:var(--card)}
 .menu nav .botao{margin-top:6px}
-@media (min-width:960px){
-  .menu[open] summary{display:none}
-  .menu[open] nav{position:static;flex-direction:row;align-items:center;gap:2px;min-width:0;padding:0;background:none;border:0}
-  .menu nav a{padding:8px 12px;font-size:.95rem;color:var(--ink-2)}
-  .menu nav a:hover,.menu nav a[aria-current]{color:var(--ink);background:none}
-  .menu nav .botao{margin:0 0 0 8px;color:var(--lime-ink)}
+.sub>summary{list-style:none;cursor:pointer;padding:10px 12px;border-radius:10px;font-weight:600}
+.sub>summary::after{content:"";display:inline-block;width:6px;height:6px;margin:0 0 3px 10px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg)}
+.sub[open]>summary::after{transform:rotate(-135deg);margin-bottom:-1px}
+.sub>div{display:flex;flex-direction:column;gap:2px;padding:0 0 6px 12px}
+@media (min-width:1024px){
+  .menu[open]>summary{display:none}
+  .menu[open] nav{position:static;flex-direction:row;align-items:center;gap:2px;min-width:0;max-height:none;overflow:visible;padding:0;background:none;border:0}
+  .menu nav a,.sub>summary{padding:8px 12px;font-size:.95rem;color:var(--ink-2)}
+  .sub>summary{font-weight:400}
+  .menu nav a:hover,.menu nav a[aria-current],.sub>summary:hover,.sub[open]>summary{color:var(--ink);background:none}
+  .menu nav .botao{margin:0 0 0 8px;color:var(--lime-ink);border-radius:999px;padding:0 18px}
+  .sub{position:relative}
+  .sub>div{position:absolute;left:0;top:calc(100% + 8px);min-width:250px;padding:10px;background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r)}
+  .sub>div a{color:var(--ink)}
+  .sub>div a:hover,.sub>div a[aria-current]{background:var(--card)}
 }
 /* trilha */
 .trilha{padding:18px 0 0}
@@ -169,7 +224,8 @@ p{margin:0}
 .cartao h3{font-size:1.15rem}
 .cartao p{color:var(--ink-2);margin-top:8px;font-size:.97rem}
 .cartao .ir{display:inline-block;margin-top:12px;font-weight:600;text-decoration:none}
-.numero{font:700 clamp(2.2rem,5vw,3rem)/1 var(--f);color:var(--lime)}
+.numero,.cartao .numero{font:700 clamp(2.2rem,5vw,3rem)/1 var(--f);color:var(--lime);margin-top:0}
+.cartao .numero+h3{margin-top:10px}
 .passos{counter-reset:p;list-style:none;margin:28px 0 0;padding:0;display:grid;gap:12px}
 .passos li{counter-increment:p;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px 18px 64px;position:relative;color:var(--ink-2)}
 .passos li::before{content:counter(p,decimal-leading-zero);position:absolute;left:20px;top:18px;font:600 .9rem/1.6 var(--mono);color:var(--lime)}

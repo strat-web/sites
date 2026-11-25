@@ -15,6 +15,10 @@ Site da StratAI no Cloudflare Pages (projeto `stratai`, prévia em https://strat
 | `/casos/` | `src/pages/casos/index.astro` + `Pagina.astro` | `stratai-casos` | Rastro `stratai-conteudo` (banner/strict) e MetricaaS `agencia-strat` (WEB-34) |
 | `/casos/restaurante-reservas-no-whatsapp/` | `src/pages/casos/restaurante-reservas-no-whatsapp/index.astro` + `Pagina.astro` | `stratai-caso-restaurante` | Rastro `stratai-conteudo` (banner/strict) e MetricaaS `agencia-strat` (WEB-34) |
 | `/sobre/` | `src/pages/sobre/index.astro` + `Pagina.astro` | `stratai-sobre` | Rastro `stratai-conteudo` (banner/strict) e MetricaaS `agencia-strat` (WEB-34) |
+| `/agente-sdr-ia/` | `src/pages/agente-sdr-ia/index.astro` + `Pagina.astro` | `stratai-agente-sdr-ia` | Rastro `stratai-paginas` (soft) e MetricaaS `agencia-strat` (WEB-59) |
+| `/automacao-com-ia/` | `src/pages/automacao-com-ia/index.astro` + `Pagina.astro` | `stratai-automacao-com-ia` | Rastro `stratai-paginas` (soft) e MetricaaS `agencia-strat` (WEB-59) |
+| `/sistemas-sob-medida/` | `src/pages/sistemas-sob-medida/index.astro` + `Pagina.astro` | `stratai-sistemas-sob-medida` | Rastro `stratai-paginas` (soft) e MetricaaS `agencia-strat` (WEB-59) |
+| `/metodo-das-alavancas/` | `src/pages/metodo-das-alavancas/index.astro` + `Pagina.astro` | `stratai-metodo-das-alavancas` | Rastro `stratai-paginas` (soft) e MetricaaS `agencia-strat` (WEB-59) |
 | `/recuperacao/cases/` e `/recuperacao/cases/<cliente>/` | `src/pages/recuperacao/cases/` (conteúdo em `public/recuperacao/comum/cases.js`) | `stratai-recuperacao-case*` | Rastro `stratai-recuperacao` (soft) e MetricaaS `agencia-strat` |
 | `/parcerias/` | `src/pages/parcerias/index.astro`, `src/layouts/Parcerias.astro`, `src/components/parcerias/`, textos em `src/data/parcerias.json` | `stratai-parcerias` | Rastro `stratai-parcerias` (soft) e MetricaaS `agencia-strat`; o cadastro vai pelo `mtc.lead()` (WEB-74) |
 
@@ -72,6 +76,15 @@ Lote A (WEB-34, 25/11/2026) também mexeu na home, pela decisão 5 da seção 7 
 de atendimento para `/agente-de-ia-whatsapp/`, o "Ler o caso completo" no caso do restaurante, as páginas novas no
 rodapé e a Agência apontando para `agenciastrat.com.br`. Texto, layout e tracking do resto da home não mudaram. Regra
 da decisão: uma semana de leads da home acompanhada depois do merge; se caírem, o menu volta.
+
+Lote B (WEB-59, 25/11/2026): `/agente-sdr-ia/`, `/automacao-com-ia/`, `/sistemas-sob-medida/` e `/metodo-das-alavancas/`,
+todas `lead` com o Rastro `stratai-paginas` em `soft`. O menu da casca passou a seguir a seção 5 do mapa: Produtos
+(Agente de IA no WhatsApp, Agente SDR com IA) e Serviços (Automação com IA, Método das Alavancas, Raio-X de IA) como
+submenu (`<details class="sub">` dentro do `MENU`, campo `itens`), Personalizado levando a `/sistemas-sob-medida/`, e
+Casos, Parcerias e Sobre. Até 1023 px o menu abre em lista pelo botão "Menu"; a partir de 1024 px o script inline
+da casca (o do Lote A, que abre o `<details>` do menu no computador) deixa o menu em linha e fecha um submenu quando
+outro abre ou ao clicar fora. O menu da home (WEB-34) não mudou. O rodapé da casca ganhou
+Agente SDR com IA, Sistemas sob medida e Automação com IA em Produtos e Método das Alavancas em StratAI.
 
 ## Depois da migração: home do plano de Joinville (WEB-33, 25/11/2026)
 A F1 de `docs/planos/stratai-buscas-joinville.md`, a primeira mudança de texto da home depois do WEB-32:

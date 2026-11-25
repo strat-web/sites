@@ -1,0 +1,171 @@
+---
+// Página do produto "agente SDR com IA" (WEB-59, Lote B). Título, H1 e busca: seção 3 do mapa
+// (docs/planos/stratai-estrutura.md). Seção 4: o título, o H1 e a descrição não citam segmento; o caso da imobiliária
+// entra só no texto, como prova. O link para /ia-para-imobiliarias/ (bloco "por segmento") e para o caso da
+// imobiliária entram quando o Lote C (WEB-60) estiver no ar: a checagem links barra link para página que não existe.
+// Fatos e fonte (regra dura 4), todos da home (WEB-32/WEB-33, src/html/home.corpo.html):
+// - módulo "02 Vendas": atende o lead do anúncio na hora, qualifica, volta em quem parou de responder, reunião no CRM;
+// - "Um dia na sua empresa", 12h30: lead do anúncio sem resposta, 1h30 de espera, às 14h comprou do concorrente;
+// - caso da imobiliária (bloco "Casos reais"): agente SDR com cobertura planejada das 18h às 8h e nas férias, pergunta a
+//   renda da família, pede os documentos da simulação do financiamento, reunião no CRM, corretor recebe o lead pronto.
+//   O número desse caso fica para a página do caso (Lote C), com a fonte no PR dele;
+// - caso do restaurante: 180 reservas por mês pelo agente;
+// - integrações: Meta Ads (lead do anúncio), site e formulários, Instagram Direct, CRM (Kommo e outros), Google Agenda;
+//   "a maioria tem porta de entrada pra agente";
+// - prazo de 4 a 6 semanas para um agente de WhatsApp e valor fechado depois do diagnóstico: FAQ da home.
+// A conversa do bloco "Na tela" é ilustrativa e vai marcada assim (regra exemplo-marcado da voz da StratAI).
+// Rastro stratai-paginas em soft (decisão do Helbert de 19/11 no #14).
+import Pagina from '../../layouts/Pagina.astro';
+import Faq from '@strat/kit/Faq.astro';
+
+const perguntas = [
+  {
+    pergunta: 'O que faz um agente SDR com IA?',
+    resposta:
+      'O trabalho do SDR: atende o lead assim que ele chega, faz as perguntas de qualificação que o seu time definiu, volta em quem parou de responder e deixa a reunião marcada no CRM. O vendedor recebe o lead com a conversa inteira junto.',
+  },
+  {
+    pergunta: 'O agente SDR funciona com o meu CRM?',
+    resposta:
+      'Funciona com o CRM que você já usa, como o Kommo. Se for outra ferramenta, ela entra no mapeamento: a maioria tem porta de entrada para agente. Você não precisa trocar nada.',
+  },
+  {
+    pergunta: 'O agente atende lead fora do horário comercial?',
+    resposta:
+      'Atende. É para isso que ele existe: numa imobiliária, o agente SDR cobre das 18h às 8h e as férias do time. O lead que chega à noite é qualificado na hora, e a reunião já está no CRM quando o corretor chega.',
+  },
+  {
+    pergunta: 'E se o lead quiser falar com uma pessoa?',
+    resposta:
+      'O agente passa a conversa para o vendedor, com tudo o que já foi dito. Ninguém precisa perguntar de novo. O que ele não sabe, não inventa.',
+  },
+  {
+    pergunta: 'Em quanto tempo o agente SDR fica pronto?',
+    resposta:
+      'O agente SDR conversa pelo WhatsApp, e um agente de WhatsApp costuma ficar no ar entre 4 e 6 semanas. O prazo depende do escopo e fica combinado antes de começar.',
+  },
+  {
+    pergunta: 'Quanto custa um agente SDR com IA?',
+    resposta:
+      'Depende do que vai ser construído. Depois do diagnóstico, a gente entende o seu caso e passa um valor fechado antes de começar.',
+  },
+];
+---
+<Pagina
+  perfil="lead"
+  titulo="Agente SDR com IA: atende e qualifica o lead · StratAI"
+  descricao="Agente SDR com IA: atende o lead do anúncio na hora, qualifica, volta em quem parou de responder e deixa a reunião marcada no CRM do seu time."
+  trilha={[{ nome: 'Início', caminho: '/' }, { nome: 'Agente SDR com IA', caminho: '/agente-sdr-ia/' }]}
+>
+  <section class="abre">
+    <div class="faixa">
+      <p class="mono destaque">Produto · Vendas</p>
+      <h1>Um SDR com IA que atende o lead do anúncio na hora e marca a reunião</h1>
+      <p class="lead">O lead preenche o formulário às 12h30, na hora do almoço. Se ninguém responde, às 14h ele já fechou com o concorrente. O agente SDR responde na hora, faz as perguntas que o seu vendedor faria e entrega o lead qualificado, com a reunião marcada no CRM.</p>
+      <div class="acoes">
+        <a class="botao" href="/#diagnostico" data-strat-cta="sdr-abre-diagnostico">Fazer meu diagnóstico</a>
+        <a class="botao botao-fantasma" href="/casos/">Ver os casos</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">O que ele faz</p>
+      <h2>Do anúncio à reunião marcada, sem o lead esfriar na fila</h2>
+      <div class="grade">
+        <article class="cartao">
+          <h3>Atende na hora</h3>
+          <p>O lead que chega do anúncio da Meta, do formulário do site ou do Instagram Direct recebe resposta no mesmo minuto, inclusive à noite.</p>
+        </article>
+        <article class="cartao">
+          <h3>Qualifica com as suas perguntas</h3>
+          <p>As perguntas são as que o seu time já faz: o que a pessoa procura, para quando, quanto pode investir. Quem não tem perfil não ocupa a agenda do vendedor.</p>
+        </article>
+        <article class="cartao">
+          <h3>Volta em quem parou de responder</h3>
+          <p>O lead que sumiu no meio da conversa recebe um novo contato, no tempo que você definir.</p>
+        </article>
+        <article class="cartao">
+          <h3>Marca a reunião no CRM</h3>
+          <p>O horário vai para a agenda do vendedor e o lead entra no CRM com a conversa inteira. Quem vende já chega sabendo com quem vai falar.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Na tela</p>
+      <h2>Um lead do anúncio às 21h14 de quinta</h2>
+      <div class="conversa" role="group" aria-label="Exemplo ilustrativo de conversa com o agente SDR">
+        <p class="msg">Oi, preenchi o formulário do anúncio<small>21:14</small></p>
+        <p class="msg a">Oi! Recebi aqui. Duas perguntas rápidas para o consultor já chegar com a proposta certa: é para você ou para a sua empresa?<small>21:14</small></p>
+        <p class="msg">Para a empresa. Somos 12 pessoas<small>21:16</small></p>
+        <p class="msg a">Perfeito. O consultor tem horário amanhã às 10h ou às 15h. Qual fica melhor?<small>21:16</small></p>
+        <p class="msg">10h<small>21:17</small></p>
+        <p class="msg a">Marcado: amanhã às 10h. O consultor já recebeu a nossa conversa.<small>21:17</small></p>
+      </div>
+      <p class="nota">Exemplo ilustrativo. As perguntas de cada agente são desenhadas com o seu time comercial.</p>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Agentes no ar</p>
+      <h2>Onde o agente já trabalha enquanto o time descansa</h2>
+      <div class="grade">
+        <article class="cartao">
+          <p class="numero">18h às 8h</p>
+          <h3>cobertura de um agente SDR numa imobiliária</h3>
+          <p>E nas férias do time. O lead do anúncio é qualificado na hora: o agente pergunta a renda da família, pede os documentos para a simulação do financiamento e deixa a reunião marcada no CRM. O corretor recebe o lead pronto.</p>
+        </article>
+        <article class="cartao">
+          <p class="numero">180</p>
+          <h3>reservas por mês</h3>
+          <p>Feitas pelo agente de um restaurante de Joinville no WhatsApp: o mesmo agente que atende na hora, registra e avisa a equipe.</p>
+          <a class="ir" href="/casos/restaurante-reservas-no-whatsapp/">Ler o caso do restaurante</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Como fica pronto</p>
+      <h2>O seu processo comercial primeiro, o agente depois</h2>
+      <ol class="passos">
+        <li><b>Mapeamento.</b> De onde vem o lead, quanto tempo ele espera hoje, quais perguntas o vendedor faz e o que separa um lead bom de um curioso.</li>
+        <li><b>Desenho.</b> As perguntas, o momento de passar para o vendedor e onde a reunião é registrada. Você aprova antes da construção.</li>
+        <li><b>No ar.</b> Testado com leads reais e ajustado com o seu time comercial acompanhando.</li>
+      </ol>
+      <div class="texto">
+        <p>É o <a href="/metodo-das-alavancas/">Método das Alavancas</a>: a alavanca de vendas só entra primeiro quando é ela que mais pesa na sua operação.</p>
+        <p>O agente SDR é o agente de WhatsApp com foco em vendas. Se o gargalo da sua empresa é responder o cliente que já comprou, veja o <a href="/agente-de-ia-whatsapp/">agente de IA para WhatsApp</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Para quem não é</p>
+      <h2>Quando o agente SDR não é o melhor começo</h2>
+      <ul class="nao-e">
+        <li>Quando quase nenhum lead chega: sem anúncio, sem formulário, sem conversa entrando, não há o que qualificar.</li>
+        <li>Quando a ideia é a IA fechar a venda sozinha. O agente entrega o lead pronto e a reunião marcada; quem vende é o seu time.</li>
+        <li>Quando o time não consegue atender as reuniões que já tem. Aí a primeira alavanca é outra, e o diagnóstico mostra qual.</li>
+      </ul>
+    </div>
+  </section>
+
+  <Faq perguntas={perguntas} />
+
+  <section class="bloco final">
+    <div class="faixa">
+      <p class="mono destaque">3 minutos</p>
+      <h2>Veja se vendas é a primeira alavanca da sua empresa</h2>
+      <p class="texto">Em 3 minutos você recebe o mapa de onde a sua operação perde tempo. Se não fizer sentido, a gente diz e indica outro caminho.</p>
+      <a class="botao" href="/#diagnostico" data-strat-cta="sdr-final-diagnostico">Fazer meu diagnóstico</a>
+    </div>
+  </section>
+</Pagina>

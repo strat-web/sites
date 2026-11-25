@@ -1,0 +1,162 @@
+---
+// Página "Personalizado" do menu: sistemas e painéis sob medida (WEB-59, Lote B). Título, H1 e busca: seção 3 do mapa
+// (docs/planos/stratai-estrutura.md); no menu, o item "Personalizado" da seção 5 leva aqui.
+// Fatos e fonte (regra dura 4), todos da home (WEB-32/WEB-33, src/html/home.corpo.html):
+// - módulo "04 Sistemas": a operação que roda em planilhas e na memória de uma pessoa vira um sistema do seu jeito;
+//   painel com os números do dia; processo que sai da cabeça de uma pessoa; ligado às ferramentas que você já usa.
+//   O painel do bloco "Na tela" usa os mesmos valores de exemplo do painel da home (38 leads, 31 pela IA, 7 para o
+//   time) e vai marcado como ilustrativo (regra exemplo-marcado da voz da StratAI);
+// - integrações: WhatsApp (API oficial), Instagram Direct, site e formulários, CRM (Kommo e outros), Google Planilhas,
+//   Google Agenda, Meta Ads, plataforma da loja, grupo do time;
+// - FAQ da home: contas e acessos no nome da empresa, LGPD, valor fechado depois do diagnóstico, quem cuida depois.
+// - "do mais simples ao mais complexo": etapa de execução do Método das Alavancas (Saber da Strat, ficha
+//   05-produtos/imersao-claude-code.md, seção "método das alavancas").
+// Sem número de resultado: nenhum caso publicado é de sistema sob medida. Sem prazo: a fonte só dá o de um agente de
+// WhatsApp.
+// Rastro stratai-paginas em soft (decisão do Helbert de 19/11 no #14).
+import Pagina from '../../layouts/Pagina.astro';
+import Faq from '@strat/kit/Faq.astro';
+
+const perguntas = [
+  {
+    pergunta: 'O que é um sistema sob medida com IA?',
+    resposta:
+      'É um painel ou sistema feito para o jeito que a sua empresa trabalha, em vez de adaptar a empresa a um sistema pronto. Ele junta os números que hoje estão espalhados, guarda o processo que só uma pessoa sabe e pode ter agentes de IA trabalhando dentro dele.',
+  },
+  {
+    pergunta: 'Preciso trocar as ferramentas que já uso?',
+    resposta:
+      'Não. O sistema se liga ao que você já usa: WhatsApp, CRM, Google Planilhas, Google Agenda, a plataforma da loja. O que precisar de ajuste é combinado antes, no desenho.',
+  },
+  {
+    pergunta: 'Os dados ficam com quem?',
+    resposta:
+      'Com a sua empresa. As contas e os acessos ficam no nome dela: a gente trabalha com o acesso que você libera, e você pode tirar quando quiser. Os dados são tratados conforme a LGPD, como descreve a política de privacidade da StratAI.',
+  },
+  {
+    pergunta: 'Quanto custa um sistema sob medida?',
+    resposta:
+      'Depende do que vai ser construído. Depois do diagnóstico, a gente entende o seu caso e passa um valor fechado antes de começar. Sem surpresa no meio do caminho.',
+  },
+  {
+    pergunta: 'E depois que está no ar, quem cuida?',
+    resposta:
+      'Você escolhe. O seu time pode assumir, com o treinamento que a gente faz na entrega, ou a gente segue cuidando dos ajustes e do acompanhamento num plano mensal, combinado na proposta.',
+  },
+];
+---
+<Pagina
+  perfil="lead"
+  titulo="Sistemas sob medida com IA para a sua empresa · StratAI"
+  descricao="Sistemas e painéis sob medida com IA: a operação que vive em planilhas e na memória de uma pessoa vira um sistema do seu jeito, com os números do dia."
+  trilha={[{ nome: 'Início', caminho: '/' }, { nome: 'Sistemas sob medida', caminho: '/sistemas-sob-medida/' }]}
+>
+  <section class="abre">
+    <div class="faixa">
+      <p class="mono destaque">Personalizado · Sistemas</p>
+      <h1>Painéis e sistemas sob medida, ligados às ferramentas que você já usa</h1>
+      <p class="lead">Quando a operação vive em várias planilhas e na memória de uma pessoa, as férias dela viram problema. A gente transforma esse processo num sistema do jeito da sua empresa, com os números do dia num painel só.</p>
+      <div class="acoes">
+        <a class="botao" href="/#diagnostico" data-strat-cta="sistemas-abre-diagnostico">Fazer meu diagnóstico</a>
+        <a class="botao botao-fantasma" href="/metodo-das-alavancas/">Como a gente decide o que construir</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">O que muda</p>
+      <h2>A operação sai da planilha e da cabeça de uma pessoa</h2>
+      <div class="grade">
+        <article class="cartao">
+          <h3>Os números do dia num painel</h3>
+          <p>Leads, pedidos, atendimentos e o que ficou pendente, sem ninguém juntar planilha no fim do dia.</p>
+        </article>
+        <article class="cartao">
+          <h3>O processo escrito no sistema</h3>
+          <p>O passo a passo que só uma pessoa sabia passa a morar no sistema. Quem entra no time segue o mesmo caminho.</p>
+        </article>
+        <article class="cartao">
+          <h3>Ligado ao que você já usa</h3>
+          <p>WhatsApp, CRM, Google Planilhas, Google Agenda e a plataforma da loja. Ninguém troca de ferramenta.</p>
+        </article>
+        <article class="cartao">
+          <h3>Agentes trabalhando dentro</h3>
+          <p>O painel mostra o que o agente resolveu e o que passou para o time, com a conversa junto.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Na tela</p>
+      <h2>O dia da operação numa tela só</h2>
+      <div class="grade" role="group" aria-label="Exemplo ilustrativo de painel">
+        <article class="cartao">
+          <p class="mono">Leads hoje</p>
+          <p class="numero">38</p>
+        </article>
+        <article class="cartao">
+          <p class="mono">Resolvidos pela IA</p>
+          <p class="numero">31</p>
+        </article>
+        <article class="cartao">
+          <p class="mono">Passados para o time</p>
+          <p class="numero">7</p>
+        </article>
+      </div>
+      <p class="nota">Exemplo ilustrativo. Os indicadores do seu painel saem do mapeamento: cada um é o número de uma alavanca.</p>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Quando faz sentido</p>
+      <h2>Sinais de que a planilha já não dá conta</h2>
+      <ol class="passos">
+        <li><b>O relatório é montado à mão.</b> Toda semana alguém junta os números de vários lugares antes da reunião.</li>
+        <li><b>Só uma pessoa sabe fazer.</b> Quando ela falta, o processo para ou sai errado.</li>
+        <li><b>A informação está espalhada.</b> O pedido está no WhatsApp, o cliente no CRM, o estoque na planilha, e ninguém vê o todo.</li>
+        <li><b>O agente já está no ar.</b> E você quer ver, num lugar só, o que ele resolveu e o que passou para o time.</li>
+      </ol>
+      <p class="texto">Se o problema é só levar a informação de um lugar para outro, uma <a href="/automacao-com-ia/">automação com IA</a> resolve antes, e mais rápido. A gente diz qual dos dois cabe no seu caso.</p>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Como fica pronto</p>
+      <h2>Do mais simples ao mais complexo, com você aprovando cada parte</h2>
+      <ol class="passos">
+        <li><b>Mapeamento.</b> Como a operação roda hoje, onde cada informação mora e quais números você precisa ver todo dia.</li>
+        <li><b>Desenho.</b> As telas, os números e as ligações com as suas ferramentas. Nada é construído antes de você aprovar.</li>
+        <li><b>Por partes.</b> Primeiro a parte que mais pesa, no ar e em uso. Depois a próxima.</li>
+      </ol>
+      <p class="texto">É o <a href="/metodo-das-alavancas/">Método das Alavancas</a> aplicado a sistemas. Veja também os <a href="/casos/">casos da StratAI</a>, com o número que cada agente moveu.</p>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Para quem não é</p>
+      <h2>Melhor dizer antes</h2>
+      <ul class="nao-e">
+        <li>Quando uma planilha bem feita já resolve. Aí a gente diz, e o sistema fica para depois.</li>
+        <li>Quando a procura é por um sistema pronto, de prateleira, para usar amanhã.</li>
+        <li>Quando ainda não existe processo nenhum. O sistema organiza um processo; ele não inventa o processo.</li>
+      </ul>
+    </div>
+  </section>
+
+  <Faq perguntas={perguntas} />
+
+  <section class="bloco final">
+    <div class="faixa">
+      <p class="mono destaque">3 minutos</p>
+      <h2>Descubra se a sua operação pede um sistema ou uma automação</h2>
+      <p class="texto">Em 3 minutos você recebe o mapa de onde a sua operação perde tempo. Se não fizer sentido, a gente diz e indica outro caminho.</p>
+      <a class="botao" href="/#diagnostico" data-strat-cta="sistemas-final-diagnostico">Fazer meu diagnóstico</a>
+    </div>
+  </section>
+</Pagina>
