@@ -71,8 +71,12 @@ test('_redirects: 301 da política sem barra, da Agência e da primeira versão 
   const tem = (de, para) => assert.ok(regras.some(([a, b, c]) => a === de && b === para && c === '301'), `${de} → ${para}`);
   tem('/politica-de-privacidade', '/politica-de-privacidade/');
   tem('/politica-de-privacidade.html', '/politica-de-privacidade/');
-  tem('/agencia', 'https://agencia.stratai.com.br/');
-  tem('/agencia/*', 'https://agencia.stratai.com.br/:splat');
+  // Agência direto no domínio novo, num salto (WEB-31); a /lp-express/ segue no host antigo até o WEB-114, e vem antes
+  tem('/agencia', 'https://agenciastrat.com.br/');
+  tem('/agencia/*', 'https://agenciastrat.com.br/:splat');
+  tem('/agencia/lp-express/*', 'https://agencia.stratai.com.br/lp-express/:splat');
+  const pos = (de) => regras.findIndex(([a]) => a === de);
+  assert.ok(pos('/agencia/lp-express/*') < pos('/agencia/*'), 'a exceção da /lp-express/ precisa vir antes de /agencia/*');
   tem('/raio-x/v1/*', '/raio-x/');
   // nenhuma regra pode apontar para a própria origem (laço)
   for (const [a, b] of regras) assert.notEqual(a, b);
