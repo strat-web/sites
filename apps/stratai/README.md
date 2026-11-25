@@ -56,7 +56,9 @@ antes de o domínio virar para cá (WEB-32). As de teste do `<Tracking>` que fic
 
 ## Redirecionamentos (`public/_redirects`)
 `/politica-de-privacidade` e `/politica-de-privacidade.html` → `/politica-de-privacidade/`; `/agencia` e `/agencia/*`
-→ `https://agencia.stratai.com.br/` (o mesmo 301 que o servidor do `strat-lps` fazia desde 31/10/2026);
+→ `https://agenciastrat.com.br/` com o caminho (até 25/11/2026 iam para `agencia.stratai.com.br`, o mesmo 301 que o
+`strat-lps` fazia desde 31/10; depois da virada de 24/11 isso dava dois saltos, WEB-31); `/agencia/lp-express` e
+`/agencia/lp-express/*` → `https://agencia.stratai.com.br/lp-express/`, que ainda mora no `strat-lps` (WEB-114);
 `/raio-x/v1/*` → `/raio-x/`. Todos 301, com a query junto.
 
 ## Desempenho

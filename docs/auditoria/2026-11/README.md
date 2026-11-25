@@ -3,6 +3,9 @@
 Portão F2 (WEB-22, 12/11): a página de teste do kit nas 6 checagens e no checklist de publicar está em
 [portao-f2.md](portao-f2.md).
 
+Portão F3 (WEB-31, 25/11): o piloto agenciastrat.com.br, com o checklist do portão e a tabela de rotas do 301 depois
+da virada de 24/11, em [portao-f3.md](portao-f3.md).
+
 Diagnóstico de LP do lab (WEB-41, 16/11): modos rápido e completo em stratai.com.br, com o destino de cada achado,
 em [web-41-diagnostico-lab.md](web-41-diagnostico-lab.md).
 
