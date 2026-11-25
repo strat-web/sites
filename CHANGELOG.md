@@ -3,6 +3,7 @@
 Uma linha por PR, a mais nova em cima, com o item do Plane.
 
 ## Não lançado
+- feat(stratai): home com o plano de Joinville (F1): título "Agentes de IA no WhatsApp em Joinville | StratAI", descrição e kicker com "agência de IA em Joinville/SC", FAQPage das 11 perguntas visíveis lido do próprio HTML no build (src/lib/faq-home.js) e alt nos logos da faixa do topo; cartão de compartilhamento, layout e tracking iguais; test/home-joinville.test.js (WEB-33)
 - docs(catalogo): stratai-parcerias no ar desde 17/11 e conferida em 19/11, com a observação só sobre a página; home, /raio-x/ e política da StratAI com a hospedagem de hoje (Pages stratai desde a virada de 17/11) no catálogo e em docs/dominios.md (WEB-74)
 - feat(agenciastrat): /bio/ migrada de bio.stratai.com.br/agencia/ (strat-lps, com a correção do WEB-82) sem mudar texto, layout nem tracking: tag do MetricaaS strat-marketing com o PX-001 atrás do banner pelo <Tracking>, banner próprio trocado pelo do kit (mesmo texto e mesma chave), fontes do app no lugar do Google Fonts, links do WhatsApp e das redes escritos no HTML, noindex; Umami passa a ser o da Agência; test/bio.test.js (WEB-25)
 - docs(dominios): virada da LP claude em 23/11 no catálogo, em dominios.md e em pages.md: claude e www.claude no projeto academy-claude do Pages, com a ressalva do LCP e do CLS no Android (WEB-48)
