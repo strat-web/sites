@@ -3,18 +3,29 @@
 // O HTML da página mora em src/html/ (head e corpo); o kit põe título, descrição, canonical, Open Graph, JSON-LD
 // e o <Tracking> (Rastro stratai e MetricaaS agencia-strat, da linha "stratai" do catálogo). O que mudou em relação
 // ao strat-lps está no README do app.
+// WEB-33 (F1 do plano de Joinville, docs/planos/stratai-buscas-joinville.md): título e descrição com Joinville, o
+// cartão de compartilhamento como estava e o FAQPage lido das perguntas visíveis da própria página.
 import Layout from '@strat/kit/Layout.astro';
+import JsonLd from '@strat/kit/JsonLd.astro';
+import { schemaFaq } from '@strat/kit';
+import { perguntasDaHome } from '../lib/faq-home.js';
 import head from '../html/home.head.html?raw';
 import corpo from '../html/home.corpo.html?raw';
+
+const faq = schemaFaq(perguntasDaHome(corpo));
 ---
 <Layout
   marca="stratai"
   perfil="lead"
-  titulo="StratAI · Agentes de IA para a sua empresa"
-  descricao="A StratAI mapeia onde a sua empresa perde tempo e constrói os agentes de IA que assumem esse trabalho: no WhatsApp, no CRM e nas rotinas do time."
+  titulo="Agentes de IA no WhatsApp em Joinville | StratAI"
+  descricao="Agência de IA em Joinville/SC. A StratAI mapeia onde a sua empresa perde tempo e constrói os agentes de IA que assumem esse trabalho: no WhatsApp e no CRM."
+  tituloSocial="StratAI · Agentes de IA para a sua empresa"
   descricaoSocial="Mapeamos onde a sua operação perde tempo e construímos os agentes de IA que assumem esse trabalho. Faça o diagnóstico grátis em 3 minutos."
   imagem="/midia/og.png"
 >
-  <Fragment slot="head" set:html={head} />
+  <Fragment slot="head">
+    <Fragment set:html={head} />
+    <JsonLd dados={faq} />
+  </Fragment>
   <Fragment set:html={corpo} />
 </Layout>

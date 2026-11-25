@@ -54,6 +54,22 @@ As páginas de teste do kit (`/kit/`, `/kit/lead/` e `/kit/conteudo/`, noindex, 
 antes de o domínio virar para cá (WEB-32). As de teste do `<Tracking>` que ficam estão na Agência e na Academy
 (`docs/tracking.md`); o código das que saíram está no histórico do git.
 
+## Depois da migração: home do plano de Joinville (WEB-33, 25/11/2026)
+A F1 de `docs/planos/stratai-buscas-joinville.md`, a primeira mudança de texto da home depois do WEB-32:
+
+| Mudança | Antes | Depois |
+|---|---|---|
+| Título | StratAI · Agentes de IA para a sua empresa | Agentes de IA no WhatsApp em Joinville \| StratAI (aprovado no plano de 04/11/2026) |
+| Descrição | A StratAI mapeia onde a sua empresa perde tempo… | Agência de IA em Joinville/SC. A StratAI mapeia onde a sua empresa perde tempo… (155 caracteres) |
+| Kicker do topo | StratAI · implementação de IA para pequenas e médias empresas | StratAI · agência de IA em Joinville/SC para pequenas e médias empresas (texto do plano) |
+| Cartão de compartilhamento (`og:title` e `og:description`) | o da página no ar | **igual**: o plano só mexe no título da busca |
+| JSON-LD | só o `ProfessionalService` da StratAI (kit, com endereço e telefone de Joinville) | + `FAQPage` com as 11 perguntas visíveis (as 5 conversas e as 6 de "Outras perguntas"), lidas do próprio `home.corpo.html` no build por `src/lib/faq-home.js`: o texto é sempre o da página |
+| Logos dos casos | `alt=""` nas 9 imagens, a faixa do topo com `aria-hidden` | a faixa do topo (1ª ocorrência) mostra o nome no `alt`; as 6 cópias, ao lado do nome escrito, seguem decorativas com `aria-hidden` |
+
+Os links de WhatsApp com `wa.me` no HTML já vinham do WEB-32. Os cards de módulo e de caso ganham link quando as
+páginas novas existirem (WEB-34 em diante). Regra do plano: se os leads da home caírem mais de 20% em 2 semanas, volta
+o título antigo antes de investigar.
+
 ## Redirecionamentos (`public/_redirects`)
 `/politica-de-privacidade` e `/politica-de-privacidade.html` → `/politica-de-privacidade/`; `/agencia` e `/agencia/*`
 → `https://agencia.stratai.com.br/` (o mesmo 301 que o servidor do `strat-lps` fazia desde 31/10/2026);
