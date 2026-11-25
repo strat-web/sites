@@ -1,0 +1,107 @@
+---
+// Caso da imobiliária (WEB-60, Lote C). Título e H1: seção 3 do mapa (docs/planos/stratai-estrutura.md); slug sem o
+// nome do cliente (decisão 4 da seção 7, Helbert 19/11 no #14). Seção 3: o caso não é de Joinville, então título, H1
+// e texto não citam cidade. Seção 4: o caso fica com a busca de prova ("caso de agente de IA em imobiliária"), sem
+// "SDR" nem "IA para imobiliárias" no título e no H1, e linka para /ia-para-imobiliarias/. Linka também
+// para /agente-sdr-ia/ ("agente SDR com IA"), do Lote B (WEB-59), que vem antes deste na pilha.
+// Anônimo até a autorização do cliente (docs/decisoes.md, 12/11): sem nome, logo, foto ou cidade que identifique a
+// imobiliária. O Saber da Strat não tem ficha do cliente nem registro de autorização (consulta de 25/11/2026). Com a
+// autorização, o nome entra no texto, no título e no H1, e a URL fica a mesma.
+// Números (regra dura 4): 480 leads atendidos fora do horário, cobertura planejada das 18h às 8h e nas férias, e o
+// lead do anúncio qualificado na hora, da home (bloco "Casos reais", migrada do strat-lps no WEB-32). O caminho do
+// lead (anúncio, renda da família, documentos para a simulação do financiamento, reunião marcada no CRM, corretor
+// recebe o lead pronto) também é o da home. O número vai no título e no H1 como o mapa pede; o princípio 5 do mapa
+// pede a fonte anexada no PR do lote (print do painel ou relatório, com data e período), senão título e H1 saem sem ele.
+// Perfil conteudo, Rastro stratai-conteudo em strict (banner no catálogo), decisão do Helbert de 19/11: a saída
+// principal é o diagnóstico, não o WhatsApp.
+import Pagina from '../../../layouts/Pagina.astro';
+import Faq from '@strat/kit/Faq.astro';
+
+const perguntas = [
+  {
+    pergunta: 'O que mudou para os corretores?',
+    resposta:
+      'O corretor deixou de começar a conversa do zero. O lead chega a ele já qualificado, com os documentos pedidos e a reunião marcada no CRM. A visita, a negociação e o fechamento seguem com o corretor.',
+  },
+  {
+    pergunta: 'Por que o foco foi o horário fora do expediente?',
+    resposta:
+      'Porque é quando o lead do anúncio mais espera. Quem pergunta às 23h e só recebe resposta de manhã já pode ter falado com outra imobiliária. A cobertura foi planejada das 18h às 8h e também nas férias do time.',
+  },
+  {
+    pergunta: 'Esse agente serve para outra imobiliária?',
+    resposta:
+      'O caminho é o mesmo para quem recebe lead de anúncio: atender na hora, qualificar e marcar a conversa no CRM. O que muda é o desenho, que segue as perguntas de qualificação, os documentos e a agenda dos corretores da sua imobiliária.',
+  },
+  {
+    pergunta: 'Quanto custa um agente como esse?',
+    resposta:
+      'Depende do que vai ser construído. No diagnóstico a gente entende o seu caso e passa um valor fechado antes de começar.',
+  },
+];
+---
+<Pagina
+  perfil="conteudo"
+  tipo="article"
+  titulo="Caso: 480 leads atendidos fora do horário · StratAI"
+  descricao="Uma imobiliária passou a atender na hora o lead do anúncio que chega à noite: 480 leads atendidos fora do horário, qualificados e com reunião no CRM."
+  trilha={[
+    { nome: 'Início', caminho: '/' },
+    { nome: 'Casos', caminho: '/casos/' },
+    { nome: 'Imobiliária: leads fora do horário', caminho: '/casos/imobiliaria-leads-fora-do-horario/' },
+  ]}
+>
+  <section class="abre">
+    <div class="faixa">
+      <p class="mono destaque">Caso · Imobiliária</p>
+      <h1>Imobiliária: 480 leads do anúncio atendidos fora do horário comercial</h1>
+      <p class="lead">O lead do anúncio também chega à noite e nas férias do time, quando não há ninguém para responder. Hoje um agente de IA atende na hora, qualifica e entrega ao corretor o lead pronto, com a reunião marcada no CRM.</p>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Os números</p>
+      <div class="grade">
+        <article class="cartao"><p class="numero">480</p><h3>leads atendidos fora do horário</h3><p>Lead do anúncio respondido pelo agente fora do horário comercial.</p></article>
+        <article class="cartao"><p class="numero">18h–8h</p><h3>de cobertura planejada</h3><p>E também nas férias do time.</p></article>
+        <article class="cartao"><p class="numero">Na hora</p><h3>o lead é qualificado</h3><p>Antes de esfriar, sem esperar o corretor chegar.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">O caminho do lead</p>
+      <h2>Do clique no anúncio à reunião com o corretor</h2>
+      <ol class="passos">
+        <li><b>O lead chega do anúncio,</b> inclusive fora do horário comercial.</li>
+        <li><b>O agente qualifica na hora.</b> Pergunta a renda da família, o que define o caminho do financiamento.</li>
+        <li><b>Pede os documentos</b> para a simulação do financiamento.</li>
+        <li><b>A reunião fica marcada no CRM.</b> O corretor recebe o lead pronto, com a conversa inteira.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">O que mudou</p>
+      <h2>O lead da noite não espera mais a manhã seguinte</h2>
+      <div class="texto">
+        <p>Quem preenche o anúncio de um imóvel costuma estar comparando opções. Responder na hora, enquanto o interesse está quente, é o que separa uma reunião marcada de um lead que esfriou. O agente faz o papel de SDR fora do expediente: atende, qualifica e marca, e o time comercial começa o dia com as conversas prontas.</p>
+        <p>Para ver o que um agente desses faz no seu segmento, veja <a href="/ia-para-imobiliarias/">IA para imobiliárias</a>; para o produto em qualquer segmento, o <a href="/agente-sdr-ia/">agente SDR com IA</a>. Se o lead da sua empresa conversa pelo WhatsApp, veja o <a href="/agente-de-ia-whatsapp/">agente de IA no WhatsApp</a>. Mais casos em <a href="/casos/">Casos</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <Faq perguntas={perguntas} />
+
+  <section class="bloco final">
+    <div class="faixa">
+      <p class="mono destaque">3 minutos</p>
+      <h2>Quantos leads da sua empresa chegam fora do horário?</h2>
+      <p class="texto">O diagnóstico mostra onde a sua operação perde tempo e qual número cada alavanca move.</p>
+      <a class="botao" href="/#diagnostico" data-strat-cta="caso-imobiliaria-final-diagnostico">Fazer meu diagnóstico</a>
+    </div>
+  </section>
+</Pagina>

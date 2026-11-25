@@ -1,14 +1,36 @@
 ---
-// Índice dos casos da StratAI (WEB-34 antecipou do WEB-60, decisão 4 da seção 7 do mapa, Helbert 19/11 no #14): o
-// breadcrumb do caso do restaurante aponta para cá. Nasce com um caso e cresce no Lote C (WEB-60).
-// Casos sem o nome do cliente até a autorização (docs/decisoes.md, 12/11). Perfil conteudo, Rastro stratai-conteudo
-// em strict (banner no catálogo), decisão do Helbert de 19/11.
+// Índice dos casos da StratAI. Nasceu no WEB-34 com um caso (antecipado do WEB-60, decisão 4 da seção 7 do mapa,
+// Helbert 19/11 no #14) e cresceu no Lote C (WEB-60) para os três casos da home, com os links por segmento.
+// Casos sem o nome do cliente até a autorização (docs/decisoes.md, 12/11). Números (regra dura 4), todos da home
+// (bloco "Casos reais", migrada do strat-lps no WEB-32): restaurante de Joinville, 180 reservas por mês; imobiliária,
+// 480 leads atendidos fora do horário; e-commerce de Joinville, 85% dos atendimentos resolvidos pela IA e 3 agentes.
+// Clínicas sem número: não há caso de clínica (seção 3 do mapa).
+// Perfil conteudo, Rastro stratai-conteudo em strict (banner no catálogo), decisão do Helbert de 19/11.
 import Pagina from '../../layouts/Pagina.astro';
+import Faq from '@strat/kit/Faq.astro';
+
+const perguntas = [
+  {
+    pergunta: 'Por que os casos não mostram o nome das empresas?',
+    resposta:
+      'Porque o nome só aparece quando a empresa autoriza. Até lá, o caso é descrito pelo segmento e pelo número, e o endereço da página não muda quando o nome entrar.',
+  },
+  {
+    pergunta: 'De onde vêm os números dos casos?',
+    resposta:
+      'Da operação de cada agente no ar: reservas feitas, leads atendidos, atendimentos resolvidos pela IA. Número que a gente não consegue mostrar de onde veio não entra na página.',
+  },
+  {
+    pergunta: 'A StratAI tem caso no meu segmento?',
+    resposta:
+      'Hoje os casos publicados são de restaurante, imobiliária e e-commerce. Para outros segmentos, o diagnóstico mostra onde a sua operação perde tempo e qual número um agente pode mover aí.',
+  },
+];
 ---
 <Pagina
   perfil="conteudo"
   titulo="Casos de IA em empresas reais · StratAI"
-  descricao="Casos da StratAI: agentes de IA no ar em empresas reais, com o número que cada um moveu na operação. Restaurante de Joinville: 180 reservas por mês."
+  descricao="Casos da StratAI com o número de cada agente de IA: 180 reservas por mês num restaurante, 480 leads fora do horário e 85% do suporte resolvido pela IA."
   trilha={[{ nome: 'Início', caminho: '/' }, { nome: 'Casos', caminho: '/casos/' }]}
 >
   <section class="abre">
@@ -29,10 +51,55 @@ import Pagina from '../../layouts/Pagina.astro';
           <p>Pedido de mesa por áudio, texto ou foto, reserva na planilha e equipe avisada no grupo.</p>
           <a class="ir" href="/casos/restaurante-reservas-no-whatsapp/">Ler o caso</a>
         </article>
+        <article class="cartao">
+          <p class="mono">Imobiliária</p>
+          <p class="numero">480</p>
+          <h3>leads do anúncio atendidos fora do horário comercial</h3>
+          <p>O agente qualifica a renda, pede os documentos e deixa a reunião com o corretor marcada no CRM.</p>
+          <a class="ir" href="/casos/imobiliaria-leads-fora-do-horario/">Ler o caso</a>
+        </article>
+        <article class="cartao">
+          <p class="mono">E-commerce · Joinville/SC</p>
+          <p class="numero">85%</p>
+          <h3>dos atendimentos de suporte resolvidos pela IA</h3>
+          <p>Três agentes, um para entrega, um para pagamento e um para o preparo do produto.</p>
+          <a class="ir" href="/casos/ecommerce-suporte-com-ia/">Ler o caso</a>
+        </article>
       </div>
-      <p class="texto">Os próximos casos entram nesta página conforme cada empresa autoriza a publicação. O agente do caso do restaurante é o <a href="/agente-de-ia-whatsapp/">agente de IA no WhatsApp</a>.</p>
+      <p class="texto">O agente por trás do restaurante e do e-commerce é o <a href="/agente-de-ia-whatsapp/">agente de IA no WhatsApp</a>, desenhado para cada operação.</p>
     </div>
   </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Por segmento</p>
+      <h2>O que um agente de IA faz no seu segmento</h2>
+      <div class="grade">
+        <article class="cartao">
+          <h3>Restaurantes</h3>
+          <p>Reservas e pedidos atendidos no WhatsApp, até com o salão cheio.</p>
+          <a class="ir" href="/ia-para-restaurantes/">IA para restaurantes</a>
+        </article>
+        <article class="cartao">
+          <h3>Imobiliárias</h3>
+          <p>O lead do anúncio atendido e qualificado na hora, com a reunião no CRM.</p>
+          <a class="ir" href="/ia-para-imobiliarias/">IA para imobiliárias</a>
+        </article>
+        <article class="cartao">
+          <h3>E-commerce</h3>
+          <p>Entrega, pagamento e dúvida de produto respondidos na hora.</p>
+          <a class="ir" href="/ia-para-ecommerce/">IA para e-commerce</a>
+        </article>
+        <article class="cartao">
+          <h3>Clínicas</h3>
+          <p>Agenda e confirmação de consulta pelo WhatsApp. Ainda sem caso publicado.</p>
+          <a class="ir" href="/ia-para-clinicas/">IA para clínicas</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <Faq perguntas={perguntas} />
 
   <section class="bloco final">
     <div class="faixa">

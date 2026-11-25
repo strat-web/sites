@@ -1,0 +1,146 @@
+---
+// Segmento "IA para clínicas" (WEB-60, Lote C). Título, H1 e busca: seção 3 do mapa
+// (docs/planos/stratai-estrutura.md). SEM NÚMERO: a StratAI não tem caso de clínica publicado (seção 3, "Lote C (sem
+// número)", e princípio 5 do mapa: segmento sem caso fica sem número). A página diz isso com todas as letras (pilar
+// honestidade da voz da StratAI) e manda para os casos dos outros segmentos.
+// O que o agente faz numa clínica (agendar e confirmar consultas, pré-atendimento, reduzir faltas): a lista de
+// segmentos do diagnóstico da home; a remarcação e o lembrete na véspera: o exemplo "Agente de agenda · Clínica" do
+// topo da home (ilustrativo lá também). Prazo de 4 a 6 semanas e dados conforme a LGPD com link para a política: o FAQ
+// da home. A conversa do bloco "Na tela" é ilustrativa e vai marcada assim (regra exemplo-marcado da voz da StratAI).
+// Saúde é nicho regulado (docs/checklist-publicar.md, A6): o texto não promete resultado clínico, o agente não dá
+// orientação de saúde e a página não vira destino de anúncio sem o laudo de política.
+// Rastro stratai-paginas em soft (decisão do Helbert de 19/11 no #14).
+import Pagina from '../../layouts/Pagina.astro';
+import Faq from '@strat/kit/Faq.astro';
+
+const perguntas = [
+  {
+    pergunta: 'O agente de IA responde dúvida de saúde do paciente?',
+    resposta:
+      'Não. O agente cuida da agenda e do que é administrativo: horário, endereço, convênio, preparo que a clínica já informa por escrito. Pergunta sobre sintoma, exame ou tratamento vai para uma pessoa da equipe, com a conversa inteira.',
+  },
+  {
+    pergunta: 'O agente confirma e remarca consultas sozinho?',
+    resposta:
+      'Confirma e remarca dentro das regras que a clínica define no desenho: quais horários pode oferecer, com que antecedência, para quais profissionais. O que foge disso vai para a recepção.',
+  },
+  {
+    pergunta: 'E os dados dos pacientes?',
+    resposta:
+      'As contas e os acessos (WhatsApp, agenda, planilhas) ficam no nome da clínica, e a gente trabalha com o acesso que vocês liberam. Os dados são tratados conforme a LGPD, e o desenho define o mínimo de informação que o agente precisa pedir.',
+  },
+  {
+    pergunta: 'A StratAI já tem um agente no ar em clínica?',
+    resposta:
+      'Ainda não temos caso de clínica publicado. Os números que a gente mostra são dos casos publicados, em restaurante, imobiliária e e-commerce, e o agente de agenda usa o mesmo caminho: atender na hora, registrar e avisar a equipe.',
+  },
+  {
+    pergunta: 'Em quanto tempo o agente fica pronto para a clínica?',
+    resposta:
+      'Um agente de WhatsApp costuma ficar no ar entre 4 e 6 semanas. O prazo depende do escopo e fica combinado antes de começar.',
+  },
+];
+---
+<Pagina
+  perfil="lead"
+  titulo="IA para clínicas: agendamento no WhatsApp · StratAI"
+  descricao="IA para clínicas: um agente no WhatsApp agenda, confirma e remarca consultas, lembra o paciente na véspera e passa à recepção o que precisa de gente."
+  trilha={[{ nome: 'Início', caminho: '/' }, { nome: 'IA para clínicas', caminho: '/ia-para-clinicas/' }]}
+>
+  <section class="abre">
+    <div class="faixa">
+      <p class="mono destaque">Segmento · Clínicas</p>
+      <h1>IA para clínicas: agenda e confirmação de consulta pelo WhatsApp</h1>
+      <p class="lead">O paciente quer remarcar às 7h de segunda, antes de a recepção abrir. Um agente de IA oferece os horários livres, atualiza a agenda e lembra a consulta na véspera. A recepção fica com quem está na clínica.</p>
+      <div class="acoes">
+        <a class="botao" href="/#diagnostico" data-strat-cta="clinicas-abre-diagnostico">Fazer meu diagnóstico</a>
+        <a class="botao botao-fantasma" href="/agente-de-ia-whatsapp/">Ver o agente de IA no WhatsApp</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">O que o agente assume</p>
+      <h2>A agenda da clínica atendida fora do horário da recepção</h2>
+      <div class="grade">
+        <article class="cartao">
+          <h3>Agenda</h3>
+          <p>Oferece os horários livres de cada profissional e marca a consulta onde a clínica já controla a agenda.</p>
+        </article>
+        <article class="cartao">
+          <h3>Confirmação e lembrete</h3>
+          <p>Confirma a consulta e lembra o paciente na véspera. Quem não pode ir já remarca na mesma conversa.</p>
+        </article>
+        <article class="cartao">
+          <h3>Pré-atendimento</h3>
+          <p>Convênio, endereço, documentos e preparo que a clínica já passa por escrito, respondidos na hora.</p>
+        </article>
+        <article class="cartao">
+          <h3>Recepção avisada</h3>
+          <p>O que pede uma pessoa, como dúvida de saúde ou encaixe, vai para a equipe com a conversa inteira.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Na tela</p>
+      <h2>Uma remarcação às 7h12 de segunda</h2>
+      <div class="conversa" aria-label="Exemplo ilustrativo de conversa com o agente de uma clínica">
+        <p class="msg">Bom dia, preciso remarcar minha consulta de quinta<small>07:12</small></p>
+        <p class="msg a">Bom dia! Tenho quinta às 16h ou sexta às 9h. Qual fica melhor?<small>07:12</small></p>
+        <p class="msg">Sexta 9h<small>07:13</small></p>
+        <p class="msg a">Remarcado: sexta, 9h. Te lembro na véspera. Até lá!<small>07:13</small></p>
+      </div>
+      <p class="nota">Exemplo ilustrativo. A StratAI ainda não tem caso de clínica publicado; o texto de cada agente é desenhado com a sua clínica.</p>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Sem caso publicado, sem número</p>
+      <h2>Ainda não temos caso de clínica. Os números que a gente mostra são de casos publicados.</h2>
+      <div class="texto">
+        <p>Toda alavanca tem um número, e o número de uma clínica só aparece aqui quando houver um agente no ar e a clínica autorizar. Até lá, o que existe são os casos de outros segmentos, com o mesmo caminho: atender na hora, registrar e avisar a equipe.</p>
+        <p>Veja os <a href="/casos/">casos da StratAI</a> e o <a href="/agente-de-ia-whatsapp/">agente de IA para WhatsApp</a>, que é a base do agente de agenda.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Como fica pronto</p>
+      <h2>De 4 a 6 semanas, com as regras da sua agenda</h2>
+      <ol class="passos">
+        <li><b>Mapeamento.</b> Que mensagens chegam à recepção, em que horário, e quantas são de agenda e confirmação.</li>
+        <li><b>Desenho.</b> Horários de cada profissional, regras de remarcação, o que o agente pode responder e o que vai para a equipe. Você aprova antes da construção.</li>
+        <li><b>No ar.</b> Testado com conversas reais e ajustado com a recepção acompanhando.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Para quem não é</p>
+      <h2>Quando o agente não é o melhor começo</h2>
+      <ul class="nao-e">
+        <li>Quando a clínica quase não recebe paciente pelo WhatsApp.</li>
+        <li>Quando a ideia é o agente orientar sobre sintoma ou tratamento: isso é com o profissional de saúde.</li>
+        <li>Quando a expectativa é tirar a recepção: o agente assume a agenda repetitiva, a equipe cuida de quem está na clínica.</li>
+      </ul>
+    </div>
+  </section>
+
+  <Faq perguntas={perguntas} />
+
+  <section class="bloco final">
+    <div class="faixa">
+      <p class="mono destaque">3 minutos</p>
+      <h2>Quanto da sua recepção é agenda e confirmação?</h2>
+      <p class="texto">Você responde 10 perguntas e recebe o mapa de onde a sua operação perde tempo.</p>
+      <a class="botao" href="/#diagnostico" data-strat-cta="clinicas-final-diagnostico">Fazer meu diagnóstico</a>
+    </div>
+  </section>
+</Pagina>

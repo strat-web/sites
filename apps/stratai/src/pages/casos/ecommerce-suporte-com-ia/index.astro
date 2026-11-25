@@ -1,0 +1,105 @@
+---
+// Caso do e-commerce (WEB-60, Lote C). Título e H1: seção 3 do mapa (docs/planos/stratai-estrutura.md); slug sem o
+// nome do cliente (decisão 4 da seção 7, Helbert 19/11 no #14). Seção 4: o caso fica com "suporte com IA no
+// e-commerce" e linka para /ia-para-ecommerce/, que fica com "IA para e-commerce".
+// Anônimo até a autorização do cliente (docs/decisoes.md, 12/11): descrito pelo segmento e pela cidade, sem nome,
+// logo, foto ou produto que identifique a loja. O Saber da Strat não tem ficha do cliente nem registro de autorização
+// (consulta de 25/11/2026). Com a autorização, o nome entra no texto, no título e no H1, e a URL fica a mesma.
+// Números (regra dura 4): 85% dos atendimentos resolvidos pela IA, 3 agentes (entrega, pagamento e preparo) e o
+// manual em PDF enviado quando o cliente pergunta, da home (bloco "Casos reais", migrada do strat-lps no WEB-32), que
+// também dá a cidade (Joinville/SC) e o caminho do atendimento. O número vai no título e no H1 como o mapa pede; o
+// princípio 5 do mapa pede a fonte anexada no PR do lote (print do painel ou relatório, com data e período), senão
+// título e H1 saem sem ele.
+// Perfil conteudo, Rastro stratai-conteudo em strict (banner no catálogo), decisão do Helbert de 19/11: a saída
+// principal é o diagnóstico, não o WhatsApp.
+import Pagina from '../../../layouts/Pagina.astro';
+import Faq from '@strat/kit/Faq.astro';
+
+const perguntas = [
+  {
+    pergunta: 'Por que três agentes, e não um só?',
+    resposta:
+      'Porque entrega, pagamento e preparo do produto têm regras diferentes. A pergunta do cliente vai para o agente que cuida daquele assunto, e cada um responde com mais precisão do que um agente que tenta saber tudo.',
+  },
+  {
+    pergunta: 'E o atendimento que a IA não resolve?',
+    resposta:
+      'Vão para uma pessoa do time, com a conversa inteira junto. Troca, reclamação e o que pede decisão ficam com gente, e ninguém pede para o cliente repetir o que já contou.',
+  },
+  {
+    pergunta: 'Esse suporte com IA serve para outra loja?',
+    resposta:
+      'O caminho é o mesmo para quem recebe as mesmas perguntas todo dia: o agente certo assume, consulta o pedido e responde. O que muda é o desenho, que segue a política de entrega, troca e pagamento da sua loja.',
+  },
+  {
+    pergunta: 'Quanto custa um suporte com agentes como esse?',
+    resposta:
+      'Depende do que vai ser construído. No diagnóstico a gente entende o seu caso e passa um valor fechado antes de começar.',
+  },
+];
+---
+<Pagina
+  perfil="conteudo"
+  tipo="article"
+  titulo="Caso: 85% do suporte resolvido pela IA · StratAI"
+  descricao="Um e-commerce de Joinville passou a ter 85% dos atendimentos de suporte resolvidos por agentes de IA no WhatsApp: entrega, pagamento e preparo."
+  trilha={[
+    { nome: 'Início', caminho: '/' },
+    { nome: 'Casos', caminho: '/casos/' },
+    { nome: 'E-commerce: suporte com IA', caminho: '/casos/ecommerce-suporte-com-ia/' },
+  ]}
+>
+  <section class="abre">
+    <div class="faixa">
+      <p class="mono destaque">Caso · E-commerce · Joinville/SC</p>
+      <h1>E-commerce: 85% dos atendimentos de suporte resolvidos por agentes de IA</h1>
+      <p class="lead">"Cadê meu pedido?", "como eu preparo?". As mesmas perguntas chegavam todo dia no WhatsApp da loja. Hoje três agentes de IA, cada um num assunto, consultam o pedido e respondem, e só o que precisa de gente vai para o time.</p>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Os números</p>
+      <div class="grade">
+        <article class="cartao"><p class="numero">85%</p><h3>dos atendimentos resolvidos pela IA</h3><p>Sem passar por ninguém do time.</p></article>
+        <article class="cartao"><p class="numero">3</p><h3>agentes especialistas</h3><p>Um para entrega, um para pagamento e um para o preparo do produto.</p></article>
+        <article class="cartao"><p class="numero">PDF</p><h3>manual enviado</h3><p>Quando o cliente pergunta como preparar.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">O caminho do atendimento</p>
+      <h2>Da pergunta no WhatsApp à resposta com o rastreio</h2>
+      <ol class="passos">
+        <li><b>O cliente pergunta no WhatsApp:</b> "cadê meu pedido?", "como preparo?".</li>
+        <li><b>O agente certo assume:</b> entrega, pagamento ou preparo.</li>
+        <li><b>Consulta o pedido e responde,</b> com o rastreio ou o manual em PDF.</li>
+        <li><b>Só o que precisa de gente vai para o time,</b> com a conversa inteira junto.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">O que mudou</p>
+      <h2>O time de atendimento ficou com o que precisa de gente</h2>
+      <div class="texto">
+        <p>Suporte de loja virtual é, na maior parte, a mesma pergunta com outro número de pedido. Com os agentes respondendo na hora, inclusive à noite e no feriado, o time não precisa mais copiar rastreio e fica livre para cuidar das trocas, das reclamações e do que pede decisão.</p>
+        <p>Para ver o que os agentes fazem numa loja, veja <a href="/ia-para-ecommerce/">IA para e-commerce</a>. Os agentes são o mesmo produto que a StratAI coloca no ar em outras empresas: o <a href="/agente-de-ia-whatsapp/">agente de IA no WhatsApp</a>. Mais casos em <a href="/casos/">Casos</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <Faq perguntas={perguntas} />
+
+  <section class="bloco final">
+    <div class="faixa">
+      <p class="mono destaque">3 minutos</p>
+      <h2>Quanto do suporte da sua empresa é a mesma pergunta?</h2>
+      <p class="texto">O diagnóstico mostra onde a sua operação perde tempo e qual número cada alavanca move.</p>
+      <a class="botao" href="/#diagnostico" data-strat-cta="caso-ecommerce-final-diagnostico">Fazer meu diagnóstico</a>
+    </div>
+  </section>
+</Pagina>

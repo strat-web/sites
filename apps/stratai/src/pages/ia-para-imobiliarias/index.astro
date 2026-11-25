@@ -1,0 +1,144 @@
+---
+// Segmento "IA para imobiliárias" (WEB-60, Lote C). Título, H1 e busca: seção 3 do mapa
+// (docs/planos/stratai-estrutura.md). Seção 4: a página fica com "IA para imobiliárias" e, só no texto, com "agente SDR
+// para imobiliária" como busca secundária; o caso da imobiliária fica com a busca de prova e linka para cá. Linka
+// para /agente-sdr-ia/ ("agente SDR com IA"), do Lote B (WEB-59), que vem antes deste na pilha.
+// Números só do caso (regra dura 4): 480 leads atendidos fora do horário, cobertura planejada das 18h às 8h e nas
+// férias, e o lead do anúncio qualificado na hora, da home (bloco "Casos reais", migrada do strat-lps no WEB-32). O
+// caminho do lead (anúncio, renda da família, documentos para a simulação do financiamento, reunião no CRM) também é o
+// da home. O que o agente faz numa imobiliária (atender na hora, qualificar a renda, agendar visitas): a lista de
+// segmentos do diagnóstico da home. Prazo de 4 a 6 semanas: o FAQ da home. A conversa do bloco "Na tela" é
+// ilustrativa e vai marcada assim (regra exemplo-marcado da voz da StratAI).
+// Rastro stratai-paginas em soft (decisão do Helbert de 19/11 no #14).
+import Pagina from '../../layouts/Pagina.astro';
+import Faq from '@strat/kit/Faq.astro';
+
+const perguntas = [
+  {
+    pergunta: 'O agente de IA substitui o corretor?',
+    resposta:
+      'Não. Ele faz o trabalho de SDR: atende o lead do anúncio na hora, pergunta o que importa para a venda e deixa a conversa marcada. O corretor recebe o lead pronto e fica com a visita, a negociação e o fechamento.',
+  },
+  {
+    pergunta: 'O que o agente pergunta para qualificar o lead?',
+    resposta:
+      'O que a sua imobiliária definir no desenho. No caso publicado, ele pergunta a renda da família e pede os documentos para a simulação do financiamento antes de marcar a conversa com o corretor.',
+  },
+  {
+    pergunta: 'E o lead que chega de madrugada ou no feriado?',
+    resposta:
+      'É atendido na hora, como o de terça às 10h. No caso publicado, a cobertura foi planejada das 18h às 8h e também nas férias do time.',
+  },
+  {
+    pergunta: 'O agente registra o lead no CRM da imobiliária?',
+    resposta:
+      'Registra. Cada conversa vira registro no CRM, com o lead qualificado e a reunião marcada. No mapeamento a gente confere como o agente conversa com o CRM que vocês já usam.',
+  },
+];
+---
+<Pagina
+  perfil="lead"
+  titulo="IA para imobiliárias: lead atendido na hora · StratAI"
+  descricao="IA para imobiliárias: o agente atende o lead do anúncio na hora, qualifica a renda, pede os documentos e deixa a reunião marcada no CRM do corretor."
+  trilha={[{ nome: 'Início', caminho: '/' }, { nome: 'IA para imobiliárias', caminho: '/ia-para-imobiliarias/' }]}
+>
+  <section class="abre">
+    <div class="faixa">
+      <p class="mono destaque">Segmento · Imobiliárias</p>
+      <h1>IA para imobiliárias: nenhum lead do anúncio esperando resposta</h1>
+      <p class="lead">O lead clica no anúncio do apartamento às 23h. Se a resposta só vem às 9h, ele já falou com outra imobiliária. Um agente de IA atende na hora, qualifica e deixa a conversa com o corretor marcada no CRM.</p>
+      <div class="acoes">
+        <a class="botao" href="/#diagnostico" data-strat-cta="imobiliarias-abre-diagnostico">Fazer meu diagnóstico</a>
+        <a class="botao botao-fantasma" href="/casos/imobiliaria-leads-fora-do-horario/">Ver o caso de uma imobiliária</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">O que o agente assume</p>
+      <h2>Um agente SDR para imobiliária, que trabalha quando o time descansa</h2>
+      <div class="grade">
+        <article class="cartao">
+          <h3>Atende o lead do anúncio</h3>
+          <p>Na hora em que ele chega, inclusive à noite, no fim de semana e no feriado.</p>
+        </article>
+        <article class="cartao">
+          <h3>Qualifica a renda</h3>
+          <p>Pergunta o que a sua imobiliária precisa saber antes de gastar a hora do corretor.</p>
+        </article>
+        <article class="cartao">
+          <h3>Pede os documentos</h3>
+          <p>A lista para a simulação do financiamento sai já na primeira conversa.</p>
+        </article>
+        <article class="cartao">
+          <h3>Marca no CRM</h3>
+          <p>Reunião ou visita agendada, e o corretor recebe o lead pronto, com a conversa inteira.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Na tela</p>
+      <h2>Um lead às 23h10 de terça</h2>
+      <div class="conversa" aria-label="Exemplo ilustrativo de conversa com o agente de uma imobiliária">
+        <p class="msg">Boa noite, vi a casa de 3 quartos no anúncio. Ainda está disponível?<small>23:10</small></p>
+        <p class="msg a">Boa noite! Está sim. Para eu já ver o financiamento, qual é a renda da família, mais ou menos?<small>23:10</small></p>
+        <p class="msg">Uns 6 mil<small>23:11</small></p>
+        <p class="msg a">Te mando a lista de documentos para a simulação e deixo uma conversa com o corretor amanhã às 10h. Pode ser?<small>23:11</small></p>
+      </div>
+      <p class="nota">Exemplo ilustrativo. As perguntas de cada agente são desenhadas com a sua imobiliária.</p>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Imobiliária com agente no ar</p>
+      <h2><span class="hl">480 leads</span> atendidos fora do horário comercial</h2>
+      <div class="grade">
+        <article class="cartao"><p class="numero">480</p><h3>leads atendidos fora do horário</h3><p>Leads do anúncio que chegaram fora do horário comercial.</p></article>
+        <article class="cartao"><p class="numero">18h–8h</p><h3>de cobertura planejada</h3><p>E também nas férias do time.</p></article>
+        <article class="cartao"><p class="numero">Na hora</p><h3>o lead é qualificado</h3><p>Antes de esfriar, com a reunião já no CRM.</p></article>
+      </div>
+      <p class="texto">Como o agente foi montado está no <a href="/casos/imobiliaria-leads-fora-do-horario/">caso de imobiliária</a>. O produto, para qualquer segmento, é o <a href="/agente-sdr-ia/">agente SDR com IA</a>. Se o lead da sua imobiliária conversa pelo WhatsApp, veja também o <a href="/agente-de-ia-whatsapp/">agente de IA para WhatsApp</a>.</p>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Como fica pronto</p>
+      <h2>De 4 a 6 semanas, com o seu processo de venda no desenho</h2>
+      <ol class="passos">
+        <li><b>Mapeamento.</b> De onde vem o lead, em que horário, quanto tempo espera hoje e o que o corretor precisa saber antes da visita.</li>
+        <li><b>Desenho.</b> As perguntas de qualificação, os documentos, a agenda dos corretores e o registro no CRM. Você aprova antes da construção.</li>
+        <li><b>No ar.</b> Testado com leads reais e ajustado com o seu time acompanhando.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Para quem não é</p>
+      <h2>Quando o agente não é o melhor começo</h2>
+      <ul class="nao-e">
+        <li>Quando a imobiliária quase não recebe lead de anúncio ou de portal.</li>
+        <li>Quando não há corretor para receber o lead que o agente qualifica.</li>
+        <li>Quando a expectativa é fechar a venda sem gente: o agente atende e qualifica, quem vende é o corretor.</li>
+      </ul>
+      <p class="texto">Outros casos com número em <a href="/casos/">Casos</a>.</p>
+    </div>
+  </section>
+
+  <Faq perguntas={perguntas} />
+
+  <section class="bloco final">
+    <div class="faixa">
+      <p class="mono destaque">3 minutos</p>
+      <h2>Quantos leads da sua imobiliária esperam até amanhã?</h2>
+      <p class="texto">Você responde 10 perguntas e recebe o mapa de onde a sua operação perde tempo.</p>
+      <a class="botao" href="/#diagnostico" data-strat-cta="imobiliarias-final-diagnostico">Fazer meu diagnóstico</a>
+    </div>
+  </section>
+</Pagina>

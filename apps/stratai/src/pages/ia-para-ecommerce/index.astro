@@ -1,0 +1,144 @@
+---
+// Segmento "IA para e-commerce" (WEB-60, Lote C). Título, H1 e busca: seção 3 do mapa
+// (docs/planos/stratai-estrutura.md). Seção 4: a página fica com "IA para e-commerce"; o caso do e-commerce fica com
+// "suporte com IA no e-commerce" e as duas se linkam.
+// Números só do caso (regra dura 4): 85% dos atendimentos resolvidos pela IA, 3 agentes (entrega, pagamento e
+// preparo) e o manual em PDF enviado quando o cliente pergunta, da home (bloco "Casos reais", migrada do strat-lps no
+// WEB-32). O caminho do atendimento (pergunta no WhatsApp, o agente certo assume, consulta o pedido e responde com o
+// rastreio ou o manual, só o que precisa de gente vai para o time) também é o da home. Troca vai para o time: o
+// exemplo "Passei 1 caso para a equipe: cliente pediu troca" da home. O que o agente faz num e-commerce ("cadê meu
+// pedido?", dúvida de produto, carrinho): a lista de segmentos do diagnóstico da home. Prazo de 4 a 6 semanas: o FAQ
+// da home. A conversa do bloco "Na tela" é ilustrativa e vai marcada assim (regra exemplo-marcado da voz da StratAI).
+// Rastro stratai-paginas em soft (decisão do Helbert de 19/11 no #14).
+import Pagina from '../../layouts/Pagina.astro';
+import Faq from '@strat/kit/Faq.astro';
+
+const perguntas = [
+  {
+    pergunta: 'O agente consulta o pedido na plataforma da loja?',
+    resposta:
+      'Consulta. Ele busca o pedido e responde "cadê meu pedido?" com o rastreio, sem abrir chamado. No mapeamento a gente confere como o agente conversa com a plataforma que a sua loja usa.',
+  },
+  {
+    pergunta: 'Por que mais de um agente, e não um só?',
+    resposta:
+      'Porque cada assunto tem a sua regra. No caso publicado, um agente cuida da entrega, um do pagamento e um do preparo do produto. A pergunta do cliente vai para o agente certo, e cada um responde com mais precisão.',
+  },
+  {
+    pergunta: 'E troca, devolução e reclamação?',
+    resposta:
+      'O agente explica a política da loja e, quando o caso precisa de decisão, passa para uma pessoa do time com a conversa inteira. Ninguém pede para o cliente repetir o que já contou.',
+  },
+  {
+    pergunta: 'Em quanto tempo o suporte com IA fica pronto?',
+    resposta:
+      'Um agente de WhatsApp costuma ficar no ar entre 4 e 6 semanas. O prazo depende do escopo e fica combinado antes de começar.',
+  },
+];
+---
+<Pagina
+  perfil="lead"
+  titulo="IA para e-commerce: suporte que resolve sozinho · StratAI"
+  descricao="IA para e-commerce: agentes no WhatsApp respondem entrega, pagamento e dúvida de produto na hora e passam ao time só o que precisa de gente."
+  trilha={[{ nome: 'Início', caminho: '/' }, { nome: 'IA para e-commerce', caminho: '/ia-para-ecommerce/' }]}
+>
+  <section class="abre">
+    <div class="faixa">
+      <p class="mono destaque">Segmento · E-commerce</p>
+      <h1>IA para e-commerce: entrega, pagamento e troca respondidos na hora</h1>
+      <p class="lead">"Cadê meu pedido?" chega no domingo à noite, e o cliente quer resposta agora. Agentes de IA consultam o pedido, mandam o rastreio e tiram a dúvida do produto. O seu time fica com o que precisa de gente.</p>
+      <div class="acoes">
+        <a class="botao" href="/#diagnostico" data-strat-cta="ecommerce-abre-diagnostico">Fazer meu diagnóstico</a>
+        <a class="botao botao-fantasma" href="/casos/ecommerce-suporte-com-ia/">Ver o caso de um e-commerce</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">O que os agentes assumem</p>
+      <h2>Um agente para cada assunto que mais chega no suporte</h2>
+      <div class="grade">
+        <article class="cartao">
+          <h3>Entrega</h3>
+          <p>Consulta o pedido e responde com o rastreio e o prazo, sem abrir chamado.</p>
+        </article>
+        <article class="cartao">
+          <h3>Pagamento</h3>
+          <p>Status do pagamento e dúvida de cobrança, respondidos com a regra da sua loja.</p>
+        </article>
+        <article class="cartao">
+          <h3>Produto</h3>
+          <p>Como usar, como preparar, o que vem na caixa. Quando existe manual, o agente manda o PDF.</p>
+        </article>
+        <article class="cartao">
+          <h3>Troca e o que precisa de gente</h3>
+          <p>O agente explica a política e passa para o time, com a conversa inteira junto.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Na tela</p>
+      <h2>Uma pergunta às 20h05 de domingo</h2>
+      <div class="conversa" aria-label="Exemplo ilustrativo de conversa com o agente de um e-commerce">
+        <p class="msg">Paguei por boleto ontem, já compensou?<small>20:05</small></p>
+        <p class="msg a">Vou ver pra você. Qual é o número do pedido?<small>20:05</small></p>
+        <p class="msg">20731<small>20:06</small></p>
+        <p class="msg a">Compensou hoje de manhã. O pedido já está em separação, e o rastreio chega aqui assim que sair.<small>20:06</small></p>
+      </div>
+      <p class="nota">Exemplo ilustrativo. As respostas de cada agente seguem as regras da sua loja.</p>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">E-commerce com agentes no ar</p>
+      <h2><span class="hl">85%</span> dos atendimentos de suporte resolvidos pela IA</h2>
+      <div class="grade">
+        <article class="cartao"><p class="numero">85%</p><h3>dos atendimentos resolvidos pela IA</h3><p>Sem passar por ninguém do time.</p></article>
+        <article class="cartao"><p class="numero">3</p><h3>agentes especialistas</h3><p>Entrega, pagamento e preparo do produto.</p></article>
+        <article class="cartao"><p class="numero">PDF</p><h3>manual enviado</h3><p>Quando o cliente pergunta como preparar.</p></article>
+      </div>
+      <p class="texto">O caminho de cada atendimento está no caso de <a href="/casos/ecommerce-suporte-com-ia/">suporte com IA no e-commerce</a>. Os agentes atendem pelo WhatsApp: veja o <a href="/agente-de-ia-whatsapp/">agente de IA para WhatsApp</a>.</p>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Como fica pronto</p>
+      <h2>De 4 a 6 semanas, a partir das perguntas que a sua loja mais recebe</h2>
+      <ol class="passos">
+        <li><b>Mapeamento.</b> Quais perguntas chegam, quais se repetem e quanto do suporte poderia sair do time.</li>
+        <li><b>Desenho.</b> Que agente cuida de cada assunto, onde ele consulta o pedido e quando chama alguém. Você aprova antes da construção.</li>
+        <li><b>No ar.</b> Testado com conversas reais e ajustado com você acompanhando.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="faixa">
+      <p class="mono">Para quem não é</p>
+      <h2>Quando o agente não é o melhor começo</h2>
+      <ul class="nao-e">
+        <li>Quando a loja recebe poucas mensagens de suporte por semana.</li>
+        <li>Quando a política de entrega, troca e pagamento ainda não está escrita: ela vem antes do agente.</li>
+        <li>Quando a ideia é zerar o time de atendimento: o agente assume o repetitivo, o time cuida do que precisa de gente.</li>
+      </ul>
+      <p class="texto">Outros casos com número em <a href="/casos/">Casos</a>.</p>
+    </div>
+  </section>
+
+  <Faq perguntas={perguntas} />
+
+  <section class="bloco final">
+    <div class="faixa">
+      <p class="mono destaque">3 minutos</p>
+      <h2>Quanto do suporte da sua loja é a mesma pergunta?</h2>
+      <p class="texto">Você responde 10 perguntas e recebe o mapa de onde a sua operação perde tempo.</p>
+      <a class="botao" href="/#diagnostico" data-strat-cta="ecommerce-final-diagnostico">Fazer meu diagnóstico</a>
+    </div>
+  </section>
+</Pagina>

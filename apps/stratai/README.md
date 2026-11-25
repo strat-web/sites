@@ -19,6 +19,12 @@ Site da StratAI no Cloudflare Pages (projeto `stratai`, prévia em https://strat
 | `/automacao-com-ia/` | `src/pages/automacao-com-ia/index.astro` + `Pagina.astro` | `stratai-automacao-com-ia` | Rastro `stratai-paginas` (soft) e MetricaaS `agencia-strat` (WEB-59) |
 | `/sistemas-sob-medida/` | `src/pages/sistemas-sob-medida/index.astro` + `Pagina.astro` | `stratai-sistemas-sob-medida` | Rastro `stratai-paginas` (soft) e MetricaaS `agencia-strat` (WEB-59) |
 | `/metodo-das-alavancas/` | `src/pages/metodo-das-alavancas/index.astro` + `Pagina.astro` | `stratai-metodo-das-alavancas` | Rastro `stratai-paginas` (soft) e MetricaaS `agencia-strat` (WEB-59) |
+| `/ia-para-restaurantes/` | `src/pages/ia-para-restaurantes/index.astro` + `Pagina.astro` | `stratai-ia-para-restaurantes` | Rastro `stratai-paginas` (soft) e MetricaaS `agencia-strat` (WEB-60) |
+| `/ia-para-imobiliarias/` | `src/pages/ia-para-imobiliarias/index.astro` + `Pagina.astro` | `stratai-ia-para-imobiliarias` | Rastro `stratai-paginas` (soft) e MetricaaS `agencia-strat` (WEB-60) |
+| `/ia-para-ecommerce/` | `src/pages/ia-para-ecommerce/index.astro` + `Pagina.astro` | `stratai-ia-para-ecommerce` | Rastro `stratai-paginas` (soft) e MetricaaS `agencia-strat` (WEB-60) |
+| `/ia-para-clinicas/` | `src/pages/ia-para-clinicas/index.astro` + `Pagina.astro` | `stratai-ia-para-clinicas` | Rastro `stratai-paginas` (soft) e MetricaaS `agencia-strat` (WEB-60) |
+| `/casos/imobiliaria-leads-fora-do-horario/` | `src/pages/casos/imobiliaria-leads-fora-do-horario/index.astro` + `Pagina.astro` | `stratai-caso-imobiliaria` | Rastro `stratai-conteudo` (banner/strict) e MetricaaS `agencia-strat` (WEB-60) |
+| `/casos/ecommerce-suporte-com-ia/` | `src/pages/casos/ecommerce-suporte-com-ia/index.astro` + `Pagina.astro` | `stratai-caso-ecommerce` | Rastro `stratai-conteudo` (banner/strict) e MetricaaS `agencia-strat` (WEB-60) |
 | `/recuperacao/cases/` e `/recuperacao/cases/<cliente>/` | `src/pages/recuperacao/cases/` (conteúdo em `public/recuperacao/comum/cases.js`) | `stratai-recuperacao-case*` | Rastro `stratai-recuperacao` (soft) e MetricaaS `agencia-strat` |
 | `/parcerias/` | `src/pages/parcerias/index.astro`, `src/layouts/Parcerias.astro`, `src/components/parcerias/`, textos em `src/data/parcerias.json` | `stratai-parcerias` | Rastro `stratai-parcerias` (soft) e MetricaaS `agencia-strat`; o cadastro vai pelo `mtc.lead()` (WEB-74) |
 
@@ -85,6 +91,14 @@ Casos, Parcerias e Sobre. Até 1023 px o menu abre em lista pelo botão "Menu"; 
 da casca (o do Lote A, que abre o `<details>` do menu no computador) deixa o menu em linha e fecha um submenu quando
 outro abre ou ao clicar fora. O menu da home (WEB-34) não mudou. O rodapé da casca ganhou
 Agente SDR com IA, Sistemas sob medida e Automação com IA em Produtos e Método das Alavancas em StratAI.
+Lote C (WEB-60, 25/11/2026): os quatro segmentos (`/ia-para-restaurantes/`, `/ia-para-imobiliarias/`,
+`/ia-para-ecommerce/` e `/ia-para-clinicas/`, perfil `lead`) e os casos da imobiliária e do e-commerce (perfil
+`conteudo`), anônimos como o do restaurante; o da imobiliária não cita cidade (seção 3 do mapa). Clínicas sem número:
+não há caso de clínica, e a página diz isso. `/casos/` passou a ter os três casos, os links por segmento e FAQ; a
+casca ganhou a coluna "Por segmento" no rodapé (o menu do topo não mudou). Na home, só o "Ler o caso completo" nos
+casos da imobiliária e do e-commerce, como o do restaurante no Lote A. Links que esperam página: os segmentos e o caso
+da imobiliária ganham o link para `/agente-sdr-ia/` quando o Lote B (WEB-59) entrar; a checagem `links` barra link
+para página que não existe.
 
 ## Depois da migração: home do plano de Joinville (WEB-33, 25/11/2026)
 A F1 de `docs/planos/stratai-buscas-joinville.md`, a primeira mudança de texto da home depois do WEB-32:

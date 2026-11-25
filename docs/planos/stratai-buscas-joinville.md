@@ -45,7 +45,7 @@ com assunto próprio, e o resto do site aponta para ela.
 | Lote B · módulos e método | `/sistemas-sob-medida/`, `/metodo-das-alavancas/` | WEB-59 | |
 | Lote C · segmentos e casos | `/ia-para-restaurantes/`, `/ia-para-imobiliarias/` | WEB-60 | |
 | Lote C · segmentos e casos | `/ia-para-ecommerce/`, `/ia-para-clinicas/` | WEB-60 | clínicas sem número |
-| Lote C · segmentos e casos | `/casos/`, `/casos/<caso-da-imobiliaria>/`, `/casos/<caso-do-ecommerce>/` | WEB-60 | |
+| Lote C · segmentos e casos | `/casos/`, `/casos/imobiliaria-leads-fora-do-horario/`, `/casos/ecommerce-suporte-com-ia/` | WEB-60 | slugs sem o nome do cliente (mapa `stratai-estrutura.md`); `/casos/` nasceu no WEB-34 e cresce aqui |
 | Guias de compra | `/guias/quanto-custa-agente-de-ia/` e mais 3 | WEB-61 | |
 | Mantidas | `/`, `/raio-x/`, `/politica-de-privacidade` | | |
 
